@@ -1,0 +1,32 @@
+export interface BrandingSettings {
+  id: string;
+  company_name: string;
+  company_tagline: string;
+  website: string;
+  booking_email: string;
+  support_email: string;
+  reply_email: string;
+  support_phone: string;
+  whatsapp_number: string;
+  business_address: string;
+  city: string;
+  state: string;
+  country: string;
+  postal_code: string;
+  logo_url: string;
+  logo_dark_url: string;
+  logo_light_url: string;
+  favicon_url: string;
+  primary_color: string;
+  secondary_color: string;
+  accent_color: string;
+  linkedin_url: string;
+  facebook_url: string;
+  instagram_url: string;
+  youtube_url: string;
+  twitter_url: string;
+  copyright_text: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
