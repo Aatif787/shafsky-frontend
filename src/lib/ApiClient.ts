@@ -3,7 +3,18 @@
  * Replaces direct Supabase client access with custom JWT Auth & Backend Microservices
  */
 
-const API_BASE_URL = process.env.VITE_BACKEND_API_URL || "http://localhost:4000";
+const getApiBaseUrl = (): string => {
+  if (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_BACKEND_API_URL) {
+    return import.meta.env.VITE_BACKEND_API_URL;
+  }
+  if (typeof process !== "undefined" && process.env && process.env.VITE_BACKEND_API_URL) {
+    return process.env.VITE_BACKEND_API_URL;
+  }
+  return "http://localhost:8001";
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
 
 export interface FlightDurationApiRequest {
   duration?: string;
