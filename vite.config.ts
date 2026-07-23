@@ -7,6 +7,19 @@ import { nitro } from "nitro/vite";
 
 export default defineConfig({
   server: { port: 5173 },
+  build: {
+    chunkSizeWarningLimit: 1500,
+  },
+  optimizeDeps: {
+    include: [
+      "@tanstack/react-query",
+      "@tanstack/react-router",
+      "@supabase/supabase-js",
+      "lucide-react",
+      "clsx",
+      "tailwind-merge",
+    ],
+  },
   plugins: [
     tsconfigPaths(),
     tailwindcss(),
@@ -25,3 +38,4 @@ export default defineConfig({
     viteReact(),
   ],
 });
+
