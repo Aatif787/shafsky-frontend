@@ -5,6 +5,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { getSessionInfo } from "@/lib/session";
 import { useAuth } from "@/auth-system/useAuth";
 import {
+  getSuperAdminKPIs,
+  listAllUsers,
+  updateUserRoleAndStatus,
+  listCoupons,
+  createCoupon,
+  toggleCoupon,
+  deleteCoupon,
+  getAuditLogs,
+} from "@/lib/super-admin.functions";
+import {
   LayoutDashboard,
   ShieldAlert,
   Users,
@@ -74,26 +84,22 @@ export default function SuperAdminView({ userId }: { userId: string }) {
     useQuery({
       queryKey: ["superadmin-stats"],
       queryFn: async () => {
-        const { count: userCount } = await supabase
-          .from("profiles")
-          .select("*", { count: "exact", head: true });
-        const { count: bookingCount } = await supabase
-          .from("bookings")
-          .select("*", { count: "exact", head: true });
-        const { data: revData } = await supabase
-          .from("bookings")
-          .select("quote_amount")
-          .in("status", ["confirmed", "completed"]);
-        const revSum = (revData || []).reduce((acc, curr) => acc + (curr.quote_amount || 0), 0);
-        return { users: userCount || 0, bookings: bookingCount || 0, revenue: revSum };
+        try {
+          const res = await getSuperAdminKPIs();
+          return {
+            users: res.totalUsers || 0,
+            bookings: res.totalBookings || 0,
+            revenue: res.totalRevenue || 0,
+          };
+        } catch {
+          return { users: 0, bookings: 0, revenue: 0 };
+        }
       },
       staleTime: 20000,
     });
 
-  // State to track if coupons table needs migration (based on query failure)
-  const [isCouponsMigrationRequired, setIsCouponsMigrationRequired] = useState(false);
+  const [isCouponsMigrationRequired] = useState(false);
 
-  // TanStack Query: Coupons
   // TanStack Query: Coupons
   const {
     data: coupons = [],
@@ -103,75 +109,10 @@ export default function SuperAdminView({ userId }: { userId: string }) {
     queryKey: ["superadmin-coupons"],
     queryFn: async () => {
       try {
-        const { data, error } = await (supabase as any)
-          .from("coupons")
-          .select("*")
-          .order("created_at", { ascending: false });
-        if (error) {
-          if (error.message.includes("does not exist")) {
-            setIsCouponsMigrationRequired(true);
-            return [
-              {
-                id: "fallback-1",
-                code: "WELCOME10",
-                discount_percent: 10,
-                uses_count: 5,
-                max_uses: 100,
-                is_active: true,
-              },
-              {
-                id: "fallback-2",
-                code: "VIP20",
-                discount_percent: 20,
-                uses_count: 12,
-                max_uses: 50,
-                is_active: true,
-              },
-              {
-                id: "fallback-3",
-                code: "SHAFSKY25",
-                discount_percent: 25,
-                uses_count: 2,
-                max_uses: 20,
-                is_active: true,
-              },
-            ];
-          }
-          throw error;
-        }
-        setIsCouponsMigrationRequired(false);
-        return (data as any) || [];
-      } catch (err: any) {
-        if (err.message?.includes("does not exist")) {
-          setIsCouponsMigrationRequired(true);
-          return [
-            {
-              id: "fallback-1",
-              code: "WELCOME10",
-              discount_percent: 10,
-              uses_count: 5,
-              max_uses: 100,
-              is_active: true,
-            },
-            {
-              id: "fallback-2",
-              code: "VIP20",
-              discount_percent: 20,
-              uses_count: 12,
-              max_uses: 50,
-              is_active: true,
-            },
-            {
-              id: "fallback-3",
-              code: "SHAFSKY25",
-              discount_percent: 25,
-              uses_count: 2,
-              max_uses: 20,
-              is_active: true,
-            },
-          ];
-        }
-        throw err;
+        const res = await listCoupons();
+        return (res || []) as Coupon[];
+      } catch {
+        return [];
       }
     },
     staleTime: 30000,
@@ -185,21 +126,20 @@ export default function SuperAdminView({ userId }: { userId: string }) {
   } = useQuery<any[]>({
     queryKey: ["superadmin-audit-logs"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("audit_log")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(50);
-      if (error) throw error;
-      return (data || []).map((l: any) => ({
-        id: l.id,
-        action: l.action,
-        actor_id: l.actor_id,
-        actor_email: "",
-        ip_address: (l.metadata as any)?.ip || "0.0.0.0",
-        created_at: l.created_at,
-        details: l.metadata,
-      })) as any;
+      try {
+        const res = await getAuditLogs();
+        return (res || []).map((l: any) => ({
+          id: l.id,
+          action: l.action,
+          actor_id: l.actor || l.actor_id,
+          actor_email: l.actor || "",
+          ip_address: l.details?.ip || "0.0.0.0",
+          created_at: l.timestamp || l.created_at,
+          details: l.details,
+        }));
+      } catch {
+        return [];
+      }
     },
     staleTime: 10000,
   });
@@ -212,18 +152,19 @@ export default function SuperAdminView({ userId }: { userId: string }) {
   } = useQuery<ProfileWithRole[]>({
     queryKey: ["superadmin-users"],
     queryFn: async () => {
-      const { data: profiles, error: pError } = await supabase.from("profiles").select("*");
-      if (pError) throw pError;
-      const { data: roles, error: rError } = await supabase.from("user_roles").select("*");
-      if (rError) throw rError;
-
-      return (profiles || []).map((p) => {
-        const uRoles = (roles || []).filter((r) => r.user_id === p.id).map((r) => r.role);
-        return {
-          ...p,
-          roles: uRoles.length > 0 ? uRoles : ["customer"],
-        };
-      });
+      try {
+        const res = await listAllUsers();
+        return (res || []).map((u: any) => ({
+          id: u.id,
+          full_name: u.full_name || u.email?.split("@")[0] || "User",
+          email: u.email,
+          created_at: u.created_at || "",
+          updated_at: u.updated_at || "",
+          roles: u.role ? [u.role.toLowerCase()] : ["customer"],
+        }));
+      } catch {
+        return [];
+      }
     },
     staleTime: 15000,
   });
@@ -232,19 +173,15 @@ export default function SuperAdminView({ userId }: { userId: string }) {
 
   const handleCreateCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isCouponsMigrationRequired) {
-      toast.error("Cannot insert coupon. Coupons table migration is required.");
-      return;
-    }
     setCouponSubmitting(true);
     try {
-      const { error } = await (supabase as any).from("coupons").insert({
-        code: cpCode.toUpperCase().trim(),
-        discount_percent: cpDiscount,
-        max_uses: cpMaxUses,
-        is_active: true,
-      } as never);
-      if (error) throw error;
+      await createCoupon({
+        data: {
+          code: cpCode.toUpperCase().trim(),
+          discount_percent: cpDiscount,
+          max_uses: cpMaxUses,
+        },
+      });
       toast.success("Coupon code successfully initialized.");
       setCpCode("");
       fetchCoupons();
@@ -256,16 +193,13 @@ export default function SuperAdminView({ userId }: { userId: string }) {
   };
 
   const handleToggleCoupon = async (couponId: string, currentStatus: boolean) => {
-    if (isCouponsMigrationRequired) {
-      toast.error("Database migration is required.");
-      return;
-    }
     try {
-      const { error } = await (supabase as any)
-        .from("coupons")
-        .update({ is_active: !currentStatus } as never)
-        .eq("id", couponId);
-      if (error) throw error;
+      await toggleCoupon({
+        data: {
+          id: couponId,
+          is_active: !currentStatus,
+        },
+      });
       toast.success("Coupon status modified.");
       fetchCoupons();
     } catch (err: any) {
@@ -274,13 +208,12 @@ export default function SuperAdminView({ userId }: { userId: string }) {
   };
 
   const handleDeleteCoupon = async (couponId: string) => {
-    if (isCouponsMigrationRequired) {
-      toast.error("Database migration is required.");
-      return;
-    }
     try {
-      const { error } = await (supabase as any).from("coupons").delete().eq("id", couponId);
-      if (error) throw error;
+      await deleteCoupon({
+        data: {
+          id: couponId,
+        },
+      });
       toast.success("Coupon successfully deleted.");
       fetchCoupons();
     } catch (err: any) {
@@ -290,17 +223,12 @@ export default function SuperAdminView({ userId }: { userId: string }) {
 
   const handleUpdateRole = async (targetUserId: string, newRole: string) => {
     try {
-      // First, remove existing roles for that user
-      await supabase.from("user_roles").delete().eq("user_id", targetUserId);
-
-      if (newRole !== "customer") {
-        const { error } = await supabase.from("user_roles").insert({
-          user_id: targetUserId,
-          role: newRole,
-        } as never);
-        if (error) throw error;
-      }
-
+      await updateUserRoleAndStatus({
+        data: {
+          targetUserId,
+          role: newRole as any,
+        },
+      });
       toast.success("User credentials / role updated successfully.");
       fetchUsers();
     } catch (e: any) {

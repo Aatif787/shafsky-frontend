@@ -8,7 +8,6 @@ import {
   executeBookingWorkflowAction,
   getBookingInternalStatus,
 } from "@/lib/bookings.functions";
-import { supabase } from "@/integrations/supabase/client";
 import { pageMono, pageDisplay, Panel } from "@/components/site/PageShell";
 import { Loader2, AlertTriangle, Search, Eye, Calendar, MapPin, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -154,16 +153,13 @@ function BookingsManagerView() {
   const { data: userRole } = useQuery({
     queryKey: ["current-user-role"],
     queryFn: async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return "customer";
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      return data?.role || "customer";
+      try {
+        const { getCurrentUserProfileServer } = await import("@/lib/user.functions");
+        const me = await getCurrentUserProfileServer();
+        return me?.role || "customer";
+      } catch {
+        return "customer";
+      }
     },
   });
 

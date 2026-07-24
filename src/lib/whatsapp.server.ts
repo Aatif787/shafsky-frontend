@@ -7,6 +7,7 @@
 import { createHash } from "crypto";
 import { generateWhatsAppText, generateAdminNotificationText } from "./notification-templates";
 import type { BookingEmailPayload } from "./notification-templates";
+import { apiGet } from "./FastApiClient";
 
 interface RequestOptions {
   method?: string;
@@ -49,7 +50,7 @@ function computeMessageHash(body: string): string {
 }
 
 /**
- * Persistent idempotency check using Supabase notification_logs
+ * Persistent idempotency check using FastAPI notification_logs endpoint
  */
 async function isDuplicateRequest(
   recipient: string,
@@ -58,18 +59,11 @@ async function isDuplicateRequest(
   bookingRef?: string | null,
 ): Promise<boolean> {
   try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const sixtySecondsAgo = new Date(Date.now() - 60000).toISOString();
+    const logs = await apiGet<any[]>(
+      `/api/notifications/logs?recipient=${encodeURIComponent(recipient)}&channel=whatsapp&status=sent&since_seconds=60`,
+    );
 
-    const { data: logs, error } = await supabaseAdmin
-      .from("notification_logs")
-      .select("error_message")
-      .eq("recipient", recipient)
-      .eq("channel", "whatsapp")
-      .eq("status", "sent")
-      .gte("created_at", sixtySecondsAgo);
-
-    if (error || !logs || logs.length === 0) return false;
+    if (!logs || !Array.isArray(logs) || logs.length === 0) return false;
 
     const currentHash = computeMessageHash(body);
 

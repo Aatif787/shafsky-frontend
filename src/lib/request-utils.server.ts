@@ -1,6 +1,5 @@
 import { getRequest } from "@tanstack/react-start/server";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database, Json } from "@/integrations/supabase/types";
+import { apiPost, getTokenFromRequest } from "@/lib/FastApiClient";
 
 /**
  * Extracts the client IP address from request headers on the server.
@@ -16,9 +15,9 @@ export function getClientIp(): string {
   );
 }
 
-// Helper to log administrative audits in both legacy and new schema formats
+// Helper to log administrative audits in FastAPI backend
 export async function logAdminActionHelper(
-  supabase: SupabaseClient<Database>,
+  _supabase: any,
   userId: string,
   action: string,
   tableName: string,
@@ -33,16 +32,21 @@ export async function logAdminActionHelper(
     console.warn("Could not extract request headers for audit logging:", e);
   }
 
-  // Insert into audit_log table
   try {
-    await supabase.from("audit_log").insert({
-      actor_id: userId,
-      action,
-      entity: tableName,
-      entity_id: entityId,
-      metadata: { before: beforeData, after: afterData, ip: ipAddress } as unknown as Json,
-    });
+    const token = getTokenFromRequest();
+    await apiPost(
+      "/api/audit-logs",
+      {
+        actor_id: userId,
+        action,
+        entity: tableName,
+        entity_id: entityId,
+        details: { before: beforeData, after: afterData, ip: ipAddress },
+        ip: ipAddress,
+      },
+      token,
+    );
   } catch (e) {
-    console.error("Failed to write to audit_log:", e);
+    console.error("Failed to write to audit log:", e);
   }
 }

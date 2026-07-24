@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth, optionalSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { assertPermission, getUserRoles, isStaffUser } from "@/lib/permissions";
+import { getUserRoles, isStaffUser } from "@/lib/permissions";
+import { apiGet, apiPatch, getTokenFromRequest } from "@/lib/FastApiClient";
 
 export const checkStaffAccess = createServerFn({ method: "GET" })
   .middleware([optionalSupabaseAuth])
@@ -14,169 +15,87 @@ export const checkStaffAccess = createServerFn({ method: "GET" })
 // ─── Admin Lounges ───
 export const getAdminLounges = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-    await assertPermission(supabase, userId, "services:read");
-
-    const { data: lounges, error } = await supabase
-      .from("lounges")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) throw new Error(error.message);
-
-    // Get queue counts per lounge
-    const loungeIds = (lounges || []).map((l) => l.id);
-    let queueData: Record<string, unknown>[] = [];
-    if (loungeIds.length > 0) {
-      const { data: q } = await supabase
-        .from("lounge_queue")
-        .select("*")
-        .in("lounge_id", loungeIds)
-        .eq("status", "waiting");
-      queueData = (q || []) as any;
+  .handler(async () => {
+    try {
+      const token = getTokenFromRequest();
+      const lounges = await apiGet<any[]>("/api/super-admin/lounges", token);
+      return (lounges || []).map((lounge) => ({
+        ...lounge,
+        airport: null,
+        queue_count: 0,
+      }));
+    } catch {
+      return [];
     }
-
-    // Get airport info
-    const { data: airports } = await supabase.from("airports").select("id, code, name, city");
-
-    const airportMap = new Map<string, Record<string, unknown>>();
-    (airports || []).forEach((a) => airportMap.set(a.id, a as any));
-
-    return (lounges || []).map((lounge) => ({
-      ...lounge,
-      airport: airportMap.get(lounge.airport_id as string) || null,
-      queue_count: queueData.filter((q: any) => q.lounge_id === lounge.id).length,
-    })) as any;
   });
 
 export const updateLoungeStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: any) => data as { loungeId: string; status: string })
-  .handler(async ({ context, data }) => {
-    const { supabase, userId } = context;
-    await assertPermission(supabase, userId, "services:write");
-
-    const { error } = await supabase
-      .from("lounges")
-      .update({ status: data.status })
-      .eq("id", data.loungeId);
-
-    if (error) throw new Error(error.message);
-
-    // Audit log
-    await supabase.from("audit_log").insert({
-      actor_id: userId,
-      action: `lounge.status.${data.status}`,
-      entity: "lounges",
-      entity_id: data.loungeId,
-    });
-
+  .handler(async ({ data }) => {
+    const token = getTokenFromRequest();
+    await apiPatch(`/api/super-admin/lounges/${data.loungeId}`, { status: data.status }, token);
     return { success: true };
   });
 
 // ─── Staff Shifts ───
 export const getStaffShifts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-    await assertPermission(supabase, userId, "staff:read");
-
-    const today = new Date().toISOString().slice(0, 10);
-    const { data: shifts, error } = await supabase
-      .from("staff_shifts")
-      .select("*")
-      .gte("shift_date", today)
-      .order("shift_date", { ascending: true })
-      .order("shift_start", { ascending: true })
-      .limit(50);
-
-    if (error) throw new Error(error.message);
-
-    // Get staff profiles
-    const staffIds: string[] = Array.from(new Set((shifts || []).map((s) => s.staff_id)));
-    let profiles: Record<string, unknown>[] = [];
-    if (staffIds.length > 0) {
-      const { data: p } = await supabase
-        .from("profiles")
-        .select("id, full_name, phone")
-        .in("id", staffIds);
-      profiles = (p || []) as any;
+  .handler(async () => {
+    try {
+      const token = getTokenFromRequest();
+      const shifts = await apiGet<any[]>("/api/super-admin/staff-shifts", token);
+      return shifts || [];
+    } catch {
+      return [];
     }
-
-    const profileMap = new Map<string, Record<string, unknown>>();
-    profiles.forEach((p) => profileMap.set(p.id as string, p));
-
-    return (shifts || []).map((shift) => ({
-      ...shift,
-      staff_profile: profileMap.get(shift.staff_id) || null,
-    })) as any;
   });
 
 // ─── Admin Profile ───
 export const getAdminProfile = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .maybeSingle();
-
-    if (error) throw new Error(error.message);
-
-    // Get recent activity
-    const { data: activity } = await supabase
-      .from("audit_log")
-      .select("*")
-      .eq("actor_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(20);
-
-    // Get roles
-    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-
-    return {
-      profile: profile || {
-        id: userId,
-        full_name: "Admin",
-        phone: null,
-        company: null,
-        avatar_url: null,
-        created_at: "",
-        updated_at: "",
-        notes: null,
-      },
-      activity: activity || [],
-      roles: (roles || []).map((r) => r.role),
-    };
+    const { userId } = context;
+    try {
+      const token = getTokenFromRequest();
+      const me = await apiGet<any>("/api/me", token);
+      return {
+        profile: {
+          id: userId,
+          full_name: me?.full_name || me?.email?.split("@")[0] || "Admin",
+          phone: me?.phone || null,
+          company: me?.company || null,
+          avatar_url: null,
+          created_at: "",
+          updated_at: "",
+          notes: null,
+        },
+        activity: [],
+        roles: me?.role ? [me.role] : ["admin"],
+      };
+    } catch {
+      return {
+        profile: {
+          id: userId,
+          full_name: "Admin",
+          phone: null,
+          company: null,
+          avatar_url: null,
+          created_at: "",
+          updated_at: "",
+          notes: null,
+        },
+        activity: [],
+        roles: ["admin"],
+      };
+    }
   });
 
 export const updateAdminProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: any) => data as { full_name?: string; phone?: string; company?: string })
-  .handler(async ({ context, data }) => {
-    const { supabase, userId } = context;
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        full_name: data.full_name,
-        phone: data.phone,
-        company: data.company,
-      } as never)
-      .eq("id", userId);
-
-    if (error) throw new Error(error.message);
-
-    await supabase.from("audit_log").insert({
-      actor_id: userId,
-      action: "profile.updated",
-      entity: "profiles",
-      entity_id: userId,
-    } as never);
-
+  .handler(async ({ data }) => {
+    const token = getTokenFromRequest();
+    await apiPatch("/api/me", data, token);
     return { success: true };
   });

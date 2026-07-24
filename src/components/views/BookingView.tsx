@@ -2030,14 +2030,16 @@ export default function BookingView({ searchParams }: { searchParams: any }) {
           if (pUpErr) {
             // Passport upload failed
           } else {
-            const { error: pInsErr } = await supabase.from("booking_documents").insert({
-              booking_id: bookingId,
-              kind: "passport",
-              storage_path: passportPath,
-              amount: null,
-              currency: null,
-            } as never);
-            if (pInsErr) {
+            try {
+              const { recordDocumentUploadServer } = await import("@/lib/booking-documents.functions");
+              await recordDocumentUploadServer({
+                data: {
+                  bookingId,
+                  kind: "passport",
+                  storagePath: passportPath,
+                },
+              });
+            } catch (pInsErr) {
               // Passport record insert failed
             }
           }
@@ -2055,14 +2057,16 @@ export default function BookingView({ searchParams }: { searchParams: any }) {
           if (vUpErr) {
             // Visa upload failed
           } else {
-            const { error: vInsErr } = await supabase.from("booking_documents").insert({
-              booking_id: bookingId,
-              kind: "visa",
-              storage_path: visaPath,
-              amount: null,
-              currency: null,
-            } as never);
-            if (vInsErr) {
+            try {
+              const { recordDocumentUploadServer } = await import("@/lib/booking-documents.functions");
+              await recordDocumentUploadServer({
+                data: {
+                  bookingId,
+                  kind: "visa",
+                  storagePath: visaPath,
+                },
+              });
+            } catch (vInsErr) {
               // Visa record insert failed
             }
           }

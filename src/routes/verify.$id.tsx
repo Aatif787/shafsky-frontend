@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getActiveBrandingServer } from "@/lib/branding/branding.server";
 import { CheckCircle2, Plane, AlertTriangle, Calendar, Users, Shield, ArrowRight } from "lucide-react";
 
@@ -9,27 +8,19 @@ import { CheckCircle2, Plane, AlertTriangle, Calendar, Users, Shield, ArrowRight
 const fetchPublicBooking = createServerFn({ method: "GET" })
   .validator((id: string) => id)
   .handler(async ({ data: bookingId }) => {
-    const { data: booking, error: bErr } = await supabaseAdmin
-      .from("bookings")
-      .select("id, booking_ref, contact_name, origin, destination, depart_date, return_date, pax_adults, pax_children, pax_infants, quote_amount, quote_currency, service_type, status, created_at")
-      .eq("id", bookingId)
-      .single();
-    if (bErr || !booking) return null;
+    try {
+      const { getPublicBookingVerificationServer } = await import("@/lib/bookings.functions");
+      const bookingData = await getPublicBookingVerificationServer({ data: bookingId });
+      const branding = await getActiveBrandingServer();
 
-    const { data: services } = await supabaseAdmin
-      .from("booking_services")
-      .select("service_name, quantity")
-      .eq("booking_id", bookingId);
-
-    const branding = await getActiveBrandingServer();
-
-    return {
-      booking: {
-        ...booking,
-        services: services || [],
-      },
-      branding,
-    };
+      return {
+        booking: bookingData,
+        branding,
+      };
+    } catch (e) {
+      console.error("[Verify] Error fetching public booking:", e);
+      return null;
+    }
   });
 
 export const Route = createFileRoute("/verify/$id")({

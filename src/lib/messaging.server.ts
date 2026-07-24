@@ -6,6 +6,7 @@ import {
   type BookingEmailPayload,
 } from "./notification-templates";
 import { CONTACT, NOTIFICATION } from "./constants";
+import { apiGet, apiPost } from "./FastApiClient";
 
 interface MailPayload {
   to: string;
@@ -29,14 +30,12 @@ interface AdminSettings {
  */
 export async function loadAdminSettings(): Promise<AdminSettings> {
   try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
-      .from("system_settings")
-      .select("value")
-      .eq("key", "admin_settings")
-      .maybeSingle();
-    if (data && data.value) {
-      return data.value as unknown as AdminSettings;
+    const settings = await apiGet<any>("/api/admin/system-settings");
+    if (Array.isArray(settings)) {
+      const match = settings.find((s: any) => s.key === "admin_settings");
+      if (match?.value) {
+        return match.value as AdminSettings;
+      }
     }
   } catch (err) {
     // Fail silently, use defaults
@@ -58,25 +57,8 @@ export async function loadAdminSettings(): Promise<AdminSettings> {
  */
 async function resolveBookingDetails(bookingRef: string): Promise<BookingEmailPayload | null> {
   try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: booking, error } = await supabaseAdmin
-      .from("bookings")
-      .select(
-        `
-        *,
-        booking_services (
-          service_name
-        )
-      `,
-      )
-      .eq("booking_ref", bookingRef)
-      .maybeSingle();
-
-    if (error || !booking) return null;
-
-    const services = (booking.booking_services || [])
-      .map((s: any) => s.service_name)
-      .filter(Boolean);
+    const booking = await apiGet<any>(`/api/bookings/${bookingRef}/full-details`);
+    if (!booking) return null;
 
     return {
       booking_ref: booking.booking_ref,
@@ -95,8 +77,8 @@ async function resolveBookingDetails(bookingRef: string): Promise<BookingEmailPa
       notes: booking.notes,
       service_type: booking.service_type || "Airport Concierge",
       quote_amount: booking.quote_amount,
-      reject_reason: (booking as any).reject_reason || null,
-      services,
+      reject_reason: booking.reject_reason || null,
+      services: booking.services || [],
     };
   } catch (err) {
     return null;
@@ -123,27 +105,16 @@ export async function logNotification({
   error_message?: string | null;
 }) {
   try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    let booking_id = null;
-    if (booking_ref) {
-      const { data } = await supabaseAdmin
-        .from("bookings")
-        .select("id")
-        .eq("booking_ref", booking_ref)
-        .maybeSingle();
-      booking_id = data?.id || null;
-    }
-    await supabaseAdmin.from("notification_logs").insert({
-      booking_id,
-      booking_ref,
+    await apiPost("/api/notifications/log", {
+      booking_ref: booking_ref || null,
       recipient,
       channel,
       template,
-      subject,
+      subject: subject || null,
       body,
       status,
-      error_message,
-    } as never);
+      error_message: error_message || null,
+    });
   } catch (e) {
     // Failed to log notification in database
   }

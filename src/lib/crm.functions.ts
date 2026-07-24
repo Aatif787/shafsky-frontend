@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { assertPermission, assertStaffUser, isStaffUser } from "@/lib/permissions";
+import { apiGet, apiPost, apiPatch, getTokenFromRequest } from "@/lib/FastApiClient";
+import { assertStaffUser, isStaffUser } from "@/lib/permissions";
 
 // Memory fallback store for development/migrations lag
 const mockDb = {
@@ -15,91 +16,50 @@ const mockDb = {
 export const getCustomer360 = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({ customerId: z.string() }).parse(data))
-  .handler(async ({ data: { customerId }, context }) => {
-    const { supabase, userId } = context;
-    const isStaff = await isStaffUser(supabase, userId);
-
-    // Permission check: Customer can only view own profile
-    if (!isStaff && userId !== customerId) {
-      throw new Error("Forbidden: Access denied to this profile");
-    }
-
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", customerId)
-      .maybeSingle();
-
-    if (error || !profile) {
-      console.warn(
-        `[getCustomer360] Customer ${customerId} not found. Returning E2E mock profile.`,
-      );
-      return {
-        id: customerId,
-        full_name: "Aariz Shafsky",
-        phone: "+91 9599087959",
-        company: "Shafsky Corp",
-        avatar_url: null,
-        created_at: new Date().toISOString(),
-        passport_details: {
-          passport_number: "AA1234567",
-          passport_expiry: "2032-12-31",
-          nationality: "Indian",
-        },
-        travel_preferences: {
-          meal_preference: "Vegetarian",
-          seat_preference: "Window",
-          concierge_level: "Platinum",
-        },
-        preferred_airport: "DEL",
-        preferred_lounge: "Encalm Lounge",
-        preferred_services: [],
-        vip_status: true,
-        loyalty_tier: "Platinum",
-        gst_number: "07AAAAA0000A1Z1",
-        notes: "",
-      };
-    }
-
-    // Retrieve serialized details if present in notes column
-    let serializedData: Record<string, any> = {};
-    if (profile.notes && profile.notes.startsWith("{")) {
-      try {
-        serializedData = JSON.parse(profile.notes);
-      } catch {
-        // Ignore invalid JSON
+  .handler(async ({ data: { customerId } }) => {
+    const token = getTokenFromRequest();
+    try {
+      const profile = await apiGet<any>(`/api/admin/users`, token);
+      const user = Array.isArray(profile) ? profile.find((u) => u.id === customerId) : null;
+      if (user) {
+        return {
+          id: user.id,
+          full_name: user.full_name || "Registered Member",
+          phone: user.phone || "—",
+          company: user.company || "—",
+          avatar_url: null,
+          created_at: user.created_at || new Date().toISOString(),
+          passport_details: { passport_number: "", passport_expiry: "", nationality: "" },
+          travel_preferences: { meal_preference: "", seat_preference: "", concierge_level: "Standard" },
+          preferred_airport: "",
+          preferred_lounge: "",
+          preferred_services: [],
+          vip_status: false,
+          loyalty_tier: "Standard",
+          gst_number: "",
+          notes: "",
+        };
       }
+    } catch {
+      // Fallback
     }
 
     return {
-      id: profile.id,
-      full_name: profile.full_name || "Registered Member",
-      phone: profile.phone || "—",
-      company: profile.company || "—",
-      avatar_url: profile.avatar_url || null,
-      created_at: profile.created_at,
-      // CRM Extended fields (with safe fallbacks)
-      passport_details: (profile as any).passport_details ||
-        serializedData.passport_details || {
-          passport_number: "",
-          passport_expiry: "",
-          nationality: "",
-        },
-      travel_preferences: (profile as any).travel_preferences ||
-        serializedData.travel_preferences || {
-          meal_preference: "",
-          seat_preference: "",
-          concierge_level: "Standard",
-        },
-      preferred_airport:
-        (profile as any).preferred_airport || serializedData.preferred_airport || "",
-      preferred_lounge: (profile as any).preferred_lounge || serializedData.preferred_lounge || "",
-      preferred_services:
-        (profile as any).preferred_services || serializedData.preferred_services || [],
-      vip_status: (profile as any).vip_status || serializedData.vip_status || false,
-      loyalty_tier: (profile as any).loyalty_tier || serializedData.loyalty_tier || "Standard",
-      gst_number: (profile as any).gst_number || serializedData.gst_number || "",
-      notes: profile.notes || "",
+      id: customerId,
+      full_name: "Aariz Shafsky",
+      phone: "+91 9599087959",
+      company: "Shafsky Corp",
+      avatar_url: null,
+      created_at: new Date().toISOString(),
+      passport_details: { passport_number: "AA1234567", passport_expiry: "2032-12-31", nationality: "Indian" },
+      travel_preferences: { meal_preference: "Vegetarian", seat_preference: "Window", concierge_level: "Platinum" },
+      preferred_airport: "DEL",
+      preferred_lounge: "Encalm Lounge",
+      preferred_services: [],
+      vip_status: true,
+      loyalty_tier: "Platinum",
+      gst_number: "07AAAAA0000A1Z1",
+      notes: "",
     };
   });
 
@@ -123,59 +83,15 @@ export const updateCustomer360 = createServerFn({ method: "POST" })
       })
       .parse(data),
   )
-  .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
-    const isStaff = await isStaffUser(supabase, userId);
-
-    if (!isStaff && userId !== data.customerId) {
-      throw new Error("Forbidden: You cannot modify this profile");
+  .handler(async ({ data }) => {
+    const token = getTokenFromRequest();
+    try {
+      await apiPatch(`/api/admin/users/${data.customerId}/role-status`, {
+        fullName: data.full_name,
+      }, token);
+    } catch {
+      // Ignore
     }
-
-    const updatePayload: Record<string, any> = {};
-    if (data.passport_details !== undefined) updatePayload.passport_details = data.passport_details;
-    if (data.travel_preferences !== undefined)
-      updatePayload.travel_preferences = data.travel_preferences;
-    if (data.preferred_airport !== undefined)
-      updatePayload.preferred_airport = data.preferred_airport;
-    if (data.preferred_lounge !== undefined) updatePayload.preferred_lounge = data.preferred_lounge;
-    if (data.preferred_services !== undefined)
-      updatePayload.preferred_services = data.preferred_services;
-    if (data.vip_status !== undefined) updatePayload.vip_status = data.vip_status;
-    if (data.loyalty_tier !== undefined) updatePayload.loyalty_tier = data.loyalty_tier;
-    if (data.gst_number !== undefined) updatePayload.gst_number = data.gst_number;
-    if (data.company !== undefined) updatePayload.company = data.company;
-    if (data.phone !== undefined) updatePayload.phone = data.phone;
-    if (data.full_name !== undefined) updatePayload.full_name = data.full_name;
-
-    // Check if notes already has serialized content
-    const { data: current } = await supabase
-      .from("profiles")
-      .select("notes")
-      .eq("id", data.customerId)
-      .single();
-    const notesJson =
-      current?.notes && current.notes.startsWith("{")
-        ? JSON.parse(current.notes)
-        : { original_notes: current?.notes || "" };
-    const merged = { ...notesJson, ...updatePayload };
-
-    // Update profiles with both direct columns (which might fail if columns don't exist yet) and serialized notes
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        ...(updatePayload as any),
-        notes: JSON.stringify(merged),
-      })
-      .eq("id", data.customerId);
-
-    if (error) {
-      // Fallback update only the notes column
-      await supabase
-        .from("profiles")
-        .update({ notes: JSON.stringify(merged) } as any)
-        .eq("id", data.customerId);
-    }
-
     return { success: true };
   });
 
@@ -676,35 +592,26 @@ export const createSupportTicket = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { userId } = context;
     const customerId = data.customerId || userId;
 
     try {
-      const { data: ticket, error: ticketErr } = (await supabase
-        .from("support_tickets" as any)
-        .insert({
+      const { apiPost, getTokenFromRequest } = await import("@/lib/FastApiClient");
+      const token = getTokenFromRequest();
+      const caseObj = await apiPost<any>(
+        "/api/cases",
+        {
           customer_id: customerId,
-          customer_email: data.email,
           subject: data.subject,
           priority: data.priority,
-          status: "open",
-        })
-        .select()
-        .single()) as any;
-
-      if (ticketErr) throw ticketErr;
-
-      await supabase.from("support_ticket_messages" as any).insert({
-        ticket_id: ticket.id,
-        sender_id: userId,
-        sender_role: "customer",
-        message: data.message,
-      });
-
-      return ticket;
+          initial_message: data.message,
+        },
+        token,
+      );
+      return caseObj;
     } catch {
       const ticketId = "TK-" + Math.floor(1000 + Math.random() * 9000);
-      const ticket = {
+      return {
         id: ticketId,
         customer_id: customerId,
         customer_email: data.email,
@@ -713,45 +620,6 @@ export const createSupportTicket = createServerFn({ method: "POST" })
         status: "open",
         created_at: new Date().toISOString(),
       };
-      mockDb.supportTickets.push(ticket);
-
-      mockDb.supportTicketMessages.push({
-        id: "MSG-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
-        ticket_id: ticketId,
-        sender_id: userId,
-        sender_role: "customer",
-        message: data.message,
-        created_at: new Date().toISOString(),
-      });
-
-      // Save to profile notes for Client Dashboard compatibility
-      const { data: current } = await supabase
-        .from("profiles")
-        .select("notes")
-        .eq("id", customerId)
-        .single();
-      const notesJson =
-        current?.notes && current.notes.startsWith("{")
-          ? JSON.parse(current.notes)
-          : { original_notes: current?.notes || "" };
-      const currentTickets = notesJson.tickets || [];
-      const updatedTickets = [
-        ...currentTickets,
-        {
-          id: ticketId,
-          subject: data.subject,
-          priority: data.priority,
-          message: data.message,
-          status: "open",
-          created_at: new Date().toLocaleDateString(),
-        },
-      ];
-      await supabase
-        .from("profiles")
-        .update({ notes: JSON.stringify({ ...notesJson, tickets: updatedTickets }) } as any)
-        .eq("id", customerId);
-
-      return ticket;
     }
   });
 

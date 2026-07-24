@@ -3,7 +3,7 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabase } from "@/integrations/supabase/client";
+import { apiGet, apiPost, getTokenFromRequest } from "@/lib/FastApiClient";
 
 export interface Preferences {
   email_enabled: boolean;
@@ -14,19 +14,10 @@ export interface Preferences {
 // Fetch user notification preferences
 export const getUserPreferences = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<Preferences> => {
-    const { supabase: s, userId } = context;
+  .handler(async (): Promise<Preferences> => {
     try {
-      const { data, error } = await (s as any)
-        .from("notification_preferences")
-        .select("email_enabled, whatsapp_enabled, in_app_enabled")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (error) {
-        console.error("[Preferences] Error fetching preferences:", error);
-      }
-
+      const token = getTokenFromRequest();
+      const data = await apiGet<Preferences>("/api/notifications/preferences", token);
       return {
         email_enabled: data?.email_enabled ?? true,
         whatsapp_enabled: data?.whatsapp_enabled ?? true,
@@ -42,27 +33,10 @@ export const getUserPreferences = createServerFn({ method: "GET" })
 export const updateUserPreferences = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: any) => data as Preferences)
-  .handler(async ({ context, data }) => {
-    const { supabase: s, userId } = context;
+  .handler(async ({ data }) => {
     try {
-      const { error } = await (s as any).from("notification_preferences").upsert(
-        {
-          user_id: userId,
-          email_enabled: data.email_enabled,
-          whatsapp_enabled: data.whatsapp_enabled,
-          in_app_enabled: data.in_app_enabled,
-          updated_at: new Date().toISOString(),
-        },
-        {
-          onConflict: "user_id",
-        } as any,
-      );
-
-      if (error) {
-        console.error("[Preferences] Error updating preferences:", error);
-        throw new Error(error.message);
-      }
-
+      const token = getTokenFromRequest();
+      await apiPost("/api/notifications/preferences", data, token);
       return { success: true };
     } catch (e: any) {
       console.error("[Preferences] Exception updating preferences:", e);

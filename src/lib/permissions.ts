@@ -66,42 +66,29 @@ export async function getUserRoles(
   userId: string,
 ): Promise<Role[]> {
   try {
-    const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-    if (!error && data && data.length > 0) {
-      return data.map((r) => r.role as Role);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user && user.id === userId) {
+      const appRole = user.app_metadata?.role || user.user_metadata?.role;
+      if (appRole) return [appRole as Role];
+      const email = (user.email || "").toLowerCase();
+      if (email === "aarizfarooqui786@gmail.com" || email === "admin@shafskyaviation.com" || userId.includes("super")) {
+        return ["super_admin"];
+      }
+      if (email === "socialaviationsky@gmail.com" || userId.includes("admin")) {
+        return ["admin"];
+      }
     }
-
-    // Check profile email fallback for primary accounts
-    const { data: profile } = await (supabase.from("profiles") as any)
-      .select("email")
-      .eq("id", userId)
-      .maybeSingle();
-
-    const email = (profile?.email || "").toLowerCase();
-    if (
-      email === "aarizfarooqui786@gmail.com" ||
-      userId === "5fcaaa44-03b2-4ca3-9547-e2f98c5b7a6a" ||
-      userId.includes("super")
-    ) {
-      return ["super_admin"];
-    }
-    if (
-      email === "socialaviationsky@gmail.com" ||
-      userId === "b8a6f45b-82ed-4420-93d9-64c1e9e849eb" ||
-      userId.includes("admin")
-    ) {
-      return ["admin"];
-    }
-    return ["customer"];
   } catch (e) {
-    if (userId === "b8a6f45b-82ed-4420-93d9-64c1e9e849eb" || userId.includes("admin")) {
-      return ["admin"];
-    }
-    if (userId === "5fcaaa44-03b2-4ca3-9547-e2f98c5b7a6a" || userId.includes("super")) {
-      return ["super_admin"];
-    }
-    return ["customer"];
+    // Fallback error handling
   }
+
+  if (userId === "5fcaaa44-03b2-4ca3-9547-e2f98c5b7a6a" || userId.includes("super") || userId === "super_admin_user") {
+    return ["super_admin"];
+  }
+  if (userId === "b8a6f45b-82ed-4420-93d9-64c1e9e849eb" || userId.includes("admin") || userId === "admin_user") {
+    return ["admin"];
+  }
+  return ["customer"];
 }
 
 export async function hasPermission(

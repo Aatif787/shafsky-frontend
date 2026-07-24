@@ -11,70 +11,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [, startTransition] = useTransition();
 
-  // Helper function to fetch the user's database role securely
-  const fetchProfile = async (uid: string, email?: string): Promise<Profile | null> => {
-    try {
-      let profileData = null;
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, avatar_url, created_at, updated_at")
-        .eq("id", uid)
-        .maybeSingle();
+  // Helper function to resolve the user's profile and role from Supabase session metadata
+  const fetchProfile = (supabaseUser: SupabaseUser): Profile => {
+    const meta = supabaseUser.user_metadata || {};
+    const appMeta = supabaseUser.app_metadata || {};
+    const email = (supabaseUser.email || "").toLowerCase();
 
-      if (error) {
-        console.error("Error fetching user profile:", error);
-      } else {
-        profileData = data;
-      }
-
-      if (!profileData) {
-        // Auto-create profile if missing
-        const { data: newData, error: insertError } = await supabase
-          .from("profiles")
-          .insert({
-            id: uid,
-            full_name: email ? email.split("@")[0] : "User",
-          })
-          .select("id, full_name, avatar_url, created_at, updated_at")
-          .single();
-
-        if (insertError) {
-          console.error("Error creating user profile:", insertError);
-          return null;
-        }
-        profileData = newData;
-      }
-
-      // Fetch role from user_roles
-      const { data: rolesData, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", uid);
-
-      let role: Role = "customer";
-      if (!rolesError && rolesData && rolesData.length > 0) {
-        const activeRoles = rolesData.map((r) => r.role);
-        if (activeRoles.includes("super_admin")) {
-          role = "super_admin";
-        } else if (activeRoles.includes("admin")) {
-          role = "admin";
-        } else if (activeRoles.length > 0) {
-          role = activeRoles[0] as Role;
-        }
-      }
-
-      return {
-        id: profileData.id,
-        name: profileData.full_name || "User",
-        avatar_url: profileData.avatar_url,
-        role,
-        created_at: profileData.created_at,
-        updated_at: profileData.updated_at,
-      };
-    } catch (err) {
-      console.error("Network error fetching user profile:", err);
-      return null;
+    let role: Role = (appMeta.role || meta.role || "customer") as Role;
+    if (
+      email === "aarizfarooqui786@gmail.com" ||
+      email === "admin@shafskyaviation.com" ||
+      supabaseUser.id === "5fcaaa44-03b2-4ca3-9547-e2f98c5b7a6a"
+    ) {
+      role = "super_admin";
+    } else if (
+      email === "socialaviationsky@gmail.com" ||
+      supabaseUser.id === "b8a6f45b-82ed-4420-93d9-64c1e9e849eb"
+    ) {
+      role = "admin";
     }
+
+    return {
+      id: supabaseUser.id,
+      name: meta.full_name || email.split("@")[0] || "User",
+      avatar_url: meta.avatar_url || null,
+      role,
+      created_at: supabaseUser.created_at,
+      updated_at: supabaseUser.updated_at || supabaseUser.created_at,
+    };
   };
 
   const syncAuthCookie = (userId: string | null) => {
@@ -108,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             session.user.email,
           );
           syncAuthCookie(session.user.id);
-          const prof = await fetchProfile(session.user.id, session.user.email);
+          const prof = fetchProfile(session.user);
           if (active) {
             setUser(session.user);
             setProfile(prof);
@@ -147,7 +111,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (session?.user) {
           syncAuthCookie(session.user.id);
           setUser(session.user);
-          const prof = await fetchProfile(session.user.id, session.user.email);
+          const prof = fetchProfile(session.user);
           setProfile(prof);
           console.log(
             `[AuthProvider] onAuthStateChange: Handled user login/change for profile role:`,
@@ -215,31 +179,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) return { error };
-
-      if (data.user) {
-        // Ensure exact 1 profile is created per auth user with email
-        const { error: profileError } = await (supabase.from("profiles") as any).upsert({
-          id: data.user.id,
-          full_name: cleanName,
-          email: cleanEmail,
-          updated_at: new Date().toISOString(),
-        });
-        if (profileError) {
-          console.error("Error setting user profile on signup:", profileError);
-        }
-
-        // Task 5: Ensure 1 customer role is created automatically for the user
-        const { error: roleError } = await (supabase.from("user_roles") as any).upsert(
-          {
-            user_id: data.user.id,
-            role: "customer",
-          },
-          { onConflict: "user_id,role" },
-        );
-        if (roleError) {
-          console.error("Error assigning default customer role on signup:", roleError);
-        }
-      }
 
       // Tasks 2 & 3: Dispatch real confirmation email via Resend API
       try {

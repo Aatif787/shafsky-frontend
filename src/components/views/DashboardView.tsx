@@ -179,28 +179,13 @@ export default function DashboardView({ userId }: { userId: string }) {
     queryKey: ["client-profile", userId],
     queryFn: async () => {
       if (!userId || userId === "guest_user") return null;
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, phone, company, avatar_url")
-        .eq("id", userId)
-        .maybeSingle();
-      if (error) throw error;
-
-      let resolvedProfile = data;
-
-      if (!data) {
-        const { data: newProfile, error: insertError } = await supabase
-          .from("profiles")
-          .insert({
-            id: userId,
-            full_name: authProfile?.name || "Aviation Client",
-          })
-          .select()
-          .single();
-        if (insertError) throw insertError;
-        resolvedProfile = newProfile;
+      try {
+        const { getCurrentUserProfileServer } = await import("@/lib/user.functions");
+        const me = await getCurrentUserProfileServer();
+        return me || { id: userId, full_name: authProfile?.name || "Aviation Client" };
+      } catch {
+        return { id: userId, full_name: authProfile?.name || "Aviation Client" };
       }
-      return resolvedProfile;
     },
     staleTime: 30000,
   });
@@ -210,13 +195,13 @@ export default function DashboardView({ userId }: { userId: string }) {
     queryKey: ["client-bookings", userId],
     queryFn: async () => {
       if (!userId || userId === "guest_user") return [];
-      const { data, error } = await supabase
-        .from("bookings")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data || [];
+      try {
+        const { listUserBookingsServer } = await import("@/lib/bookings.functions");
+        const res = await listUserBookingsServer();
+        return res || [];
+      } catch {
+        return [];
+      }
     },
     staleTime: 10000,
   });
@@ -226,29 +211,30 @@ export default function DashboardView({ userId }: { userId: string }) {
     queryKey: ["booking-docs", selectedBooking?.id],
     queryFn: async () => {
       if (!selectedBooking?.id) return [];
-      const { data: rows, error } = await supabase
-        .from("booking_documents")
-        .select("id, kind, storage_path, amount, currency, created_at")
-        .eq("booking_id", selectedBooking.id)
-        .order("created_at", { ascending: false });
+      try {
+        const { fetchDocs } = await import("@/lib/booking-documents.functions");
+        const rows = await fetchDocs({ data: { id: selectedBooking.id } });
+        if (!rows || rows.length === 0) return [];
 
-      if (error) throw error;
-      if (!rows || rows.length === 0) return [];
+        const paths = rows.map((r: any) => r.storage_path).filter(Boolean);
+        let signedUrls: any[] = [];
+        if (paths.length > 0) {
+          const { data } = await supabase.storage.from("booking-docs").createSignedUrls(paths, 60 * 60);
+          signedUrls = data || [];
+        }
 
-      const paths = rows.map((r: any) => r.storage_path);
-      const { data: signedUrls } = await supabase.storage
-        .from("booking-docs")
-        .createSignedUrls(paths, 60 * 60);
-
-      const urlMap = new Map((signedUrls ?? []).map((item: any) => [item.path, item.signedUrl]));
-      return rows.map((r: any) => ({
-        ...r,
-        document_type: r.kind,
-        filename: `${r.kind}.pdf`,
-        version: 1,
-        checksum: "legacy",
-        url: urlMap.get(r.storage_path) || "",
-      }));
+        const urlMap = new Map((signedUrls ?? []).map((item: any) => [item.path, item.signedUrl]));
+        return rows.map((r: any) => ({
+          ...r,
+          document_type: r.kind,
+          filename: `${r.kind}.pdf`,
+          version: 1,
+          checksum: "legacy",
+          url: urlMap.get(r.storage_path) || "",
+        }));
+      } catch {
+        return [];
+      }
     },
     enabled: !!selectedBooking?.id,
   });
@@ -258,13 +244,13 @@ export default function DashboardView({ userId }: { userId: string }) {
     queryKey: ["client-notifications", userId],
     queryFn: async () => {
       if (!userId || userId === "guest_user") return [];
-      const { data, error } = await supabase
-        .from("notifications")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data || [];
+      try {
+        const { getMyNotificationsServer } = await import("@/lib/user.functions");
+        const res = await getMyNotificationsServer();
+        return res || [];
+      } catch {
+        return [];
+      }
     },
     staleTime: 10000,
   });
@@ -344,12 +330,8 @@ export default function DashboardView({ userId }: { userId: string }) {
   const markAllNotificationsRead = async () => {
     if (!userId || userId === "guest_user") return;
     try {
-      const { error } = await supabase
-        .from("notifications")
-        .update({ read_at: new Date().toISOString() } as never)
-        .eq("user_id", userId)
-        .is("read_at", null);
-      if (error) throw error;
+      const { markMyNotificationsReadServer } = await import("@/lib/user.functions");
+      await markMyNotificationsReadServer();
       queryClient.invalidateQueries({ queryKey: ["client-notifications", userId] });
       toast.success("All notifications marked as read.");
     } catch (err) {
@@ -388,10 +370,8 @@ export default function DashboardView({ userId }: { userId: string }) {
     setNotesData(updatedNotes);
 
     try {
-      await supabase
-        .from("profiles")
-        .update({ notes: JSON.stringify(updatedNotes) })
-        .eq("id", userId);
+      const { updateMyProfileServer } = await import("@/lib/user.functions");
+      await updateMyProfileServer({ data: { notes: JSON.stringify(updatedNotes) } });
     } catch (e) {
       console.warn("DB notes column sync skipped - fallback is active.");
     }
@@ -402,15 +382,14 @@ export default function DashboardView({ userId }: { userId: string }) {
     e.preventDefault();
     setSavingProfile(true);
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
+      const { updateMyProfileServer } = await import("@/lib/user.functions");
+      await updateMyProfileServer({
+        data: {
           full_name: fullName,
           phone,
           company,
-        })
-        .eq("id", userId);
-      if (error) throw error;
+        },
+      });
       toast.success("Profile parameters updated successfully.");
       queryClient.invalidateQueries({ queryKey: ["client-profile", userId] });
     } catch (e) {
@@ -626,11 +605,13 @@ export default function DashboardView({ userId }: { userId: string }) {
   const handleCancelBooking = async (bId: string) => {
     if (!window.confirm("Are you sure you want to cancel this booking request?")) return;
     try {
-      const { error } = await supabase
-        .from("bookings")
-        .update({ status: "cancelled" })
-        .eq("id", bId);
-      if (error) throw error;
+      const { updateBookingDetailsServer } = await import("@/lib/bookings.functions");
+      await updateBookingDetailsServer({
+        data: {
+          bookingId: bId,
+          updateData: { notes: "cancelled" },
+        },
+      });
       toast.success("Booking request cancelled.");
       queryClient.invalidateQueries({ queryKey: ["client-bookings", userId] });
       if (selectedBooking?.id === bId) {
@@ -649,14 +630,13 @@ export default function DashboardView({ userId }: { userId: string }) {
     if (!reschedulingId || !rescheduleDate) return;
     setRescheduleSubmitting(true);
     try {
-      const { error } = await supabase
-        .from("bookings")
-        .update({
-          depart_date: rescheduleDate,
-          status: "pending",
-        })
-        .eq("id", reschedulingId);
-      if (error) throw error;
+      const { updateBookingDetailsServer } = await import("@/lib/bookings.functions");
+      await updateBookingDetailsServer({
+        data: {
+          bookingId: reschedulingId,
+          updateData: { depart_date: rescheduleDate },
+        },
+      });
       toast.success("Reschedule request submitted successfully.");
       queryClient.invalidateQueries({ queryKey: ["client-bookings", userId] });
       setSelectedBooking(null);

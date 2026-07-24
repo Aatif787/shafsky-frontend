@@ -270,16 +270,13 @@ function BookingDetailsView() {
   const { data: userRole } = useQuery({
     queryKey: ["current-user-role"],
     queryFn: async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return "customer";
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      return data?.role || "customer";
+      try {
+        const { getCurrentUserProfileServer } = await import("@/lib/user.functions");
+        const me = await getCurrentUserProfileServer();
+        return me?.role || "customer";
+      } catch {
+        return "customer";
+      }
     },
   });
 
@@ -306,11 +303,13 @@ function BookingDetailsView() {
   const { data: bookingServices } = useQuery({
     queryKey: ["booking-services", id],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("booking_services")
-        .select("*")
-        .eq("booking_id", id);
-      return data || [];
+      try {
+        const { getBookingFullDetailsServer } = await import("@/lib/bookings.functions");
+        const detail = await getBookingFullDetailsServer({ data: { bookingId: id } });
+        return detail?.services || [];
+      } catch {
+        return [];
+      }
     },
   });
 
@@ -386,31 +385,22 @@ function BookingDetailsView() {
   const handleSaveDraftQuote = async (
     quoteAmount: number,
     currency: string,
-    notes?: string,
+    _notes?: string,
     services?: Array<{ service_name: string; quantity: number; unit_price: number; currency: string }>,
   ) => {
     setIsQuoteSubmitting(true);
     try {
-      const { error } = await supabase
-        .from("bookings")
-        .update({ quote_amount: quoteAmount, quote_currency: currency } as never)
-        .eq("id", booking.id);
-      if (error) throw new Error(error.message);
-
-      if (services && services.length > 0) {
-        await supabase.from("booking_services").delete().eq("booking_id", booking.id);
-        await supabase.from("booking_services").insert(
-          services.map((s) => ({
-            booking_id: booking.id,
-            service_code: s.service_name.toLowerCase().replace(/\s+/g, "_"),
-            service_name: s.service_name,
-            category: "departure",
-            quantity: s.quantity,
-            unit_price: s.unit_price,
-            currency: s.currency,
-          })) as never,
-        );
-      }
+      const { updateBookingDetailsServer } = await import("@/lib/bookings.functions");
+      await updateBookingDetailsServer({
+        data: {
+          bookingId: booking.id,
+          updateData: {
+            quote_amount: quoteAmount,
+            quote_currency: currency,
+            services: services || undefined,
+          },
+        },
+      });
 
       toast.success("Quote draft saved successfully");
       qc.invalidateQueries({ queryKey: ["admin-booking-detail", id] });
@@ -426,10 +416,16 @@ function BookingDetailsView() {
   const handleSendQuote = async (quoteAmount: number, currency: string, notes?: string) => {
     setIsQuoteSubmitting(true);
     try {
-      await supabase
-        .from("bookings")
-        .update({ quote_currency: currency } as never)
-        .eq("id", booking.id);
+      const { updateBookingDetailsServer } = await import("@/lib/bookings.functions");
+      await updateBookingDetailsServer({
+        data: {
+          bookingId: booking.id,
+          updateData: {
+            quote_amount: quoteAmount,
+            quote_currency: currency,
+          },
+        },
+      });
 
       const internalStatus = getBookingInternalStatus(booking);
       const targetAction = internalStatus === "NEW_BOOKING" ? "request_documents" : "request_payment";

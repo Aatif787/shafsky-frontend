@@ -1,17 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { apiGet, apiPost, getTokenFromRequest } from "@/lib/FastApiClient";
 
 export const listMyNotifications = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
-      .from("notifications")
-      .select("id, kind, title, body, link, read_at, created_at")
-      .eq("user_id", context.userId)
-      .order("created_at", { ascending: false })
-      .limit(50);
-    if (error) throw new Error(error.message);
+  .handler(async () => {
+    const token = getTokenFromRequest();
+    const data = await apiGet<any[]>("/api/notifications/my", token);
     return data ?? [];
   });
 
@@ -20,24 +16,9 @@ export const markNotificationRead = createServerFn({ method: "POST" })
   .validator((d: unknown) =>
     z.object({ id: z.string().uuid().optional(), all: z.boolean().optional() }).parse(d),
   )
-  .handler(async ({ data, context }) => {
-    const now = new Date().toISOString();
-    if (data.all) {
-      const { error } = await context.supabase
-        .from("notifications")
-        .update({ read_at: now } as never)
-        .eq("user_id", context.userId)
-        .is("read_at", null);
-      if (error) throw new Error(error.message);
-      return { ok: true };
-    }
-    if (!data.id) throw new Error("id required");
-    const { error } = await context.supabase
-      .from("notifications")
-      .update({ read_at: now } as never)
-      .eq("id", data.id)
-      .eq("user_id", context.userId);
-    if (error) throw new Error(error.message);
+  .handler(async ({ data }) => {
+    const token = getTokenFromRequest();
+    await apiPost("/api/notifications/mark-read", data, token);
     return { ok: true };
   });
 

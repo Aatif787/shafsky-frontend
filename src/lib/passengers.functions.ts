@@ -1,8 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { isStaffUser } from "@/lib/permissions";
+import { apiPost, getTokenFromRequest } from "@/lib/FastApiClient";
 
 // ============ VALIDATION UTILITIES ============
 
@@ -107,18 +106,8 @@ export const PassengerInputSchema = z.object({
 export const listUserPassengers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-
-    const { data: rows, error } = await (supabase as any)
-      .from("passengers")
-      .select("*")
-      .eq("profile_id", userId)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      return [];
-    }
-
+    const token = getTokenFromRequest();
+    const rows = await apiPost<any[]>("/api/passengers/list", { userId: context.userId }, token);
     return (rows || []).map((p: any) => ({
       ...p,
       age: calculateAge(p.date_of_birth),
@@ -134,85 +123,8 @@ export const savePassenger = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((d: unknown) => PassengerInputSchema.parse(d))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
-
-    // 1. Validate Duplicate Passport Number for this user if provided
-    if (data.passport_number && data.passport_number.trim() !== "") {
-      const pNumClean = data.passport_number.trim().toUpperCase();
-      let query = (supabase as any)
-        .from("passengers")
-        .select("id")
-        .eq("profile_id", userId)
-        .ilike("passport_number", pNumClean);
-
-      if (data.id) {
-        query = query.neq("id", data.id);
-      }
-
-      const { data: dupes } = await query;
-      if (dupes && dupes.length > 0) {
-        throw new Error(`A passenger profile with passport number "${pNumClean}" already exists.`);
-      }
-    }
-
-    // 2. Validate Passport Expiry
-    if (data.passport_expiry) {
-      const pCheck = validatePassportExpiry(data.passport_expiry);
-      if (pCheck.status === "expired") {
-        throw new Error("Cannot save profile with an expired passport.");
-      }
-    }
-
-    // 3. Save to database
-    const payload = {
-      profile_id: userId,
-      first_name: data.first_name,
-      last_name: data.last_name,
-      gender: data.gender,
-      date_of_birth: data.date_of_birth || null,
-      nationality: data.nationality || null,
-      passport_number: data.passport_number ? data.passport_number.trim().toUpperCase() : null,
-      passport_expiry: data.passport_expiry || null,
-      visa_number: data.visa_number ? data.visa_number.trim().toUpperCase() : null,
-      visa_expiry: data.visa_expiry || null,
-      phone: data.phone || null,
-      email: data.email || null,
-      special_assistance: data.special_assistance || null,
-      meal_preference: data.meal_preference || null,
-    };
-
-    if (data.id) {
-      // Ensure ownership
-      const { data: existing } = await (supabase as any)
-        .from("passengers")
-        .select("profile_id")
-        .eq("id", data.id)
-        .maybeSingle();
-
-      if (existing && existing.profile_id !== userId) {
-        const isStaff = await isStaffUser(supabase, userId);
-        if (!isStaff) throw new Error("Forbidden");
-      }
-
-      const { data: updated, error } = await (supabase as any)
-        .from("passengers")
-        .update(payload)
-        .eq("id", data.id)
-        .select()
-        .single();
-
-      if (error) throw new Error(error.message);
-      return updated;
-    } else {
-      const { data: created, error } = await (supabase as any)
-        .from("passengers")
-        .insert(payload)
-        .select()
-        .single();
-
-      if (error) throw new Error(error.message);
-      return created;
-    }
+    const token = getTokenFromRequest();
+    return await apiPost("/api/passengers/save", { ...data, profile_id: context.userId }, token);
   });
 
 /**
@@ -221,23 +133,9 @@ export const savePassenger = createServerFn({ method: "POST" })
 export const deletePassenger = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
-  .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
-
-    const { data: existing } = await (supabase as any)
-      .from("passengers")
-      .select("profile_id")
-      .eq("id", data.id)
-      .maybeSingle();
-
-    if (existing && existing.profile_id !== userId) {
-      const isStaff = await isStaffUser(supabase, userId);
-      if (!isStaff) throw new Error("Forbidden");
-    }
-
-    const { error } = await (supabase as any).from("passengers").delete().eq("id", data.id);
-    if (error) throw new Error(error.message);
-    return { success: true };
+  .handler(async ({ data }) => {
+    const token = getTokenFromRequest();
+    return await apiPost("/api/passengers/delete", { id: data.id }, token);
   });
 
 /**
@@ -246,61 +144,15 @@ export const deletePassenger = createServerFn({ method: "POST" })
 export const listBookingPassengers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((d: unknown) => z.object({ bookingId: z.string().uuid() }).parse(d))
-  .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
-
-    // Check permissions
-    const { data: b } = await supabase
-      .from("bookings")
-      .select("user_id")
-      .eq("id", data.bookingId)
-      .maybeSingle();
-
-    if (b && b.user_id !== userId) {
-      const isStaff = await isStaffUser(supabase, userId);
-      if (!isStaff) throw new Error("Forbidden");
-    }
-
-    // Query manifest joined with passenger table
-    const { data: rows, error } = await (supabaseAdmin as any)
-      .from("booking_passengers")
-      .select(
-        `
-        id,
-        booking_id,
-        passenger_id,
-        seat_preference,
-        is_primary_contact,
-        remarks,
-        created_at,
-        passengers (
-          id,
-          first_name,
-          last_name,
-          gender,
-          date_of_birth,
-          nationality,
-          passport_number,
-          passport_expiry,
-          visa_number,
-          visa_expiry,
-          phone,
-          email,
-          special_assistance,
-          meal_preference
-        )
-      `,
-      )
-      .eq("booking_id", data.bookingId);
-
-    if (error || !rows) return [];
-
-    return rows.map((r: any) => {
-      const p = r.passengers || {};
+  .handler(async ({ data }) => {
+    const token = getTokenFromRequest();
+    const rows = await apiPost<any[]>("/api/passengers/booking", { bookingId: data.bookingId }, token);
+    return (rows || []).map((r: any) => {
+      const p = r.passengers || r;
       return {
         manifest_id: r.id,
         booking_id: r.booking_id,
-        passenger_id: r.passenger_id,
+        passenger_id: r.passenger_id || r.id,
         seat_preference: r.seat_preference,
         is_primary_contact: r.is_primary_contact,
         remarks: r.remarks,
@@ -340,41 +192,7 @@ export const assignPassengersToBooking = createServerFn({ method: "POST" })
       })
       .parse(d),
   )
-  .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
-
-    // Check authorization
-    const { data: b } = await supabase
-      .from("bookings")
-      .select("user_id")
-      .eq("id", data.bookingId)
-      .maybeSingle();
-
-    if (b && b.user_id !== userId) {
-      const isStaff = await isStaffUser(supabase, userId);
-      if (!isStaff) throw new Error("Forbidden");
-    }
-
-    // Clear previous manifest for this booking
-    await (supabaseAdmin as any)
-      .from("booking_passengers")
-      .delete()
-      .eq("booking_id", data.bookingId);
-
-    if (data.passengerIds.length > 0) {
-      const inserts = data.passengerIds.map((pId) => ({
-        booking_id: data.bookingId,
-        passenger_id: pId,
-        seat_preference: data.seatPreferences?.[pId] || null,
-        is_primary_contact: pId === data.primaryPassengerId,
-      }));
-
-      const { error } = await (supabaseAdmin as any)
-        .from("booking_passengers")
-        .insert(inserts);
-
-      if (error) throw new Error(error.message);
-    }
-
-    return { success: true };
+  .handler(async ({ data }) => {
+    const token = getTokenFromRequest();
+    return await apiPost("/api/passengers/assign", data, token);
   });

@@ -73,18 +73,15 @@ export const Route = createFileRoute("/api/flight/validate")({
           // 2.5 Load dynamic threshold settings
           let threshold = 6;
           try {
-            const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-            const { data: settingsRow } = await supabaseAdmin
-              .from("system_settings")
-              .select("value")
-              .eq("key", "admin_settings")
-              .maybeSingle();
+            const { listSystemSettings } = await import("@/lib/super-admin.functions");
+            const settingsData = await listSystemSettings();
+            const adminSetting = (settingsData || []).find((s: any) => s.key === "admin_settings");
             if (
-              settingsRow &&
-              settingsRow.value &&
-              typeof (settingsRow.value as any).sixHourRuleThreshold === "number"
+              adminSetting &&
+              adminSetting.value &&
+              typeof adminSetting.value.sixHourRuleThreshold === "number"
             ) {
-              threshold = (settingsRow.value as any).sixHourRuleThreshold;
+              threshold = adminSetting.value.sixHourRuleThreshold;
             }
           } catch (err) {
             console.warn("Failed to load dynamic threshold settings, using default of 6:", err);

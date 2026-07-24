@@ -1,8 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { assertStaffUser, isStaffUser } from "@/lib/permissions";
+import { assertStaffUser } from "@/lib/permissions";
 import { CONTACT } from "./constants";
+import { apiGet, apiPost, apiDelete, getTokenFromRequest } from "@/lib/FastApiClient";
 
 const GenInput = z.object({
   id: z.string().uuid(),
@@ -208,35 +209,28 @@ async function buildPdf(opts: {
 }
 
 export async function generateBookingDocumentInternal(
-  supabase: unknown,
+  _supabase: unknown,
   userId: string,
   data: { id: string; kind: "quotation" | "invoice" | "receipt"; amount?: number },
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sb = supabase as any;
-  const { data: b, error } = await sb
-    .from("bookings")
-    .select(
-      "id, booking_ref, contact_name, contact_email, contact_phone, origin, destination, depart_date, return_date, pax_adults, pax_children, pax_infants, quote_amount, quote_currency, service_type",
-    )
-    .eq("id", data.id)
-    .single();
-  if (error || !b) throw new Error("Booking not found");
+  const token = getTokenFromRequest();
+  const b = await apiGet<any>(`/api/bookings/${data.id}`, token);
+  if (!b) throw new Error("Booking not found");
 
-  const amount = data.amount ?? Number(b.quote_amount ?? 0);
+  const amount = data.amount ?? Number(b.quote_amount ?? b.price ?? 0);
   const bytes = await buildPdf({
     kind: data.kind,
     ref: b.booking_ref,
-    customer: b.contact_name,
-    email: b.contact_email,
-    phone: b.contact_phone,
-    origin: b.origin,
-    destination: b.destination,
-    depart: b.depart_date,
-    ret: b.return_date,
-    pax: `${b.pax_adults} adult · ${b.pax_children} child · ${b.pax_infants} infant`,
+    customer: b.contact_name || b.passenger_name,
+    email: b.contact_email || b.passenger_email,
+    phone: b.contact_phone || b.passenger_phone,
+    origin: b.origin || b.origin_code,
+    destination: b.destination || b.dest_code,
+    depart: b.depart_date || b.flight_date || "",
+    ret: b.return_date || null,
+    pax: `${b.pax_adults || b.num_passengers || 1} adult · ${b.pax_children || 0} child · ${b.pax_infants || 0} infant`,
     amount,
-    currency: b.quote_currency ?? "INR",
+    currency: b.quote_currency ?? b.currency ?? "INR",
     service_type: b.service_type,
   });
 
@@ -250,27 +244,29 @@ export async function generateBookingDocumentInternal(
     .upload(path, bytes, { contentType: "application/pdf", upsert: false });
   if (upErr) throw new Error(upErr.message);
 
-  const { data: row, error: insErr } = await supabaseAdmin
-    .from("booking_documents")
-    .insert({
-      booking_id: b.id,
+  const row = await apiPost<any>(
+    `/api/bookings/${b.id}/documents`,
+    {
       kind: data.kind,
       storage_path: path,
       amount,
-      currency: b.quote_currency ?? "INR",
+      currency: b.quote_currency ?? b.currency ?? "INR",
       generated_by: userId,
-    } as never)
-    .select("id, kind, storage_path, amount, currency, created_at")
-    .single();
-  if (insErr) throw new Error(insErr.message);
+    },
+    token,
+  );
 
-  await sb.from("audit_log").insert({
-    actor_id: userId,
-    action: `booking.${data.kind}.generated`,
-    entity: "booking",
-    entity_id: b.id,
-    metadata: { document_id: row.id, amount },
-  });
+  await apiPost(
+    "/api/audit-logs",
+    {
+      actor_id: userId,
+      action: `booking.${data.kind}.generated`,
+      entity: "booking",
+      entity_id: b.id,
+      details: { document_id: row.id, amount },
+    },
+    token,
+  );
 
   return row;
 }
@@ -295,53 +291,15 @@ export const generateBookingDocument = createServerFn({ method: "POST" })
 export const listBookingDocuments = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
-  .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
-    const sb = supabase as any;
-
-    // Verify ownership or staff permissions
-    const { data: booking, error: bErr } = await sb
-      .from("bookings")
-      .select("user_id")
-      .eq("id", data.id)
-      .maybeSingle();
-
-    if (bErr || !booking) {
-      throw new Error("Booking not found");
-    }
-
-    if (booking.user_id !== userId) {
-      const isStaff = await isStaffUser(sb, userId);
-      if (!isStaff) {
-        throw new Error(
-          "Forbidden: You do not have permission to view documents for this booking.",
-        );
-      }
-    }
-
-    let queryFields = "id, kind, storage_path, amount, currency, created_at, document_type, filename, version, checksum";
-    let { data: rows, error } = await sb
-      .from("booking_documents")
-      .select(queryFields)
-      .eq("booking_id", data.id)
-      .order("created_at", { ascending: false });
-
-    // Fallback if columns are not migrated yet
-    if (error && error.message.includes("column")) {
-      const legacyResult = await sb
-        .from("booking_documents")
-        .select("id, kind, storage_path, amount, currency, created_at")
-        .eq("booking_id", data.id)
-        .order("created_at", { ascending: false });
-      rows = legacyResult.data;
-      error = legacyResult.error;
-    }
-
-    if (error) throw new Error(error.message);
+  .handler(async ({ data }) => {
+    const token = getTokenFromRequest();
+    const rows = await apiGet<any[]>(`/api/bookings/${data.id}/documents`, token);
 
     if (!rows || rows.length === 0) return [];
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const paths = rows.map((r: any) => r.storage_path);
-    const { data: signedUrls } = await sb.storage
+    const { data: signedUrls } = await supabaseAdmin.storage
       .from("booking-docs")
       .createSignedUrls(paths, 60 * 60);
 
@@ -362,158 +320,101 @@ export const listBookingDocuments = createServerFn({ method: "POST" })
   });
 
 export async function generateAllBookingPdfsInternal(
-  supabase: any,
+  _supabase: any,
   userId: string | null,
-  bookingId: string
+  bookingId: string,
 ) {
-  // 1. Fetch booking
-  const { data: booking, error: bErr } = await supabase
-    .from("bookings")
-    .select("*")
-    .eq("id", bookingId)
-    .single();
-  if (bErr || !booking) throw new Error("Booking not found");
+  const token = getTokenFromRequest();
+  const booking = await apiGet<any>(`/api/bookings/${bookingId}`, token);
+  if (!booking) throw new Error("Booking not found");
 
-  // 2. Fetch booking services
-  const { data: services } = await supabase
-    .from("booking_services")
-    .select("*")
-    .eq("booking_id", bookingId);
-  
-  // 3. Determine required PDFs
-  const { getRequiredPdfTypes, generatePdfByType, generateChecksum } = await import("@/lib/pdf-engine.server");
-  const requiredTypes = getRequiredPdfTypes(booking, services || []);
+  const services = booking.services || [];
+  const { getRequiredPdfTypes, generatePdfByType, generateChecksum } = await import(
+    "@/lib/pdf-engine.server"
+  );
+  const requiredTypes = getRequiredPdfTypes(booking, services);
   const results = [];
-  
+
+  const existingDocs = await apiGet<any[]>(`/api/bookings/${bookingId}/documents`, token);
+
   for (const type of requiredTypes) {
     try {
-      // Generate PDF bytes
-      const bytes = await generatePdfByType(type, booking, services || []);
+      const bytes = await generatePdfByType(type, booking, services);
       const checksum = generateChecksum(bytes);
-      
-      // Check if this version already exists (by checksum)
-      let existingDoc = null;
-      try {
-        const { data } = await supabase
-          .from("booking_documents")
-          .select("id, storage_path, version")
-          .eq("booking_id", bookingId)
-          .eq("document_type", type)
-          .eq("checksum", checksum)
-          .maybeSingle();
-        existingDoc = data;
-      } catch (err) {
-        // Fallback for legacy DB structure
-      }
-        
+
+      const existingDoc = (existingDocs || []).find(
+        (d: any) =>
+          (d.document_type === type || d.kind === type) && d.checksum === checksum,
+      );
+
       if (existingDoc) {
         results.push({ type, status: "up_to_date", id: existingDoc.id });
         continue;
       }
-      
-      // Get highest version
-      let latestVersion = 0;
-      try {
-        const { data: versions } = await supabase
-          .from("booking_documents")
-          .select("version")
-          .eq("booking_id", bookingId)
-          .eq("document_type", type)
-          .order("version", { ascending: false })
-          .limit(1);
-        if (versions && versions.length > 0) {
-          latestVersion = versions[0].version || 1;
-        }
-      } catch (err) {
-        // Fallback for legacy DB structure
-      }
-      
+
+      const matchingVersions = (existingDocs || [])
+        .filter((d: any) => d.document_type === type || d.kind === type)
+        .map((d: any) => d.version || 1);
+
+      const latestVersion = matchingVersions.length > 0 ? Math.max(...matchingVersions) : 0;
       const newVersion = latestVersion + 1;
       const filename = `${type}_v${newVersion}.pdf`;
       const path = `${bookingId}/${filename}`;
-      
-      // Upload to storage
+
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       try {
-        await supabase.storage.createBucket("booking-docs", { public: false });
+        await supabaseAdmin.storage.createBucket("booking-docs", { public: false });
       } catch (err) {}
-      const { error: upErr } = await supabase.storage
+      const { error: upErr } = await supabaseAdmin.storage
         .from("booking-docs")
         .upload(path, bytes, { contentType: "application/pdf", upsert: true });
-        
+
       if (upErr) {
         console.error(`[PDF Engine] Storage upload failed for ${filename}:`, upErr.message);
         continue;
       }
-      
-      // Map kind for DB constraint compatibility
+
       let mappedKind = "quotation";
       if (type.includes("invoice")) mappedKind = "invoice";
       else if (type.includes("receipt")) mappedKind = "receipt";
-      
-      // Insert row with defensive fallback for column existence
-      const dbPayload: any = {
-        booking_id: bookingId,
-        kind: mappedKind,
-        storage_path: path,
-        amount: booking.quote_amount || null,
-        currency: booking.quote_currency || "INR",
-        generated_by: userId,
-      };
-      
-      try {
-        const { data: row, error: insErr } = await supabase
-          .from("booking_documents")
-          .insert({
-            ...dbPayload,
-            document_type: type,
-            filename: filename,
-            checksum: checksum,
-            version: newVersion,
-          })
-          .select("id")
-          .single();
-          
-        if (insErr) {
-          if (insErr.message.includes("column")) {
-            // Fallback insert without new columns
-            const { data: fbRow, error: fbErr } = await supabase
-              .from("booking_documents")
-              .insert(dbPayload)
-              .select("id")
-              .single();
-            if (fbErr) throw fbErr;
-            results.push({ type, status: "generated_legacy", id: fbRow.id });
-          } else {
-            throw insErr;
-          }
-        } else {
-          results.push({ type, status: "generated", id: row.id });
-        }
-      } catch (insErr: any) {
-        // Double fallback
-        const { data: fbRow, error: fbErr } = await supabase
-          .from("booking_documents")
-          .insert(dbPayload)
-          .select("id")
-          .single();
-        if (fbErr) throw fbErr;
-        results.push({ type, status: "generated_legacy", id: fbRow.id });
-      }
-      
-      // Audit Log
-      await supabase.from("audit_log").insert({
-        actor_id: userId || null,
-        action: `booking.${type}.generated`,
-        entity: "booking",
-        entity_id: bookingId,
-        metadata: { version: newVersion, checksum },
-      });
-      
+
+      const row = await apiPost<any>(
+        `/api/bookings/${bookingId}/documents`,
+        {
+          kind: mappedKind,
+          storage_path: path,
+          amount: booking.quote_amount || booking.price || null,
+          currency: booking.quote_currency || booking.currency || "INR",
+          generated_by: userId,
+          document_type: type,
+          filename,
+          checksum,
+          version: newVersion,
+        },
+        token,
+      );
+
+      results.push({ type, status: "generated", id: row.id });
+
+      await apiPost(
+        "/api/audit-logs",
+        {
+          actor_id: userId || null,
+          action: `booking.${type}.generated`,
+          entity: "booking",
+          entity_id: bookingId,
+          details: { version: newVersion, checksum },
+        },
+        token,
+      );
     } catch (err: any) {
-      console.error(`[PDF Engine] Error generating PDF of type ${type} for booking ${bookingId}:`, err);
+      console.error(
+        `[PDF Engine] Error generating PDF of type ${type} for booking ${bookingId}:`,
+        err,
+      );
     }
   }
-  
+
   return results;
 }
 
@@ -531,38 +432,28 @@ export const deleteOldDocumentVersions = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ bookingId: z.string().uuid(), documentType: z.string() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const sb = supabase as any;
-    await assertStaffUser(sb, userId);
-    
-    // Find all rows of this documentType for this booking where version < max(version)
-    const { data: currentDocs, error: fetchErr } = await sb
-      .from("booking_documents")
-      .select("id, version, storage_path")
-      .eq("booking_id", data.bookingId)
-      .eq("document_type", data.documentType)
-      .order("version", { ascending: false });
-      
-    if (fetchErr || !currentDocs || currentDocs.length <= 1) {
+    await assertStaffUser(supabase as any, userId);
+
+    const token = getTokenFromRequest();
+    const currentDocs = await apiGet<any[]>(`/api/bookings/${data.bookingId}/documents`, token);
+    const matching = (currentDocs || []).filter(
+      (d: any) => (d.document_type || d.kind) === data.documentType,
+    );
+
+    if (matching.length <= 1) {
       return { success: true, message: "No old versions to delete." };
     }
-    
-    const oldDocs = currentDocs.slice(1);
+
+    matching.sort((a, b) => (b.version || 1) - (a.version || 1));
+    const oldDocs = matching.slice(1);
     const oldIds = oldDocs.map((d: any) => d.id);
     const oldPaths = oldDocs.map((d: any) => d.storage_path);
-    
-    // Delete from storage
-    const { error: storageErr } = await sb.storage
-      .from("booking-docs")
-      .remove(oldPaths);
-      
-    // Delete from DB
-    const { error: dbErr } = await sb
-      .from("booking_documents")
-      .delete()
-      .in("id", oldIds);
-      
-    if (dbErr) throw new Error(dbErr.message);
-    
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.storage.from("booking-docs").remove(oldPaths);
+
+    await apiDelete(`/api/bookings/${data.bookingId}/documents`, { ids: oldIds }, token);
+
     return { success: true, deletedCount: oldIds.length };
   });
 
@@ -571,17 +462,15 @@ export const resendDocumentEmail = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid(), type: z.string() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const sb = supabase as any;
-    await assertStaffUser(sb, userId);
-    
-    // Get booking details
-    const { data: booking } = await sb.from("bookings").select("*").eq("id", data.id).single();
+    await assertStaffUser(supabase as any, userId);
+
+    const token = getTokenFromRequest();
+    const booking = await apiGet<any>(`/api/bookings/${data.id}`, token);
     if (!booking) throw new Error("Booking not found");
-    
-    // Queue a notification of type based on the document
+
     let eventType = "booking_confirmed";
-    let recipient = booking.contact_email;
-    
+    let recipient = booking.contact_email || booking.passenger_email;
+
     if (data.type.includes("ops") || data.type.includes("summary")) {
       eventType = "new_booking_received";
       recipient = process.env.EMAIL_FROM || "admin@shafskyaviation.com";
@@ -592,7 +481,7 @@ export const resendDocumentEmail = createServerFn({ method: "POST" })
     } else if (data.type.includes("refund")) {
       eventType = "refund_processed";
     }
-    
+
     const { enqueueNotification } = await import("@/lib/notifications/queue");
     await enqueueNotification({
       bookingId: booking.id,
@@ -603,15 +492,28 @@ export const resendDocumentEmail = createServerFn({ method: "POST" })
       payload: {
         bookingId: booking.id,
         bookingRef: booking.booking_ref,
-        customerName: booking.contact_name,
-        origin: booking.origin,
-        destination: booking.destination,
-        departDate: booking.depart_date,
-        amount: Number(booking.quote_amount || 0),
+        customerName: booking.contact_name || booking.passenger_name,
+        origin: booking.origin || booking.origin_code,
+        destination: booking.destination || booking.dest_code,
+        departDate: booking.depart_date || booking.flight_date,
+        amount: Number(booking.quote_amount || booking.price || 0),
       },
     });
-    
+
     return { success: true };
+  });
+
+export const fetchDocs = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    try {
+      const token = getTokenFromRequest();
+      const rows = await apiGet<any[]>(`/api/bookings/${data.id}/documents`, token);
+      return rows ?? [];
+    } catch {
+      return [];
+    }
   });
 
 

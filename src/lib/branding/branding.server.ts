@@ -1,6 +1,7 @@
 import { FALLBACK_BRANDING } from "./branding.constants";
 import type { BrandingSettings } from "./branding.types";
 import { cache } from "@/lib/cache";
+import { apiGet } from "@/lib/FastApiClient";
 
 const BRANDING_CACHE_KEY = "server_branding_settings";
 
@@ -11,23 +12,8 @@ export async function getActiveBrandingServer(): Promise<BrandingSettings> {
       return cached;
     }
 
-    const clientServer = await import("@/integrations/supabase/client.server");
-    const sbAdmin = clientServer.supabaseAdmin as any;
-    if (!sbAdmin || typeof sbAdmin.from !== "function") {
-      return FALLBACK_BRANDING;
-    }
-    
-    const queryBuilder = sbAdmin.from("branding_settings");
-    if (!queryBuilder || typeof queryBuilder.select !== "function") {
-      return FALLBACK_BRANDING;
-    }
-
-    const { data, error } = await queryBuilder
-      .select("*")
-      .eq("is_active", true)
-      .maybeSingle();
-
-    if (error || !data) {
+    const data = await apiGet<any>("/api/branding/active");
+    if (!data) {
       return FALLBACK_BRANDING;
     }
 
@@ -35,9 +21,6 @@ export async function getActiveBrandingServer(): Promise<BrandingSettings> {
     await cache.set(BRANDING_CACHE_KEY, branding, 60000);
     return branding;
   } catch (err: any) {
-    if (err?.message?.includes("Missing Supabase environment variable")) {
-      return FALLBACK_BRANDING;
-    }
     console.warn("[Branding Server] Exception loading server branding, using fallback:", err);
     return FALLBACK_BRANDING;
   }

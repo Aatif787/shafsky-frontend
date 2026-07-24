@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { isStaffUser } from "@/lib/permissions";
+import { apiGet, apiPost, getTokenFromRequest } from "@/lib/FastApiClient";
 
 const ContactInput = z.object({
   name: z.string().trim().min(2).max(120),
@@ -20,19 +20,15 @@ export const submitContact = createServerFn({ method: "POST" })
       return { ok: true, id: null as string | null };
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin
-      .from("contact_messages")
-      .insert({
-        name: data.name,
-        email: data.email,
-        phone: data.phone || null,
-        subject: data.subject || null,
-        message: data.message,
-      })
-      .select("id, name, email, phone, subject, message")
-      .single();
-    if (error) throw new Error(error.message);
+    const payload = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone || null,
+      subject: data.subject || null,
+      message: data.message,
+    };
+
+    const row = await apiPost<any>("/api/contact", payload);
 
     // Dispatch notifications asynchronously in the background (non-blocking)
     (async () => {
@@ -40,24 +36,24 @@ export const submitContact = createServerFn({ method: "POST" })
       try {
         const { sendContactResponse } = await import("./messaging.server");
         await sendContactResponse({
-          name: row.name,
-          email: row.email,
-          subject: row.subject,
-          message: row.message,
+          name: row.name || data.name,
+          email: row.email || data.email,
+          subject: row.subject || data.subject,
+          message: row.message || data.message,
         });
       } catch (e) {
         console.error("Failed to send contact message email:", e);
       }
 
       // 2. Customer WhatsApp acknowledgement
-      if (row.phone) {
+      if (row.phone || data.phone) {
         try {
           const { sendContactAcknowledgement } = await import("./whatsapp.server");
           await sendContactAcknowledgement({
-            name: row.name,
-            phone: row.phone,
-            subject: row.subject,
-            message: row.message,
+            name: row.name || data.name,
+            phone: row.phone || data.phone,
+            subject: row.subject || data.subject,
+            message: row.message || data.message,
           });
         } catch (e) {
           console.error("Failed to send contact customer WhatsApp acknowledgement:", e);
@@ -68,11 +64,11 @@ export const submitContact = createServerFn({ method: "POST" })
       try {
         const { sendContactAdminNotification } = await import("./whatsapp.server");
         await sendContactAdminNotification({
-          name: row.name,
-          email: row.email,
-          phone: row.phone,
-          subject: row.subject,
-          message: row.message,
+          name: row.name || data.name,
+          email: row.email || data.email,
+          phone: row.phone || data.phone,
+          subject: row.subject || data.subject,
+          message: row.message || data.message,
         });
       } catch (e) {
         console.error("Failed to send contact admin WhatsApp notification:", e);
@@ -86,20 +82,8 @@ export const submitContact = createServerFn({ method: "POST" })
 
 export const listContactMessages = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-
-    // Verify staff permissions
-    const isStaff = await isStaffUser(supabase, userId);
-    if (!isStaff) {
-      throw new Error("Forbidden: You do not have permission to view contact messages.");
-    }
-
-    const { data, error } = await supabase
-      .from("contact_messages")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(200);
-    if (error) throw new Error(error.message);
-    return data ?? [];
+  .handler(async () => {
+    const token = getTokenFromRequest();
+    const metrics = await apiGet<any>("/api/admin/dashboard-metrics", token);
+    return metrics?.messages ?? [];
   });

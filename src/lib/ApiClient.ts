@@ -1,7 +1,9 @@
 /**
  * Enterprise REST API Client for Shafsky Aviation Frontend
- * Replaces direct Supabase client access with custom JWT Auth & Backend Microservices
+ * Forwards Supabase Auth JWT Access Tokens to FastAPI Backend Services
  */
+
+import { supabase } from "@/integrations/supabase/client";
 
 const getApiBaseUrl = (): string => {
   if (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_BACKEND_API_URL) {
@@ -14,7 +16,6 @@ const getApiBaseUrl = (): string => {
 };
 
 const API_BASE_URL = getApiBaseUrl();
-
 
 export interface FlightDurationApiRequest {
   duration?: string;
@@ -49,47 +50,46 @@ export interface FlightValidationApiResponse {
   error?: string;
 }
 
-export interface AuthLoginResponse {
-  success: boolean;
-  data?: {
-    accessToken: string;
-    refreshToken: string;
-    user: {
-      id: string;
-      email: string;
-      role: string;
-      fullName?: string;
-    };
-  };
-  error?: string;
-}
-
 export class ApiClient {
   /**
-   * Custom Enterprise JWT Login
+   * Helper to retrieve active Supabase JWT Access Token header.
    */
-  public static async login(email: string, password: string): Promise<AuthLoginResponse> {
+  public static async getAuthHeaders(): Promise<Record<string, string>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      return (await response.json()) as AuthLoginResponse;
-    } catch {
-      return { success: false, error: "Network error connecting to backend authentication engine." };
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        return { Authorization: `Bearer ${session.access_token}` };
+      }
+    } catch (err) {
+      console.warn("[ApiClient] Failed to retrieve session access token:", err);
     }
+    return {};
   }
 
   /**
-   * Resolves flight duration via backend microservice API
+   * Wrapper for making authenticated fetch requests to FastAPI backend.
+   */
+  public static async fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
+    const authHeaders = await ApiClient.getAuthHeaders();
+    const url = endpoint.startsWith("http") ? endpoint : `${API_BASE_URL}${endpoint}`;
+    
+    return fetch(url, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders,
+        ...options.headers,
+      },
+    });
+  }
+
+  /**
+   * Resolves live/calculated flight duration via backend microservice API (/api/flight/duration).
    */
   public static async resolveFlightDuration(payload: FlightDurationApiRequest): Promise<FlightDurationApiResponse["data"]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/flight/duration`, {
+      const response = await ApiClient.fetchWithAuth("/api/flight/duration", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
@@ -109,13 +109,12 @@ export class ApiClient {
   }
 
   /**
-   * Validates booking advance notice rules via backend microservice API
+   * Validates booking advance notice rules (6-hour rule) via backend microservice API (/api/flight/validate).
    */
   public static async validateFlightEligibility(departureTime: string, arrivalTime: string): Promise<FlightValidationApiResponse["data"]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/flight/validate`, {
+      const response = await ApiClient.fetchWithAuth("/api/flight/validate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ departureTime, arrivalTime }),
       });
 
