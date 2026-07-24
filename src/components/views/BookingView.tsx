@@ -1985,10 +1985,9 @@ export default function BookingView({ searchParams }: { searchParams: any }) {
         if (f2Snap) notesArray.push(f2Snap);
       }
 
-      notesArray.push(`Selected Services: ${selectedServiceTitles.join(", ")}`);
-      notesArray.push(
-        `Total Service Price: ₹${totalPrice.toLocaleString("en-IN")} (Approx. $${Math.round(totalPrice / 83).toLocaleString()} USD)`,
-      );
+      if (selectedServiceTitles.length > 0) {
+        notesArray.push(`Selected Services: ${selectedServiceTitles.join(", ")}`);
+      }
       if (userNotes.trim()) {
         notesArray.push(`Special Requests: ${userNotes}`);
       }

@@ -28,7 +28,7 @@ export const BookingInput = z.object({
   pax_infants: z.number().int().min(0).max(20),
   aircraft_preference: z.string().trim().max(120).optional().or(z.literal("")),
   service_type: z.string().trim().max(120).optional().or(z.literal("")),
-  notes: z.string().trim().max(2000).optional().or(z.literal("")),
+  notes: z.string().trim().max(8000).optional().or(z.literal("")),
   verification_type: z.enum(["AUTO_VERIFIED", "MANUAL_ENTRY"]).optional(),
   services: z
     .array(
