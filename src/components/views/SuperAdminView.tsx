@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionInfo } from "@/lib/session";
 import { useAuth } from "@/auth-system/useAuth";
@@ -82,7 +83,7 @@ export default function SuperAdminView({ userId }: { userId: string }) {
   // TanStack Query: Stats Overview
   const { data: stats = { users: 0, bookings: 0, revenue: 0 }, isLoading: isStatsLoading } =
     useQuery({
-      queryKey: ["superadmin-stats"],
+      queryKey: queryKeys.superAdmin.kpis(),
       queryFn: async () => {
         try {
           const res = await getSuperAdminKPIs();
@@ -106,11 +107,11 @@ export default function SuperAdminView({ userId }: { userId: string }) {
     isLoading: isCouponsLoading,
     refetch: fetchCoupons,
   } = useQuery<Coupon[]>({
-    queryKey: ["superadmin-coupons"],
+    queryKey: queryKeys.superAdmin.coupons(),
     queryFn: async () => {
       try {
         const res = await listCoupons();
-        return (res || []) as Coupon[];
+        return (res || []) as unknown as Coupon[];
       } catch {
         return [];
       }
@@ -124,7 +125,7 @@ export default function SuperAdminView({ userId }: { userId: string }) {
     isLoading: isAuditLoading,
     refetch: fetchAuditLogs,
   } = useQuery<any[]>({
-    queryKey: ["superadmin-audit-logs"],
+    queryKey: queryKeys.superAdmin.audits(),
     queryFn: async () => {
       try {
         const res = await getAuditLogs();
@@ -132,10 +133,8 @@ export default function SuperAdminView({ userId }: { userId: string }) {
           id: l.id,
           action: l.action,
           actor_id: l.actor || l.actor_id,
-          actor_email: l.actor || "",
-          ip_address: l.details?.ip || "0.0.0.0",
-          created_at: l.timestamp || l.created_at,
-          details: l.details,
+          entity_type: l.entity_type || l.entity,
+          created_at: l.created_at || l.timestamp,
         }));
       } catch {
         return [];
@@ -144,13 +143,13 @@ export default function SuperAdminView({ userId }: { userId: string }) {
     staleTime: 10000,
   });
 
-  // TanStack Query: Users
+  // TanStack Query: All Users
   const {
     data: systemUsers = [],
     isLoading: isUsersLoading,
     refetch: fetchUsers,
-  } = useQuery<ProfileWithRole[]>({
-    queryKey: ["superadmin-users"],
+  } = useQuery<any[]>({
+    queryKey: queryKeys.superAdmin.users(),
     queryFn: async () => {
       try {
         const res = await listAllUsers();
