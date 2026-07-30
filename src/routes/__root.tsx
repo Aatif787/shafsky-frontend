@@ -17,6 +17,7 @@ import { WhatsAppWidget } from "../components/ui/WhatsAppWidget";
 import { Toaster } from "../components/ui/sonner";
 import { AuthProvider } from "../auth-system/AuthProvider";
 import { AppErrorBoundary } from "../components/ui/AppErrorBoundary";
+import { CustomCursor } from "../components/ui/interactions";
 
 function NotFoundComponent() {
   return (
@@ -108,12 +109,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "icon", href: "/logo.png" },
+      { rel: "stylesheet", href: "/fonts/fonts.css" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=JetBrains+Mono:wght@300;400;500;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=JetBrains+Mono:wght@300;400;500;700&display=swap",
       },
     ],
   }),
@@ -150,6 +152,7 @@ function RootComponent() {
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
               <Outlet />
             </div>
+            <CustomCursor />
             <WhatsAppWidget />
             <Toaster position="top-right" richColors closeButton />
           </BrandingProvider>

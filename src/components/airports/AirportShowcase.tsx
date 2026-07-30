@@ -1,393 +1,227 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Link } from "@tanstack/react-router";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowUpRight,
-  Plane,
-  ShieldCheck,
-  Sparkles,
   ChevronLeft,
   ChevronRight,
-  MessageSquare,
-  X,
+  ArrowRight,
+  Sparkles,
+  Plane,
+  Crown,
+  MapPin,
 } from "lucide-react";
-import { AIRPORTS, Airport } from "@/data/airports";
-import { display, mono } from "./Atoms";
+import { AIRPORTS, type Airport } from "@/data/airports";
 import { getAirportAsset } from "@/lib/airport-assets";
+import { display, mono } from "./Atoms";
+
+// Filter featured airport hubs (e.g. DEL, BOM, DXB, AMD, BLR, LHR, JFK, SIN)
+const FEATURED_CODES = ["DEL", "BOM", "DXB", "AMD", "BLR", "LHR", "JFK", "SIN"];
 
 export function AirportShowcase() {
-  // Use ALL airports available in the website dataset
-  const showcaseAirports = AIRPORTS;
-  const N = showcaseAirports.length;
+  const featuredAirports = AIRPORTS.filter((a) => FEATURED_CODES.includes(a.code));
+  const [activeIndex, setActiveIndex] = useState(0); // DEL as default center
 
-  // Find index of DEL (Delhi) as default center card
-  const initialIndex =
-    showcaseAirports.findIndex((a) => a.code === "DEL") !== -1
-      ? showcaseAirports.findIndex((a) => a.code === "DEL")
-      : Math.floor(N / 2);
-
-  const [activeIndex, setActiveIndex] = useState(initialIndex);
-  const [showConcierge, setShowConcierge] = useState(true);
-
-  // Continuous motion value for infinite 360-degree cycle
-  const indexMotion = useMotionValue(initialIndex);
-  const smoothIndex = useSpring(indexMotion, { stiffness: 110, damping: 20 });
-
-  // Update motion value on activeIndex change
-  useEffect(() => {
-    indexMotion.set(activeIndex);
-  }, [activeIndex, indexMotion]);
-
-  // Infinite continuous keyboard navigation
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft") {
-      e.preventDefault();
-      setActiveIndex((prev) => prev - 1);
-    } else if (e.key === "ArrowRight") {
-      e.preventDefault();
-      setActiveIndex((prev) => prev + 1);
-    }
+  const handlePrev = () => {
+    setActiveIndex((prev) => (prev > 0 ? prev - 1 : featuredAirports.length - 1));
   };
 
-  // Drag interaction with infinite continuous scrolling
-  const dragRef = useRef<HTMLDivElement>(null);
-  const isDraggingRef = useRef(false);
-  const startXRef = useRef(0);
-  const startIndexRef = useRef(0);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    isDraggingRef.current = true;
-    startXRef.current = e.clientX;
-    startIndexRef.current = activeIndex;
+  const handleNext = () => {
+    setActiveIndex((prev) => (prev < featuredAirports.length - 1 ? prev + 1 : 0));
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDraggingRef.current) return;
-    const deltaX = e.clientX - startXRef.current;
-    // Map drag distance (in px) to continuous index shift
-    const indexShift = -deltaX / 160;
-    const newIndex = startIndexRef.current + indexShift;
-    indexMotion.set(newIndex);
-  };
-
-  const handleMouseUp = () => {
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-    const currentVal = indexMotion.get();
-    const rounded = Math.round(currentVal);
-    setActiveIndex(rounded);
-  };
-
-  // Touch handlers
-  const handleTouchStart = (e: React.TouchEvent) => {
-    isDraggingRef.current = true;
-    startXRef.current = e.touches[0].clientX;
-    startIndexRef.current = activeIndex;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDraggingRef.current) return;
-    const deltaX = e.touches[0].clientX - startXRef.current;
-    const indexShift = -deltaX / 140;
-    const newIndex = startIndexRef.current + indexShift;
-    indexMotion.set(newIndex);
-  };
-
-  const handleTouchEnd = () => {
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-    const currentVal = indexMotion.get();
-    const rounded = Math.round(currentVal);
-    setActiveIndex(rounded);
-  };
+  const activeAirport = featuredAirports[activeIndex] || featuredAirports[0];
 
   return (
-    <div className="relative w-full overflow-hidden bg-[#FAF5EB] py-14 select-none">
-      {/* Main Cover Flow Stage */}
-      <div
-        ref={dragRef}
-        onKeyDown={handleKeyDown}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        tabIndex={0}
-        className="relative w-full h-[580px] flex items-center justify-center focus:outline-none cursor-grab active:cursor-grabbing"
-        style={{ perspective: "1600px", transformStyle: "preserve-3d" }}
-      >
-        {/* Navigation Chevron Left */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setActiveIndex((prev) => prev - 1);
-          }}
-          aria-label="Previous destination"
-          className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full bg-[#182025]/90 border border-white/15 text-white flex items-center justify-center shadow-2xl backdrop-blur-md hover:bg-[#202B32] hover:scale-105 active:scale-95 transition-all"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </button>
+    <section className="relative w-full overflow-hidden bg-[#FAF9F5] py-16 sm:py-24 select-none border-y border-slate-200/80">
+      {/* SECTION HEADER */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12 sm:mb-16">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-[#7c3aed] text-[10px] font-mono font-bold uppercase tracking-widest mb-3">
+          <Crown className="w-3.5 h-3.5" />
+          <span>Curated Global Concierge Hubs</span>
+        </div>
 
-        {/* Navigation Chevron Right */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setActiveIndex((prev) => prev + 1);
-          }}
-          aria-label="Next destination"
-          className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full bg-[#182025]/90 border border-white/15 text-white flex items-center justify-center shadow-2xl backdrop-blur-md hover:bg-[#202B32] hover:scale-105 active:scale-95 transition-all"
-        >
-          <ChevronRight className="h-6 w-6" />
-        </button>
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-slate-900 font-bold tracking-tight">
+          Featured Aviation <span className="italic text-[#7c3aed]">Destinations</span>
+        </h2>
+        <p className="mt-3 text-xs sm:text-sm text-slate-600 font-sans max-w-xl mx-auto">
+          Explore signature airport sanctuaries arranged across our international VVIP service arc.
+        </p>
+      </div>
 
-        {/* Render All Airport Cards in Infinite 3D 360 Loop */}
-        <div
-          className="relative w-full h-full flex items-center justify-center"
-          style={{ transformStyle: "preserve-3d" }}
-        >
-          {showcaseAirports.map((a, i) => {
+      {/* CURVED STAGE CONTAINER (DESKTOP) & HORIZONTAL SNAP SCROLL (MOBILE) */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* SVG BACKGROUND ARC GUIDELINE (DESKTOP ONLY) */}
+        <div className="hidden lg:block absolute left-0 right-0 top-1/2 -translate-y-1/2 pointer-events-none z-0">
+          <svg className="w-full h-40 overflow-visible" viewBox="0 0 1000 160">
+            <path
+              d="M 50 140 Q 500 10 950 140"
+              fill="none"
+              stroke="#7c3aed"
+              strokeWidth="2"
+              strokeDasharray="6 6"
+              className="opacity-20"
+            />
+          </svg>
+        </div>
+
+        {/* NAVIGATION CHEVRON BUTTONS */}
+        <div className="flex items-center justify-between absolute inset-x-2 sm:inset-x-6 top-1/2 -translate-y-1/2 z-30 pointer-events-none">
+          <button
+            onClick={handlePrev}
+            aria-label="Previous featured airport"
+            className="pointer-events-auto w-11 h-11 rounded-full bg-white border border-slate-200 text-slate-800 flex items-center justify-center shadow-md hover:bg-slate-50 hover:text-[#7c3aed] hover:border-[#7c3aed]/40 active:scale-95 transition-all cursor-pointer"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={handleNext}
+            aria-label="Next featured airport"
+            className="pointer-events-auto w-11 h-11 rounded-full bg-white border border-slate-200 text-slate-800 flex items-center justify-center shadow-md hover:bg-slate-50 hover:text-[#7c3aed] hover:border-[#7c3aed]/40 active:scale-95 transition-all cursor-pointer"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* DESKTOP CURVED ALIGNMENT STAGE (lg+) */}
+        <div className="hidden lg:flex relative h-[380px] items-center justify-center z-10">
+          {featuredAirports.map((airport, index) => {
+            const diff = index - activeIndex;
+            const absDiff = Math.abs(diff);
+
+            // Parabolic curve vertical offset: y = a * diff^2
+            const translateY = Math.pow(diff, 2) * 18;
+            // Subtle rotation tilt along the arc
+            const rotateZ = diff * 3.5;
+            // Horizontal position offset
+            const translateX = diff * 210;
+            // Scale center card prominent
+            const scale = diff === 0 ? 1.06 : Math.max(0.82, 1 - absDiff * 0.08);
+            // Opacity decay for far elements
+            const opacity = absDiff > 3 ? 0 : Math.max(0.4, 1 - absDiff * 0.22);
+            const isCenter = diff === 0;
+
+            const cardImage = getAirportAsset(airport.code, "hero-mobile.webp") || airport.mobCover || airport.cover;
+
             return (
-              <CoverFlowCard
-                key={a.code}
-                a={a}
-                index={i}
-                total={N}
-                smoothIndex={smoothIndex}
-                onClick={() => setActiveIndex(i)}
-              />
+              <motion.div
+                key={airport.code}
+                onClick={() => setActiveIndex(index)}
+                animate={{
+                  x: translateX,
+                  y: translateY,
+                  rotateZ: rotateZ,
+                  scale: scale,
+                  opacity: opacity,
+                }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  position: "absolute",
+                  zIndex: 20 - absDiff,
+                }}
+                className={`w-[260px] rounded-3xl bg-white border transition-all duration-300 cursor-pointer overflow-hidden ${
+                  isCenter
+                    ? "border-2 border-[#7c3aed] shadow-xl shadow-[#7c3aed]/15 ring-4 ring-[#7c3aed]/10"
+                    : "border-slate-200/90 shadow-sm hover:border-slate-300"
+                }`}
+              >
+                <Link to="/airports/$code" params={{ code: airport.code }} className="block p-3">
+                  {/* Thumbnail Image */}
+                  <div className="relative h-36 w-full rounded-2xl overflow-hidden bg-slate-100">
+                    <img
+                      src={cardImage}
+                      alt={airport.city}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                    />
+                    <div className="absolute top-2 left-2 flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded-md bg-[#7c3aed] text-white font-mono text-[10px] font-bold tracking-widest shadow-xs">
+                        {airport.code}
+                      </span>
+                    </div>
+
+                    {isCenter && (
+                      <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-[#84cc16] text-[#0f172a] font-mono text-[9px] font-bold uppercase tracking-wider shadow-xs">
+                        ✦ Selected Hub
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="pt-3 pb-1 px-1">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-serif font-bold text-slate-900 truncate">
+                        {airport.city}
+                      </h3>
+                      <span className="text-[10px] font-mono text-slate-500 font-bold uppercase">
+                        {airport.countryCode}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-500 font-sans truncate mt-0.5">
+                      {airport.airport?.name || airport.country}
+                    </p>
+
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-mono">
+                      <span className="text-[11px] text-slate-500 font-medium">
+                        4 Airside Services
+                      </span>
+                      <span className="inline-flex items-center gap-1 font-bold text-[#7c3aed]">
+                        <span>Explore</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
             );
           })}
         </div>
-      </div>
 
-      {/* Subtext below carousel */}
-      <div
-        className="mt-6 flex flex-col items-center gap-1 text-center text-[#58646E] select-none"
-        style={mono}
-      >
-        <div className="text-[11px] font-semibold uppercase tracking-[0.28em]">
-          DRAG / SWIPE OR ARROW KEYS TO SCROLL
-        </div>
-        <div className="text-[9px] uppercase tracking-[0.22em] opacity-70">
-          ∞ INFINITE 360° LOOP · {N} INDIAN DESTINATIONS
-        </div>
-      </div>
+        {/* MOBILE & TABLET HORIZONTAL SNAP SCROLL (< lg) */}
+        <div className="lg:hidden flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 py-4 px-2">
+          {featuredAirports.map((airport, index) => {
+            const isSelected = index === activeIndex;
+            const cardImage = getAirportAsset(airport.code, "hero-mobile.webp") || airport.mobCover || airport.cover;
 
-      {/* Suswagatam Concierge Widget (Bottom Right) */}
-      {showConcierge && (
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-3.5 rounded-[20px] border border-white/15 bg-[#121A1F]/95 p-4 pr-10 shadow-2xl backdrop-blur-xl max-w-[340px] text-white"
-        >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2BB3A3] shadow-[0_0_12px_rgba(43,179,163,0.5)]">
-            <MessageSquare className="h-5 w-5 text-slate-950 fill-slate-950" />
-          </div>
-          <div>
-            <div className="text-[13px] font-bold text-[#2BB3A3] tracking-wide">
-              Suswagatam Concierge
-            </div>
-            <div className="mt-0.5 text-[11px] leading-snug text-white/80">
-              Need slot check or quick booking assistance? Chat with us now.
-            </div>
-          </div>
-          <button
-            onClick={() => setShowConcierge(false)}
-            className="absolute top-3 right-3 text-white/40 hover:text-white transition-colors"
-            aria-label="Close widget"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </motion.div>
-      )}
-    </div>
-  );
-}
-
-function CoverFlowCard({
-  a,
-  index,
-  total,
-  smoothIndex,
-  onClick,
-}: {
-  a: Airport;
-  index: number;
-  total: number;
-  smoothIndex: any;
-  onClick: () => void;
-}) {
-  // Direct motion transforms for seamless infinite 360-degree cylindrical arc
-  const transform = useTransform(smoothIndex, (latestVal: number) => {
-    let diff = (index - (latestVal % total) + total) % total;
-    if (diff > total / 2) diff -= total;
-    if (diff < -total / 2) diff += total;
-
-    // Smooth progressive 360 cylindrical arc rotation & 3D depth
-    const rotateY = -diff * 24; // Left cards face right (+), Right cards face left (-)
-    const x = diff * 155; // Smooth continuous horizontal stepping
-    const z = -Math.pow(Math.abs(diff), 1.2) * 50; // Smooth 3D depth curvature into background
-    const scale = Math.max(0.68, 1.15 / (1 + Math.abs(diff) * 0.1));
-
-    return `translateX(${x}px) translateZ(${z}px) rotateY(${rotateY}deg) scale(${scale})`;
-  });
-
-  const zIndex = useTransform(smoothIndex, (latestVal: number) => {
-    let diff = (index - (latestVal % total) + total) % total;
-    if (diff > total / 2) diff -= total;
-    if (diff < -total / 2) diff += total;
-    return Math.round(100 - Math.abs(diff) * 10);
-  });
-
-  const opacity = useTransform(smoothIndex, (latestVal: number) => {
-    let diff = (index - (latestVal % total) + total) % total;
-    if (diff > total / 2) diff -= total;
-    if (diff < -total / 2) diff += total;
-    const absDiff = Math.abs(diff);
-    // Hide far offscreen cards beyond 3.5 positions to keep 360 clean & fast
-    if (absDiff > 3.5) return 0;
-    return Math.max(0.35, 1 - absDiff * 0.18);
-  });
-
-  const cleanTerminal = a.airport.terminals
-    ? `Terminal ${a.airport.terminals.split(" ")[0].replace(/[^0-9]/g, "") || "1"}`
-    : "Terminal 1";
-
-  const statusText =
-    a.code === "DEL"
-      ? "ACTIVE DISPATCH"
-      : a.code === "BOM"
-        ? "24/7 OPERATIONS"
-        : "LIVE OPERATIONS";
-
-  return (
-    <motion.div
-      onClick={onClick}
-      suppressHydrationWarning
-      style={{
-        position: "absolute",
-        transform,
-        zIndex,
-        opacity,
-        transformStyle: "preserve-3d",
-      }}
-      className="w-[320px] h-[520px] shrink-0 rounded-[28px] bg-[#141C21] border border-white/12 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden cursor-pointer group transition-shadow duration-300"
-    >
-      <Link to="/airports/$code" params={{ code: a.code }} className="relative block h-full w-full">
-        {/* Top Half Image Container */}
-        <div className="relative h-[235px] w-full overflow-hidden">
-          <img
-            src={getAirportAsset(a.code, "hero-mobile.webp") || a.mobCover || a.cover}
-            alt={`${a.city} — ${a.landmark}`}
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-108"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#141C21] via-transparent to-black/40" />
-
-          {/* Top Pill Badges Row */}
-          <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4 z-10">
-            {/* Code Badge Pill */}
-            <div className="flex items-center gap-1.5 rounded-full border border-white/15 bg-[#182127]/80 px-3 py-1 backdrop-blur-md">
-              <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold tracking-widest text-white">
-                {a.code}
-              </span>
-              <span className="text-[10px] font-bold tracking-wider text-white/80 font-mono">
-                {a.icao}
-              </span>
-            </div>
-
-            {/* Flight Circle Icon Button */}
-            <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-[#182127]/80 text-[#38BDAD] backdrop-blur-md shadow-md">
-              <Plane className="h-4 w-4 rotate-45" />
-            </div>
-          </div>
+            return (
+              <div
+                key={airport.code}
+                onClick={() => setActiveIndex(index)}
+                className={`snap-center shrink-0 w-[240px] rounded-2xl bg-white border p-3 transition-all ${
+                  isSelected ? "border-2 border-[#7c3aed] shadow-md" : "border-slate-200 shadow-xs"
+                }`}
+              >
+                <Link to="/airports/$code" params={{ code: airport.code }} className="block">
+                  <div className="relative h-32 w-full rounded-xl overflow-hidden bg-slate-100">
+                    <img src={cardImage} alt={airport.city} className="h-full w-full object-cover" />
+                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-[#7c3aed] text-white font-mono text-[10px] font-bold">
+                      {airport.code}
+                    </span>
+                  </div>
+                  <div className="pt-2.5">
+                    <h3 className="text-base font-serif font-bold text-slate-900">{airport.city}</h3>
+                    <p className="text-xs text-slate-500 truncate">{airport.airport?.name}</p>
+                  </div>
+                </Link>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Lower Glass Panel */}
-        <div className="mx-3 mt-[-20px] relative z-20 flex h-[240px] flex-col justify-between rounded-[22px] border border-white/10 bg-[#1C252B]/95 p-5 backdrop-blur-xl shadow-xl">
-          {/* Header Row: Country & Live Status */}
-          <div className="flex items-center justify-between">
-            <span
-              className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#38BDAD]"
-              style={mono}
-            >
-              {a.country}
-            </span>
-            <span
-              className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.2em] text-[#38BDAD]"
-              style={mono}
-            >
-              <span className="h-2 w-2 rounded-full bg-[#38BDAD] animate-pulse shadow-[0_0_8px_#38BDAD]" />
-              {statusText}
-            </span>
-          </div>
-
-          {/* City Heading & Airport Name */}
-          <div className="mt-1">
-            <h3
-              className={`font-normal leading-tight text-white tracking-wide font-serif truncate ${
-                a.city.length > 15
-                  ? "text-[20px]"
-                  : a.city.length > 11
-                    ? "text-[24px]"
-                    : a.city.length > 8
-                      ? "text-[27px]"
-                      : "text-[32px]"
+        {/* INDICATOR DOTS */}
+        <div className="flex items-center justify-center gap-2 mt-8">
+          {featuredAirports.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setActiveIndex(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                idx === activeIndex ? "w-8 bg-[#7c3aed]" : "w-2 bg-slate-300 hover:bg-slate-400"
               }`}
-              style={display}
-              title={a.city}
-            >
-              {a.city}
-            </h3>
-            <div className="mt-0.5 line-clamp-1 text-[11px] font-medium text-white/75">
-              {a.airport.name}
-            </div>
-          </div>
-
-          {/* Facility & Terminal Two-Column Grid */}
-          <div className="mt-2 grid grid-cols-2 gap-3 border-t border-white/10 pt-3">
-            <div>
-              <div
-                className="text-[8px] font-bold uppercase tracking-widest text-white/40"
-                style={mono}
-              >
-                FACILITY
-              </div>
-              <div className="mt-0.5 flex items-center gap-1.5 text-[11px] font-medium text-white">
-                <ShieldCheck className="h-3.5 w-3.5 text-[#38BDAD] shrink-0" />
-                <span>Secure Airside</span>
-              </div>
-            </div>
-            <div>
-              <div
-                className="text-[8px] font-bold uppercase tracking-widest text-white/40"
-                style={mono}
-              >
-                TERMINAL
-              </div>
-              <div className="mt-0.5 text-[11px] font-medium text-white">{cleanTerminal}</div>
-            </div>
-          </div>
-
-          {/* Tagline / City Highlight */}
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] italic text-[#38BDAD] font-medium line-clamp-1">
-            <Sparkles className="h-3.5 w-3.5 shrink-0 text-[#38BDAD]" />
-            <span>{a.tagline}</span>
-          </div>
+            />
+          ))}
         </div>
-
-        {/* Bottom CTA Button Container */}
-        <div
-          className="mt-2 flex w-full items-center justify-center gap-2 border-t border-white/10 py-3.5 text-[10px] font-bold uppercase tracking-[0.22em] text-white/80 group-hover:text-[#38BDAD] transition-colors"
-          style={mono}
-        >
-          <span>EXPLORE DESTINATION</span>
-          <ArrowUpRight className="h-4 w-4 text-[#38BDAD] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-        </div>
-      </Link>
-    </motion.div>
+      </div>
+    </section>
   );
 }

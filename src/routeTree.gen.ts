@@ -25,6 +25,11 @@ import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authentic
 import { Route as AirportsCodeRouteImport } from './routes/airports.$code'
 import { Route as ApiProcessQueueRouteImport } from './routes/api.process-queue'
 import { Route as ServicesGuideRouteImport } from './routes/services.guide'
+import { Route as SolutionsAviationRouteImport } from './routes/solutions.aviation'
+import { Route as SolutionsCargoRouteImport } from './routes/solutions.cargo'
+import { Route as SolutionsConciergeRouteImport } from './routes/solutions.concierge'
+import { Route as SolutionsMedicalRouteImport } from './routes/solutions.medical'
+import { Route as SolutionsTravelRouteImport } from './routes/solutions.travel'
 import { Route as VerifyIdRouteImport } from './routes/verify.$id'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
@@ -136,6 +141,31 @@ const ApiProcessQueueRoute = ApiProcessQueueRouteImport.update({
 const ServicesGuideRoute = ServicesGuideRouteImport.update({
   id: '/services/guide',
   path: '/services/guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolutionsAviationRoute = SolutionsAviationRouteImport.update({
+  id: '/solutions/aviation',
+  path: '/solutions/aviation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolutionsCargoRoute = SolutionsCargoRouteImport.update({
+  id: '/solutions/cargo',
+  path: '/solutions/cargo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolutionsConciergeRoute = SolutionsConciergeRouteImport.update({
+  id: '/solutions/concierge',
+  path: '/solutions/concierge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolutionsMedicalRoute = SolutionsMedicalRouteImport.update({
+  id: '/solutions/medical',
+  path: '/solutions/medical',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolutionsTravelRoute = SolutionsTravelRouteImport.update({
+  id: '/solutions/travel',
+  path: '/solutions/travel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerifyIdRoute = VerifyIdRouteImport.update({
@@ -348,6 +378,11 @@ export interface FileRoutesByFullPath {
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
   '/services/guide': typeof ServicesGuideRoute
+  '/solutions/aviation': typeof SolutionsAviationRoute
+  '/solutions/cargo': typeof SolutionsCargoRoute
+  '/solutions/concierge': typeof SolutionsConciergeRoute
+  '/solutions/medical': typeof SolutionsMedicalRoute
+  '/solutions/travel': typeof SolutionsTravelRoute
   '/verify/$id': typeof VerifyIdRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
@@ -396,6 +431,11 @@ export interface FileRoutesByTo {
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
   '/services/guide': typeof ServicesGuideRoute
+  '/solutions/aviation': typeof SolutionsAviationRoute
+  '/solutions/cargo': typeof SolutionsCargoRoute
+  '/solutions/concierge': typeof SolutionsConciergeRoute
+  '/solutions/medical': typeof SolutionsMedicalRoute
+  '/solutions/travel': typeof SolutionsTravelRoute
   '/verify/$id': typeof VerifyIdRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
@@ -448,6 +488,11 @@ export interface FileRoutesById {
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
   '/services/guide': typeof ServicesGuideRoute
+  '/solutions/aviation': typeof SolutionsAviationRoute
+  '/solutions/cargo': typeof SolutionsCargoRoute
+  '/solutions/concierge': typeof SolutionsConciergeRoute
+  '/solutions/medical': typeof SolutionsMedicalRoute
+  '/solutions/travel': typeof SolutionsTravelRoute
   '/verify/$id': typeof VerifyIdRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
@@ -500,6 +545,11 @@ export interface FileRouteTypes {
     | '/airports/$code'
     | '/api/process-queue'
     | '/services/guide'
+    | '/solutions/aviation'
+    | '/solutions/cargo'
+    | '/solutions/concierge'
+    | '/solutions/medical'
+    | '/solutions/travel'
     | '/verify/$id'
     | '/admin/analytics'
     | '/admin/audit-logs'
@@ -548,6 +598,11 @@ export interface FileRouteTypes {
     | '/airports/$code'
     | '/api/process-queue'
     | '/services/guide'
+    | '/solutions/aviation'
+    | '/solutions/cargo'
+    | '/solutions/concierge'
+    | '/solutions/medical'
+    | '/solutions/travel'
     | '/verify/$id'
     | '/admin/analytics'
     | '/admin/audit-logs'
@@ -599,6 +654,11 @@ export interface FileRouteTypes {
     | '/airports/$code'
     | '/api/process-queue'
     | '/services/guide'
+    | '/solutions/aviation'
+    | '/solutions/cargo'
+    | '/solutions/concierge'
+    | '/solutions/medical'
+    | '/solutions/travel'
     | '/verify/$id'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/audit-logs'
@@ -647,6 +707,11 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiProcessQueueRoute: typeof ApiProcessQueueRoute
   ServicesGuideRoute: typeof ServicesGuideRoute
+  SolutionsAviationRoute: typeof SolutionsAviationRoute
+  SolutionsCargoRoute: typeof SolutionsCargoRoute
+  SolutionsConciergeRoute: typeof SolutionsConciergeRoute
+  SolutionsMedicalRoute: typeof SolutionsMedicalRoute
+  SolutionsTravelRoute: typeof SolutionsTravelRoute
   VerifyIdRoute: typeof VerifyIdRoute
   ApiFlightValidateRoute: typeof ApiFlightValidateRoute
 }
@@ -763,6 +828,41 @@ declare module '@tanstack/react-router' {
       path: '/services/guide'
       fullPath: '/services/guide'
       preLoaderRoute: typeof ServicesGuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions/aviation': {
+      id: '/solutions/aviation'
+      path: '/solutions/aviation'
+      fullPath: '/solutions/aviation'
+      preLoaderRoute: typeof SolutionsAviationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions/cargo': {
+      id: '/solutions/cargo'
+      path: '/solutions/cargo'
+      fullPath: '/solutions/cargo'
+      preLoaderRoute: typeof SolutionsCargoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions/concierge': {
+      id: '/solutions/concierge'
+      path: '/solutions/concierge'
+      fullPath: '/solutions/concierge'
+      preLoaderRoute: typeof SolutionsConciergeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions/medical': {
+      id: '/solutions/medical'
+      path: '/solutions/medical'
+      fullPath: '/solutions/medical'
+      preLoaderRoute: typeof SolutionsMedicalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions/travel': {
+      id: '/solutions/travel'
+      path: '/solutions/travel'
+      fullPath: '/solutions/travel'
+      preLoaderRoute: typeof SolutionsTravelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verify/$id': {
@@ -1136,6 +1236,11 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiProcessQueueRoute: ApiProcessQueueRoute,
   ServicesGuideRoute: ServicesGuideRoute,
+  SolutionsAviationRoute: SolutionsAviationRoute,
+  SolutionsCargoRoute: SolutionsCargoRoute,
+  SolutionsConciergeRoute: SolutionsConciergeRoute,
+  SolutionsMedicalRoute: SolutionsMedicalRoute,
+  SolutionsTravelRoute: SolutionsTravelRoute,
   VerifyIdRoute: VerifyIdRoute,
   ApiFlightValidateRoute: ApiFlightValidateRoute,
 }

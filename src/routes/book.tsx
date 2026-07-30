@@ -14,6 +14,12 @@ const bookSearchSchema = z.object({
   pax_children: z.number().optional().catch(0),
   pax_infants: z.number().optional().catch(0),
   notes: z.string().optional().catch(""),
+  service_id: z.string().optional().catch(""),
+  package_id: z.string().optional().catch(""),
+  booking_mode: z.string().optional().catch(""),
+  mode: z.string().optional().catch(""),
+  sub: z.string().optional().catch(""),
+  flight_number: z.string().optional().catch(""),
 });
 
 export const Route = createFileRoute("/book")({
@@ -42,13 +48,17 @@ export const Route = createFileRoute("/book")({
   component: BookRouteComponent,
 });
 
+import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
+
 function BookRouteComponent() {
   const searchParams = Route.useSearch();
   return (
-    <AppErrorBoundary name="BookingView">
-      <Suspense fallback={<BookingEngineSkeleton />}>
-        <BookingView searchParams={searchParams} />
-      </Suspense>
-    </AppErrorBoundary>
+    <PageJourneyWrapper category="Book Now" categoryHref="/book" showCTA={false} showRelated={false}>
+      <AppErrorBoundary name="BookingView">
+        <Suspense fallback={<BookingEngineSkeleton />}>
+          <BookingView searchParams={searchParams} />
+        </Suspense>
+      </AppErrorBoundary>
+    </PageJourneyWrapper>
   );
 }

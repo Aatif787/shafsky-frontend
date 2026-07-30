@@ -32,6 +32,8 @@ import mobHydAir from "@/assets/airports/hyd/Mob-Hyd-air.png";
 import dekLkoAir from "@/assets/airports/lko/Dek-lko-air.png";
 import mobLkoAir from "@/assets/airports/lko/Mob-lko-air.png";
 
+import { getAirportRegistryEntry } from "./airportRegistry";
+
 export type Facility = { name: string; status: "live" | "24x7" | "limited" };
 export type Attraction = {
   name: string;
@@ -238,7 +240,7 @@ const getPhotoUrl = (q: string, size: string) => {
   // If PHOTO_MAP matched an asset
   if (id) {
     if (!id.startsWith("photo-")) return id;
-    return `https://images.unsplash.com/${id}?auto=format&fit=crop&${size}&q=80`;
+    return `https://images.unsplash.com/${id}?auto=format&fit=crop&${size}&q=95`;
   }
 
   // Fallback to deterministic local asset based on query string hash
@@ -250,8 +252,8 @@ const getPhotoUrl = (q: string, size: string) => {
   return LOCAL_ASSETS_LIST[index];
 };
 
-const u = (q: string) => getPhotoUrl(q, "w=1600&h=1000");
-const us = (q: string) => getPhotoUrl(q, "w=800&h=600");
+const u = (q: string) => getPhotoUrl(q, "w=3840&h=2160");
+const us = (q: string) => getPhotoUrl(q, "w=1920&h=1080");
 
 const baseFacilities: Facility[] = [
   { name: "WiFi", status: "live" },
@@ -1100,6 +1102,96 @@ export const AIRPORTS: Airport[] = [
       ["Dassam Falls", "Dassam Falls", "Scenic cascade where the Kanchi River plunges 44 meters."]
     ]
   }),
+  ...buildCity({
+    code: "DXB",
+    icao: "OMDB",
+    city: "Dubai",
+    landmark: "Burj Khalifa",
+    tagline: "City of Superlatives",
+    q1: "Burj Khalifa Dubai",
+    q2: "Museum of the Future",
+    q3: "Dubai Frame",
+    airportName: "Dubai International Airport",
+    terminals: "3 (T1, T2, T3)",
+    annual: "87M",
+    attr: [
+      ["Burj Khalifa", "Burj Khalifa", "World's tallest building, 828-meter skyscraper icon."],
+      ["Museum of the Future", "Museum of the Future", "Torus-shaped architectural marvel of calligraphy."],
+      ["Dubai Mall & Fountain", "Dubai Mall", "World's largest shopping and entertainment destination."]
+    ]
+  }),
+  ...buildCity({
+    code: "SIN",
+    icao: "WSSS",
+    city: "Singapore",
+    landmark: "Jewel Changi",
+    tagline: "World's Best Airport Hub",
+    q1: "Jewel Changi Singapore",
+    q2: "Marina Bay Sands",
+    q3: "Gardens by the Bay",
+    airportName: "Singapore Changi Airport",
+    terminals: "4 (T1, T2, T3, T4 + Jewel)",
+    annual: "68M",
+    attr: [
+      ["Jewel Changi & Rain Vortex", "Jewel Changi Rain Vortex", "7-storey indoor waterfall and lush canopy park."],
+      ["Marina Bay Sands", "Marina Bay Sands Singapore", "Iconic triple-tower resort with infinity pool."],
+      ["Gardens by the Bay", "Gardens by the Bay", "Futuristic Supertree Grove and Cloud Forest dome."]
+    ]
+  }),
+  ...buildCity({
+    code: "LHR",
+    icao: "EGLL",
+    city: "London Heathrow",
+    landmark: "Big Ben & Westminster",
+    tagline: "Europe's Busiest Gateway",
+    q1: "Big Ben London",
+    q2: "Tower Bridge London",
+    q3: "London Eye",
+    airportName: "London Heathrow Airport",
+    terminals: "4 (T2, T3, T4, T5)",
+    annual: "79M",
+    attr: [
+      ["Big Ben & Parliament", "Big Ben London", "Iconic Elizabeth Tower and Palace of Westminster."],
+      ["Tower Bridge", "Tower Bridge London", "Victorian suspension bridge over the River Thames."],
+      ["London Eye", "London Eye", "135-meter giant observation wheel on the South Bank."]
+    ]
+  }),
+  ...buildCity({
+    code: "JFK",
+    icao: "KJFK",
+    city: "New York JFK",
+    landmark: "Statue of Liberty",
+    tagline: "The Big Apple Gateway",
+    q1: "Statue of Liberty New York",
+    q2: "Times Square",
+    q3: "Empire State Building",
+    airportName: "John F. Kennedy International Airport",
+    terminals: "6 (T1, T4, T5, T7, T8)",
+    annual: "62M",
+    attr: [
+      ["Statue of Liberty", "Statue of Liberty", "Iconic colossal neoclassical sculpture on Liberty Island."],
+      ["Times Square", "Times Square New York", "Bustling commercial intersection lit by neon billboards."],
+      ["Empire State Building", "Empire State Building", "102-story Art Deco skyscraper in Midtown Manhattan."]
+    ]
+  }),
+  ...buildCity({
+    code: "PNQ",
+    icao: "VAPO",
+    city: "Pune",
+    landmark: "Shaniwar Wada",
+    tagline: "Cultural Capital of Maharashtra",
+    q1: "Shaniwar Wada Pune",
+    q2: "Aga Khan Palace",
+    q3: "Sinhagad Fort",
+    airportName: "Pune International Airport",
+    terminals: "2",
+    annual: "9.0M",
+    attr: [
+      ["Shaniwar Wada", "Shaniwar Wada", "18th-century Maratha Peshwa fortification seat."],
+      ["Aga Khan Palace", "Aga Khan Palace Pune", "Historic Italianate palace & Mahatma Gandhi memorial."],
+      ["Sinhagad Fort", "Sinhagad Fort", "Ancient hill fortress overlooking the Western Ghats."]
+    ]
+  }),
 ];
 
 type CityArgs = {
@@ -1118,19 +1210,36 @@ type CityArgs = {
 };
 
 function buildCity(a: CityArgs): Airport[] {
+  const isSIN = a.code === "SIN";
+  const isLHR = a.code === "LHR";
+  const isJFK = a.code === "JFK";
+  const isDXB = a.code === "DXB";
+
+  const country = isSIN ? "Singapore" : isLHR ? "United Kingdom" : isJFK ? "United States" : isDXB ? "United Arab Emirates" : "India";
+  const countryCode = isSIN ? "SG" : isLHR ? "GB" : isJFK ? "US" : isDXB ? "AE" : "IN";
+  const timezone = isSIN ? "Asia/Singapore" : isLHR ? "Europe/London" : isJFK ? "America/New_York" : isDXB ? "Asia/Dubai" : "Asia/Kolkata";
+  const currency = "INR (₹)";
+
+  const sinCover = "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1920&q=80";
+  const sinSlides = [
+    "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1920&q=80",
+    "https://images.unsplash.com/photo-1565967511849-76a60a516170?auto=format&fit=crop&w=1920&q=80",
+    "https://images.unsplash.com/photo-1508964942454-1a56651d54ac?auto=format&fit=crop&w=1920&q=80",
+  ];
+
   return [
     {
       code: a.code,
       icao: a.icao,
       city: a.city,
-      country: "India",
-      countryCode: "IN",
+      country,
+      countryCode,
       landmark: a.landmark,
       tagline: a.tagline,
-      timezone: "Asia/Kolkata",
-      cover: u(a.q1),
-      slideshow: [u(a.q1), u(a.q2), u(a.q3), u(a.city + " skyline")],
-      gallery: [
+      timezone,
+      cover: isSIN ? sinCover : u(a.q1),
+      slideshow: isSIN ? sinSlides : [u(a.q1), u(a.q2), u(a.q3), u(a.city + " skyline")],
+      gallery: isSIN ? sinSlides : [
         us(a.q1),
         us(a.q2),
         us(a.q3),
@@ -1140,29 +1249,29 @@ function buildCity(a: CityArgs): Airport[] {
       ],
       videoId: "jfKfPfyJRdk",
       about: `${a.city} blends heritage, commerce and modern aviation infrastructure — a signature stop on the Shafsky network.`,
-      bestTime: "October – March",
-      languages: "Regional + Hindi + English",
-      currency: "INR (₹)",
+      bestTime: isSIN ? "Year-round" : "October – March",
+      languages: isSIN ? "English + Malay + Mandarin + Tamil" : "Regional + Hindi + English",
+      currency,
       business: "Trade, services, manufacturing",
       tourism: a.landmark + " and surrounding heritage",
       climate: "Tropical to subtropical",
       safety: "Safe for travellers with standard precautions.",
-      emergency: "Police 100 · Ambulance 102",
+      emergency: a.code === "DXB" ? "Police 999 · Ambulance 998" : "Police 100 · Ambulance 102",
       visa: "e-Visa available",
       airport: {
         name: a.airportName,
         elevation: "—",
-        runways: "1",
-        operator: "Airports Authority of India / Concessionaire",
+        runways: a.code === "DXB" ? "2" : "1",
+        operator: a.code === "DXB" ? "Dubai Airports" : "Airports Authority of India / Concessionaire",
         type: "International",
-        domestic: "60+ daily",
-        intl: "10+ weekly",
+        domestic: a.code === "DXB" ? "—" : "60+ daily",
+        intl: a.code === "DXB" ? "1,200+ daily" : "10+ weekly",
         terminals: a.terminals,
-        capacity: "—",
+        capacity: a.code === "DXB" ? "90M pax/yr" : "—",
         annual: a.annual,
-        cargo: "—",
-        website: "aai.aero",
-        contact: "+91 124 337 6000",
+        cargo: a.code === "DXB" ? "2.6M MT" : "—",
+        website: a.code === "DXB" ? "dubaiairports.ae" : "aai.aero",
+        contact: a.code === "DXB" ? "+971 4 224 5555" : "+91 124 337 6000",
       },
       attractions: a.attr.map(([n, q, d]) => ({
         name: n,
@@ -1171,22 +1280,27 @@ function buildCity(a: CityArgs): Airport[] {
         distance: "12 km",
         travel: "30 min",
         hours: "06:00 – 18:00",
-        fee: "₹50",
+        fee: "Standard",
         photo: "Golden hour exterior",
         maps: `https://maps.google.com/?q=${encodeURIComponent(n + " " + a.city)}`,
       })),
       facilities: baseFacilities,
       weather: {
-        temp: "29°C",
-        humidity: "60%",
-        visibility: "8 km",
-        wind: "12 km/h",
+        temp: a.code === "DXB" ? "34°C" : "29°C",
+        humidity: a.code === "DXB" ? "45%" : "60%",
+        visibility: a.code === "DXB" ? "10 km" : "8 km",
+        wind: a.code === "DXB" ? "14 km/h" : "12 km/h",
         aqi: "Moderate",
-        sunrise: "05:55",
-        sunset: "18:40",
+        sunrise: a.code === "DXB" ? "05:45" : "05:55",
+        sunset: a.code === "DXB" ? "19:05" : "18:40",
         flying: "Excellent",
       },
-      transport: [
+      transport: a.code === "DXB" ? [
+        { mode: "Dubai Metro", fare: "AED 8", time: "25 min to Downtown", availability: "05:00 – 24:00" },
+        { mode: "Airport Taxi", fare: "AED 60", time: "20 min", availability: "24×7" },
+        { mode: "Uber Black", fare: "AED 120", time: "20 min", availability: "24×7" },
+        { mode: "Chauffeur Limousine", fare: "AED 350", time: "On demand", availability: "24×7" },
+      ] : [
         { mode: "Taxi", fare: "₹450", time: "30 min", availability: "24×7" },
         { mode: "Uber / Ola", fare: "₹360", time: "30 min", availability: "24×7" },
         { mode: "Car Rental", fare: "₹2,500/day", time: "On demand", availability: "24×7" },
@@ -1196,64 +1310,26 @@ function buildCity(a: CityArgs): Airport[] {
       ],
       hotels: [
         {
-          name: "Taj " + a.city,
+          name: a.code === "DXB" ? "Burj Al Arab Jumeirah" : "Taj " + a.city,
           stars: 5,
-          distance: "10 km",
-          price: "₹14,000+",
-          img: us("taj hotel " + a.city),
+          distance: a.code === "DXB" ? "25 km" : "10 km",
+          price: a.code === "DXB" ? "AED 4,500+" : "₹14,000+",
+          img: us(a.code === "DXB" ? "burj al arab" : "taj hotel " + a.city),
         },
         {
-          name: "ITC " + a.city,
+          name: a.code === "DXB" ? "Armani Hotel Dubai" : "ITC " + a.city,
           stars: 5,
-          distance: "12 km",
-          price: "₹13,500+",
-          img: us("itc hotel"),
-        },
-        {
-          name: "Marriott " + a.city,
-          stars: 5,
-          distance: "9 km",
-          price: "₹12,800+",
-          img: us("marriott hotel"),
-        },
-        {
-          name: "Radisson Blu",
-          stars: 5,
-          distance: "8 km",
-          price: "₹11,000+",
-          img: us("radisson hotel"),
+          distance: a.code === "DXB" ? "14 km" : "12 km",
+          price: a.code === "DXB" ? "AED 2,200+" : "₹13,500+",
+          img: us(a.code === "DXB" ? "armani hotel dubai" : "itc hotel"),
         },
       ],
       experiences: [
         {
-          kind: "Food",
-          title: a.city + " Heritage Kitchen",
-          img: us(a.city + " food"),
-          note: "Regional thali",
-        },
-        {
-          kind: "Shopping",
-          title: a.city + " Bazaar",
-          img: us(a.city + " market"),
-          note: "Crafts + textiles",
-        },
-        {
-          kind: "Culture",
-          title: "Heritage Walk",
-          img: us(a.city + " heritage"),
-          note: "Guided morning tour",
-        },
-        {
-          kind: "Nightlife",
-          title: "Skyline Lounge",
+          kind: "Luxury",
+          title: "Sky Lounge",
           img: us(a.city + " rooftop"),
-          note: "Cocktails + views",
-        },
-        {
-          kind: "Museums",
-          title: "City Museum",
-          img: us(a.city + " museum"),
-          note: "Cultural artefacts",
+          note: "Panoramic skyline views",
         },
       ],
       faqs: baseFAQ,
@@ -1263,5 +1339,357 @@ function buildCity(a: CityArgs): Airport[] {
 }
 
 export function getAirport(code: string) {
-  return AIRPORTS.find((a) => a.code === code.toUpperCase());
+  return AIRPORTS.find((a) => a.code.toUpperCase() === code.toUpperCase());
 }
+
+export interface AirportPackage {
+  id: string;
+  title: string;
+  desc: string;
+  price: number;
+  duration?: string;
+  isRecommended?: boolean;
+  includedServices?: string[];
+  highlights?: string[];
+}
+
+export interface AirportService {
+  id: string;
+  title: string;
+  desc: string;
+  type: "package" | "direct";
+  price?: number;
+  packages?: AirportPackage[];
+}
+
+export function getAirportServices(airportCode: string): AirportService[] {
+  const code = (airportCode || "DEL").toUpperCase().trim();
+  const airport = getAirport(code);
+
+  // 1. Dubai (DXB) Dynamic Service Catalog
+  if (code === "DXB") {
+    return [
+      {
+        id: "meet_greet",
+        title: "Meet & Greet",
+        desc: "Personalized host greeting at aerobridge, electric buggy transfer across T3, and expedited clearance.",
+        type: "package",
+        packages: [
+          {
+            id: "dxb_silver",
+            title: "Silver Ahlan Escort",
+            desc: "Marhaba aerobridge host greeting, dedicated baggage porter, and express passport control.",
+            price: 7500,
+            duration: "Up to 2 Hours",
+            isRecommended: false,
+            includedServices: [
+              "Marhaba Aerobridge Greeting",
+              "Dedicated Baggage Porterage",
+              "Fast-Track Passport Control",
+              "Curbside Transport Handoff",
+            ],
+            highlights: ["Terminal 3 Express", "Marhaba Porterage"],
+          },
+          {
+            id: "dxb_gold",
+            title: "Gold Ahlan VIP",
+            desc: "Ahlan VIP Escort, electric airside buggy transport, Ahlan Lounge access with gourmet buffet, and priority clearance.",
+            price: 14500,
+            duration: "Up to 3 Hours",
+            isRecommended: true,
+            includedServices: [
+              "Ahlan VIP Escort Host",
+              "Electric Airside Buggy Transport",
+              "Ahlan Lounge Access & Gourmet Buffet",
+              "Priority Passport & Customs Clearance",
+              "Duty Free Shopping Escort",
+            ],
+            highlights: ["Most Popular Choice", "Airside Buggy Transport", "Ahlan VIP Lounge Suite"],
+          },
+          {
+            id: "dxb_elite",
+            title: "Elite Al Majlis VVIP",
+            desc: "Al Majlis Private VIP Terminal Suite, private tarmac limousine transfer, dedicated personal butler, and in-suite customs.",
+            price: 24500,
+            duration: "Unlimited Transit",
+            isRecommended: false,
+            includedServices: [
+              "Al Majlis Private VIP Terminal Suite",
+              "Private Limousine Tarmac Transfer",
+              "Dedicated Personal Butler & Protocol Officer",
+              "Gourmet In-Suite Dining & Shower Facilities",
+              "Full In-Suite Passport & Customs Processing",
+            ],
+            highlights: ["Al Majlis VIP Terminal", "Private Limousine Tarmac", "In-Suite Passport Clearance"],
+          },
+        ],
+      },
+      {
+        id: "lounge",
+        title: "VIP Lounge",
+        desc: "Access to Marhaba and Ahlan VIP Lounges with fine dining, private quiet rooms, and shower suites.",
+        type: "direct",
+        price: 5200,
+      },
+      {
+        id: "buggy",
+        title: "Buggy Service",
+        desc: "Dedicated chauffeured electric airside buggy transport across concourses and gates.",
+        type: "direct",
+        price: 3200,
+      },
+      {
+        id: "fast_track",
+        title: "Fast Track",
+        desc: "Express fast-track immigration and security lane clearance at Dubai International.",
+        type: "direct",
+        price: 4100,
+      },
+    ];
+  }
+
+  // 2. Ahmedabad (AMD) Dynamic Service Catalog
+  if (code === "AMD") {
+    return [
+      {
+        id: "meet_greet",
+        title: "Meet & Greet",
+        desc: "Dedicated host escort, baggage porter assistance, and expedited terminal arrival guidance.",
+        type: "package",
+        packages: [
+          {
+            id: "amd_gold",
+            title: "Gold Concierge",
+            desc: "Uniformed terminal host, baggage porter assistance, and curbside executive chauffeur handoff.",
+            price: 6500,
+            duration: "Up to 2 Hours",
+            isRecommended: false,
+            includedServices: [
+              "Terminal Host Greeting",
+              "Dedicated Baggage Porter",
+              "Express Clearance Guidance",
+              "Executive Chauffeur Handoff",
+            ],
+            highlights: ["Dedicated Terminal Escort", "Express Arrival Handoff"],
+          },
+          {
+            id: "amd_elite",
+            title: "Elite VIP Sanctuary",
+            desc: "VIP Escort Host, Plaza Premium Lounge access with hot buffet, dedicated butler, and executive tarmac sedan.",
+            price: 11500,
+            duration: "Until Departure",
+            isRecommended: true,
+            includedServices: [
+              "VIP Escort Host",
+              "Plaza Premium Lounge Access & Dining",
+              "Dedicated Butler Assistance",
+              "Executive Tarmac Vehicle Transfer",
+              "Unlimited Baggage Assistance",
+            ],
+            highlights: ["Most Popular Choice", "VIP Lounge Sanctuary", "Executive Tarmac Transfer"],
+          },
+        ],
+      },
+      {
+        id: "transfer",
+        title: "Transportation",
+        desc: "Chauffeured luxury executive vehicle pickup from Sardar Vallabhbhai Patel airport.",
+        type: "direct",
+        price: 2800,
+      },
+    ];
+  }
+
+  // 3. Delhi (DEL) Dynamic Service Catalog
+  if (code === "DEL") {
+    return [
+      {
+        id: "meet_greet",
+        title: "Meet & Greet",
+        desc: "Personalized host escort from aerobridge, porter assistance, and fast-track clearance.",
+        type: "package",
+        packages: [
+          {
+            id: "del_silver",
+            title: "Silver Concierge",
+            desc: "Aerobridge host welcome, dedicated baggage porterage, and expedited security escort.",
+            price: 5500,
+            duration: "Up to 2 Hours",
+            isRecommended: false,
+            includedServices: [
+              "Aerobridge Host Welcome",
+              "Dedicated Baggage Porterage",
+              "Fast Track Security Escort",
+              "Curbside Vehicle Handoff",
+            ],
+            highlights: ["Fast-Track Terminal Escort", "Uniformed Porter Service"],
+          },
+          {
+            id: "del_gold",
+            title: "Gold VIP Escort",
+            desc: "Aerobridge host welcome, dedicated porter, diplomatic fast-track, Encalm VIP Lounge access, and electric buggy.",
+            price: 9800,
+            duration: "Up to 3 Hours",
+            isRecommended: true,
+            includedServices: [
+              "Aerobridge Host Welcome",
+              "Dedicated Baggage Porterage",
+              "Diplomatic Fast Track Clearance",
+              "Encalm VIP Lounge Suite Access",
+              "Electric Airside Buggy Escort",
+            ],
+            highlights: ["Most Popular Choice", "Encalm Lounge Sanctuary", "Diplomatic Passport Control", "Airside Buggy"],
+          },
+          {
+            id: "del_elite",
+            title: "Elite VVIP Tarmac",
+            desc: "Diplomatic protocol officer, unlimited porterage, private Maybach tarmac transfer, Encalm Privé VVIP suite.",
+            price: 16500,
+            duration: "Until Departure",
+            isRecommended: false,
+            includedServices: [
+              "Personal Diplomatic Protocol Officer",
+              "Unlimited Baggage Porterage",
+              "Private Maybach Tarmac Sedan Transfer",
+              "Encalm Privé VVIP Private Suite",
+              "Full Flight Delay Monitoring & Baggage Retagging",
+            ],
+            highlights: ["VVIP Tarmac Maybach Sedan", "Encalm Privé Private Suite", "Dedicated Protocol Officer"],
+          },
+        ],
+      },
+      {
+        id: "lounge",
+        title: "Lounge",
+        desc: "Access to T3 Encalm Lounge & Lounge Suites with chef-curated dining and relaxation.",
+        type: "direct",
+        price: 4500,
+      },
+      {
+        id: "fast_track",
+        title: "Fast Track",
+        desc: "Diplomatic express queue bypass through security and immigration checkpoints.",
+        type: "direct",
+        price: 3500,
+      },
+      {
+        id: "transfer",
+        title: "Transportation",
+        desc: "Chauffeured Mercedes-Maybach & BMW 7 Series airport transfer to Delhi NCR.",
+        type: "direct",
+        price: 4200,
+      },
+    ];
+  }
+
+  // 4. Dynamic Fallback derived from airport metadata & facilities
+  const registryEntry = getAirportRegistryEntry(code);
+  const serviceIds = registryEntry?.availableServiceIds || ["meet_greet", "lounge", "fast_track", "transport"];
+
+  const hasLounge = serviceIds.includes("lounge");
+  const isIntl = serviceIds.includes("fast_track");
+  const hasTransfer = serviceIds.includes("transport") || serviceIds.includes("transfer");
+  const hasHotel = serviceIds.includes("hotel");
+
+  const services: AirportService[] = [];
+
+  // Meet & Greet (Package-Based) — Always present
+  services.push({
+    id: "meet_greet",
+    title: "Meet & Greet",
+    desc: "Personalized host escort, express queues bypass, and baggage porter service.",
+    type: "package",
+    packages: [
+      {
+        id: `${code.toLowerCase()}_silver`,
+        title: "Silver Concierge",
+        desc: "Uniformed host greeting, baggage porter assistance, and fast-track terminal guidance.",
+        price: 5000,
+        duration: "Up to 2 Hours",
+        isRecommended: false,
+        includedServices: [
+          "Uniformed Host Greeting",
+          "Dedicated Baggage Porter",
+          "Express Terminal Escort",
+          "Curbside Chauffeur Handoff",
+        ],
+        highlights: ["Terminal Escort", "Porter Service"],
+      },
+      {
+        id: `${code.toLowerCase()}_gold`,
+        title: "Gold VIP Escort",
+        desc: "Aerobridge host welcome, baggage porter, VIP lounge sanctuary access, and fast-track clearance.",
+        price: 9500,
+        duration: "Up to 3 Hours",
+        isRecommended: true,
+        includedServices: [
+          "Aerobridge Host Welcome",
+          "Dedicated Baggage Porter",
+          "VIP Lounge Sanctuary Access",
+          "Fast-Track Passport Control",
+          "Electric Buggy Assistance",
+        ],
+        highlights: ["Most Popular Choice", "VIP Lounge Sanctuary", "Fast Track Clearance"],
+      },
+      {
+        id: `${code.toLowerCase()}_elite`,
+        title: "Elite VVIP Tarmac",
+        desc: "Personal protocol officer, unlimited porterage, private tarmac luxury transfer, and private suite access.",
+        price: 15500,
+        duration: "Until Departure",
+        isRecommended: false,
+        includedServices: [
+          "Personal Protocol Officer",
+          "Unlimited Baggage Assistance",
+          "Private Tarmac Sedan Transfer",
+          "VVIP Private Lounge Suite",
+          "Flight Delay Monitoring",
+        ],
+        highlights: ["VVIP Tarmac Transfer", "Private Suite", "Personal Protocol Officer"],
+      },
+    ],
+  });
+
+  if (hasLounge) {
+    services.push({
+      id: "lounge",
+      title: "Lounge",
+      desc: "Enjoy quiet workspaces, comfortable seating, food buffet, and high-speed Wi-Fi.",
+      type: "direct",
+      price: 4500,
+    });
+  }
+
+  if (isIntl) {
+    services.push({
+      id: "fast_track",
+      title: "Fast Track",
+      desc: "Priority desk processing and documentation clearance assistance upon landing.",
+      type: "direct",
+      price: 3200,
+    });
+  }
+
+  if (hasTransfer) {
+    services.push({
+      id: "transfer",
+      title: "Transportation",
+      desc: "Private luxury chauffeur sedan ride from the terminal curbside to your destination.",
+      type: "direct",
+      price: 3500,
+    });
+  }
+
+  if (hasHotel) {
+    services.push({
+      id: "hotel",
+      title: "Luxury Hotel Handoff",
+      desc: `Direct check-in coordination at 5-star partner hotels.`,
+      type: "direct",
+      price: 12000,
+    });
+  }
+
+  return services;
+}
+

@@ -50,41 +50,40 @@ export class AppErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex min-h-[400px] w-full items-center justify-center p-6 bg-[#06090f] text-white">
-          <div className="max-w-md w-full rounded-2xl border border-red-500/20 bg-[#0d1424] p-8 text-center shadow-2xl space-y-6">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-500/10 border border-red-500/30">
-              <AlertTriangle className="h-7 w-7 text-red-400 animate-pulse" />
+        <div className="flex min-h-[450px] w-full items-center justify-center p-6 bg-[#06090f] text-white">
+          <div className="max-w-lg w-full rounded-[32px] border border-[#c5a059]/40 bg-gradient-to-br from-[#0c1422] to-[#060a12] p-8 sm:p-10 text-center shadow-2xl space-y-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#c5a059]/10 rounded-full blur-2xl pointer-events-none" />
+
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#c5a059]/15 border border-[#c5a059]/40 text-[#c5a059]">
+              <RefreshCw className="h-6 w-6 animate-spin" style={{ animationDuration: "8s" }} />
             </div>
 
-            <div className="space-y-2">
-              <h2 className="text-xl font-bold uppercase tracking-wider text-red-400 font-mono">
-                Component Recovery Required
+            <div className="space-y-2 relative z-10">
+              <span className="px-3 py-1 rounded-full bg-[#c5a059]/20 border border-[#c5a059]/30 text-[#c5a059] text-[10px] font-mono uppercase tracking-[0.25em]">
+                Concierge Auto-Recovery Active
+              </span>
+              <h2 className="text-2xl font-serif text-white font-light pt-2" style={{ fontFamily: "'Fraunces', serif" }}>
+                Session Auto-Recovery
               </h2>
-              <p className="text-xs text-white/60 leading-relaxed">
-                An unforeseen system exception occurred while rendering this section. Our automated recovery handlers have logged the incident.
+              <p className="text-xs text-white/70 leading-relaxed font-sans">
+                Our operational command desk has automatically isolated this view to maintain uninterrupted site navigation. Click below to refresh this component.
               </p>
-              {this.state.error && (
-                <div className="mt-3 overflow-hidden rounded-lg bg-black/40 p-3 text-left border border-white/5">
-                  <p className="text-[11px] font-mono text-red-300/90 truncate">
-                    {this.state.error.name}: {this.state.error.message}
-                  </p>
-                </div>
-              )}
             </div>
 
-            <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3 relative z-10">
               <button
                 onClick={this.handleReset}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-white/10 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-white hover:bg-white/20 transition-all font-mono"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#c5a059] to-[#d4c09d] px-6 py-3 text-xs font-bold uppercase tracking-[0.2em] text-[#081119] shadow-lg hover:scale-105 transition-all font-mono"
               >
-                <RefreshCw className="h-3.5 w-3.5" />
-                <span>Try Again</span>
+                <RefreshCw className="h-4 w-4" />
+                <span>Reload Component</span>
               </button>
+
               <a
                 href="/"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-transparent px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-white/80 hover:bg-white/5 transition-all font-mono"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white hover:bg-white/20 transition-all font-mono border border-white/15"
               >
-                <Home className="h-3.5 w-3.5" />
+                <Home className="h-4 w-4 text-[#c5a059]" />
                 <span>Return Home</span>
               </a>
             </div>

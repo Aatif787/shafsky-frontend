@@ -4,6 +4,22 @@ import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { nitro } from "nitro/vite";
+import fs from "node:fs";
+import path from "node:path";
+
+function fontVerificationPlugin() {
+  return {
+    name: "font-verification-plugin",
+    buildStart() {
+      const fontsDir = path.resolve(process.cwd(), "public/fonts");
+      if (!fs.existsSync(fontsDir)) {
+        console.warn("\x1b[33m%s\x1b[0m", "⚠️ [Font Management Warning] Public fonts directory '/public/fonts/' is missing!");
+        return;
+      }
+      console.log("\x1b[32m%s\x1b[0m", "✓ [Font Management] Font system verified from /public/fonts/.");
+    },
+  };
+}
 
 export default defineConfig({
   server: { port: 5173 },
@@ -21,6 +37,7 @@ export default defineConfig({
     ],
   },
   plugins: [
+    fontVerificationPlugin(),
     tsconfigPaths(),
     tailwindcss(),
     tanstackStart({
@@ -38,4 +55,3 @@ export default defineConfig({
     viteReact(),
   ],
 });
-

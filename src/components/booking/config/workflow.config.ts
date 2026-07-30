@@ -1,0 +1,172 @@
+import { BookingService } from "../types/service.types";
+import { WorkflowMetadata } from "../types/workflow.types";
+
+export const WORKFLOW_CONFIG: Record<BookingService, WorkflowMetadata> = {
+  [BookingService.CHARTER]: {
+    serviceId: BookingService.CHARTER,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Flight Itinerary & Aircraft Category", sub: "Specify origin/destination airports, departure date/time, and aircraft preference.", estTime: "Est. 30 sec", progress: 33 },
+      { stepNumber: 2, title: "Charterer Contact & Review", sub: "Enter lead charterer details and review your private jet quotation request.", estTime: "Est. 30 sec", progress: 66 },
+      { stepNumber: 3, title: "Charter Request Staged", sub: "Your private jet charter quote request is assigned to our flight dispatch team.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Private Jet Quote Request Logged",
+    confirmationSubtitle: "Our flight dispatch desk is staging tail options for your route.",
+    badgeLabel: "Charter Quote Staged",
+  },
+  [BookingService.AIR_AMBULANCE]: {
+    serviceId: BookingService.AIR_AMBULANCE,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Patient Details", sub: "Provide patient condition and count for airborne ICU flight staging.", estTime: "Est. 20 sec", progress: 33 },
+      { stepNumber: 2, title: "Transport Route", sub: "Specify origin hospital/city, receiving facility, and preferred date.", estTime: "Est. 20 sec", progress: 66 },
+      { stepNumber: 3, title: "Contact Details & Review", sub: "Enter emergency contact details and review your air ambulance dispatch request.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Air Ambulance Request Logged",
+    confirmationSubtitle: "Our 24/7 medical flight physician is evaluating fit-to-fly assessment.",
+    badgeLabel: "Medevac Flight Desk Notified",
+  },
+  [BookingService.TRAIN_AMBULANCE]: {
+    serviceId: BookingService.TRAIN_AMBULANCE,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Patient Details", sub: "Provide patient condition and count for mobile train ICU compartment staging.", estTime: "Est. 20 sec", progress: 33 },
+      { stepNumber: 2, title: "Transport Route", sub: "Specify origin railway station/city, destination station, and preferred date.", estTime: "Est. 20 sec", progress: 66 },
+      { stepNumber: 3, title: "Contact Details & Review", sub: "Enter emergency contact details and review your train ambulance dispatch request.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Train Ambulance Reserved",
+    confirmationSubtitle: "Your train ambulance request is logged with our medical rail desk.",
+    badgeLabel: "Train ICU Request Submitted",
+  },
+  [BookingService.HUM]: {
+    serviceId: BookingService.HUM,
+    totalSteps: 2,
+    steps: [
+      { stepNumber: 1, title: "Repatriation Details", sub: "Specify assistance type, origin city, and destination city.", estTime: "Est. 20 sec", progress: 50 },
+      { stepNumber: 2, title: "Contact Details & Review", sub: "Enter family/liaison contact details and review repatriation assistance request.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Repatriation Assistance Active",
+    confirmationSubtitle: "Our repatriation desk is coordinating embassy clearance and airside transport.",
+    badgeLabel: "Repatriation Request Assigned",
+  },
+  [BookingService.CARGO]: {
+    serviceId: BookingService.CARGO,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Cargo Specifications", sub: "Specify commodity type, approximate weight, package count, and description.", estTime: "Est. 30 sec", progress: 33 },
+      { stepNumber: 2, title: "Freight Route & Schedule", sub: "Specify pickup city, destination city, and preferred shipping date.", estTime: "Est. 30 sec", progress: 66 },
+      { stepNumber: 3, title: "Contact Info & Review", sub: "Enter logistics contact details and verify your air freight quotation request.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Air Cargo Request Submitted",
+    confirmationSubtitle: "Your freight quote request is assigned to our air cargo logistics team.",
+    badgeLabel: "Air Cargo Desk Notified",
+  },
+  [BookingService.AVI]: {
+    serviceId: BookingService.AVI,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Pet & Animal Specifications", sub: "Specify animal species, breed, approximate weight, and count.", estTime: "Est. 30 sec", progress: 33 },
+      { stepNumber: 2, title: "Transit Route & Date", sub: "Specify pickup city, destination city, and preferred travel date.", estTime: "Est. 30 sec", progress: 66 },
+      { stepNumber: 3, title: "Owner Contact & Review", sub: "Enter owner contact details and verify your live pet air transit request.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Pet Transport Request Logged",
+    confirmationSubtitle: "Our live animal care specialists are preparing climate-controlled transit arrangements.",
+    badgeLabel: "Pet Transport Desk Assigned",
+  },
+  [BookingService.HOTEL]: {
+    serviceId: BookingService.HOTEL,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Hotel Destination & Schedule", sub: "Select destination, check-in/out dates, headcount, and room preferences.", estTime: "Est. 30 sec", progress: 33 },
+      { stepNumber: 2, title: "Contact Info & Review", sub: "Enter lead guest details and verify your 5-star hotel suite request.", estTime: "Est. 30 sec", progress: 66 },
+      { stepNumber: 3, title: "Hotel Request Confirmed", sub: "Your luxury hotel reservation request is submitted to our VIP concierge desk.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Hotel Suite Request Logged",
+    confirmationSubtitle: "Our travel concierge is confirming room availability with luxury hotel partners.",
+    badgeLabel: "Hotel Concierge Notified",
+  },
+  [BookingService.VISA]: {
+    serviceId: BookingService.VISA,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Visa & Country Selection", sub: "Specify destination country, visa type, expected travel date, and applicant nationality.", estTime: "Est. 30 sec", progress: 33 },
+      { stepNumber: 2, title: "Applicant Contact & Review", sub: "Provide applicant contact info and verify visa document processing requirements.", estTime: "Est. 30 sec", progress: 66 },
+      { stepNumber: 3, title: "Visa Request Submitted", sub: "Your diplomatic visa processing request is assigned to our embassy liaison officer.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Visa Assistance Request Logged",
+    confirmationSubtitle: "Our embassy liaison team is reviewing your visa application documentation.",
+    badgeLabel: "Visa Desk Assigned",
+  },
+  [BookingService.TICKETING]: {
+    serviceId: BookingService.TICKETING,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Flight Routing & Class", sub: "Select trip type, departure/destination cities, travel date, and preferred cabin class.", estTime: "Est. 30 sec", progress: 33 },
+      { stepNumber: 2, title: "Passenger Contact & Review", sub: "Enter lead passenger contact details and review your commercial flight booking request.", estTime: "Est. 30 sec", progress: 66 },
+      { stepNumber: 3, title: "Flight Request Reserved", sub: "Your commercial flight seat request is staged with our airline ticketing desk.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Air Ticketing Request Reserved",
+    confirmationSubtitle: "Our ticketing desk is securing seat inventory for your requested flight itinerary.",
+    badgeLabel: "Airline Ticketing Staged",
+  },
+  [BookingService.MEALS]: {
+    serviceId: BookingService.MEALS,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "In-Flight Catering Preferences", sub: "Choose gourmet meal options, passenger count, travel date, and dietary requirements.", estTime: "Est. 30 sec", progress: 33 },
+      { stepNumber: 2, title: "Contact Info & Review", sub: "Enter guest contact details and confirm your gourmet inflight menu selection.", estTime: "Est. 30 sec", progress: 66 },
+      { stepNumber: 3, title: "Meal Request Staged", sub: "Your inflight gourmet meal order is sent to our executive culinary team.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Gourmet Catering Order Staged",
+    confirmationSubtitle: "Our executive chef team is preparing custom inflight menus for your travel date.",
+    badgeLabel: "Culinary Desk Notified",
+  },
+  [BookingService.TRANSFER]: {
+    serviceId: BookingService.TRANSFER,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Pickup & Drop Locations", sub: "Specify pickup location, destination address, and travel schedule.", estTime: "Est. 30 sec", progress: 33 },
+      { stepNumber: 2, title: "Contact Info & Review", sub: "Enter passenger contact details and review chauffeur transfer request.", estTime: "Est. 30 sec", progress: 66 },
+      { stepNumber: 3, title: "Transfer Booked", sub: "Your luxury chauffeur transfer is assigned to our ground transport fleet.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Chauffeur Transfer Reserved",
+    confirmationSubtitle: "Our ground dispatch desk is assigning a luxury vehicle and executive chauffeur.",
+    badgeLabel: "Chauffeur Fleet Assigned",
+  },
+  [BookingService.FAST_TRACK]: {
+    serviceId: BookingService.FAST_TRACK,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Fast Track Type & Airport", sub: "Select clearance type, airport, and flight schedule.", estTime: "Est. 30 sec", progress: 33 },
+      { stepNumber: 2, title: "Passenger Contact & Review", sub: "Enter passenger contact details and review fast track booking.", estTime: "Est. 30 sec", progress: 66 },
+      { stepNumber: 3, title: "Fast Track Reserved", sub: "Your expedited immigration clearance pass is generated.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Fast Track Clearance Reserved",
+    confirmationSubtitle: "Our airport agent is assigned to meet you at the immigration queue.",
+    badgeLabel: "Fast Track Confirmed",
+  },
+  [BookingService.LOUNGE]: {
+    serviceId: BookingService.LOUNGE,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Lounge Selection & Schedule", sub: "Select airport lounge, access date, entry time, and guest count.", estTime: "Est. 30 sec", progress: 33 },
+      { stepNumber: 2, title: "Guest Contact & Review", sub: "Enter guest contact details and confirm lounge access reservation.", estTime: "Est. 30 sec", progress: 66 },
+      { stepNumber: 3, title: "Lounge Access Reserved", sub: "Your VIP lounge pass is generated.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "VIP Lounge Access Reserved",
+    confirmationSubtitle: "Your digital lounge pass is active for your scheduled travel date.",
+    badgeLabel: "Lounge Pass Active",
+  },
+  [BookingService.MEET_GREET]: {
+    serviceId: BookingService.MEET_GREET,
+    totalSteps: 3,
+    steps: [
+      { stepNumber: 1, title: "Service Package Selection", sub: "Select airport concierge tier and flight details.", estTime: "Est. 30 sec", progress: 33 },
+      { stepNumber: 2, title: "Passenger Contact & Review", sub: "Enter passenger contact details and verify package selection.", estTime: "Est. 30 sec", progress: 66 },
+      { stepNumber: 3, title: "Concierge Booking Confirmed", sub: "Your airport meet & greet agent is assigned.", estTime: "Completed", progress: 100 },
+    ],
+    successTitle: "Meet & Greet Concierge Reserved",
+    confirmationSubtitle: "Our airport greeter is assigned to assist your arrival or departure.",
+    badgeLabel: "Concierge Agent Assigned",
+  },
+};

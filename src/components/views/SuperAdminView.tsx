@@ -288,11 +288,10 @@ export default function SuperAdminView({ userId }: { userId: string }) {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id as any)}
-                    className={`w-full flex items-center gap-3 px-4.5 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${
-                      isActive
+                    className={`w-full flex items-center gap-3 px-4.5 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${isActive
                         ? "bg-[#0d5a6e] text-white shadow-md shadow-[#0d5a6e]/15 translate-x-1"
                         : "text-[#5b6b75] hover:text-[#0d2a36] hover:bg-black/[0.02]"
-                    }`}
+                      }`}
                     style={mono}
                   >
                     <item.icon className="h-4.5 w-4.5 shrink-0" />
@@ -540,11 +539,10 @@ export default function SuperAdminView({ userId }: { userId: string }) {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleToggleCoupon(coupon.id, coupon.is_active)}
-                              className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-lg border transition ${
-                                coupon.is_active
+                              className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-lg border transition ${coupon.is_active
                                   ? "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
                                   : "bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
-                              }`}
+                                }`}
                               style={mono}
                               disabled={isCouponsMigrationRequired}
                             >
@@ -651,13 +649,12 @@ export default function SuperAdminView({ userId }: { userId: string }) {
                           {(user.roles || []).map((role) => (
                             <span
                               key={role}
-                              className={`text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded font-mono ${
-                                role === "super_admin"
+                              className={`text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded font-mono ${role === "super_admin"
                                   ? "bg-red-100 text-red-800"
                                   : role === "admin"
                                     ? "bg-amber-100 text-amber-800"
                                     : "bg-green-100 text-green-800"
-                              }`}
+                                }`}
                             >
                               {role}
                             </span>

@@ -1,4 +1,5 @@
-@import "tailwindcss" source(none);
+@import "../public/fonts/fonts.css";
+@import "tailwindcss";
 @source "../src";
 @import "tw-animate-css";
 
@@ -119,6 +120,103 @@
 }
 
 @layer base {
+/* ─────────────────────────────────────────────────────────────────────────────
+ * PREMIUM LUXURY ANIMATIONS & GPU UTILITIES (60 FPS Hardware Accelerated)
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+/* 1. Animated Gradient Border */
+@keyframes borderGlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-gradient-border {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.animated-gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(120deg, rgba(95,181,173,0.4), rgba(197,160,89,0.4), rgba(13,90,110,0.4));
+  background-size: 200% 200%;
+  animation: borderGlow 6s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* 2. Glassmorphism Surface */
+.glass-surface-luxury {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.dark .glass-surface-luxury,
+.glass-surface-dark {
+  background: rgba(10, 15, 24, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 3. Skeleton Shimmer Loading */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.shimmer-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(229, 223, 213, 0.5);
+}
+
+.shimmer-skeleton::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.3) 20%,
+    rgba(255, 255, 255, 0.6) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2s infinite;
+  content: "";
+}
+
+/* 4. GPU Performance Optimization & Reduced Motion Safety */
+.transform-gpu-smooth {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
   * {
     border-color: var(--color-border);
   }
@@ -181,3 +279,236 @@ html {
   );
   background-size: 200% 100%;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   SHAFSKY AVIATION — LIGHT LUXURY DESIGN SYSTEM TOKENS
+   Palette: Cream / Off-White, White, Lime Green, Violet, Orange
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Brand palette — Light luxury */
+  --shaf-ink: #0f172a;
+  --shaf-muted: #64748b;
+  --shaf-lime: #84cc16;
+  --shaf-lime-dark: #65a30d;
+  --shaf-violet: #7c3aed;
+  --shaf-violet-dark: #6d28d9;
+  --shaf-violet-light: #f5f3ff;
+  --shaf-orange: #f97316;
+  --shaf-orange-light: #ffedd5;
+  --shaf-gold: #7c3aed; /* mapped to luxury violet accent */
+  --shaf-bg: #faf9f5;
+  --shaf-paper: #ffffff;
+  --shaf-line: rgba(15, 23, 42, 0.08);
+
+  /* Spacing scale (8px base) */
+  --shaf-space-1: 4px;
+  --shaf-space-2: 8px;
+  --shaf-space-3: 12px;
+  --shaf-space-4: 16px;
+  --shaf-space-5: 20px;
+  --shaf-space-6: 24px;
+  --shaf-space-8: 32px;
+  --shaf-space-10: 40px;
+  --shaf-space-12: 48px;
+  --shaf-space-16: 64px;
+
+  /* Radii */
+  --shaf-radius: 20px;
+  --shaf-radius-sm: 14px;
+  --shaf-radius-xs: 10px;
+  --shaf-radius-full: 9999px;
+
+  /* Transition */
+  --shaf-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --shaf-duration: 250ms;
+  --shaf-transition: all var(--shaf-duration) var(--shaf-ease);
+
+  /* Shadows – Light, airy & warm */
+  --shaf-shadow-sm: 0 2px 8px rgba(124, 58, 237, 0.04), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shaf-shadow-md: 0 8px 24px -4px rgba(124, 58, 237, 0.08), 0 2px 6px rgba(15, 23, 42, 0.03);
+  --shaf-shadow-lg: 0 20px 40px -8px rgba(124, 58, 237, 0.12), 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+body {
+  background-color: #faf9f5 !important;
+  color: #0f172a !important;
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── 2. Glassmorphism & Light Panels ───────────────────────────── */
+.glass-surface-luxury {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow: 0 10px 30px -5px rgba(124, 58, 237, 0.05);
+}
+
+.panel-luxury {
+  background: #ffffff !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: var(--shaf-radius) !important;
+  box-shadow: var(--shaf-shadow-md) !important;
+  transition: var(--shaf-transition) !important;
+}
+
+/* ── 3. Inputs & Textareas — Soft Light Style ────────────────────── */
+.input-luxury,
+.textarea-luxury {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: var(--shaf-radius-sm) !important;
+  outline: none;
+  transition: var(--shaf-transition);
+}
+
+.input-luxury::placeholder,
+.textarea-luxury::placeholder {
+  color: #94a3b8;
+}
+
+.input-luxury:focus,
+.textarea-luxury:focus {
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12), var(--shaf-shadow-sm) !important;
+}
+
+/* Floating Label Form Fields — Soft Light Theme */
+.floating-group {
+  position: relative;
+  width: 100%;
+}
+.floating-input {
+  width: 100%;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 1rem;
+  padding: 1.25rem 1rem 0.5rem 1rem;
+  color: #0f172a !important;
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 250ms ease;
+}
+.floating-input:focus {
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.15) !important;
+  background: #ffffff !important;
+}
+.floating-label {
+  position: absolute;
+  left: 1rem;
+  top: 0.9rem;
+  font-size: 0.75rem;
+  font-family: "JetBrains Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #64748b !important;
+  pointer-events: none;
+  transition: all 200ms ease;
+}
+.floating-input:focus ~ .floating-label,
+.floating-input:not(:placeholder-shown) ~ .floating-label {
+  top: 0.35rem;
+  font-size: 0.625rem;
+  color: #7c3aed !important;
+  font-weight: 700;
+}
+
+/* ── 4. Buttons — Premium Lime / Violet Accent ───────────────────── */
+.btn-primary-luxury {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--shaf-space-2);
+  min-height: 3rem;
+  padding: 0 var(--shaf-space-8);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #0f172a !important;
+  background-color: #84cc16 !important;
+  border: none;
+  border-radius: var(--shaf-radius-sm);
+  cursor: pointer;
+  outline: none;
+  transition: var(--shaf-transition);
+  box-shadow: 0 4px 14px rgba(132, 204, 22, 0.25) !important;
+}
+
+.btn-primary-luxury:hover {
+  background-color: #65a30d !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(101, 163, 13, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+.btn-secondary-luxury {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--shaf-space-2);
+  min-height: 3rem;
+  padding: 0 var(--shaf-space-8);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7c3aed !important;
+  background: #f5f3ff !important;
+  border: 1px solid #ddd6fe !important;
+  border-radius: var(--shaf-radius-sm);
+  cursor: pointer;
+  outline: none;
+  transition: var(--shaf-transition);
+}
+
+.btn-secondary-luxury:hover {
+  background-color: #7c3aed !important;
+  color: #ffffff !important;
+  border-color: #7c3aed !important;
+  transform: translateY(-1px);
+}
+
+/* ── 5. Micro-Interaction & Underline Utilities ──────────────────── */
+.link-hover-underline {
+  position: relative;
+}
+.link-hover-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background-color: #7c3aed;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-hover-underline:hover::after {
+  transform: scaleX(1);
+}
+
+select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+select option:checked {
+  background-color: #f5f3ff !important;
+  color: #7c3aed !important;
+}
+
+
+

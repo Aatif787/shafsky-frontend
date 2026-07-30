@@ -416,17 +416,26 @@ export default function DashboardView({ userId }: { userId: string }) {
 
       const res = await submitBookingFn({
         data: {
+          passenger_name: contactName,
           contact_name: contactName,
+          passenger_email: contactEmail,
           contact_email: contactEmail,
+          passenger_phone: contactPhone,
           contact_phone: contactPhone,
           trip_type: "one_way",
+          origin_code: bkOrigin.trim().toUpperCase(),
           origin: bkOrigin,
+          dest_code: bkDest.trim().toUpperCase(),
           destination: bkDest,
+          departure_time: `${bkDate}T10:00:00Z`,
           depart_date: bkDate,
+          arrival_time: `${bkDate}T12:30:00Z`,
           pax_adults: bkAdults,
           pax_children: bkChildren,
           pax_infants: 0,
           service_type: bkService,
+          total_amount: 18000 * (bkAdults + bkChildren),
+          currency: "INR",
           notes: bkNotes,
           services: [
             {
@@ -480,13 +489,13 @@ export default function DashboardView({ userId }: { userId: string }) {
       const updated = currentPassengers.map((p) =>
         p.id === editingPassengerId
           ? {
-              id: p.id,
-              fullName: psName,
-              nationality: psNat,
-              passportNumber: psPass,
-              passportExpiry: psExp,
-              type: psType,
-            }
+            id: p.id,
+            fullName: psName,
+            nationality: psNat,
+            passportNumber: psPass,
+            passportExpiry: psExp,
+            type: psType,
+          }
           : p,
       );
       saveNotesToDB({ ...notesData, passengers: updated });
@@ -744,11 +753,11 @@ export default function DashboardView({ userId }: { userId: string }) {
               <div className="h-12 w-12 rounded-full bg-[#0d5a6e]/10 border border-[#0d5a6e]/20 flex items-center justify-center text-xl font-bold text-[#0d5a6e]">
                 {fullName
                   ? fullName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .substring(0, 2)
-                      .toUpperCase()
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .substring(0, 2)
+                    .toUpperCase()
                   : "U"}
               </div>
               <div className="truncate">
@@ -783,11 +792,10 @@ export default function DashboardView({ userId }: { userId: string }) {
                       setBookingSuccess(false);
                       setEditingPassengerId(null);
                     }}
-                    className={`w-full flex items-center gap-3 px-4.5 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${
-                      isActive
+                    className={`w-full flex items-center gap-3 px-4.5 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${isActive
                         ? "bg-[#0d5a6e] text-white shadow-md shadow-[#0d5a6e]/15 translate-x-1"
                         : "text-[#5b6b75] hover:text-[#0d2a36] hover:bg-black/[0.02]"
-                    }`}
+                      }`}
                     style={mono}
                   >
                     <item.icon className="h-4.5 w-4.5 shrink-0" />
@@ -997,15 +1005,14 @@ export default function DashboardView({ userId }: { userId: string }) {
                               {b.booking_ref}
                             </span>
                             <span
-                              className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded font-mono ${
-                                b.status === "completed"
+                              className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded font-mono ${b.status === "completed"
                                   ? "bg-emerald-100 text-emerald-800"
                                   : b.status === "pending"
                                     ? "bg-amber-100 text-amber-800"
                                     : b.status === "cancelled"
                                       ? "bg-red-100 text-red-800"
                                       : "bg-blue-100 text-blue-800"
-                              }`}
+                                }`}
                             >
                               {b.status}
                             </span>
@@ -1119,9 +1126,9 @@ export default function DashboardView({ userId }: { userId: string }) {
                             <div className="text-xs font-semibold text-[#0d5a6e]">
                               {selectedBooking.quote_amount
                                 ? convertQuote(
-                                    selectedBooking.quote_amount,
-                                    selectedBooking.quote_currency || "INR",
-                                  )
+                                  selectedBooking.quote_amount,
+                                  selectedBooking.quote_currency || "INR",
+                                )
                                 : "Reviewing"}
                             </div>
                           </div>
@@ -1875,11 +1882,10 @@ export default function DashboardView({ userId }: { userId: string }) {
                               Ref: {p.booking_ref}
                             </span>
                             <span
-                              className={`px-2 py-0.5 text-[8px] font-mono uppercase font-bold rounded ${
-                                p.status === "completed"
+                              className={`px-2 py-0.5 text-[8px] font-mono uppercase font-bold rounded ${p.status === "completed"
                                   ? "bg-emerald-500/10 text-emerald-700 border border-emerald-500/20"
                                   : "bg-yellow-500/10 text-yellow-700 border border-yellow-500/20"
-                              }`}
+                                }`}
                             >
                               {p.status}
                             </span>
@@ -2033,11 +2039,10 @@ export default function DashboardView({ userId }: { userId: string }) {
                                   {t.id}
                                 </span>
                                 <span
-                                  className={`text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded font-mono ${
-                                    t.priority === "high"
+                                  className={`text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded font-mono ${t.priority === "high"
                                       ? "bg-red-100 text-red-800"
                                       : "bg-black/5 text-[#5b6b75]"
-                                  }`}
+                                    }`}
                                 >
                                   {t.priority}
                                 </span>
@@ -2291,11 +2296,10 @@ export default function DashboardView({ userId }: { userId: string }) {
                       return (
                         <div
                           key={notif.id}
-                          className={`p-5 rounded-2xl border transition-all duration-300 ${
-                            isUnread
+                          className={`p-5 rounded-2xl border transition-all duration-300 ${isUnread
                               ? "bg-[#faf5ea] border-[#0d5a6e]/20"
                               : "bg-[#faf5ea]/50 border-black/[0.04]"
-                          }`}
+                            }`}
                           style={{
                             boxShadow: isUnread
                               ? "4px 4px 12px #e8e0d0, -4px -4px 12px #ffffff"

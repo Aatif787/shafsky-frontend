@@ -42,74 +42,64 @@ export function DestinationHero({ a }: { a: Airport }) {
     !!getAirportAsset(a.code, "hero-tablet.webp");
 
   return (
-    <section className="relative h-[100svh] w-full overflow-hidden" style={{ background: DARK.bg }}>
-      <AnimatePresence mode="sync">
-        {hasDynamicHero ? (
-          <motion.div
-            key="dynamic-hero"
-            initial={{ opacity: 0, scale: 1.08 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-x-0 bottom-0 top-[53px] md:top-[68px]"
-          >
-            <ResponsiveAirportHero
-              code={a.code}
-              alt={`${a.city} Airport Cover`}
-              className="h-full w-full object-cover"
-              fallbackImage={a.slideshow[0]}
-            />
-            <div
+    <section className="relative h-[100svh] w-full overflow-hidden p-2 sm:p-4 md:p-6" style={{ background: DARK.bg }}>
+      <div className="relative h-full w-full rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10">
+        <AnimatePresence mode="sync">
+          {hasDynamicHero ? (
+            <motion.div
+              key="dynamic-hero"
+              initial={{ opacity: 0, scale: 1.08 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
               className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(6,9,15,0.45) 0%, rgba(6,9,15,0.25) 40%, rgba(6,9,15,0.95) 100%)",
-              }}
-            />
-            <div
+            >
+              <ResponsiveAirportHero
+                code={a.code}
+                alt={`${a.city} Airport Cover`}
+                className="h-full w-full object-cover"
+                fallbackImage={a.slideshow[0]}
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(11,26,36,0.35) 0%, rgba(250,248,245,0.6) 60%, rgba(250,248,245,1) 100%)",
+                }}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key={slide}
+              initial={{ opacity: 0, scale: 1.08 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
               className="absolute inset-0"
-              style={{
-                background: "radial-gradient(60% 60% at 50% 60%, transparent, rgba(6,9,15,0.6))",
-              }}
-            />
-          </motion.div>
-        ) : (
-          <motion.div
-            key={slide}
-            initial={{ opacity: 0, scale: 1.08 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-x-0 bottom-0 top-[53px] md:top-[68px]"
-          >
-            <img
-              src={a.slideshow[slide]}
-              alt=""
-              className="h-full w-full object-cover"
-              style={{
-                objectPosition: a.slideshow[slide]?.includes("chaarminar")
-                  ? "center 30%"
-                  : a.slideshow[slide]?.includes("golkunda")
-                    ? "center 40%"
-                    : "center",
-              }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(6,9,15,0.45) 0%, rgba(6,9,15,0.25) 40%, rgba(6,9,15,0.95) 100%)",
-              }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background: "radial-gradient(60% 60% at 50% 60%, transparent, rgba(6,9,15,0.6))",
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+            >
+              <img
+                src={a.slideshow[slide]}
+                alt=""
+                className="h-full w-full object-cover"
+                style={{
+                  objectPosition: a.slideshow[slide]?.includes("chaarminar")
+                    ? "center 30%"
+                    : a.slideshow[slide]?.includes("golkunda")
+                      ? "center 40%"
+                      : "center",
+                }}
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(11,26,36,0.35) 0%, rgba(250,248,245,0.6) 60%, rgba(250,248,245,1) 100%)",
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* fog */}
       <motion.div
@@ -126,13 +116,13 @@ export function DestinationHero({ a }: { a: Airport }) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="flex min-w-0 flex-wrap items-center gap-3 text-[10px] uppercase tracking-[0.28em] text-white/70 sm:tracking-[0.45em]"
+          className="flex min-w-0 flex-wrap items-center gap-3 text-[10px] uppercase tracking-[0.28em] text-slate-700 font-bold sm:tracking-[0.45em]"
           style={mono}
         >
           <span className="text-2xl leading-none">🇮🇳</span>
           <span>{a.country}</span>
-          <span className="h-px w-12 bg-white/40" />
-          <span style={{ color: DARK.blue }}>
+          <span className="h-px w-12 bg-slate-400/40" />
+          <span className="text-[#7c3aed]">
             {a.code} · {a.icao}
           </span>
         </motion.div>
@@ -141,7 +131,7 @@ export function DestinationHero({ a }: { a: Airport }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.9 }}
-          className="mt-6 max-w-2xl text-white/80"
+          className="mt-6 max-w-2xl text-slate-800 font-serif"
           style={{ ...display, fontSize: "clamp(1.1rem, 1.6vw, 1.5rem)", fontStyle: "italic" }}
         >
           {a.tagline}
@@ -158,13 +148,13 @@ export function DestinationHero({ a }: { a: Airport }) {
             <Stat label="Weather" value={a.weather.temp + " · clear"} />
           </div>
           <div className="flex flex-wrap items-center gap-3 lg:justify-end">
-            <MagneticButton href="#book">Book Charter</MagneticButton>
+            <MagneticButton href="#book">Book Concierge</MagneticButton>
             <a
               href="#guide"
-              className="inline-flex min-h-12 items-center gap-2 px-5 py-4 text-[10px] uppercase tracking-[0.24em] text-white/80 transition hover:text-white sm:text-[11px] sm:tracking-[0.3em]"
-              style={{ ...mono, border: `1px solid ${DARK.lineStrong}` }}
+              className="inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-4 text-[10px] uppercase tracking-[0.24em] font-bold text-slate-800 bg-white/80 border border-[#e5dfd5] shadow-xs backdrop-blur-md transition hover:bg-white hover:border-[#7c3aed]/40 sm:text-[11px] sm:tracking-[0.3em]"
+              style={mono}
             >
-              <MapPin className="h-3 w-3" /> Explore
+              <MapPin className="h-3.5 w-3.5 text-[#7c3aed]" /> Explore
             </a>
           </div>
         </motion.div>
@@ -179,7 +169,7 @@ export function DestinationHero({ a }: { a: Airport }) {
               className="h-px transition-all duration-500"
               style={{
                 width: i === slide ? 40 : 14,
-                background: i === slide ? DARK.blue : "rgba(255,255,255,0.3)",
+                background: i === slide ? "#7c3aed" : "rgba(0,0,0,0.2)",
               }}
             />
           ))}
@@ -189,11 +179,11 @@ export function DestinationHero({ a }: { a: Airport }) {
       <motion.div
         animate={{ y: [0, 6, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-6 right-8 z-10 flex flex-col items-center gap-2 text-[9px] uppercase tracking-[0.4em] text-white/50"
+        className="absolute bottom-6 right-8 z-10 flex flex-col items-center gap-2 text-[9px] uppercase tracking-[0.4em] text-slate-500 font-bold"
         style={mono}
       >
         Scroll
-        <ArrowDown className="h-3 w-3" />
+        <ArrowDown className="h-3 w-3 text-[#7c3aed]" />
       </motion.div>
     </section>
   );
@@ -201,11 +191,11 @@ export function DestinationHero({ a }: { a: Airport }) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0">
-      <div className="truncate text-[9px] uppercase tracking-[0.28em] text-white/45 sm:tracking-[0.35em]">
+    <div className="min-w-0 bg-white/80 border border-[#e5dfd5] px-4 py-2.5 rounded-2xl shadow-xs backdrop-blur-md">
+      <div className="truncate text-[9px] uppercase tracking-[0.28em] text-slate-500 font-bold sm:tracking-[0.35em]">
         {label}
       </div>
-      <div className="mt-1 truncate text-sm text-white">{value}</div>
+      <div className="mt-0.5 truncate text-sm font-extrabold text-slate-900">{value}</div>
     </div>
   );
 }

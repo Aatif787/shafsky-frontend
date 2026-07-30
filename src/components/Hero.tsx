@@ -36,6 +36,7 @@ import {
   Ticket,
   Menu,
   X,
+  Building2,
 } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
@@ -73,19 +74,29 @@ import { AirportShowcase } from "./airports/AirportShowcase";
 
 const SLIDESHOW_IMAGES = [world, slide0, slide1, slide2, slide3, lounge, interior];
 
+const MotionLink = motion(Link);
+const MotionA = motion.a;
+
 const display = { fontFamily: "'Fraunces', serif", fontWeight: 300, letterSpacing: "-0.02em" };
 const mono = { fontFamily: "'JetBrains Mono', monospace" };
 
-// Cream / teal palette
+// Light cream, off-white, lime green, violet & orange theme palette
 const C = {
-  bg: "#faf5ea",
-  paper: "#f5efe1",
-  ink: "#0d2a36",
-  mute: "#5b6b75",
-  mint: "#5fb5ad",
-  teal: "#0d5a6e",
-  tealDeep: "#0a4252",
-  line: "rgba(13,42,54,0.08)",
+  bg: "#faf9f5",
+  paper: "#ffffff",
+  ink: "#0f172a",
+  mute: "#64748b",
+  lime: "#84cc16",
+  limeDark: "#65a30d",
+  violet: "#7c3aed",
+  violetDark: "#6d28d9",
+  violetLight: "#f5f3ff",
+  orange: "#f97316",
+  orangeLight: "#ffedd5",
+  teal: "#7c3aed",
+  tealDeep: "#6d28d9",
+  mint: "#84cc16",
+  line: "rgba(15,23,42,0.08)",
 };
 
 const NAV: [string, string, string][] = [
@@ -154,16 +165,14 @@ export function Hero({ visible = true }: { visible?: boolean }) {
       <Navigation visible={visible} />
       <HeroSection visible={visible} />
       <BookingPanel />
+      <SignatureConciergeSection />
       <ScrollSection id="why">
         <WhyChooseUs />
       </ScrollSection>
       <ScrollSection>
         <TrustBar />
       </ScrollSection>
-      <div className="hidden md:block">
-        <Services />
-      </div>
-      <MobileServices />
+      <EnterpriseSolutions />
       <ScrollSection id="coverage">
         <Coverage />
       </ScrollSection>
@@ -352,7 +361,102 @@ function DoublePlaneIcon({ className }: { className?: string }) {
   );
 }
 
+const SELECTOR_SERVICES = [
+  { t: "Meet & Greet", Icon: Users },
+  { t: "VIP Lounge", Icon: Hotel },
+  { t: "Fast Track", Icon: Ticket },
+  { t: "Airport Transfer", Icon: Car },
+  { t: "Porter Service", Icon: Package },
+  { t: "Baggage Assistance", Icon: Package },
+  { t: "Visa Assistance", Icon: Sparkles },
+  { t: "Hotel Booking", Icon: Building2 },
+  { t: "Wheelchair Assistance", Icon: HeartPulse },
+  { t: "Airport Concierge", Icon: Crown },
+];
+
+function ServicesSelectorBar({
+  selectedService,
+  onSelectService,
+}: {
+  selectedService: string | null;
+  onSelectService: (serviceTitle: string) => void;
+}) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleSelect = (serviceTitle: string) => {
+    onSelectService(serviceTitle);
+    const bookingElem = document.getElementById("book");
+    if (bookingElem) {
+      const rect = bookingElem.getBoundingClientRect();
+      if (rect.top < 0 || rect.bottom > window.innerHeight) {
+        bookingElem.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  };
+
+  return (
+    <div className="w-full relative flex items-center justify-center py-1">
+      {/* Icon Tabs Container */}
+      <div
+        ref={scrollContainerRef}
+        className="flex items-center gap-4 sm:gap-6 md:gap-7 overflow-x-auto snap-x snap-mandatory py-2 px-2 scrollbar-none w-full justify-start md:justify-center"
+      >
+        {SELECTOR_SERVICES.map((s) => {
+          const Icon = s.Icon;
+          const isSelected = selectedService === s.t;
+
+          return (
+            <motion.button
+              key={`circ-selector-${s.t}`}
+              type="button"
+              onClick={() => handleSelect(s.t)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="group relative flex flex-col items-center gap-1.5 shrink-0 snap-center focus:outline-none cursor-pointer"
+            >
+              {/* Round Circle Container */}
+              <div
+                className={`flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full transition-all duration-300 ${isSelected
+                  ? "bg-gradient-to-tr from-[#7c3aed] to-[#9333ea] border-2 border-white text-white shadow-[0_6px_20px_rgba(124,58,237,0.45)] ring-4 ring-[#7c3aed]/25 scale-105"
+                  : "bg-white/95 border border-gray-200/80 text-gray-600 shadow-sm hover:border-[#7c3aed]/50 hover:text-[#7c3aed] hover:scale-102"
+                  }`}
+              >
+                <Icon
+                  className={`h-4.5 w-4.5 sm:h-5 sm:w-5 transition-transform duration-300 ${isSelected ? "text-white scale-110" : "text-gray-600 group-hover:text-[#7c3aed]"
+                    }`}
+                />
+              </div>
+
+              {/* Label */}
+              <span
+                className={`text-[10px] sm:text-[11px] font-semibold tracking-tight transition-all whitespace-nowrap px-1.5 py-0.5 rounded-full ${isSelected
+                  ? "text-[#7c3aed] font-extrabold bg-[#7c3aed]/10 border border-[#7c3aed]/20 shadow-xs"
+                  : "text-gray-700 group-hover:text-[#7c3aed]"
+                  }`}
+                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+              >
+                {s.t}
+              </span>
+
+              {/* Active Underline Bar */}
+              {isSelected && (
+                <motion.div
+                  layoutId="activeServiceBar"
+                  className="absolute -bottom-1 h-0.5 w-8 rounded-full bg-[#7c3aed] shadow-[0_0_8px_#7c3aed]"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+            </motion.button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function BookingPanel() {
+  const [selectedService, setSelectedService] = useState<string | null>("Meet & Greet");
   const [tab, setTab] = useState<"arrival" | "departure" | "connection">("arrival");
   const [showPassengerModal, setShowPassengerModal] = useState(false);
   const [adults, setAdults] = useState(1);
@@ -367,6 +471,11 @@ function BookingPanel() {
   const [flightNumber2, setFlightNumber2] = useState("");
   const [departDate2, setDepartDate2] = useState("");
   const [datePopoverOpen2, setDatePopoverOpen2] = useState(false);
+
+  const selectedServiceObj = useMemo(
+    () => SELECTOR_SERVICES.find((s) => s.t === selectedService) || null,
+    [selectedService]
+  );
 
   const todayStart = useMemo(() => {
     const d = new Date();
@@ -422,7 +531,7 @@ function BookingPanel() {
   const tabs: [typeof tab, string, React.ComponentType<{ className?: string }>][] = [
     ["arrival", "Arrival", PlaneLanding],
     ["departure", "Departure", PlaneTakeoff],
-    ["connection", "Connection", DoublePlaneIcon],
+    ["connection", "Transit", DoublePlaneIcon],
   ];
 
   return (
@@ -454,14 +563,70 @@ function BookingPanel() {
 
         {/* Header Strip */}
         <div
-          className="px-8 py-5 md:px-12 border-b border-white/15 rounded-t-[22px] relative z-10"
+          className="px-6 py-4 md:px-10 border-b border-white/15 rounded-t-[22px] relative z-10 flex flex-col gap-4 items-center"
           style={{
             background:
               "linear-gradient(90deg, rgba(95, 181, 173, 0.08) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 107, 0, 0.04) 100%)",
           }}
         >
+          <ServicesSelectorBar
+            selectedService={selectedService}
+            onSelectService={setSelectedService}
+          />
+
+          {/* Dynamic Service Selection Banner */}
+          <div className="w-full max-w-xl">
+            <AnimatePresence mode="wait">
+              {selectedServiceObj ? (
+                <motion.div
+                  key={selectedServiceObj.t}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 rounded-2xl bg-white/70 border border-[#7c3aed]/30 shadow-sm backdrop-blur-md"
+                >
+                  <div className="flex items-center gap-3.5 text-left">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-[#7c3aed] to-[#9333ea] text-white shadow-md">
+                      <selectedServiceObj.Icon className="h-5 w-5" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span
+                        className="text-[9px] font-extrabold uppercase tracking-widest text-[#7c3aed]"
+                        style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                      >
+                        Booking for
+                      </span>
+                      <h3
+                        className="text-sm font-extrabold text-gray-900 tracking-tight"
+                        style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                      >
+                        {selectedServiceObj.t}
+                      </h3>
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-medium text-gray-600 bg-purple-50 px-3 py-1 rounded-full border border-purple-100/80">
+                    You can add more services later during checkout.
+                  </span>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="empty-service"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-white/40 border border-dashed border-gray-300 text-xs font-semibold text-gray-600"
+                >
+                  <HelpCircle className="h-4 w-4 text-[#7c3aed]" />
+                  <span>Select a service above to begin your booking.</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           <h2
-            className="text-center text-[10px] font-bold uppercase tracking-[0.24em] flex items-center justify-center gap-2"
+            className="text-center text-[10px] font-bold uppercase tracking-[0.24em] flex items-center justify-center gap-2 mt-0.5"
             style={{ color: C.teal, fontFamily: "'JetBrains Mono', monospace" }}
           >
             <Sparkles size={12} />
@@ -470,7 +635,13 @@ function BookingPanel() {
           </h2>
         </div>
 
-        <div className="grid gap-8 p-6 md:grid-cols-12 md:gap-10 md:p-10">
+        <motion.div
+          key={`booking-form-grid-${selectedService || "none"}`}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          className="grid gap-8 p-6 md:grid-cols-12 md:gap-10 md:p-10"
+        >
           {/* LEFT — Tabs + Flight Info (7 cols on desktop) */}
           <div className="md:col-span-7 flex flex-col gap-6">
             {/* Tabs (Segmented Control) */}
@@ -520,11 +691,10 @@ function BookingPanel() {
                         value={flightNumber}
                         onChange={(e) => setFlightNumber(e.target.value.toUpperCase())}
                         onBlur={() => setTouched((t) => ({ ...t, flightNumber: true }))}
-                        className={`w-full h-12 rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold uppercase outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 focus:bg-white/20 focus:ring-4 focus:ring-teal/5 ${
-                          touched.flightNumber && !flightNumber.trim()
-                            ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-                            : ""
-                        }`}
+                        className={`w-full h-12 rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold uppercase outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 focus:bg-white/20 focus:ring-4 focus:ring-teal/5 ${touched.flightNumber && !flightNumber.trim()
+                          ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                          : ""
+                          }`}
                         style={{
                           borderColor:
                             touched.flightNumber && !flightNumber.trim()
@@ -541,209 +711,144 @@ function BookingPanel() {
                         </span>
                       )}
                     </div>
-                    <button
-                      type="button"
-                      aria-label="Help"
-                      className="grid h-12 w-12 shrink-0 place-items-center rounded-xl transition hover:bg-white/20 active:scale-95 border sm:hidden"
-                      style={{
-                        borderColor: "rgba(255,255,255,0.25)",
-                        background: "rgba(255,255,255,0.08)",
-                        backdropFilter: "blur(8px)",
-                        color: C.teal,
-                        boxShadow:
-                          "inset 0 1px 1px rgba(255,255,255,0.2), 0 1.5px 3px rgba(0,0,0,0.02)",
-                      }}
-                    >
-                      <HelpCircle className="h-5 w-5" />
-                    </button>
                   </div>
 
-                  <div className="relative flex flex-col gap-1 w-full">
-                    <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
-                      <PopoverTrigger asChild>
-                        <button
-                          type="button"
-                          aria-haspopup="dialog"
-                          aria-expanded={datePopoverOpen}
-                          onBlur={() => setTouched((t) => ({ ...t, departDate: true }))}
-                          className={`flex h-12 w-full items-center justify-between rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 focus:bg-white/20 focus:ring-4 focus:ring-teal/5 cursor-pointer ${
-                            touched.departDate && !departDate
-                              ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-                              : ""
+                  <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className={`flex h-12 w-full items-center justify-between rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold uppercase outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 cursor-pointer ${touched.departDate && !departDate
+                          ? "border-red-400 focus:border-red-500"
+                          : ""
                           }`}
-                          style={{
-                            borderColor:
-                              touched.departDate && !departDate
-                                ? undefined
-                                : "rgba(255,255,255,0.25)",
-                            color: C.ink,
-                            boxShadow:
-                              "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
-                          }}
-                        >
-                          <span className="truncate flex items-center gap-2">
-                            <Calendar size={14} style={{ color: C.teal }} />
-                            {departDate && dateValue ? format(dateValue, "PPP") : "Arrival Date"}
-                          </span>
-                          <ChevronDown
-                            size={14}
-                            className={`opacity-60 transition-transform duration-200 ${datePopoverOpen ? "rotate-180" : ""}`}
-                          />
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto p-3 rounded-2xl shadow-xl border z-50 animate-in fade-in zoom-in-95 duration-200"
                         style={{
-                          borderColor: "rgba(255,255,255,0.4)",
-                          background:
-                            "linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%)",
-                          backdropFilter: "blur(24px)",
+                          borderColor:
+                            touched.departDate && !departDate
+                              ? undefined
+                              : "rgba(255,255,255,0.25)",
                           color: C.ink,
                           boxShadow:
-                            "0 24px 50px rgba(13,42,54,0.15), inset 0 1px 2px rgba(255,255,255,0.6)",
+                            "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
                         }}
-                        align="start"
                       >
-                        <CalendarPicker
-                          mode="single"
-                          selected={dateValue}
-                          onSelect={(date) => {
-                            if (date) {
-                              setDepartDate(format(date, "yyyy-MM-dd"));
-                              setDatePopoverOpen(false);
-                            }
-                          }}
-                          initialFocus
-                          disabled={{ before: todayStart }}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    {touched.departDate && !departDate && (
-                      <span className="text-[9px] text-red-500 font-medium ml-1 mt-0.5">
-                        Date is required
-                      </span>
-                    )}
-                  </div>
+                        <span className="truncate">
+                          {departDate ? format(parseISO(departDate), "MMM dd, yyyy") : "Arrival Date"}
+                        </span>
+                        <ChevronDown className="h-4 w-4 opacity-60" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarPicker
+                        mode="single"
+                        selected={dateValue}
+                        onSelect={(d) => {
+                          if (d) setDepartDate(format(d, "yyyy-MM-dd"));
+                          setDatePopoverOpen(false);
+                        }}
+                        disabled={{ before: todayStart }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
 
-                  <button
-                    type="button"
-                    aria-label="Help"
-                    className="hidden sm:grid h-12 w-12 place-items-center rounded-xl transition hover:bg-white/20 active:scale-95 border"
-                    style={{
-                      borderColor: "rgba(255,255,255,0.25)",
-                      background: "rgba(255,255,255,0.08)",
-                      backdropFilter: "blur(8px)",
-                      color: C.teal,
-                      boxShadow:
-                        "inset 0 1px 1px rgba(255,255,255,0.2), 0 1.5px 3px rgba(0,0,0,0.02)",
-                    }}
-                  >
-                    <HelpCircle className="h-5 w-5" />
-                  </button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        aria-label="Help"
+                        className="hidden sm:grid h-12 w-12 shrink-0 place-items-center rounded-xl transition hover:bg-white/20 active:scale-95 border cursor-pointer"
+                        style={{
+                          borderColor: "rgba(255,255,255,0.25)",
+                          background: "rgba(255,255,255,0.08)",
+                          backdropFilter: "blur(8px)",
+                          color: C.teal,
+                          boxShadow:
+                            "inset 0 1px 1px rgba(255,255,255,0.2), 0 1.5px 3px rgba(0,0,0,0.02)",
+                        }}
+                      >
+                        <HelpCircle className="h-5 w-5" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-72 p-4 text-xs space-y-2 bg-slate-900/95 text-slate-100 border-slate-800 backdrop-blur-xl">
+                      <p className="font-semibold text-teal-400">Where can I find my Flight Number?</p>
+                      <p className="text-slate-300 leading-relaxed">
+                        Your flight number is a 2 to 4 digit code preceded by your airline's 2-letter IATA designator (e.g. <strong>EK505</strong>, <strong>BA117</strong>, <strong>AI101</strong>). You can find it on your booking confirmation email, e-ticket, or boarding pass.
+                      </p>
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
-                {/* Row 2 */}
-                <div className="grid gap-4 sm:grid-cols-[1.5fr_1.2fr_auto] items-start">
-                  <div className="relative flex flex-col gap-1 w-full">
-                    <input
-                      type="text"
-                      placeholder="Enter Your Flight Number e.g. AERO77"
-                      value={flightNumber2}
-                      onChange={(e) => setFlightNumber2(e.target.value.toUpperCase())}
-                      onBlur={() => setTouched((t) => ({ ...t, flightNumber2: true }))}
-                      className={`w-full h-12 rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold uppercase outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 focus:bg-white/20 focus:ring-4 focus:ring-teal/5 ${
-                        touched.flightNumber2 && !flightNumber2.trim()
+                {/* Row 2 (Connection Flight 2) */}
+                <div className="flex flex-col gap-4 sm:grid sm:grid-cols-[1.5fr_1.2fr_auto] sm:items-start">
+                  <div className="flex gap-2 w-full items-start">
+                    <div className="relative flex flex-col gap-1 flex-1 w-full">
+                      <input
+                        type="text"
+                        placeholder="Connecting Flight e.g. AERO88"
+                        value={flightNumber2}
+                        onChange={(e) => setFlightNumber2(e.target.value.toUpperCase())}
+                        onBlur={() => setTouched((t) => ({ ...t, flightNumber2: true }))}
+                        className={`w-full h-12 rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold uppercase outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 focus:bg-white/20 focus:ring-4 focus:ring-teal/5 ${touched.flightNumber2 && !flightNumber2.trim()
                           ? "border-red-400 focus:border-red-500 focus:ring-red-100"
                           : ""
-                      }`}
-                      style={{
-                        borderColor:
-                          touched.flightNumber2 && !flightNumber2.trim()
-                            ? undefined
-                            : "rgba(255,255,255,0.25)",
-                        color: C.ink,
-                        boxShadow:
-                          "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
-                      }}
-                    />
-                    {touched.flightNumber2 && !flightNumber2.trim() && (
-                      <span className="text-[9px] text-red-500 font-medium ml-1 mt-0.5">
-                        Flight number required
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="relative flex flex-col gap-1 w-full">
-                    <Popover open={datePopoverOpen2} onOpenChange={setDatePopoverOpen2}>
-                      <PopoverTrigger asChild>
-                        <button
-                          type="button"
-                          aria-haspopup="dialog"
-                          aria-expanded={datePopoverOpen2}
-                          onBlur={() => setTouched((t) => ({ ...t, departDate2: true }))}
-                          className={`flex h-12 w-full items-center justify-between rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 focus:bg-white/20 focus:ring-4 focus:ring-teal/5 cursor-pointer ${
-                            touched.departDate2 && !departDate2
-                              ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-                              : ""
                           }`}
-                          style={{
-                            borderColor:
-                              touched.departDate2 && !departDate2
-                                ? undefined
-                                : "rgba(255,255,255,0.25)",
-                            color: C.ink,
-                            boxShadow:
-                              "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
-                          }}
-                        >
-                          <span className="truncate flex items-center gap-2">
-                            <Calendar size={14} style={{ color: C.teal }} />
-                            {departDate2 && dateValue2
-                              ? format(dateValue2, "PPP")
-                              : "Departure Date"}
-                          </span>
-                          <ChevronDown
-                            size={14}
-                            className={`opacity-60 transition-transform duration-200 ${datePopoverOpen2 ? "rotate-180" : ""}`}
-                          />
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto p-3 rounded-2xl shadow-xl border z-50 animate-in fade-in zoom-in-95 duration-200"
                         style={{
-                          borderColor: "rgba(255,255,255,0.4)",
-                          background:
-                            "linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%)",
-                          backdropFilter: "blur(24px)",
+                          borderColor:
+                            touched.flightNumber2 && !flightNumber2.trim()
+                              ? undefined
+                              : "rgba(255,255,255,0.25)",
                           color: C.ink,
                           boxShadow:
-                            "0 24px 50px rgba(13,42,54,0.15), inset 0 1px 2px rgba(255,255,255,0.6)",
+                            "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
                         }}
-                        align="start"
-                      >
-                        <CalendarPicker
-                          mode="single"
-                          selected={dateValue2}
-                          onSelect={(date) => {
-                            if (date) {
-                              setDepartDate2(format(date, "yyyy-MM-dd"));
-                              setDatePopoverOpen2(false);
-                            }
-                          }}
-                          initialFocus
-                          disabled={{ before: todayStart }}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    {touched.departDate2 && !departDate2 && (
-                      <span className="text-[9px] text-red-500 font-medium ml-1 mt-0.5">
-                        Date is required
-                      </span>
-                    )}
+                      />
+                      {touched.flightNumber2 && !flightNumber2.trim() && (
+                        <span className="text-[9px] text-red-500 font-medium ml-1 mt-0.5">
+                          Connecting flight required
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Desktop spacer placeholder, hidden on mobile */}
-                  <div className="hidden sm:block w-12 h-12 pointer-events-none" />
+                  <Popover open={datePopoverOpen2} onOpenChange={setDatePopoverOpen2}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className={`flex h-12 w-full items-center justify-between rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold uppercase outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 cursor-pointer ${touched.departDate2 && !departDate2
+                          ? "border-red-400 focus:border-red-500"
+                          : ""
+                          }`}
+                        style={{
+                          borderColor:
+                            touched.departDate2 && !departDate2
+                              ? undefined
+                              : "rgba(255,255,255,0.25)",
+                          color: C.ink,
+                          boxShadow:
+                            "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
+                        }}
+                      >
+                        <span className="truncate">
+                          {departDate2 ? format(parseISO(departDate2), "MMM dd, yyyy") : "Departure Date"}
+                        </span>
+                        <ChevronDown className="h-4 w-4 opacity-60" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarPicker
+                        mode="single"
+                        selected={dateValue2}
+                        onSelect={(d) => {
+                          if (d) setDepartDate2(format(d, "yyyy-MM-dd"));
+                          setDatePopoverOpen2(false);
+                        }}
+                        disabled={{ before: dateValue || todayStart }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+
+                  <div className="h-12 w-12 shrink-0 hidden sm:block" />
                 </div>
               </div>
             ) : (
@@ -756,11 +861,10 @@ function BookingPanel() {
                       value={flightNumber}
                       onChange={(e) => setFlightNumber(e.target.value.toUpperCase())}
                       onBlur={() => setTouched((t) => ({ ...t, flightNumber: true }))}
-                      className={`w-full h-12 rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold uppercase outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 focus:bg-white/20 focus:ring-4 focus:ring-teal/5 ${
-                        touched.flightNumber && !flightNumber.trim()
-                          ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-                          : ""
-                      }`}
+                      className={`w-full h-12 rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold uppercase outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 focus:bg-white/20 focus:ring-4 focus:ring-teal/5 ${touched.flightNumber && !flightNumber.trim()
+                        ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                        : ""
+                        }`}
                       style={{
                         borderColor:
                           touched.flightNumber && !flightNumber.trim()
@@ -777,109 +881,75 @@ function BookingPanel() {
                       </span>
                     )}
                   </div>
-                  <button
-                    type="button"
-                    aria-label="Help"
-                    className="grid h-12 w-12 shrink-0 place-items-center rounded-xl transition hover:bg-white/20 active:scale-95 border sm:hidden"
-                    style={{
-                      borderColor: "rgba(255,255,255,0.25)",
-                      background: "rgba(255,255,255,0.08)",
-                      backdropFilter: "blur(8px)",
-                      color: C.teal,
-                      boxShadow:
-                        "inset 0 1px 1px rgba(255,255,255,0.2), 0 1.5px 3px rgba(0,0,0,0.02)",
-                    }}
-                  >
-                    <HelpCircle className="h-5 w-5" />
-                  </button>
                 </div>
 
-                <div className="relative flex flex-col gap-1 w-full">
-                  <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <button
-                        type="button"
-                        aria-haspopup="dialog"
-                        aria-expanded={datePopoverOpen}
-                        onBlur={() => setTouched((t) => ({ ...t, departDate: true }))}
-                        className={`flex h-12 w-full items-center justify-between rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 focus:bg-white/20 focus:ring-4 focus:ring-teal/5 cursor-pointer ${
-                          touched.departDate && !departDate
-                            ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-                            : ""
+                <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className={`flex h-12 w-full items-center justify-between rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold uppercase outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 cursor-pointer ${touched.departDate && !departDate
+                        ? "border-red-400 focus:border-red-500"
+                        : ""
                         }`}
-                        style={{
-                          borderColor:
-                            touched.departDate && !departDate
-                              ? undefined
-                              : "rgba(255,255,255,0.25)",
-                          color: C.ink,
-                          boxShadow:
-                            "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
-                        }}
-                      >
-                        <span className="truncate flex items-center gap-2">
-                          <Calendar size={14} style={{ color: C.teal }} />
-                          {departDate && dateValue
-                            ? format(dateValue, "PPP")
-                            : tab === "arrival"
-                              ? "Arrival Date"
-                              : "Departure Date"}
-                        </span>
-                        <ChevronDown
-                          size={14}
-                          className={`opacity-60 transition-transform duration-200 ${datePopoverOpen ? "rotate-180" : ""}`}
-                        />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-3 rounded-2xl shadow-xl border z-50 animate-in fade-in zoom-in-95 duration-200"
                       style={{
-                        borderColor: "rgba(255,255,255,0.4)",
-                        background:
-                          "linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%)",
-                        backdropFilter: "blur(24px)",
+                        borderColor:
+                          touched.departDate && !departDate
+                            ? undefined
+                            : "rgba(255,255,255,0.25)",
                         color: C.ink,
                         boxShadow:
-                          "0 24px 50px rgba(13,42,54,0.15), inset 0 1px 2px rgba(255,255,255,0.6)",
+                          "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
                       }}
-                      align="start"
                     >
-                      <CalendarPicker
-                        mode="single"
-                        selected={dateValue}
-                        onSelect={(date) => {
-                          if (date) {
-                            setDepartDate(format(date, "yyyy-MM-dd"));
-                            setDatePopoverOpen(false);
-                          }
-                        }}
-                        initialFocus
-                        disabled={{ before: todayStart }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  {touched.departDate && !departDate && (
-                    <span className="text-[9px] text-red-500 font-medium ml-1 mt-0.5">
-                      Date is required
-                    </span>
-                  )}
-                </div>
+                      <span className="truncate">
+                        {departDate
+                          ? format(parseISO(departDate), "MMM dd, yyyy")
+                          : tab === "arrival"
+                            ? "Arrival Date"
+                            : "Departure Date"}
+                      </span>
+                      <ChevronDown className="h-4 w-4 opacity-60" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarPicker
+                      mode="single"
+                      selected={dateValue}
+                      onSelect={(d) => {
+                        if (d) setDepartDate(format(d, "yyyy-MM-dd"));
+                        setDatePopoverOpen(false);
+                      }}
+                      disabled={{ before: todayStart }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
 
-                <button
-                  type="button"
-                  aria-label="Help"
-                  className="hidden sm:grid h-12 w-12 place-items-center rounded-xl transition hover:bg-white/20 active:scale-95 border"
-                  style={{
-                    borderColor: "rgba(255,255,255,0.25)",
-                    background: "rgba(255,255,255,0.08)",
-                    backdropFilter: "blur(8px)",
-                    color: C.teal,
-                    boxShadow:
-                      "inset 0 1px 1px rgba(255,255,255,0.2), 0 1.5px 3px rgba(0,0,0,0.02)",
-                  }}
-                >
-                  <HelpCircle className="h-5 w-5" />
-                </button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      aria-label="Help"
+                      className="hidden sm:grid h-12 w-12 shrink-0 place-items-center rounded-xl transition hover:bg-white/20 active:scale-95 border cursor-pointer"
+                      style={{
+                        borderColor: "rgba(255,255,255,0.25)",
+                        background: "rgba(255,255,255,0.08)",
+                        backdropFilter: "blur(8px)",
+                        color: C.teal,
+                        boxShadow:
+                          "inset 0 1px 1px rgba(255,255,255,0.2), 0 1.5px 3px rgba(0,0,0,0.02)",
+                      }}
+                    >
+                      <HelpCircle className="h-5 w-5" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-72 p-4 text-xs space-y-2 bg-slate-900/95 text-slate-100 border-slate-800 backdrop-blur-xl">
+                    <p className="font-semibold text-teal-400">Where can I find my Flight Number?</p>
+                    <p className="text-slate-300 leading-relaxed">
+                      Your flight number is a 2 to 4 digit code preceded by your airline's 2-letter IATA designator (e.g. <strong>EK505</strong>, <strong>BA117</strong>, <strong>AI101</strong>). You can find it on your booking confirmation email, e-ticket, or boarding pass.
+                    </p>
+                  </PopoverContent>
+                </Popover>
               </div>
             )}
           </div>
@@ -945,7 +1015,7 @@ function BookingPanel() {
                       >
                         <span className="truncate flex items-center gap-2">
                           <Package size={14} style={{ color: C.teal }} />
-                          {bags} Bag{bags > 1 ? "s" : ""}
+                          {bags} Bag{bags !== 1 ? "s" : ""}
                         </span>
                         <ChevronDown
                           className={`h-4 w-4 opacity-60 transition-transform duration-200 ${showPassengerModal ? "rotate-180" : ""}`}
@@ -953,41 +1023,27 @@ function BookingPanel() {
                       </button>
                     </div>
                   </PopoverTrigger>
-                  <PopoverContent
-                    className="w-[320px] p-5 rounded-2xl border backdrop-blur-2xl z-[100]"
-                    style={{
-                      borderColor: "rgba(255, 255, 255, 0.45)",
-                      background:
-                        "linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.88) 100%)",
-                      color: C.ink,
-                      boxShadow:
-                        "0 32px 60px rgba(13,42,54,0.22), inset 0 1px 2px rgba(255,255,255,0.6)",
-                    }}
-                    align="end"
-                  >
-                    <div className="flex items-center justify-between mb-4 border-b border-black/5 pb-2">
-                      <h3
-                        className="text-xs font-bold uppercase tracking-wider text-gray-800"
-                        style={mono}
-                      >
-                        Choose travelers
-                      </h3>
-                      <button
-                        type="button"
-                        onClick={() => setShowPassengerModal(false)}
-                        className="text-[10px] font-semibold uppercase tracking-wider text-teal hover:opacity-75"
-                        style={{ ...mono, color: C.teal }}
-                      >
-                        Done
-                      </button>
-                    </div>
 
+                  <PopoverContent className="w-80 p-5 bg-white/95 backdrop-blur-xl border border-black/10 shadow-2xl rounded-2xl">
                     <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b border-black/5 pb-2">
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-700">
+                          Passengers & Luggage
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setShowPassengerModal(false)}
+                          className="text-gray-400 hover:text-gray-700"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+
                       {/* Adult */}
                       <div className="flex items-center justify-between">
                         <div className="flex flex-col">
-                          <span className="text-xs font-semibold text-gray-800">Adult(s)</span>
-                          <span className="text-[10px] text-gray-500 font-medium">12 years+</span>
+                          <span className="text-xs font-semibold text-gray-800">Adult</span>
+                          <span className="text-[10px] text-gray-500 font-medium">12+ years</span>
                         </div>
                         <div className="flex items-center gap-2.5">
                           <button
@@ -1046,7 +1102,7 @@ function BookingPanel() {
                         <div className="flex flex-col">
                           <span className="text-xs font-semibold text-gray-800">Infant</span>
                           <span className="text-[10px] text-gray-500 font-medium">
-                            Below 2 years
+                            Under 2 years
                           </span>
                         </div>
                         <div className="flex items-center gap-2.5">
@@ -1074,10 +1130,8 @@ function BookingPanel() {
                       {/* Bags */}
                       <div className="flex items-center justify-between border-t border-black/5 pt-3">
                         <div className="flex flex-col">
-                          <span className="text-xs font-semibold text-gray-800">Bag(s)</span>
-                          <span className="text-[10px] text-gray-500 font-medium">
-                            Standard check-in
-                          </span>
+                          <span className="text-xs font-semibold text-gray-800">Check-in Bags</span>
+                          <span className="text-[10px] text-gray-500 font-medium">Luggage items</span>
                         </div>
                         <div className="flex items-center gap-2.5">
                           <button
@@ -1109,6 +1163,7 @@ function BookingPanel() {
             <Link
               to="/book"
               search={{
+                service_id: selectedService || undefined,
                 origin: tab === "departure" ? flightNumber : "",
                 destination: tab === "arrival" ? flightNumber : "",
                 depart_date: departDate,
@@ -1117,15 +1172,14 @@ function BookingPanel() {
                 pax_infants: infants,
                 notes:
                   tab === "connection"
-                    ? `Connection Flight 1: ${flightNumber} on ${departDate} | Flight 2: ${flightNumber2} on ${departDate2}`
+                    ? `Transit Flight 1: ${flightNumber} on ${departDate} | Flight 2: ${flightNumber2} on ${departDate2}`
                     : flightNumber
                       ? `Flight Number: ${flightNumber} (${tab})`
                       : "",
-              }}
+              } as any}
               onClick={(e) => {
                 if (!isFormValid) {
                   e.preventDefault();
-                  // Trigger validation display for all fields
                   setTouched({
                     flightNumber: true,
                     departDate: true,
@@ -1134,11 +1188,10 @@ function BookingPanel() {
                   });
                 }
               }}
-              className={`mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[11px] font-semibold uppercase tracking-[0.24em] transition ${
-                isFormValid
-                  ? "hover:brightness-110 shadow-lg cursor-pointer"
-                  : "opacity-45 cursor-not-allowed"
-              }`}
+              className={`mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[11px] font-semibold uppercase tracking-[0.24em] transition ${isFormValid
+                ? "hover:brightness-110 shadow-lg cursor-pointer"
+                : "opacity-45 cursor-not-allowed"
+                }`}
               style={{
                 ...mono,
                 background: "linear-gradient(135deg, #0d5a6e 0%, #083c4b 100%)",
@@ -1154,7 +1207,7 @@ function BookingPanel() {
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
-        </div>
+        </motion.div>
       </motion.div>
     </section>
   );
@@ -1276,29 +1329,30 @@ function WhyChooseUs() {
           </div>
         </div>
 
-        <div className="mt-20 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((it, i) => {
             const Icon = it.icon;
             return (
               <motion.div
                 key={it.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-10px" }}
-                transition={{ duration: 0.7, delay: (i % 4) * 0.08 }}
-                className="group relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-white to-[#e8dfce] p-8 shadow-[10px_10px_20px_#e6ded0,-10px_-10px_20px_#ffffff] transition-all duration-500 hover:from-[#f5efe1] hover:to-[#f5efe1] hover:shadow-[inset_6px_6px_12px_#e6ded0,inset_-6px_-6px_12px_#ffffff]"
+                whileHover={{ y: -8 }}
+                viewport={{ once: true, margin: "-20px" }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: (i % 4) * 0.06 }}
+                className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[24px] bg-[#f5f0e6] border border-white/60 p-7 shadow-[8px_8px_16px_rgba(200,188,170,0.65),-8px_-8px_16px_rgba(255,255,255,0.95)] transition-all duration-300 hover:shadow-[14px_14px_28px_rgba(190,178,160,0.75),-14px_-14px_28px_rgba(255,255,255,1)]"
               >
-                <div className="transition-transform duration-500 group-hover:translate-y-[1px]">
+                <div>
                   <div
-                    className="grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-white to-[#e8dfce] shadow-[4px_4px_8px_#e6ded0,-4px_-4px_8px_#ffffff] transition-all duration-500 group-hover:from-[#f5efe1] group-hover:to-[#f5efe1] group-hover:shadow-[inset_3px_3px_6px_#e6ded0,inset_-3px_-3px_6px_#ffffff]"
+                    className="grid h-12 w-12 place-items-center rounded-xl bg-[#f5f0e6] border border-white/80 shadow-[4px_4px_8px_rgba(200,188,170,0.6),-4px_-4px_8px_rgba(255,255,255,0.9)] transition-all duration-300 group-hover:shadow-[inset_3px_3px_6px_rgba(200,188,170,0.6),inset_-3px_-3px_6px_rgba(255,255,255,0.9)]"
                     style={{ color: C.teal }}
                   >
-                    <Icon className="h-5 w-5 transition-transform duration-500 group-hover:scale-110" />
+                    <Icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
                   </div>
-                  <h3 className="mt-6 text-[20px] leading-tight" style={display}>
+                  <h3 className="mt-5 text-xl font-bold leading-tight text-[#0b1a24]" style={display}>
                     {it.title}
                   </h3>
-                  <p className="mt-3 text-[14px] leading-relaxed" style={{ color: C.mute }}>
+                  <p className="mt-3 text-xs leading-relaxed text-[#576875]">
                     {it.body}
                   </p>
                 </div>
@@ -1311,15 +1365,16 @@ function WhyChooseUs() {
   );
 }
 
-/* ─────────────────── TRUST BAR ─────────────────── */
+/* ─────────────────── TRUST BAR / STATISTICS ─────────────────── */
 function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
   const [v, setV] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "0px" });
+
   useEffect(() => {
     if (!inView) return;
     const start = performance.now();
-    const dur = 1800;
+    const dur = 1600;
     let raf = 0;
     const step = (now: number) => {
       const t = Math.min(1, (now - start) / dur);
@@ -1330,47 +1385,57 @@ function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
   }, [inView, end]);
+
   return (
-    <span ref={ref}>
-      {v.toLocaleString()}
-      {suffix}
+    <span ref={ref} className="inline-flex items-baseline font-serif">
+      <span className="font-extrabold tracking-tight text-[#0b1a24]">{v.toLocaleString()}</span>
+      <span className="text-2xl sm:text-3xl font-bold text-[#0c3b46] ml-1 font-sans">{suffix}</span>
     </span>
   );
 }
 
 function TrustBar() {
-  const stats: [number, string, string, string][] = [
-    [100, "%", "Reliability", "Dispatch safety record"],
-    [20, "+", "Airports", "India & global hubs"],
-    [42000, "+", "Guests", "Welcomed annually"],
-    [12, "min", "Response", "Average dispatch"],
+  const stats = [
+    { n: 100, suf: "%", l: "Reliability", sub: "Dispatch safety record", Icon: ShieldCheck },
+    { n: 20, suf: "+", l: "Airports", sub: "India & global hubs", Icon: Globe2 },
+    { n: 42000, suf: "+", l: "Guests", sub: "Welcomed annually", Icon: Users },
+    { n: 12, suf: "min", l: "Response", sub: "Average dispatch", Icon: Clock },
   ];
+
   return (
-    <section className="relative px-6 py-12 md:px-14 md:py-24" style={{ background: C.bg }}>
-      <div className="mx-auto grid max-w-[1480px] grid-cols-1 xs:grid-cols-2 gap-6 md:gap-8 md:grid-cols-4">
-        {stats.map(([n, suf, l, sub], i) => (
+    <section className="relative px-6 py-14 md:px-14 md:py-24" style={{ background: C.bg }}>
+      <div className="mx-auto grid max-w-[1480px] grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        {stats.map(({ n, suf, l, sub, Icon }, i) => (
           <motion.div
             key={l}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -6 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: i * 0.08 }}
-            className="group relative overflow-hidden rounded-[2rem] p-6 md:p-8 bg-gradient-to-br from-white to-[#f0e9db] shadow-[8px_8px_16px_#eee7d8,-8px_-8px_16px_#ffffff] transition-all duration-500 hover:from-[#faf5ea] hover:to-[#faf5ea] hover:shadow-[inset_6px_6px_12px_#eee7d8,inset_-6px_-6px_12px_#ffffff]"
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: i * 0.08 }}
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-[#faf8f5] border border-white/80 p-7 shadow-[6px_6px_12px_rgba(200,188,170,0.5),-6px_-6px_12px_rgba(255,255,255,0.9)] transition-all duration-300 hover:shadow-[10px_10px_20px_rgba(190,178,160,0.6),-10px_-10px_20px_rgba(255,255,255,1)]"
           >
-            <div className="transition-transform duration-500 group-hover:translate-y-[1px]">
-              <div
-                className="text-[clamp(1.8rem,4vw,3.4rem)] leading-none"
-                style={{ ...display, color: C.ink }}
-              >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div
+                  className="grid h-10 w-10 place-items-center rounded-xl bg-[#faf8f5] border border-white/80 shadow-[3px_3px_6px_rgba(200,188,170,0.5),-3px_-3px_6px_rgba(255,255,255,0.9)] text-[#0c3b46] transition-transform duration-300 group-hover:scale-105"
+                >
+                  <Icon className="h-4 w-4" />
+                </div>
+              </div>
+
+              <div className="text-3xl sm:text-4xl md:text-5xl leading-none">
                 <Counter end={n} suffix={suf} />
               </div>
+
               <div
-                className="mt-4 text-[10px] uppercase tracking-[0.35em]"
-                style={{ ...mono, color: C.teal }}
+                className="mt-4 text-[10px] uppercase tracking-[0.3em] font-mono font-bold text-[#0c3b46]"
+                style={mono}
               >
                 {l}
               </div>
-              <div className="mt-1 text-[12px]" style={{ color: C.mute }}>
+
+              <div className="mt-1 text-xs text-[#576875] font-body-luxury">
                 {sub}
               </div>
             </div>
@@ -1478,495 +1543,597 @@ const SERVICES: Svc[] = [
   },
 ];
 
-function Services() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+/* ─────────────────── ENTERPRISE CATEGORIES DATA ─────────────────── */
+const ENTERPRISE_CATEGORIES = [
+  {
+    id: "concierge",
+    categoryName: "Airport Concierge",
+    subtitle: "Airside escort, priority clearances, VIP lounge access & tarmac chauffeured transfers.",
+    badge: "5 Concierge Services",
+    Icon: Crown,
+    img: meetGreetImg,
+    services: [
+      {
+        title: "Meet & Greet",
+        description: "Personal host at flight bridge, baggage assistance & curbside escort.",
+        badge: "Signature VIP Service",
+        icon: Users,
+        serviceId: "meet-greet",
+      },
+      {
+        title: "Airport Lounge",
+        description: "Access to private first-class suites, gourmet dining & shower facilities.",
+        badge: "Direct Booking",
+        icon: Hotel,
+        serviceId: "lounge",
+      },
+      {
+        title: "Immigration Fast Track",
+        description: "Expedited security screening & priority passport control clearance desks.",
+        badge: "Direct Booking",
+        icon: Ticket,
+        serviceId: "fast-track",
+      },
+      {
+        title: "Transportation Domestic",
+        description: "Private Mercedes S-Class tarmac pickup & domestic city transfers.",
+        badge: "Chauffeur Drive",
+        icon: Car,
+        serviceId: "transfer",
+      },
+      {
+        title: "Transportation International",
+        description: "Global airport transfers & cross-border executive ground transit.",
+        badge: "Global Fleet",
+        icon: Plane,
+        serviceId: "transfer",
+      },
+    ],
+  },
+  {
+    id: "travel",
+    categoryName: "Travel Assistance",
+    subtitle: "Bespoke hotel curation, VIP ticketing, visa desk coordination & private chartering.",
+    badge: "4 Travel Services",
+    Icon: Globe2,
+    img: hotelImg,
+    services: [
+      {
+        title: "Air Ticketing",
+        description: "First & Business Class seat allocations, priority seat holds, and instant flight reissuance.",
+        badge: "24/7 Ticketing",
+        icon: Ticket,
+        serviceId: "air_ticketing",
+      },
+      {
+        title: "Hotel Booking",
+        description: "Bespoke 5-star hotel suite bookings with exclusive room upgrades and butler service.",
+        badge: "Luxury Partners",
+        icon: Hotel,
+        serviceId: "hotel",
+      },
+      {
+        title: "Visa Assistance",
+        description: "Expedited diplomatic visa processing, doorstep biometric collection, and VIP documentation.",
+        badge: "Express Clearance",
+        icon: Building2,
+        serviceId: "visa",
+      },
+      {
+        title: "On-board Meals",
+        description: "Custom Michelin-grade inflight gourmet catering, specialized dietary curation, and fine dining.",
+        badge: "Bespoke Dining",
+        icon: Sparkles,
+        serviceId: "onboard_meals",
+      },
+    ],
+  },
+  {
+    id: "cargo",
+    categoryName: "Cargo & Aviation",
+    subtitle: "White-glove cargo clearance, pet transport care & compassionate repatriation.",
+    badge: "3 Freight Services",
+    Icon: Package,
+    img: cargoAssistImg,
+    services: [
+      {
+        title: "Cargo Assistance",
+        description: "Express air cargo clearance, customs liaison & valuable freight escort.",
+        badge: "Customs Escort",
+        icon: Package,
+        serviceId: "porter",
+      },
+      {
+        title: "AVI (Pet Transport)",
+        description: "Climate-controlled, IATA-compliant live animal transport & veterinary care.",
+        badge: "Pet Care",
+        icon: HeartPulse,
+        serviceId: "baggage",
+      },
+      {
+        title: "HUM (Human Remains)",
+        description: "Compassionate, dignified repatriation & international air transport logistics.",
+        badge: "Dignified Transit",
+        icon: ShieldCheck,
+        serviceId: "baggage",
+      },
+    ],
+  },
+  {
+    id: "medical",
+    categoryName: "Medical & Emergency",
+    subtitle: "24/7 IC-equipped air medevac & specialized rail ambulance escorts.",
+    badge: "2 Medevac Services",
+    Icon: HeartPulse,
+    img: medicalAssistImg,
+    services: [
+      {
+        title: "Air Ambulance",
+        description: "Fully equipped ICU medevac aircraft with specialized critical care medical crew.",
+        badge: "24/7 Medevac",
+        icon: Plane,
+        serviceId: "wheelchair",
+      },
+      {
+        title: "Train Ambulance",
+        description: "Rail medevac units with doctor escort for long-distance patient transport.",
+        badge: "Rail Medevac",
+        icon: Car,
+        serviceId: "wheelchair",
+      },
+    ],
+  },
+];
+
+/* ─────────────────── SIGNATURE AIRPORT CONCIERGE EXPERIENCE ─────────────────── */
+function SignatureConciergeSection() {
+  const highlights = [
+    {
+      title: "Arrival Concierge",
+      desc: "Aerobridge greeting with personalized placard, priority passport clearance & luggage retrieval.",
+      icon: PlaneLanding,
+      tag: "Arrival",
+    },
+    {
+      title: "Departure Concierge",
+      desc: "Curbside porter greeting, expedited check-in desk clearance & premium lounge escort.",
+      icon: PlaneTakeoff,
+      tag: "Departure",
+    },
+    {
+      title: "Transit Concierge",
+      desc: "Gate-to-gate buggy transport, terminal transit navigation & luggage re-check liaison.",
+      icon: Shuffle,
+      tag: "Transit",
+    },
+    {
+      title: "Meet & Greet VVIP",
+      desc: "Private luxury tarmac transfer sedan directly to the aircraft gate steps.",
+      icon: Crown,
+      tag: "VVIP Tarmac",
+    },
+  ];
 
   return (
-    <section
-      id="services"
-      ref={ref}
-      className="relative"
-      style={{ background: C.ink, height: `${(SERVICES.length + 1) * 100}vh`, position: "relative" }}
-    >
-      {/* sticky stage */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* intro overlay (first viewport) */}
-        <ServicesIntro progress={scrollYProgress} />
+    <section id="airport-concierge" className="relative px-6 py-20 md:px-14 md:py-28 bg-[#0a0c10] text-white overflow-hidden">
+      <div className="mx-auto max-w-[1480px]">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto">
+          <div
+            className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.45em]"
+            style={{ ...mono, color: C.mint }}
+          >
+            <span className="h-px w-10" style={{ background: C.mint }} />
+            FLAGSHIP AIRPORT OFFERING
+            <span className="h-px w-10" style={{ background: C.mint }} />
+          </div>
+          <h2
+            className="mt-5 text-[clamp(2.2rem,5vw,4.2rem)] leading-[1.05] font-serif text-white tracking-tight"
+            style={display}
+          >
+            Signature Airport <span className="italic text-[#5fb5ad]">Concierge Experience.</span>
+          </h2>
+          <p className="mt-4 text-sm md:text-base text-white/75 font-body-luxury max-w-2xl mx-auto leading-relaxed">
+            Meet & Greet is our company's flagship airport experience — engineered to eliminate every queue, counter, and uncertainty across 20+ international airport hubs.
+          </p>
+        </div>
 
-        {/* the 8 service stages */}
-        {SERVICES.map((s, i) => (
-          <ServiceStage
-            key={s.t}
-            s={s}
-            index={i}
-            progress={scrollYProgress}
-            total={SERVICES.length}
-          />
-        ))}
+        {/* Flagship Hero Card Layout */}
+        <div className="mt-14 relative rounded-[32px] border border-white/15 bg-gradient-to-br from-[#0e313f]/95 via-[#0c2632]/95 to-[#081820]/95 shadow-2xl p-6 sm:p-10 lg:p-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Visual Media Showcase */}
+            <div className="lg:col-span-5 relative h-72 sm:h-96 rounded-2xl overflow-hidden group shadow-xl">
+              <img
+                src={meetGreetImg}
+                alt="Signature Airport Concierge Escort"
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#081820] via-black/30 to-transparent" />
+              <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest text-[#5fb5ad] border border-white/15" style={mono}>
+                ★ Flagship Experience
+              </div>
+              <div className="absolute bottom-6 left-6 right-6">
+                <div className="text-xl font-bold font-serif text-white">Suswagatam Escort</div>
+                <div className="text-xs text-white/80 mt-1 font-body-luxury">One dedicated officer for your entire airport journey.</div>
+              </div>
+            </div>
 
-        {/* progress rail */}
-        <ServicesRail progress={scrollYProgress} />
+            {/* Highlights Grid */}
+            <div className="lg:col-span-7 flex flex-col justify-between h-full gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {highlights.map((h) => {
+                  const HIcon = h.icon;
+                  return (
+                    <div
+                      key={h.title}
+                      className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#5fb5ad]/40 transition-all duration-300 group/h"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="h-9 w-9 rounded-xl bg-[#5fb5ad]/15 text-[#5fb5ad] border border-[#5fb5ad]/30 flex items-center justify-center group-hover/h:scale-110 transition-transform">
+                          <HIcon size={18} />
+                        </div>
+                        <span className="text-[8px] font-mono uppercase tracking-wider text-white/50 bg-white/5 px-2.5 py-0.5 rounded-full border border-white/10" style={mono}>
+                          {h.tag}
+                        </span>
+                      </div>
+                      <h4 className="text-sm font-bold text-white font-body-luxury group-hover/h:text-[#5fb5ad] transition-colors">
+                        {h.title}
+                      </h4>
+                      <p className="text-xs text-white/70 mt-1.5 leading-relaxed font-body-luxury">
+                        {h.desc}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Action CTA */}
+              <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-xs text-white/60 font-body-luxury text-center sm:text-left">
+                  Packages & pricing appear dynamically after selecting your airport hub.
+                </div>
+                <Link
+                  to="/airports"
+                  className="group/cta inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-[#74d0c7] to-[#4fa098] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.25em] text-[#0d2a36] shadow-lg transition-all duration-300 hover:brightness-110 active:scale-98 cursor-pointer shrink-0"
+                  style={mono}
+                >
+                  <span>Explore Airport Services</span>
+                  <ArrowRight size={16} className="transition-transform duration-300 group-hover/cta:translate-x-1.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-function ServicesIntro({ progress }: { progress: MotionValue<number> }) {
-  const N = SERVICES.length;
-  const end = 1 / (N + 1);
-  const opacity = useTransform(progress, [0, end * 0.65, end], [1, 1, 0]);
-  const y = useTransform(progress, [0, end], [0, -60]);
-  const pointerEvents = useTransform(progress, [0, end * 0.95, end], ["auto", "auto", "none"]);
+/* ─────────────────── ENTERPRISE SOLUTIONS — PREMIUM GSAP SHOWCASE ─────────────────── */
+
+/** Per-panel mouse-tracking parallax card */
+function SolutionPanel({
+  sol,
+  idx,
+}: {
+  sol: {
+    id: string;
+    title: string;
+    subtitle: string;
+    badge: string;
+    Icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties; color?: string }>;
+    gradient: string;
+    glowColor: string;
+    iconColor: string;
+    ctaLink: string;
+    services: { name: string; icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties; color?: string }>; }[];
+  };
+  idx: number;
+}) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  /* ── GSAP scroll-triggered entrance ── */
+  useEffect(() => {
+    let ctx: ReturnType<typeof import("gsap").gsap.context> | null = null;
+
+    (async () => {
+      const gsapModule = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      const gsap = gsapModule.gsap;
+      gsap.registerPlugin(ScrollTrigger);
+
+      if (!panelRef.current) return;
+
+      ctx = gsap.context(() => {
+        gsap.fromTo(
+          panelRef.current,
+          { y: 80, opacity: 0, scale: 0.96 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.9,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: panelRef.current,
+              start: "top 88%",
+              toggleActions: "play none none none",
+            },
+            delay: idx * 0.12,
+          }
+        );
+      }, panelRef);
+    })();
+
+    return () => { ctx?.revert(); };
+  }, [idx]);
+
+  /* ── Mouse-tracking parallax depth + glow follow ── */
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const el = panelRef.current;
+    const glow = glowRef.current;
+    const content = contentRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;   // -0.5 … 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+    // Subtle 3D tilt
+    el.style.transform = `perspective(1200px) rotateY(${x * 3}deg) rotateX(${-y * 3}deg) scale(1.015)`;
+
+    // Content parallax shift
+    if (content) {
+      content.style.transform = `translate(${x * 8}px, ${y * 6}px)`;
+    }
+
+    // Glow follows cursor
+    if (glow) {
+      glow.style.opacity = "1";
+      glow.style.left = `${e.clientX - rect.left}px`;
+      glow.style.top = `${e.clientY - rect.top}px`;
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    const el = panelRef.current;
+    const glow = glowRef.current;
+    const content = contentRef.current;
+    if (el) el.style.transform = "perspective(1200px) rotateY(0deg) rotateX(0deg) scale(1)";
+    if (content) content.style.transform = "translate(0,0)";
+    if (glow) glow.style.opacity = "0";
+  }, []);
+
+  const SolIcon = sol.Icon;
+
   return (
-    <motion.div
-      style={{ opacity, y, background: C.ink, color: "#fff", pointerEvents }}
-      className="absolute inset-0 z-30 flex items-center justify-center px-4 md:px-14"
+    <div
+      ref={panelRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="group relative overflow-hidden rounded-[36px] border border-black/[0.08] will-change-transform shadow-[0_4px_32px_rgba(0,0,0,0.06)]"
+      style={{
+        transition: "transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease",
+        background: sol.gradient,
+        boxShadow: "0 8px 40px rgba(0,0,0,0.06)",
+      }}
     >
-      <div className="mx-auto w-full max-w-[1200px]">
-        <div className="rounded-[3rem] bg-gradient-to-br from-[#0e313f] to-[#0a1e27] p-10 md:p-16 shadow-[15px_15px_30px_#05151b,-15px_-15px_30px_#154357]">
-          <div
-            className="flex items-center gap-4 text-[10px] uppercase tracking-[0.45em]"
-            style={{ ...mono, color: C.mint }}
-          >
-            <span className="h-px w-10" style={{ background: C.mint }} />
-            04 — Our Services
+      {/* ── Cursor-following glow orb ── */}
+      <div
+        ref={glowRef}
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 h-[320px] w-[320px] rounded-full blur-[100px] transition-opacity duration-500"
+        style={{ background: sol.glowColor, opacity: 0 }}
+      />
+
+      {/* ── Animated ambient floating orb (always visible, slow drift) ── */}
+      <div
+        className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-opacity duration-700"
+        style={{ background: sol.glowColor }}
+      >
+        <motion.div
+          animate={{ y: [0, -20, 0], x: [0, 12, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="h-full w-full"
+        />
+      </div>
+
+      {/* ── Animated diagonal shine sweep on hover ── */}
+      <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 overflow-hidden">
+        <motion.div
+          animate={{ x: ["-120%", "120%"] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", repeatDelay: 3 }}
+          className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent skew-x-12"
+        />
+      </div>
+
+      {/* ── Content layer ── */}
+      <div
+        ref={contentRef}
+        className="relative z-10 p-8 sm:p-12 lg:p-14 will-change-transform"
+        style={{ transition: "transform 0.3s ease-out" }}
+      >
+        {/* Top row: icon + badge */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="h-14 w-14 rounded-2xl bg-white/80 border border-black/[0.08] backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-white transition-all duration-400">
+            {React.createElement(SolIcon as any, { size: 28, color: sol.iconColor })}
           </div>
-          <h2
-            className="mt-8 max-w-4xl text-[clamp(2.4rem,6vw,5.5rem)] leading-[1.02]"
-            style={display}
-          >
-            Eight services.
-            <br />
-            <span className="italic" style={{ color: C.mint }}>
-              One signature welcome.
-            </span>
-          </h2>
-          <p className="mt-8 max-w-xl text-[16px] leading-relaxed text-white/70">
-            Scroll through each chapter of the Suswagatam journey — coordinated end-to-end by a
-            single guest relations officer.
-          </p>
-          <div
-            className="mt-10 flex items-center gap-3 text-[10px] uppercase tracking-[0.5em] text-white/50"
+          <span
+            className="rounded-full bg-white/80 border border-black/[0.06] backdrop-blur-sm px-4 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-slate-800 shadow-sm transition-all duration-400"
             style={mono}
           >
-            Scroll to begin{" "}
-            <motion.span
-              animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 1.8, repeat: Infinity }}
-            >
-              ↓
-            </motion.span>
-          </div>
+            {sol.badge}
+          </span>
         </div>
-      </div>
-    </motion.div>
-  );
-}
 
-function GallerySlideshow({
-  images,
-  alt,
-  scale,
-  y,
-}: {
-  images: string[];
-  alt: string;
-  scale: MotionValue<number>;
-  y: MotionValue<number>;
-}) {
-  const [current, setCurrent] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length);
-    }, 3000);
-    return () => clearInterval(id);
-  }, [images.length]);
-
-  return (
-    <motion.div
-      style={{ scale, y, transformOrigin: "center center" }}
-      className="absolute inset-0 will-change-transform"
-    >
-      {images.map((src, i) => (
-        <img
-          key={`slideshow-${src}-${i}`}
-          src={src}
-          alt={`${alt} ${i + 1}`}
-          loading={i === 0 ? "eager" : "lazy"}
-          fetchPriority={i === 0 ? "high" : "low"}
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1200ms] ease-in-out"
-          style={{ opacity: i === current ? 1 : 0 }}
-        />
-      ))}
-    </motion.div>
-  );
-}
-
-function ServiceStage({
-  s,
-  index,
-  progress,
-  total,
-}: {
-  s: Svc;
-  index: number;
-  progress: MotionValue<number>;
-  total: number;
-}) {
-  const slot = 1 / (total + 1);
-  const start = (index + 1) * slot;
-  const end = (index + 2) * slot;
-  const mid = (start + end) / 2;
-
-  const opacity = useTransform(
-    progress,
-    [start - slot * 0.15, start, end, end + slot * 0.15],
-    [0, 1, 1, 0],
-  );
-  const imgScale = useTransform(progress, [start, end], [1.06, 1.14]);
-  const imgY = useTransform(progress, [start, end], [-12, 12]);
-  const textY = useTransform(progress, [start, mid, end], [60, 0, -40]);
-  const textOpacity = useTransform(
-    progress,
-    [start, mid - slot * 0.2, mid, end - slot * 0.1, end],
-    [0, 1, 1, 1, 0],
-  );
-
-  const Icon = s.Icon;
-
-  const pointerEvents = useTransform(
-    progress,
-    [start - slot * 0.05, start, end, end + slot * 0.05],
-    ["none", "auto", "auto", "none"],
-  );
-
-  return (
-    <motion.div
-      style={{ opacity, zIndex: 10 + index, pointerEvents }}
-      className="absolute inset-0 grid h-full w-full grid-cols-1 grid-rows-[42svh_minmax(0,1fr)] overflow-hidden md:grid-cols-2 md:grid-rows-1"
-      aria-hidden={false}
-    >
-      <div
-        className="relative isolate h-full min-h-0 w-full max-w-full overflow-hidden"
-        style={{ contain: "strict" }}
-      >
-        <div className="absolute inset-0 overflow-hidden">
-          {s.video ? (
-            <video
-              src={s.video}
-              autoPlay
-              loop
-              muted
-              playsInline
-              disablePictureInPicture
-              controls={false}
-              onPause={(e) => {
-                const v = e.currentTarget;
-                v.play().catch(() => {});
-              }}
-              onContextMenu={(e) => e.preventDefault()}
-              style={{
-                pointerEvents: "none",
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                objectPosition: "center",
-              }}
-            />
-          ) : s.gallery ? (
-            <GallerySlideshow images={s.gallery} alt={s.t} scale={imgScale} y={imgY} />
-          ) : (
-            <motion.img
-              src={s.img}
-              alt={s.t}
-              loading="lazy"
-              style={{ scale: imgScale, y: imgY, transformOrigin: "center center" }}
-              className="block h-full w-full max-w-full object-cover object-center will-change-transform"
-            />
-          )}
-        </div>
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(10,66,82,0.45), rgba(13,42,54,0.15) 60%, transparent)",
-          }}
-        />
-        <div
-          className="pointer-events-none absolute bottom-4 left-4 text-[clamp(3.5rem,14vw,18rem)] leading-none text-white/15 md:bottom-12 md:left-12"
+        {/* Title & subtitle */}
+        <h3
+          className="text-[clamp(1.8rem,4vw,3.2rem)] font-bold font-serif text-slate-900 leading-[1.08] tracking-tight"
           style={display}
         >
-          0{index + 1}
+          {sol.title}<span style={{ color: sol.iconColor }}>.</span>
+        </h3>
+        <p className="mt-3 text-sm sm:text-[15px] text-slate-600 font-body-luxury leading-relaxed max-w-lg">
+          {sol.subtitle}
+        </p>
+
+        {/* Included services chips */}
+        <div className="mt-8 flex flex-wrap gap-2.5">
+          {sol.services.map((svc) => {
+            const SvcIcon = svc.icon;
+            return (
+              <span
+                key={svc.name}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/70 border border-black/[0.06] px-3.5 py-1.5 text-[11px] font-medium text-slate-700 backdrop-blur-sm group-hover:bg-white group-hover:border-black/[0.12] transition-all duration-300"
+              >
+                {React.createElement(SvcIcon as any, { size: 12, className: "shrink-0", color: sol.iconColor })}
+                {svc.name}
+              </span>
+            );
+          })}
+        </div>
+
+        {/* Explore CTA */}
+        <div className="mt-10 pt-6 border-t border-black/[0.06]">
+          <Link
+            to={sol.ctaLink}
+            className="group/cta inline-flex items-center gap-3 rounded-2xl bg-slate-900 border border-slate-800 px-8 py-4 text-[11px] font-bold uppercase tracking-[0.25em] text-white transition-all duration-400 hover:bg-slate-800 hover:shadow-lg"
+            style={mono}
+          >
+            <span>Explore</span>
+            <ArrowRight className="h-4 w-4 transition-transform duration-400 group-hover/cta:translate-x-2.5" />
+          </Link>
         </div>
       </div>
 
+      {/* ── Bottom border glow on hover ── */}
       <div
-        className="relative flex min-h-0 items-center justify-center overflow-y-auto px-3 py-6 xs:px-4 xs:py-8 sm:px-8 md:px-12 md:py-12"
-        style={{ background: C.ink, color: "#fff" }}
-      >
-        <motion.div
-          style={{ y: textY, opacity: textOpacity }}
-          className="w-full max-w-xl rounded-[2rem] bg-gradient-to-br from-[#0e313f] to-[#0a1e27] p-5 xs:p-6 sm:p-8 md:p-10 shadow-[10px_10px_20px_#05151b,-15px_-15px_30px_#154357]"
-        >
-          <div
-            className="flex items-center gap-4 text-[10px] uppercase tracking-[0.45em]"
-            style={{ ...mono, color: C.mint }}
-          >
-            <span
-              className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#0e313f] to-[#0a1e27] shadow-[inset_3px_3px_6px_#05151b,inset_-3px_-3px_6px_#154357]"
-              style={{ color: C.mint }}
-            >
-              <Icon className="h-4 w-4" />
-            </span>
-            Service 0{index + 1} of {total}
-          </div>
-          <h3
-            className="mt-4 sm:mt-6 text-[clamp(1.75rem,4vw,3.0rem)] leading-[1.05]"
-            style={display}
-          >
-            {s.t}
-          </h3>
-          <p
-            className="mt-3 sm:mt-4 text-[11px] sm:text-[13px] uppercase tracking-[0.25em]"
-            style={{ ...mono, color: "rgba(255,255,255,0.55)" }}
-          >
-            {s.d}
-          </p>
-          <p className="mt-4 sm:mt-8 text-[13.5px] sm:text-[15px] leading-relaxed text-white/80">
-            {s.long}
-          </p>
-          <ul className="mt-4 sm:mt-8 grid gap-2.5">
-            {s.bullets.map((b) => (
-              <li
-                key={b}
-                className="flex items-center gap-3 text-[12px] sm:text-[13px] text-white/85"
-              >
-                <span className="h-px w-6" style={{ background: C.mint }} />
-                {b}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-6 sm:mt-10 flex flex-wrap gap-3">
-            <Link
-              to="/book"
-              className="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-br from-[#74d0c7] to-[#4fa098] px-5 py-3 sm:px-7 sm:py-3.5 text-[10px] sm:text-[11px] uppercase tracking-[0.3em] shadow-[4px_4px_10px_#05151b,-4px_-4px_10px_rgba(255,255,255,0.05)] transition-all duration-300 hover:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.25),inset_-3px_-3px_6px_rgba(255,255,255,0.2)]"
-              style={{ ...mono, color: C.ink }}
-            >
-              Request this <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-            <a
-              href={`https://wa.me/919599087959?text=Hi!%20I'm%20interested%20in%20booking%20the%20${encodeURIComponent(s.t)}%20airport%20concierge%20service.`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-br from-[#0e313f] to-[#0a1e27] px-5 py-3 sm:px-7 sm:py-3.5 text-[10px] sm:text-[11px] uppercase tracking-[0.3em] shadow-[4px_4px_10px_#05151b,-4px_-4px_10px_rgba(255,255,255,0.05)] transition-all duration-300 hover:shadow-[inset_3px_3px_6px_#05151b,inset_-3px_-3px_6px_#154357]"
-              style={{ ...mono, color: "#fff" }}
-            >
-              Talk to us
-            </a>
-          </div>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-}
-
-function ServicesRail({ progress }: { progress: MotionValue<number> }) {
-  const scaleY = useTransform(progress, [0, 1], [0, 1]);
-  return (
-    <div className="pointer-events-none absolute right-6 top-1/2 z-40 hidden -translate-y-1/2 md:block">
-      <div className="relative h-[260px] w-px" style={{ background: "rgba(255,255,255,0.15)" }}>
-        <motion.div style={{ scaleY, transformOrigin: "top" }} className="absolute inset-0 w-px" />
-        <motion.div
-          style={{ scaleY, transformOrigin: "top", background: C.mint }}
-          className="absolute inset-0 w-px"
-        />
-      </div>
-      <div className="mt-3 text-center text-[9px] tracking-[0.4em] text-white/40" style={mono}>
-        SCROLL
-      </div>
+        className="absolute bottom-0 inset-x-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{ background: `linear-gradient(to right, transparent, ${sol.iconColor}, transparent)` }}
+      />
     </div>
   );
 }
 
-/* ─────────────────── MOBILE SERVICES (PREMIUM DETAILED ACCORDION/CAROUSEL) ─────────────────── */
-function MobileServices() {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const handleScroll = () => {
-    if (!scrollRef.current) return;
-    const scrollLeft = scrollRef.current.scrollLeft;
-    const width = scrollRef.current.clientWidth;
-    if (width === 0) return;
-    const idx = Math.round(scrollLeft / width);
-    if (idx !== activeIdx && idx >= 0 && idx < SERVICES.length) {
-      setActiveIdx(idx);
-    }
-  };
-
-  const scrollTo = (idx: number) => {
-    if (!scrollRef.current) return;
-    const width = scrollRef.current.clientWidth;
-    scrollRef.current.scrollTo({
-      left: idx * width,
-      behavior: "smooth",
-    });
-    setActiveIdx(idx);
-  };
+function EnterpriseSolutions() {
+  const solutions = [
+    {
+      id: "concierge",
+      title: "Airport Services",
+      subtitle: "Everything you need for a smooth airport journey.",
+      badge: "Flagship",
+      Icon: Crown,
+      gradient: "linear-gradient(145deg, #fff7ed 0%, #fef3e2 40%, #fdf8f0 100%)",
+      glowColor: "rgba(234,88,12,0.12)",
+      iconColor: "#ea580c",
+      ctaLink: "/solutions/concierge",
+      services: [
+        { name: "Meet & Greet", icon: Users },
+        { name: "Airport Lounge", icon: Hotel },
+        { name: "Fast Track", icon: Ticket },
+        { name: "Airport Transfer", icon: Car },
+      ],
+    },
+    {
+      id: "travel",
+      title: "Travel Services",
+      subtitle: "Bespoke hotel curation, VIP flight ticketing, express visa desks & Michelin-grade onboard dining.",
+      badge: "Travel",
+      Icon: Globe2,
+      gradient: "linear-gradient(145deg, #f0fdf4 0%, #ecfce8 40%, #f5fef2 100%)",
+      glowColor: "rgba(101,163,13,0.12)",
+      iconColor: "#65a30d",
+      ctaLink: "/solutions/travel",
+      services: [
+        { name: "Air Ticketing", icon: Ticket },
+        { name: "Hotel Booking", icon: Building2 },
+        { name: "Visa Assistance", icon: Sparkles },
+        { name: "On-board Meals", icon: Award },
+      ],
+    },
+    {
+      id: "cargo",
+      title: "Cargo & Logistics",
+      subtitle: "White-glove customs clearance, insured freight handling & climate-controlled live animal transport.",
+      badge: "Freight",
+      Icon: Package,
+      gradient: "linear-gradient(145deg, #faf5ff 0%, #f5f0ff 40%, #f8f4ff 100%)",
+      glowColor: "rgba(139,92,246,0.12)",
+      iconColor: "#7c3aed",
+      ctaLink: "/solutions/cargo",
+      services: [
+        { name: "Cargo Assistance", icon: Package },
+        { name: "AVI (Pet Transport)", icon: HeartPulse },
+      ],
+    },
+    {
+      id: "medical",
+      title: "Medical Assistance",
+      subtitle: "24/7 ICU-equipped air ambulance medevac, specialized rail ambulance & dignified repatriation.",
+      badge: "24/7 Critical",
+      Icon: HeartPulse,
+      gradient: "linear-gradient(145deg, #fff1f2 0%, #ffe4e6 40%, #fff5f6 100%)",
+      glowColor: "rgba(225,29,72,0.1)",
+      iconColor: "#e11d48",
+      ctaLink: "/solutions/medical",
+      services: [
+        { name: "Air Ambulance", icon: Plane },
+        { name: "Train Ambulance", icon: Car },
+        { name: "HUM (Repatriation)", icon: ShieldCheck },
+      ],
+    },
+    {
+      id: "aviation",
+      title: "Private Aviation",
+      subtitle: "On-demand private jet charter with exclusive FBO terminal access & bespoke cabin luxury worldwide.",
+      badge: "Executive",
+      Icon: Plane,
+      gradient: "linear-gradient(145deg, #fffbeb 0%, #fef9c3 40%, #fefce8 100%)",
+      glowColor: "rgba(202,138,4,0.12)",
+      iconColor: "#ca8a04",
+      ctaLink: "/solutions/aviation",
+      services: [
+        { name: "Private Charter", icon: Crown },
+      ],
+    },
+  ];
 
   return (
-    <section
-      id="services-mobile"
-      className="block md:hidden py-16 text-white overflow-hidden"
-      style={{ background: C.ink }}
-    >
-      <div className="px-6">
-        <div
-          className="flex items-center gap-3 text-[10px] uppercase tracking-[0.45em]"
-          style={{ ...mono, color: C.mint }}
-        >
-          <span className="h-px w-10" style={{ background: C.mint }} />
-          04 — Our Services
+    <section id="solutions" className="relative px-6 py-24 md:px-14 md:py-36 overflow-hidden" style={{ background: '#faf5ea' }}>
+      {/* Background ambient grain texture */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }} />
+
+      <div className="relative z-10 mx-auto max-w-[1380px]">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <div
+            className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.45em]"
+            style={{ ...mono, color: '#7c3aed' }}
+          >
+            <span className="h-px w-12" style={{ background: 'linear-gradient(to right, transparent, #7c3aed)' }} />
+            ENTERPRISE SOLUTIONS
+            <span className="h-px w-12" style={{ background: 'linear-gradient(to left, transparent, #7c3aed)' }} />
+          </div>
+          <h2
+            className="mt-6 text-[clamp(2.6rem,6vw,5.2rem)] leading-[1.0] text-slate-900 tracking-tight"
+            style={{ fontFamily: 'var(--font-heading)', fontWeight: 400 }}
+          >
+            Five pillars of{" "}
+            <span className="italic text-[#7c3aed]" style={{ fontFamily: 'var(--font-heading)' }}>
+              aviation excellence.
+            </span>
+          </h2>
+          <p className="mt-5 text-sm md:text-[15px] text-slate-600 font-body-luxury max-w-xl mx-auto leading-relaxed">
+            Our complete portfolio — organized into specialized enterprise domains — serves every dimension of premium flight and airport transit.
+          </p>
         </div>
-        <h2 className="mt-6 text-3xl leading-tight font-extrabold" style={display}>
-          Eight services.
-          <br />
-          <span className="italic" style={{ color: C.mint }}>
-            One signature welcome.
-          </span>
-        </h2>
 
-        {/* Horizontal Navigation Tabs */}
-        <div className="flex gap-2 overflow-x-auto pb-3 mt-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden snap-x">
-          {SERVICES.map((s, i) => {
-            const active = i === activeIdx;
-            return (
-              <button
-                key={s.t}
-                onClick={() => scrollTo(i)}
-                className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider whitespace-nowrap transition-all duration-300 ${
-                  active
-                    ? "bg-[#5fb5ad] text-[#0d2a36] shadow-md scale-105"
-                    : "bg-white/5 text-white/60 border border-white/5"
-                }`}
-                style={mono}
-              >
-                0{i + 1} · {s.t}
-              </button>
-            );
-          })}
+        {/* Showcase Panels */}
+        <div className="flex flex-col gap-10">
+          {solutions.map((sol, i) => (
+            <SolutionPanel key={sol.id} sol={sol} idx={i} />
+          ))}
         </div>
-      </div>
-
-      {/* Swipeable Cards Container */}
-      <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className="mt-4 flex overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
-        {SERVICES.map((s, i) => {
-          const Icon = s.Icon;
-          return (
-            <div key={s.t} className="w-full shrink-0 px-6 snap-center">
-              <div
-                className="overflow-hidden rounded-3xl border border-white/10 shadow-2xl relative"
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(14,49,63,0.95) 0%, rgba(10,30,39,0.95) 100%)",
-                }}
-              >
-                {/* Media Container */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden">
-                  {s.video ? (
-                    <video
-                      src={s.video}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  ) : (
-                    <img
-                      src={s.img}
-                      alt={s.t}
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a1e27] via-transparent to-transparent" />
-                  <div
-                    className="absolute top-4 right-4 text-3xl font-extrabold text-white/20"
-                    style={display}
-                  >
-                    0{i + 1}
-                  </div>
-                </div>
-
-                {/* Text Content */}
-                <div className="p-6">
-                  <div
-                    className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#5fb5ad]"
-                    style={mono}
-                  >
-                    <Icon className="h-3.5 w-3.5" />
-                    {s.d}
-                  </div>
-                  <h3 className="mt-3 text-2xl font-bold" style={display}>
-                    {s.t}
-                  </h3>
-                  <p className="mt-4 text-sm leading-relaxed text-white/70">{s.long}</p>
-
-                  <ul className="mt-5 space-y-2">
-                    {s.bullets.map((b) => (
-                      <li key={b} className="flex items-center gap-2.5 text-xs text-white/80">
-                        <span className="h-1 w-4 rounded-full bg-[#5fb5ad]" />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-8 flex gap-3">
-                    <Link
-                      to="/book"
-                      className="flex-1 text-center py-3.5 rounded-xl bg-gradient-to-r from-[#74d0c7] to-[#4fa098] text-[10px] font-bold uppercase tracking-wider text-[#0d2a36] shadow-lg transition-transform active:scale-98"
-                      style={mono}
-                    >
-                      Book Service
-                    </Link>
-                    <a
-                      href={`https://wa.me/919599087959?text=Hi!%20I'm%20interested%20in%20booking%20the%20${encodeURIComponent(s.t)}%20service.`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-center py-3.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-white transition-all active:scale-98"
-                      style={mono}
-                    >
-                      Talk to us
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Pagination Dots */}
-      <div className="flex justify-center gap-1.5 mt-6">
-        {SERVICES.map((s, i) => (
-          <button
-            key={`mobile-dot-${s.t || i}`}
-            onClick={() => scrollTo(i)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              i === activeIdx ? "w-6 bg-[#5fb5ad]" : "w-1.5 bg-white/20"
-            }`}
-            aria-label={`Go to slide ${i + 1}`}
-          />
-        ))}
       </div>
     </section>
   );
@@ -2242,9 +2409,8 @@ function Journey() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-10px" }}
               transition={{ duration: 0.7, delay: 0.05 * i }}
-              className={`relative mb-14 grid grid-cols-[44px_1fr] gap-6 md:grid-cols-2 md:gap-16 ${
-                i % 2 ? "md:[&>*:first-child]:order-2" : ""
-              }`}
+              className={`relative mb-14 grid grid-cols-[44px_1fr] gap-6 md:grid-cols-2 md:gap-16 ${i % 2 ? "md:[&>*:first-child]:order-2" : ""
+                }`}
             >
               {/* Timeline Indicator Dot */}
               <div className="relative flex items-start">
@@ -2257,8 +2423,9 @@ function Journey() {
               {/* Neumorphic Step Card */}
               <motion.div
                 whileHover={{
-                  y: -4,
-                  boxShadow: "10px 10px 24px #e0d8c8, -10px -10px 24px #ffffff",
+                  scale: 1.02,
+                  y: -8,
+                  boxShadow: "12px 12px 30px #dcd3c0, -12px -12px 30px #ffffff",
                 }}
                 className="p-8 rounded-[28px] transition-all duration-300 flex flex-col justify-between"
                 style={{
@@ -2493,8 +2660,9 @@ function Testimonials() {
                   key={r.name}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: i * 0.12 }}
-                  className="group relative overflow-hidden rounded-2xl p-8 md:p-10 transition-shadow hover:shadow-[0_20px_60px_-20px_rgba(13,90,110,0.25)]"
+                  whileHover={{ y: -6 }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: i * 0.12 }}
+                  className="group relative overflow-hidden rounded-2xl p-8 md:p-10 transition-all duration-300 hover:shadow-[0_20px_60px_-20px_rgba(13,90,110,0.25)]"
                   style={{ background: C.paper, border: `1px solid ${C.line}` }}
                 >
                   {/* Large decorative quote */}
@@ -2733,27 +2901,33 @@ function FinalCTA() {
             A guest relations officer will reply within minutes. Tell us only where, and when.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <a
+            <MotionA
               href="#book"
-              className="inline-flex items-center gap-3 rounded-full px-8 py-4 text-[12px] uppercase tracking-[0.3em] transition hover:brightness-110"
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center gap-3 rounded-full px-8 py-4 text-[12px] uppercase tracking-[0.3em] shadow-lg transition hover:brightness-110"
               style={{ ...mono, background: C.teal, color: "#fff" }}
             >
               Book Services →
-            </a>
-            <Link
+            </MotionA>
+            <MotionLink
               to="/charter"
-              className="inline-flex items-center gap-3 rounded-full px-8 py-4 text-[12px] uppercase tracking-[0.3em] transition hover:brightness-110"
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center gap-3 rounded-full px-8 py-4 text-[12px] uppercase tracking-[0.3em] shadow-lg transition hover:brightness-110"
               style={{ ...mono, background: C.mint, color: C.ink }}
             >
               <Plane className="h-3.5 w-3.5" /> Private Charter
-            </Link>
-            <a
+            </MotionLink>
+            <MotionA
               href="https://wa.me/919599087959"
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.98 }}
               className="inline-flex items-center gap-3 rounded-full px-8 py-4 text-[12px] uppercase tracking-[0.3em] transition"
               style={{ ...mono, border: `1px solid ${C.teal}`, color: C.teal }}
             >
               WhatsApp Us
-            </a>
+            </MotionA>
           </div>
         </motion.div>
       </div>
@@ -2785,19 +2959,19 @@ function Footer() {
                 <img
                   src={branding.logo_light_url || branding.logo_url}
                   alt={branding.company_name}
-                  className="h-9 w-auto md:h-10 lg:h-[42px] object-contain"
+                  className="h-11 sm:h-13 md:h-16 lg:h-18 max-h-[70px] w-auto object-contain scale-[2.2] sm:scale-[2.5] md:scale-[2.8] origin-left transition-all duration-300 transform-gpu hover:scale-[2.95]"
                 />
               ) : (
                 <>
                   <div
-                    className="grid h-9 w-9 place-items-center rounded-sm"
+                    className="grid h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14 place-items-center rounded-2xl shadow-md"
                     style={{ background: C.mint }}
                   >
-                    <Plane className="h-4 w-4 -rotate-45" style={{ color: C.tealDeep }} />
+                    <Plane className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 -rotate-45" style={{ color: C.tealDeep }} />
                   </div>
                   <div style={mono}>
-                    <div className="text-[14px] font-semibold tracking-[0.28em]">{firstPart}</div>
-                    <div className="-mt-0.5 text-[8px] tracking-[0.45em] text-white/60">
+                    <div className="text-lg sm:text-xl md:text-2xl font-bold tracking-[0.28em]">{firstPart}</div>
+                    <div className="mt-0.5 text-[9px] sm:text-[10px] tracking-[0.45em] text-white/60">
                       {restPart} · SUSWAGATAM
                     </div>
                   </div>

@@ -1,4 +1,25 @@
 /* eslint-disable react-refresh/only-export-components */
+/**
+ * PageShell — Shared design system primitives.
+ *
+ * Design tokens are defined as CSS custom properties in src/styles.css
+ * under the `--shaf-*` namespace. The `creamTheme` and `darkTheme`
+ * objects below mirror those tokens for use in inline styles.
+ *
+ * Utility classes available globally:
+ *   .panel-luxury      — Card / surface with backdrop blur
+ *   .shadow-luxury-sm  — Subtle elevation
+ *   .shadow-luxury-md  — Medium elevation
+ *   .shadow-luxury-lg  — Hero elevation
+ *   .input-luxury      — Consistent text input
+ *   .textarea-luxury   — Consistent textarea
+ *   .btn-primary-luxury — Primary CTA button
+ *   .btn-secondary-luxury — Secondary / outlined button
+ *   .font-display-luxury — Fraunces display headings
+ *   .font-body-luxury  — Plus Jakarta Sans body text
+ *   .font-mono-luxury  — JetBrains Mono labels / codes
+ *   .animate-fadeIn    — Smooth fade-in entrance
+ */
 import type { CSSProperties, ReactNode } from "react";
 
 export const pageDisplay: CSSProperties = {
@@ -43,9 +64,7 @@ export function PageContainer({
 }) {
   return (
     <main
-      className={`min-h-screen px-4 py-20 sm:px-6 md:px-10 lg:px-14 font-body-luxury ${
-        tone === "cream" ? "bg-[#faf8f5] text-[#0b1a24]" : "dark bg-[#0a0c10] text-[#f3f4f6]"
-      } ${className}`}
+      className={`min-h-screen px-4 py-20 sm:px-6 md:px-10 lg:px-14 font-body-luxury bg-[#faf8f5] text-[#0b1a24] ${className}`}
     >
       <div className="mx-auto w-full max-w-[1280px]">{children}</div>
     </main>
@@ -70,14 +89,12 @@ export function Eyebrow({
 }) {
   return (
     <div
-      className={`flex min-w-0 items-center gap-3 font-mono-luxury ${
-        tone === "cream" ? "text-[#576875]" : "text-[#8f9fa9]"
-      }`}
+      className={`flex min-w-0 items-center gap-3 font-mono-luxury ${tone === "cream" ? "text-[#576875]" : "text-[#8f9fa9]"
+        }`}
     >
       <span
-        className={`h-px w-8 shrink-0 sm:w-12 ${
-          tone === "cream" ? "bg-[#0c3b46]" : "bg-[#d4c09d]"
-        }`}
+        className={`h-px w-8 shrink-0 sm:w-12 ${tone === "cream" ? "bg-[#0c3b46]" : "bg-[#d4c09d]"
+          }`}
       />
       <span className="truncate">{children}</span>
     </div>
@@ -95,9 +112,8 @@ export function Panel({
 }) {
   return (
     <div
-      className={`panel-luxury p-5 sm:p-6 shadow-luxury-sm ${
-        tone === "cream" ? "" : "dark"
-      } ${className}`}
+      className={`panel-luxury p-5 sm:p-6 shadow-luxury-sm ${tone === "cream" ? "" : "dark"
+        } ${className}`}
     >
       {children}
     </div>
@@ -126,9 +142,8 @@ export function FormField({
   return (
     <label className="block min-w-0">
       <span
-        className={`block truncate font-mono-luxury ${
-          tone === "cream" ? "text-[#576875]" : "text-[#8f9fa9]"
-        }`}
+        className={`block truncate font-mono-luxury ${tone === "cream" ? "text-[#576875]" : "text-[#8f9fa9]"
+          }`}
       >
         {label}
       </span>
@@ -139,9 +154,8 @@ export function FormField({
         minLength={minLength}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`mt-2 input-luxury ${
-          tone === "cream" ? "text-[#0b1a24]" : "dark text-[#f3f4f6]"
-        }`}
+        className={`mt-2 input-luxury ${tone === "cream" ? "text-[#0b1a24]" : "dark text-[#f3f4f6]"
+          }`}
       />
     </label>
   );
@@ -163,9 +177,8 @@ export function TextAreaField({
   return (
     <label className="block min-w-0">
       <span
-        className={`block truncate font-mono-luxury ${
-          tone === "cream" ? "text-[#576875]" : "text-[#8f9fa9]"
-        }`}
+        className={`block truncate font-mono-luxury ${tone === "cream" ? "text-[#576875]" : "text-[#8f9fa9]"
+          }`}
       >
         {label}
       </span>
@@ -176,9 +189,8 @@ export function TextAreaField({
         maxLength={4000}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`mt-2 textarea-luxury ${
-          tone === "cream" ? "text-[#0b1a24]" : "dark text-[#f3f4f6]"
-        }`}
+        className={`mt-2 textarea-luxury ${tone === "cream" ? "text-[#0b1a24]" : "dark text-[#f3f4f6]"
+          }`}
       />
     </label>
   );
