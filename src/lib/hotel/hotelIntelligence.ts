@@ -17,13 +17,13 @@ export function recommendRoomCategory(
   paxInfants: number,
   roomType: string
 ): string {
-  if (roomType === "palace") return "Presidential / Palace Suite";
-  if (paxAdults === 2 && paxChildren === 0 && paxInfants === 0) return "Deluxe King Suite";
-  if (paxAdults === 2 && paxInfants >= 1) return "Deluxe King Suite + Baby Cot";
+  if (roomType === "presidential_suite" || roomType === "palace") return "Presidential / Signature Suite";
+  if (roomType === "private_villa" || roomType === "heritage_villa") return "Private Villa / Residence";
+  if (paxAdults === 2 && paxChildren === 0 && paxInfants === 0) return "Deluxe Room / Suite";
+  if (paxAdults === 2 && paxInfants >= 1) return "Deluxe Room + Baby Cot";
   if (paxChildren >= 1 || paxAdults > 2) return "Executive Family Suite";
-  if (roomType === "heritage_villa") return "Bespoke Heritage Villa";
-  if (roomType === "boutique") return "Executive Boutique Suite";
-  return "Deluxe Suite";
+  if (roomType === "executive_suite" || roomType === "deluxe_suite") return "Executive Suite";
+  return "Standard / Deluxe Room";
 }
 
 export function detectGroupBooking(roomCount: number): boolean {
@@ -36,7 +36,7 @@ export function detectVipStay(
   roomCount: number,
   isCorporate?: boolean
 ): boolean {
-  return roomType === "palace" || nights >= 30 || roomCount >= 5 || Boolean(isCorporate);
+  return roomType === "presidential_suite" || roomType === "palace" || nights >= 30 || roomCount >= 5 || Boolean(isCorporate);
 }
 
 export function calculateHotelEstimate(
@@ -45,11 +45,11 @@ export function calculateHotelEstimate(
   nights: number,
   personalization: { airportTransfer?: boolean; spaInterest?: boolean; earlyCheckin?: boolean }
 ): number {
-  let baseNightRate = 35000;
-  if (roomType === "palace") baseNightRate = 120000;
-  else if (roomType === "heritage_villa") baseNightRate = 75000;
-  else if (roomType === "boutique") baseNightRate = 45000;
-  else if (roomType === "corporate") baseNightRate = 28000;
+  let baseNightRate = 18000;
+  if (roomType === "presidential_suite" || roomType === "palace") baseNightRate = 95000;
+  else if (roomType === "private_villa" || roomType === "heritage_villa") baseNightRate = 65000;
+  else if (roomType === "executive_suite" || roomType === "deluxe_suite") baseNightRate = 35000;
+  else if (roomType === "deluxe_room") baseNightRate = 22000;
 
   let extraPrice = 0;
   if (personalization.airportTransfer) extraPrice += 6500;

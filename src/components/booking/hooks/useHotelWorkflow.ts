@@ -16,6 +16,7 @@ export interface HotelStayData {
   paxChildren: number;
   paxInfants: number;
   roomCount: number;
+  hotelCategory?: string;
   roomType: string;
   purposeOfStay: "Business" | "Family" | "Honeymoon" | "Anniversary" | "Wellness" | "Leisure";
   brandPreference?: string;
@@ -83,7 +84,8 @@ export function useHotelWorkflow(initialDest = "Dubai, UAE") {
       paxChildren: 0,
       paxInfants: 0,
       roomCount: 1,
-      roomType: "deluxe_suite",
+      hotelCategory: "no_preference",
+      roomType: "deluxe_room",
       purposeOfStay: "Leisure",
       brandPreference: "Any Preferred Hotel",
       budgetGuidance: "",

@@ -134,9 +134,9 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
     icon: Hotel,
     ctaText: "Submit Travel Enquiry",
     estimatedTime: "1 min",
-    successTitle: "Hotel Suite Reservation Staged",
+    successTitle: "Hotel Reservation Staged",
     successMessage: "Your luxury travel coordinator has received your requirements and is preparing your voucher.",
-    badgeLabel: "Suite Voucher Staged",
+    badgeLabel: "Hotel Confirmation Staged",
     stepSequence: [
       {
         id: "step_service_select",
@@ -157,18 +157,26 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
           { id: "check_in", label: "Check-in Date", type: "date", required: true, gridCols: 2 },
           { id: "check_out", label: "Check-out Date", type: "date", required: true, gridCols: 2 },
           { id: "guests_count", label: "Total Guest Count", type: "passenger_counter", required: true, gridCols: 2 },
-          { id: "room_type", label: "Preferred Room Category", type: "select", options: [
-              { label: "Standard / Deluxe Room", value: "deluxe_room" },
-              { label: "Executive Suite", value: "deluxe_suite" },
-              { label: "Boutique Hotel", value: "boutique" },
-              { label: "Luxury / Palace Suite", value: "palace" },
-              { label: "Heritage Villa", value: "heritage_villa" },
-              { label: "Business Suite", value: "corporate" },
+          { id: "hotel_category", label: "Hotel Category Preference", type: "select", options: [
+              { label: "No Preference (Concierge Curated)", value: "no_preference" },
+              { label: "4-Star Hotel", value: "4_star" },
+              { label: "5-Star Hotel", value: "5_star" },
+              { label: "Luxury Boutique", value: "luxury_boutique" },
+              { label: "Beach / Country Resort", value: "resort" },
+              { label: "Business & Executive Hotel", value: "business_hotel" },
+            ], required: true, gridCols: 2 },
+          { id: "room_type", label: "Preferred Room Type", type: "select", options: [
+              { label: "Standard Room", value: "standard_room" },
+              { label: "Deluxe Room", value: "deluxe_room" },
+              { label: "Executive Suite", value: "executive_suite" },
+              { label: "Junior / Family Suite", value: "family_suite" },
+              { label: "Presidential / Signature Suite", value: "presidential_suite" },
+              { label: "Private Villa / Residence", value: "private_villa" },
             ], required: true, gridCols: 2 },
           { id: "room_count", label: "Number of Rooms", type: "select", options: [
               { label: "1 Room", value: "1" },
               { label: "2 Rooms", value: "2" },
-              { label: "3+ Rooms / Suite Block", value: "3" },
+              { label: "3+ Rooms", value: "3" },
             ], required: true, gridCols: 2 },
           { id: "meal_plan", label: "Meal Plan Preference", type: "select", options: [
               { label: "Bed & Gourmet Breakfast (CP)", value: "breakfast" },
