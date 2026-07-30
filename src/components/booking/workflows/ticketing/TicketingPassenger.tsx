@@ -1,153 +1,502 @@
-import React from "react";
-import { ArrowRight, User, Phone, Mail, FileText } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowRight, User, Phone, Mail, FileText, ChevronDown, ChevronUp, Check, AlertCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { TicketingPassengerData } from "../../hooks/useTicketingWorkflow";
+import { TicketingPassengerData, TicketingJourneyData, IndividualPassenger } from "../../hooks/useTicketingWorkflow";
 
 interface TicketingPassengerProps {
   data: TicketingPassengerData;
+  journeyData?: TicketingJourneyData;
   onChange: (fields: Partial<TicketingPassengerData>) => void;
   onBack: () => void;
   onNext: () => void;
 }
 
-export function TicketingPassenger({ data, onChange, onBack, onNext }: TicketingPassengerProps) {
+export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext }: TicketingPassengerProps) {
+  const paxAdults = journeyData?.paxAdults || 1;
+  const paxChildren = journeyData?.paxChildren || 0;
+  const paxInfants = journeyData?.paxInfants || 0;
+  const totalPax = paxAdults + paxChildren + paxInfants;
+
+  // Initialize or align passenger list based on counts
+  const [passengers, setPassengers] = useState<IndividualPassenger[]>(() => {
+    if (data.passengersList && data.passengersList.length === totalPax) {
+      return data.passengersList;
+    }
+
+    const list: IndividualPassenger[] = [];
+    let pNum = 1;
+
+    for (let i = 0; i < paxAdults; i++) {
+      list.push({
+        id: `pax-${pNum}`,
+        type: "Adult",
+        passengerNumber: pNum,
+        firstName: i === 0 && data.fullName ? data.fullName.split(" ")[0] || "" : "",
+        lastName: i === 0 && data.fullName ? data.fullName.split(" ").slice(1).join(" ") || "" : "",
+        gender: "",
+        dateOfBirth: "",
+        nationality: "Indian",
+        passportNumber: "",
+        passportExpiry: "",
+        frequentFlyerNumber: "",
+      });
+      pNum++;
+    }
+
+    for (let i = 0; i < paxChildren; i++) {
+      list.push({
+        id: `pax-${pNum}`,
+        type: "Child",
+        passengerNumber: pNum,
+        firstName: "",
+        lastName: "",
+        gender: "",
+        dateOfBirth: "",
+        nationality: "Indian",
+        passportNumber: "",
+        passportExpiry: "",
+        frequentFlyerNumber: "",
+      });
+      pNum++;
+    }
+
+    for (let i = 0; i < paxInfants; i++) {
+      list.push({
+        id: `pax-${pNum}`,
+        type: "Infant",
+        passengerNumber: pNum,
+        firstName: "",
+        lastName: "",
+        gender: "",
+        dateOfBirth: "",
+        nationality: "Indian",
+        passportNumber: "",
+        passportExpiry: "",
+        frequentFlyerNumber: "",
+      });
+      pNum++;
+    }
+
+    return list;
+  });
+
+  // Track expanded accordion card (card 1 expanded by default)
+  const [expandedId, setExpandedId] = useState<string>("pax-1");
+
+  // Keep parent state synced
+  useEffect(() => {
+    onChange({ passengersList: passengers });
+  }, [passengers]);
+
+  const updateIndividualPassenger = (id: string, fields: Partial<IndividualPassenger>) => {
+    setPassengers((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, ...fields } : p))
+    );
+  };
+
+  const isPassengerComplete = (p: IndividualPassenger) => {
+    return Boolean(
+      p.firstName.trim() &&
+        p.lastName.trim() &&
+        p.gender &&
+        p.dateOfBirth &&
+        p.nationality.trim()
+    );
+  };
+
+  const completedCount = passengers.filter(isPassengerComplete).length;
+
   const handleContinue = () => {
     if (!data.fullName || !data.fullName.trim()) {
-      toast.error("Please enter Full Name.");
+      toast.error("Please enter Lead Contact Full Name.");
       return;
     }
     if (!data.phone || !data.phone.trim()) {
-      toast.error("Please enter Phone / Mobile Number.");
+      toast.error("Please enter Lead Contact Phone.");
       return;
     }
     if (!data.email || !data.email.trim()) {
-      toast.error("Please enter Email Address.");
+      toast.error("Please enter Lead Contact Email.");
       return;
     }
+
+    // Validate every individual passenger
+    for (const p of passengers) {
+      if (!isPassengerComplete(p)) {
+        setExpandedId(p.id);
+        toast.error(
+          `Please complete required details for Passenger ${p.passengerNumber} (${p.type}).`
+        );
+        return;
+      }
+    }
+
     onNext();
   };
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-slate-100 pb-4">
-        <span className="text-[10px] font-mono text-emerald-700 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200">
-          Step 2 of 3 — Passenger Contact
-        </span>
-        <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
-          Passenger & Contact Details
-        </h2>
-        <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
-          Enter lead passenger information for commercial airline e-ticket issuance.
-        </p>
+      <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <span className="text-[10px] font-mono text-emerald-700 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200">
+            Step 2 of 3 — Passenger Manifest
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
+            Passenger & Contact Details
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
+            Lead contact and individual manifest for commercial airline e-ticket issuance.
+          </p>
+        </div>
+
+        {/* Progress Counter Badge */}
+        <div className="px-4 py-2 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-right">
+          <span className="text-[10px] font-mono uppercase text-emerald-800 tracking-wider block font-bold">
+            Manifest Status
+          </span>
+          <span className="text-xs font-mono font-bold text-emerald-900">
+            Completed {completedCount} of {totalPax} Passenger(s)
+          </span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <div>
-          <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-            Lead Passenger Full Name *
-          </label>
-          <input
-            type="text"
-            value={data.fullName}
-            onChange={(e) => onChange({ fullName: e.target.value })}
-            placeholder="e.g. Lord Henry Sterling"
-            className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
-          />
+      {/* 1. Lead Contact Section */}
+      <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4">
+        <div className="flex items-center gap-2">
+          <User className="w-4 h-4 text-emerald-700" />
+          <h3 className="text-xs font-mono font-bold uppercase text-slate-900 tracking-wider">
+            Lead Contact & Booking Organizer
+          </h3>
         </div>
 
-        <div>
-          <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-            Company Name (Optional)
-          </label>
-          <input
-            type="text"
-            value={data.companyName || ""}
-            onChange={(e) => onChange({ companyName: e.target.value })}
-            placeholder="e.g. Sterling Global Enterprises"
-            className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-            Mobile Number *
-          </label>
-          <input
-            type="tel"
-            value={data.phone}
-            onChange={(e) => onChange({ phone: e.target.value })}
-            placeholder="+44 7700 900077"
-            className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-mono font-bold"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-            Email Address *
-          </label>
-          <input
-            type="email"
-            value={data.email}
-            onChange={(e) => onChange({ email: e.target.value })}
-            placeholder="guest@shafskyaviation.com"
-            className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
-          />
-        </div>
-
-        {/* VIP Assistance & Special Needs Layer */}
-        <div className="sm:col-span-2 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
-          <span className="text-xs font-mono font-bold text-slate-800 uppercase tracking-wider block">
-            Special Assistance & VIP Preferences
-          </span>
-          <div className="flex flex-wrap gap-4">
-            <label className="flex items-center gap-2 cursor-pointer text-xs font-sans font-semibold text-slate-700">
-              <input
-                type="checkbox"
-                checked={data.wheelchairAssistance || false}
-                onChange={(e) => onChange({ wheelchairAssistance: e.target.checked })}
-                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
-              />
-              <span>Wheelchair Ramp Escort</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer text-xs font-sans font-semibold text-slate-700">
-              <input
-                type="checkbox"
-                checked={data.medicalAssistance || false}
-                onChange={(e) => onChange({ medicalAssistance: e.target.checked })}
-                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
-              />
-              <span>Medical / Oxygen Assistance</span>
-            </label>
-          </div>
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-[11px] font-mono text-slate-600 font-bold mb-1">
-              Dietary Restrictions / Meal Preferences
+            <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+              Lead Contact Name *
             </label>
             <input
               type="text"
-              value={data.dietaryRestrictions || ""}
-              onChange={(e) => onChange({ dietaryRestrictions: e.target.value })}
-              placeholder="e.g. Diabetic meal, Halal, Kosher, Strict Vegan..."
-              className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 text-xs font-sans font-medium"
+              value={data.fullName}
+              onChange={(e) => {
+                const name = e.target.value;
+                onChange({ fullName: name });
+                // Auto pre-fill Passenger 1 first & last name if not edited
+                if (passengers.length > 0) {
+                  const parts = name.split(" ");
+                  updateIndividualPassenger(passengers[0].id, {
+                    firstName: parts[0] || "",
+                    lastName: parts.slice(1).join(" ") || "",
+                  });
+                }
+              }}
+              placeholder="e.g. Lord Henry Sterling"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+              Company Name (Optional)
+            </label>
+            <input
+              type="text"
+              value={data.companyName || ""}
+              onChange={(e) => onChange({ companyName: e.target.value })}
+              placeholder="e.g. Sterling Global Enterprises"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+              Mobile Number *
+            </label>
+            <input
+              type="tel"
+              value={data.phone}
+              onChange={(e) => onChange({ phone: e.target.value })}
+              placeholder="+44 7700 900077"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-mono font-bold"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+              Email Address *
+            </label>
+            <input
+              type="email"
+              value={data.email}
+              onChange={(e) => onChange({ email: e.target.value })}
+              placeholder="guest@shafskyaviation.com"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
             />
           </div>
         </div>
+      </div>
 
-        <div className="sm:col-span-2">
-          <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-            Special Requests / VIP Notes (Optional)
+      {/* 2. Dynamic Multi-Passenger Accordions */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-mono font-bold text-slate-800 uppercase tracking-wider">
+          Individual Passenger Manifest Details ({totalPax} Passengers)
+        </h3>
+
+        {passengers.map((p) => {
+          const isExpanded = expandedId === p.id;
+          const complete = isPassengerComplete(p);
+
+          return (
+            <div
+              key={p.id}
+              className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                complete
+                  ? "border-emerald-200 bg-white"
+                  : "border-slate-200 bg-slate-50/50"
+              }`}
+            >
+              {/* Accordion Header */}
+              <button
+                type="button"
+                onClick={() => setExpandedId(isExpanded ? "" : p.id)}
+                className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-100/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-mono font-bold text-xs ${
+                      complete
+                        ? "bg-emerald-100 text-emerald-800"
+                        : "bg-amber-100 text-amber-800"
+                    }`}
+                  >
+                    P{p.passengerNumber}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-slate-900 font-sans">
+                        {p.firstName || p.lastName
+                          ? `${p.firstName} ${p.lastName}`.trim()
+                          : `Passenger ${p.passengerNumber}`}
+                      </span>
+                      <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold">
+                        {p.type}
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 font-mono">
+                      {p.gender ? `${p.gender} • ` : ""}
+                      {p.nationality || "Indian"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {complete ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+                      <Check className="w-3 h-3" />
+                      <span>Complete</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
+                      <AlertCircle className="w-3 h-3" />
+                      <span>Incomplete</span>
+                    </span>
+                  )}
+                  {isExpanded ? (
+                    <ChevronUp className="w-4 h-4 text-slate-500" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-slate-500" />
+                  )}
+                </div>
+              </button>
+
+              {/* Accordion Body */}
+              {isExpanded && (
+                <div className="p-5 border-t border-slate-100 bg-white space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-[11px] font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+                        First Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={p.firstName}
+                        onChange={(e) =>
+                          updateIndividualPassenger(p.id, {
+                            firstName: e.target.value,
+                          })
+                        }
+                        placeholder="Given Name"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+                        Last Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={p.lastName}
+                        onChange={(e) =>
+                          updateIndividualPassenger(p.id, {
+                            lastName: e.target.value,
+                          })
+                        }
+                        placeholder="Surname"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+                        Gender *
+                      </label>
+                      <select
+                        value={p.gender}
+                        onChange={(e) =>
+                          updateIndividualPassenger(p.id, {
+                            gender: e.target.value as any,
+                          })
+                        }
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
+                      >
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+                        Date of Birth *
+                      </label>
+                      <input
+                        type="date"
+                        value={p.dateOfBirth}
+                        onChange={(e) =>
+                          updateIndividualPassenger(p.id, {
+                            dateOfBirth: e.target.value,
+                          })
+                        }
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm font-mono font-bold"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+                        Nationality *
+                      </label>
+                      <input
+                        type="text"
+                        value={p.nationality}
+                        onChange={(e) =>
+                          updateIndividualPassenger(p.id, {
+                            nationality: e.target.value,
+                          })
+                        }
+                        placeholder="e.g. Indian, British, American"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+                        Frequent Flyer # (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={p.frequentFlyerNumber || ""}
+                        onChange={(e) =>
+                          updateIndividualPassenger(p.id, {
+                            frequentFlyerNumber: e.target.value,
+                          })
+                        }
+                        placeholder="e.g. SQ984021"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm font-mono font-bold"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+                        Passport Number (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={p.passportNumber || ""}
+                        onChange={(e) =>
+                          updateIndividualPassenger(p.id, {
+                            passportNumber: e.target.value,
+                          })
+                        }
+                        placeholder="e.g. Z8492041"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm font-mono font-bold uppercase"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+                        Passport Expiry (Optional)
+                      </label>
+                      <input
+                        type="date"
+                        value={p.passportExpiry || ""}
+                        onChange={(e) =>
+                          updateIndividualPassenger(p.id, {
+                            passportExpiry: e.target.value,
+                          })
+                        }
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm font-mono font-bold"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 3. VIP Assistance Layer */}
+      <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+        <span className="text-xs font-mono font-bold text-slate-800 uppercase tracking-wider block">
+          Special Assistance & VIP Preferences
+        </span>
+        <div className="flex flex-wrap gap-4">
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-sans font-semibold text-slate-700">
+            <input
+              type="checkbox"
+              checked={data.wheelchairAssistance || false}
+              onChange={(e) => onChange({ wheelchairAssistance: e.target.checked })}
+              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+            />
+            <span>Wheelchair Ramp Escort</span>
           </label>
-          <textarea
-            rows={2}
-            value={data.specialRequests}
-            onChange={(e) => onChange({ specialRequests: e.target.value })}
-            placeholder="Frequent flyer numbers, passport expiry, or specific seat requests..."
-            className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium resize-none"
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-sans font-semibold text-slate-700">
+            <input
+              type="checkbox"
+              checked={data.medicalAssistance || false}
+              onChange={(e) => onChange({ medicalAssistance: e.target.checked })}
+              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+            />
+            <span>Medical / Oxygen Assistance</span>
+          </label>
+        </div>
+
+        <div>
+          <label className="block text-[11px] font-mono text-slate-600 font-bold mb-1">
+            Dietary Restrictions / Meal Preferences
+          </label>
+          <input
+            type="text"
+            value={data.dietaryRestrictions || ""}
+            onChange={(e) => onChange({ dietaryRestrictions: e.target.value })}
+            placeholder="e.g. Diabetic meal, Halal, Kosher, Strict Vegan..."
+            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 text-xs font-sans font-medium"
           />
         </div>
       </div>
 
+      {/* Action Buttons */}
       <div className="pt-4 flex items-center justify-between">
         <button
           type="button"
@@ -162,7 +511,7 @@ export function TicketingPassenger({ data, onChange, onBack, onNext }: Ticketing
           onClick={handleContinue}
           className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#84cc16] hover:bg-[#65a30d] text-[#0f172a] font-mono text-xs font-extrabold uppercase tracking-widest shadow-sm hover:scale-105 transition-all"
         >
-          <span>Review Ticket Request</span>
+          <span>Personalize & Review</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>

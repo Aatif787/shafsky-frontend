@@ -128,6 +128,7 @@ export function TicketingWorkflow({ searchParams }: TicketingWorkflowProps) {
           {currentStep === 2 && (
             <TicketingPassenger
               data={passenger}
+              journeyData={journey}
               onChange={updatePassenger}
               onBack={() => {
                 setCurrentStep(1);

@@ -28,6 +28,20 @@ export interface TicketingJourneyData {
   budgetGuidance?: string;
 }
 
+export interface IndividualPassenger {
+  id: string;
+  type: "Adult" | "Child" | "Infant";
+  passengerNumber: number;
+  firstName: string;
+  lastName: string;
+  gender: "Male" | "Female" | "Other" | "";
+  dateOfBirth: string;
+  nationality: string;
+  passportNumber?: string;
+  passportExpiry?: string;
+  frequentFlyerNumber?: string;
+}
+
 export interface TicketingPassengerData {
   fullName: string;
   phone: string;
@@ -38,6 +52,7 @@ export interface TicketingPassengerData {
   wheelchairAssistance?: boolean;
   medicalAssistance?: boolean;
   dietaryRestrictions?: string;
+  passengersList?: IndividualPassenger[];
 }
 
 export function useTicketingWorkflow(initialOrigin = "London Heathrow (LHR)", initialDest = "Delhi Indira Gandhi (DEL)") {
