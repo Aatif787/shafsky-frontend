@@ -39,15 +39,15 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
   const [bookingRef, setBookingRef] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
 
-  // Step 1: Travel Info
-  const [destinationCountry, setDestinationCountry] = useState<string>(initialDestination || "United Arab Emirates");
-  const [passportCountry, setPassportCountry] = useState<string>("India");
-  const [residenceCountry, setResidenceCountry] = useState<string>("India");
+  // Step 1: Travel Info - START 100% EMPTY DEFAULT VALUES
+  const [destinationCountry, setDestinationCountry] = useState<string>(initialDestination || "");
+  const [passportCountry, setPassportCountry] = useState<string>("");
+  const [residenceCountry, setResidenceCountry] = useState<string>("");
   const [behalfOf, setBehalfOf] = useState<"self" | "family" | "corporate">("self");
-  const [travelPurpose, setTravelPurpose] = useState<TravelPurpose>("tourism");
+  const [travelPurpose, setTravelPurpose] = useState<TravelPurpose | "">("");
   const [dateMode, setDateMode] = useState<"fixed" | "tentative">("fixed");
   const [departDate, setDepartDate] = useState<string>("");
-  const [tentativeMonth, setTentativeMonth] = useState<string>("2026-09");
+  const [tentativeMonth, setTentativeMonth] = useState<string>("");
   const [adultsCount, setAdultsCount] = useState<number>(1);
   const [childrenCount, setChildrenCount] = useState<number>(0);
   const [infantsCount, setInfantsCount] = useState<number>(0);
@@ -55,14 +55,14 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
   const [hasBookedHotel, setHasBookedHotel] = useState<boolean>(false);
   const [needsHotelAssistance, setNeedsHotelAssistance] = useState<boolean>(false);
 
-  // Step 2: Applicant Details
+  // Step 2: Applicant Details - START 100% EMPTY
   const [applicants, setApplicants] = useState<IndividualApplicant[]>([
     {
       id: "app-1",
       firstName: "",
       lastName: "",
       dob: "",
-      nationality: "India",
+      nationality: "",
       passportNumber: "",
       passportExpiry: "",
       hasPreviousVisa: false,
@@ -72,7 +72,7 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
   const [coordinatorTitle, setCoordinatorTitle] = useState<string>("");
   const [companyName, setCompanyName] = useState<string>("");
 
-  // Step 5: Lead Contact
+  // Step 5: Lead Contact - START 100% EMPTY
   const [contactName, setContactName] = useState<string>("");
   const [contactEmail, setContactEmail] = useState<string>("");
   const [contactPhone, setContactPhone] = useState<string>("");
@@ -80,9 +80,9 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
 
   // Frontend Intelligence Evaluation
   const evaluation: VisaEvaluationResult = evaluateVisaRequest({
-    passportCountry,
-    destinationCountry,
-    travelPurpose,
+    passportCountry: passportCountry || "India",
+    destinationCountry: destinationCountry || "United Arab Emirates",
+    travelPurpose: (travelPurpose as TravelPurpose) || "tourism",
     travelDate: dateMode === "fixed" ? departDate : tentativeMonth,
     applicantType: behalfOf === "corporate" ? "corporate_delegation" : behalfOf === "family" ? "family" : "individual",
   });
@@ -95,7 +95,7 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
         firstName: "",
         lastName: "",
         dob: "",
-        nationality: passportCountry || "India",
+        nationality: passportCountry || "",
         passportNumber: "",
         passportExpiry: "",
         hasPreviousVisa: false,
@@ -136,7 +136,7 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
         pax_children: childrenCount,
         pax_infants: infantsCount,
         service_type: "visa_assistance",
-        special_requests: `Behalf: ${behalfOf.toUpperCase()} | Purpose: ${travelPurpose} | Applicants: ${applicants.map((a) => `${a.firstName} ${a.lastName}`).join(", ")} | Flight Booked: ${hasBookedFlight ? "Yes" : "No"} | Hotel Booked: ${hasBookedHotel ? "Yes" : "No"} | Hotel Help Needed: ${needsHotelAssistance ? "Yes" : "No"} | Notes: ${specialNotes}`,
+        special_requests: `Behalf: ${behalfOf.toUpperCase()} | Purpose: ${travelPurpose} | Applicants: ${applicants.map((a) => `${a.firstName} ${a.lastName}`).join(", ")} | Notes: ${specialNotes}`,
       };
 
       const res = await createBooking({ data: payload });

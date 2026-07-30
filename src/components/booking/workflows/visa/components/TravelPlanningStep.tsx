@@ -8,7 +8,6 @@ import {
   ArrowRight,
   Sparkles,
   Plane,
-  Hotel,
   FileText,
   ShieldCheck,
 } from "lucide-react";
@@ -27,7 +26,7 @@ interface TravelPlanningStepProps {
   setResidenceCountry: (val: string) => void;
   behalfOf: "self" | "family" | "corporate";
   setBehalfOf: (val: "self" | "family" | "corporate") => void;
-  travelPurpose: TravelPurpose;
+  travelPurpose: TravelPurpose | "";
   setTravelPurpose: (val: TravelPurpose) => void;
   dateMode: "fixed" | "tentative";
   setDateMode: (val: "fixed" | "tentative") => void;
@@ -74,12 +73,6 @@ export function TravelPlanningStep({
   setChildrenCount,
   infantsCount,
   setInfantsCount,
-  hasBookedFlight,
-  setHasBookedFlight,
-  hasBookedHotel,
-  setHasBookedHotel,
-  needsHotelAssistance,
-  setNeedsHotelAssistance,
   evaluation,
   onNext,
 }: TravelPlanningStepProps) {
@@ -108,7 +101,7 @@ export function TravelPlanningStep({
       </div>
 
       <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 sm:p-8 space-y-6 shadow-2xl">
-        {/* Conversational Location & Passport Inputs */}
+        {/* 1. Destination Country */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
@@ -118,24 +111,26 @@ export function TravelPlanningStep({
               type="text"
               value={destinationCountry}
               onChange={(e) => setDestinationCountry(e.target.value)}
-              placeholder="e.g. France, UAE, Japan"
+              placeholder="Select destination country"
               className="w-full px-4 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-all"
             />
           </div>
 
+          {/* 2. Passport Country */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Which passport will you travel with? *
+              Passport Country *
             </label>
             <input
               type="text"
               value={passportCountry}
               onChange={(e) => setPassportCountry(e.target.value)}
-              placeholder="e.g. India, United States"
+              placeholder="Select passport issuing country"
               className="w-full px-4 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-all"
             />
           </div>
 
+          {/* 3. Country of Residence */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
               Country of Residence
@@ -144,7 +139,7 @@ export function TravelPlanningStep({
               type="text"
               value={residenceCountry}
               onChange={(e) => setResidenceCountry(e.target.value)}
-              placeholder="e.g. India, UAE, UK"
+              placeholder="Select country of residence"
               className="w-full px-4 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-all"
             />
           </div>
@@ -182,10 +177,10 @@ export function TravelPlanningStep({
           </div>
         </div>
 
-        {/* Why are you travelling? (Travel Purpose Grid) */}
+        {/* 4. Travel Purpose */}
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
-            Why are you travelling?
+            Travel Purpose *
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {travelPurposes.map((p) => {
@@ -213,11 +208,11 @@ export function TravelPlanningStep({
           </div>
         </div>
 
-        {/* Travel Date Mode (Fixed Date vs Tentative Month) */}
+        {/* 5. Travel Date */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-              When do you plan to travel?
+              Travel Date *
             </label>
             <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
               <button
@@ -249,6 +244,7 @@ export function TravelPlanningStep({
                   type="date"
                   value={departDate}
                   onChange={(e) => setDepartDate(e.target.value)}
+                  placeholder="Choose intended travel date"
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500"
                 />
               </div>
@@ -258,6 +254,7 @@ export function TravelPlanningStep({
                 onChange={(e) => setTentativeMonth(e.target.value)}
                 className="w-full px-4 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500"
               >
+                <option value="">Choose intended travel month</option>
                 <option value="2026-08">August 2026</option>
                 <option value="2026-09">September 2026</option>
                 <option value="2026-10">October 2026</option>
@@ -268,10 +265,10 @@ export function TravelPlanningStep({
           </div>
         </div>
 
-        {/* Applicant Counters */}
+        {/* 6. Applicants Selector */}
         <div className="space-y-3">
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Number of Travellers
+            Applicants
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <ApplicantCounter
@@ -298,44 +295,10 @@ export function TravelPlanningStep({
           </div>
         </div>
 
-        {/* Travel Support Toggles */}
-        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3 text-xs">
-          <span className="font-semibold text-slate-300 uppercase tracking-wider block">Additional Trip Arrangements</span>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <label className="flex items-center gap-2 cursor-pointer text-slate-300">
-              <input
-                type="checkbox"
-                checked={hasBookedFlight}
-                onChange={(e) => setHasBookedFlight(e.target.checked)}
-                className="rounded border-slate-700 text-amber-500 focus:ring-amber-500 bg-slate-900"
-              />
-              Already booked flight tickets
-            </label>
-
-            <label className="flex items-center gap-2 cursor-pointer text-slate-300">
-              <input
-                type="checkbox"
-                checked={hasBookedHotel}
-                onChange={(e) => setHasBookedHotel(e.target.checked)}
-                className="rounded border-slate-700 text-amber-500 focus:ring-amber-500 bg-slate-900"
-              />
-              Already booked hotel stay
-            </label>
-
-            <label className="flex items-center gap-2 cursor-pointer text-slate-300">
-              <input
-                type="checkbox"
-                checked={needsHotelAssistance}
-                onChange={(e) => setNeedsHotelAssistance(e.target.checked)}
-                className="rounded border-slate-700 text-amber-500 focus:ring-amber-500 bg-slate-900"
-              />
-              Need hotel booking assistance
-            </label>
-          </div>
-        </div>
-
-        {/* Visa Status Intelligence Card */}
-        <VisaStatusCard evaluation={evaluation} />
+        {/* Dynamic Visa Status Intelligence Card */}
+        {destinationCountry && passportCountry && (
+          <VisaStatusCard evaluation={evaluation} />
+        )}
 
         {/* Action Bar */}
         <div className="flex justify-end pt-2">
