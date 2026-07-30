@@ -270,7 +270,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
         title: "Destination & Travel Dates",
         subtitle: "Specify destination city, check-in date, and stay duration",
         fields: [
-          { id: "destAirport", label: "Destination City / Region", type: "text", placeholder: "e.g. Dubai, London, Paris, Tokyo, Goa", required: true, gridCols: 2 },
+          { id: "destination", label: "Destination City / Region", type: "text", placeholder: "e.g. Dubai, London, Paris, Tokyo, Goa", required: true, gridCols: 2 },
           { id: "check_in", label: "Check-in Date", type: "date", required: true, gridCols: 2 },
           { id: "check_out", label: "Check-out Date", type: "date", required: true, gridCols: 2 },
           { id: "room_type", label: "Preferred Room Category", type: "select", options: [
@@ -285,10 +285,20 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
       {
         id: "travellers",
         title: "Guests & Suite Preferences",
-        subtitle: "Specify number of guests and special room requests",
+        subtitle: "Specify number of guests, room count, and meal preferences",
         fields: [
           { id: "guests_count", label: "Total Adult Guests", type: "passenger_counter", required: true, gridCols: 2 },
-          { id: "specialRequests", label: "Room Preferences / Butler Requests", type: "textarea", placeholder: "e.g. Connecting suites, ocean view, late check-out", required: false, gridCols: 1 },
+          { id: "room_count", label: "Number of Rooms", type: "select", options: [
+              { label: "1 Room", value: "1" },
+              { label: "2 Rooms", value: "2" },
+              { label: "3+ Rooms / Suite Block", value: "3" },
+            ], required: true, gridCols: 2 },
+          { id: "meal_plan", label: "Meal Plan Preference", type: "select", options: [
+              { label: "Bed & Gourmet Breakfast (CP)", value: "breakfast" },
+              { label: "Half Board (MAP - Breakfast + Dinner)", value: "half_board" },
+              { label: "Full Board / All-Inclusive Luxury", value: "full_board" },
+            ], required: true, gridCols: 2 },
+          { id: "special_requests", label: "Room Preferences / Butler Requests", type: "textarea", placeholder: "e.g. Connecting suites, ocean view, late check-out", required: false, gridCols: 1 },
         ],
       },
       {
