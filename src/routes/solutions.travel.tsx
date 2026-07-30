@@ -104,7 +104,7 @@ function TravelServicesPage() {
         },
         {
           number: "04",
-          title: "Suite Arrival & Concierge Staging",
+          title: "Suite Arrival & VIP Welcome",
           description: "Direct check-in completion at hotel reception with suite keys handed over immediately.",
           badge: "Step 4: Completion",
         },
@@ -112,7 +112,7 @@ function TravelServicesPage() {
       faqs={[
         {
           q: "Which hotel partners are covered by the Hotel Booking service?",
-          a: "We maintain direct concierge relationships with premier hotel chains including Taj Hotels, Oberoi, Four Seasons, Marriott, and boutique heritage properties across 20+ cities.",
+          a: "We maintain direct partnerships with premier hotel chains including Taj Hotels, Oberoi, Four Seasons, Marriott, and boutique heritage properties across 20+ cities.",
         },
         {
           q: "How does Visa Assistance work upon landing?",

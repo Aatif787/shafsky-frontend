@@ -47,18 +47,18 @@ export interface ServiceEntry {
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 export const SERVICE_REGISTRY: Record<string, ServiceEntry> = {
-  // ── 1. MEET & GREET CONCIERGE ──
+  // ── 1. MEET & GREET ASSISTANCE ──
   meet_greet: {
     id: "meet_greet",
-    name: "Meet & Greet Concierge",
+    name: "Meet & Greet Assistance",
     category: "concierge",
     categoryName: "Airport Services",
     categoryHref: "/solutions/concierge",
     icon: Crown,
-    shortDescription: "Aerobridge placard greeting, dedicated luggage porters, and priority airside escort.",
-    tagline: "Aerobridge Placard Greeting & Escort",
+    shortDescription: "Aerobridge greeting, luggage porter assistance, and fast-track airport escort.",
+    tagline: "Aerobridge Greeting & Personal Escort",
     heroTitle: "Flagship Airport Meet & Greet",
-    heroSubtitle: "A uniformed Guest Relations Officer greets you at the aerobridge exit with discrete name placarding.",
+    heroSubtitle: "A uniformed Guest Relations Officer greets you at the aerobridge exit with a name sign.",
     ctaText: "Book Airport Assistance",
     route: "/solutions/concierge?sub=meet_greet",
     requiresAirport: true,
@@ -67,9 +67,9 @@ export const SERVICE_REGISTRY: Record<string, ServiceEntry> = {
     accentColor: "#7c3aed",
     bookingConfigId: "meet_greet",
     seo: {
-      title: "Meet & Greet Airport Concierge — Shafsky Aviation",
+      title: "Meet & Greet Airport Assistance — Shafsky Aviation",
       description: "VIP aerobridge greeting, baggage handling, and fast-track arrival escort at 500+ global hubs.",
-      keywords: ["meet and greet airport", "vip airport escort", "airside concierge", "aerobridge welcome"],
+      keywords: ["meet and greet airport", "vip airport escort", "airport welcome", "aerobridge welcome"],
     },
   },
 
@@ -185,10 +185,10 @@ export const SERVICE_REGISTRY: Record<string, ServiceEntry> = {
     categoryName: "Travel Services",
     categoryHref: "/solutions/travel",
     icon: Hotel,
-    shortDescription: "Bespoke hotel reservations with room upgrades, complimentary breakfast, and concierge coordination.",
-    tagline: "Curated Check-in & Room Upgrade Support",
+    shortDescription: "Handpicked hotel reservations with room upgrades, complimentary breakfast, and personalized support.",
+    tagline: "Handpicked Hotels & Room Upgrade Support",
     heroTitle: "Hotel Booking",
-    heroSubtitle: "Direct check-in coordination with premium partner hotels with room upgrades and late checkout.",
+    heroSubtitle: "Direct check-in support with premier partner hotels including room upgrades and flexible checkout.",
     ctaText: "Request Hotel Booking",
     route: "/solutions/travel?sub=hotel",
     requiresAirport: false,
@@ -198,8 +198,8 @@ export const SERVICE_REGISTRY: Record<string, ServiceEntry> = {
     bookingConfigId: "hotel",
     seo: {
       title: "Hotel Booking & Resort Reservations — Shafsky Aviation",
-      description: "Curated hotel bookings, room upgrades, and personalized concierge services worldwide.",
-      keywords: ["hotel booking", "hotel reservation", "concierge hotel booking", "luxury hotel booking"],
+      description: "Handpicked hotel bookings, room upgrades, and VIP stay support worldwide.",
+      keywords: ["hotel booking", "hotel reservation", "vip hotel booking", "luxury hotel booking"],
     },
   },
 

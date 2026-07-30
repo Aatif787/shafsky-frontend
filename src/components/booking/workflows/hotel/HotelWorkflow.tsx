@@ -124,20 +124,20 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
       {/* SECTION 1: LUXURY HERO HEADER */}
       <div className="relative z-10 max-w-3xl mb-12 pt-4">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-semibold uppercase tracking-widest mb-6 backdrop-blur-md">
-          <Sparkles className="w-3.5 h-3.5" /> Luxury Concierge Hospitality
+          <Sparkles className="w-3.5 h-3.5" /> VIP Hotel Booking
         </div>
         <h1 className="text-4xl sm:text-6xl font-serif text-white font-normal tracking-tight leading-tight mb-4 drop-shadow-md">
-          Luxury Hotel Concierge
+          Luxury Hotel Booking
         </h1>
         <p className="text-slate-200 text-base sm:text-xl font-light leading-relaxed max-w-2xl drop-shadow">
-          Tell us your travel plans and our concierge specialists will curate the most suitable hotel options for your stay. No public prices. No endless listings. Just personalized recommendations.
+          Tell us your travel plans and our stay specialists will source the best hotel options for you. No public prices. No endless search. Just handpicked recommendations.
         </p>
 
         {/* HERO BADGES */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 mt-8 border-t border-white/15 text-white/90 text-xs">
           <div className="flex items-center gap-2.5">
             <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>Curated Offline Sourcing</span>
+            <span>Curated Sourcing</span>
           </div>
           <div className="flex items-center gap-2.5">
             <Clock className="w-4 h-4 text-amber-400 shrink-0" />
@@ -149,7 +149,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
           </div>
           <div className="flex items-center gap-2.5">
             <UserCheck className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>Dedicated Stay Specialist</span>
+            <span>Dedicated Travel Specialist</span>
           </div>
         </div>
       </div>
@@ -160,42 +160,41 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-3xl p-8 sm:p-12 border border-amber-200/60 shadow-xl text-center max-w-2xl mx-auto"
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/80 shadow-2xl mb-16 text-center max-w-2xl mx-auto"
           >
-            <div className="w-16 h-16 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-6 border border-amber-200">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-serif font-medium text-slate-900 mb-2">
+
+            <span className="text-xs uppercase tracking-widest font-semibold text-emerald-600 mb-2 block">
               Stay Request Received
-            </h2>
-            <p className="text-slate-600 text-sm mb-6">
-              Reference Code: <span className="font-mono font-bold text-amber-700">{bookingRef}</span>
+            </span>
+
+            <h3 className="text-2xl sm:text-3xl font-serif text-slate-900 mb-3">
+              We Are Curating Your Hotel Proposals
+            </h3>
+
+            <p className="text-slate-600 text-sm leading-relaxed mb-6">
+              Thank you, <strong className="text-slate-900">{guest.fullName}</strong>. Our stay specialists are contacting top hotel managers for your stay in{" "}
+              <strong className="text-slate-900">{stay.destination}</strong>.
             </p>
-            <div className="bg-amber-50/50 rounded-2xl p-6 border border-amber-100 text-left mb-8 space-y-3 text-sm text-slate-700">
-              <div className="flex items-center justify-between border-b border-amber-200/40 pb-2">
-                <span className="text-slate-500">Destination</span>
-                <span className="font-semibold text-slate-900">{stay.destination}</span>
+
+            {bookingRef && (
+              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 inline-block mb-8">
+                <span className="text-xs text-slate-500 block uppercase font-medium">Reference Code</span>
+                <span className="text-xl font-mono font-bold text-amber-600">{bookingRef}</span>
               </div>
-              <div className="flex items-center justify-between border-b border-amber-200/40 pb-2">
-                <span className="text-slate-500">Dates ({nights} Nights)</span>
-                <span className="font-semibold text-slate-900">{stay.checkIn} to {stay.checkOut}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500">Est. Response SLA</span>
-                <span className="font-semibold text-amber-700">15 – 30 Minutes</span>
-              </div>
-            </div>
-            <p className="text-xs text-slate-500 mb-8 leading-relaxed">
-              Your dedicated concierge specialist will review your preferences and send curated proposal options directly via Email or WhatsApp.
-            </p>
+            )}
+
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href={`https://wa.me/?text=Hello%20Shafsky%20Concierge,%20inquiring%20about%20my%20hotel%20request%20${bookingRef}`}
+                href="https://wa.me/919599087959?text=Hello%20Shafsky,%20I%20just%20submitted%20a%20hotel%20booking%20request."
                 target="_blank"
                 rel="noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm transition-all shadow-md"
               >
-                <MessageSquare className="w-4 h-4" /> WhatsApp Concierge
+                <MessageSquare className="w-4 h-4" /> Connect via WhatsApp
               </a>
               <button
                 onClick={() => setSubmitted(false)}
@@ -213,14 +212,14 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
                 <h3 className="text-xl font-serif font-medium text-slate-900">
-                  Curated Stay Request Form
+                  Hotel Booking Request Form
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Specify your travel requirements for offline concierge hotel sourcing
+                  Share your travel preferences and our team will handle your hotel booking.
                 </p>
               </div>
               <span className="text-xs bg-amber-50 text-amber-700 font-semibold px-3 py-1 rounded-full border border-amber-200">
-                White-Glove Support
+                VIP Support
               </span>
             </div>
 
@@ -228,7 +227,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                  Destination City / Country
+                  Destination City
                 </label>
                 <div className="relative">
                   <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -237,7 +236,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
                     required
                     value={stay.destination}
                     onChange={(e) => updateStay({ destination: e.target.value })}
-                    placeholder="e.g. Dubai, London, Paris, Tokyo"
+                    placeholder="e.g. Dubai, London, Paris"
                     className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none"
                   />
                 </div>
@@ -261,7 +260,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                  Check-out Date ({nights} Nights)
+                  Check-out Date ({nights} {nights === 1 ? "night" : "nights"})
                 </label>
                 <div className="relative">
                   <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -277,183 +276,179 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                  Guests & Rooms
+                  Guests & Rooms ({totalGuests} PAX)
                 </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <select
-                    value={stay.paxAdults}
-                    onChange={(e) => updateStay({ paxAdults: Number(e.target.value) })}
-                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none bg-white"
-                  >
-                    {[1, 2, 3, 4, 5, 6, 8, 10].map((num) => (
-                      <option key={num} value={num}>{num} Adult{num > 1 ? "s" : ""}</option>
-                    ))}
-                  </select>
+                <div className="relative">
+                  <Users className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
                   <select
                     value={stay.roomCount}
                     onChange={(e) => updateStay({ roomCount: Number(e.target.value) })}
-                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none bg-white"
+                    className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none bg-white"
                   >
-                    {[1, 2, 3, 4, 5, 8].map((num) => (
-                      <option key={num} value={num}>{num} Room{num > 1 ? "s" : ""}</option>
-                    ))}
+                    <option value={1}>1 Room ({stay.paxAdults} Guests)</option>
+                    <option value={2}>2 Rooms</option>
+                    <option value={3}>3 Rooms</option>
+                    <option value={4}>4+ Rooms (Group Stay)</option>
                   </select>
                 </div>
               </div>
             </div>
 
-            {/* ROW 2: HOTEL CATEGORY & PREFERRED BRAND */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+            {/* ROW 2: HOTEL CATEGORY, ROOM TYPE, PURPOSE, MEAL PLAN */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4 border-t border-slate-100">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
                   Hotel Category Preference
                 </label>
                 <select
-                  value={stay.hotelCategory || "no_preference"}
+                  value={stay.hotelCategory}
                   onChange={(e) => updateStay({ hotelCategory: e.target.value })}
-                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none bg-white"
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none bg-white"
                 >
-                  <option value="no_preference">No Preference (Concierge Curated)</option>
-                  <option value="4_star">4-Star Hotel</option>
-                  <option value="5_star">5-Star Hotel</option>
-                  <option value="luxury_boutique">Luxury Boutique</option>
-                  <option value="resort">Beach / Country Resort</option>
-                  <option value="business_hotel">Business & Executive Hotel</option>
+                  <option value="no_preference">No Preference (Best Option)</option>
+                  <option value="5_star">5-Star Luxury</option>
+                  <option value="4_star">4-Star Premium</option>
+                  <option value="luxury_boutique">Luxury Boutique Hotel</option>
+                  <option value="resort">Beach / Golf Resort</option>
+                  <option value="business_hotel">Business Hotel</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                  Preferred Brand / Chain (Optional)
+                  Room Type Preference
+                </label>
+                <select
+                  value={stay.roomType}
+                  onChange={(e) => updateStay({ roomType: e.target.value })}
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none bg-white"
+                >
+                  <option value="standard_room">Standard Room</option>
+                  <option value="deluxe_room">Deluxe Room</option>
+                  <option value="executive_suite">Executive Suite</option>
+                  <option value="family_suite">Family Suite</option>
+                  <option value="presidential_suite">Presidential Suite</option>
+                  <option value="private_villa">Private Villa</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                  Purpose of Stay
+                </label>
+                <select
+                  value={stay.purposeOfStay}
+                  onChange={(e) => updateStay({ purposeOfStay: e.target.value as any })}
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none bg-white"
+                >
+                  <option value="leisure">Leisure / Vacation</option>
+                  <option value="business">Business / Corporate</option>
+                  <option value="vip_event">VIP Event / Conference</option>
+                  <option value="honeymoon">Honeymoon / Anniversary</option>
+                  <option value="medical_recovery">Medical / Rest Stay</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                  Meal Plan Preference
+                </label>
+                <select
+                  value={stay.mealPlan}
+                  onChange={(e) => updateStay({ mealPlan: e.target.value })}
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none bg-white"
+                >
+                  <option value="room_only">Room Only</option>
+                  <option value="bed_breakfast">Bed & Breakfast</option>
+                  <option value="half_board">Half Board (Breakfast & Dinner)</option>
+                  <option value="full_board">Full Board (All Meals)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* ROW 3: PREFERRED BRAND & SPECIAL PREFERENCES */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                  Preferred Hotel Brand (Optional)
                 </label>
                 <input
                   type="text"
                   value={stay.brandPreference || ""}
                   onChange={(e) => updateStay({ brandPreference: e.target.value })}
-                  placeholder="e.g. Taj Hotels, Four Seasons, Oberoi, Marriott"
-                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
+                  placeholder="e.g. Taj, Oberoi, Four Seasons, Marriott, Hilton"
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none"
                 />
               </div>
-            </div>
 
-            {/* ROW 3: PURPOSE OF STAY */}
-            <div className="pt-4 border-t border-slate-100">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
-                Purpose of Stay
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
-                {[
-                  { label: "Leisure", icon: Compass },
-                  { label: "Business", icon: Briefcase },
-                  { label: "Family", icon: Users },
-                  { label: "Honeymoon", icon: Heart },
-                  { label: "Wellness", icon: Sparkles },
-                  { label: "Event", icon: Building2 },
-                ].map((item) => {
-                  const Icon = item.icon;
-                  const isSelected = stay.purposeOfStay === item.label;
-                  return (
-                    <button
-                      key={item.label}
-                      type="button"
-                      onClick={() => updateStay({ purposeOfStay: item.label as any })}
-                      className={`flex items-center justify-center gap-2 p-3 rounded-xl border text-xs font-medium transition-all ${
-                        isSelected
-                          ? "border-amber-500 bg-amber-50/60 text-amber-900 shadow-sm"
-                          : "border-slate-200 text-slate-600 hover:border-slate-300 bg-white"
-                      }`}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* ROW 4: SPECIAL PREFERENCES */}
-            <div className="pt-4 border-t border-slate-100">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
-                Special Stay Preferences
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                {[
-                  { key: "airportTransfer", label: "Luxury Airport Transfer", icon: Car },
-                  { key: "spaInterest", label: "Spa & Wellness Credit", icon: Sparkles },
-                  { key: "earlyCheckin", label: "Guaranteed Early Check-in", icon: Clock },
-                  { key: "lateCheckout", label: "Flexible Late Check-out", icon: Clock },
-                ].map((item) => {
-                  const Icon = item.icon;
-                  const active = (personalization as any)[item.key];
-                  return (
-                    <button
-                      key={item.key}
-                      type="button"
-                      onClick={() =>
-                        updatePersonalization({ [item.key]: !active })
-                      }
-                      className={`flex items-center gap-2.5 p-3 rounded-xl border transition-all text-left ${
-                        active
-                          ? "border-amber-500 bg-amber-50/50 text-amber-900 font-semibold"
-                          : "border-slate-200 text-slate-600 hover:border-slate-300"
-                      }`}
-                    >
-                      <Icon className="w-4 h-4 text-amber-600 shrink-0" />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* CONTACT DETAILS & SUBMIT */}
-            <div className="pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                  Lead Guest Full Name
+                  Special Stay Preferences & Requests
                 </label>
                 <input
                   type="text"
-                  required
-                  value={guest.fullName}
-                  onChange={(e) => updateGuest({ fullName: e.target.value })}
-                  placeholder="e.g. Alexander Wright"
-                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
+                  value={guest.specialRequests || ""}
+                  onChange={(e) => updateGuest({ specialRequests: e.target.value })}
+                  placeholder="e.g. Sea view, high floor, early check-in, airport transfer"
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none"
                 />
               </div>
+            </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={guest.email}
-                  onChange={(e) => updateGuest({ email: e.target.value })}
-                  placeholder="alexander@corporate.com"
-                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
-                />
-              </div>
+            {/* ROW 4: CONTACT INFORMATION */}
+            <div className="pt-6 border-t border-slate-100 space-y-4">
+              <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <UserCheck className="w-4 h-4 text-amber-600" /> Guest & Contact Information
+              </h4>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                  Phone / WhatsApp
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={guest.phone}
-                  onChange={(e) => updateGuest({ phone: e.target.value })}
-                  placeholder="+91 98765 43210"
-                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                    Full Contact Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={guest.fullName}
+                    onChange={(e) => updateGuest({ fullName: e.target.value })}
+                    placeholder="e.g. Alexander Wright"
+                    className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={guest.email}
+                    onChange={(e) => updateGuest({ email: e.target.value })}
+                    placeholder="alexander@corporate.com"
+                    className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                    Phone / WhatsApp *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={guest.phone}
+                    onChange={(e) => updateGuest({ phone: e.target.value })}
+                    placeholder="+91 98765 43210"
+                    className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
+                  />
+                </div>
               </div>
             </div>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-slate-400">
-                Our concierge desk will source available rates and send custom proposals to your email/phone.
+                Our stay specialists will source available rates and send custom proposals to your email/phone.
               </p>
               <button
                 type="submit"
@@ -475,15 +470,15 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
             Why Request Hotel Stays Through Shafsky
           </h2>
           <p className="text-slate-600 text-sm">
-            White-glove concierge management ensuring room upgrades, flexible check-outs, and direct hotel general manager coordination.
+            Personalized service ensuring room upgrades, flexible check-outs, and direct hotel coordination.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {[
             {
-              title: "Dedicated Concierge",
-              desc: "One dedicated specialist handles your reservation, special requests, and room allocations from inquiry to checkout.",
+              title: "Dedicated Travel Specialist",
+              desc: "One dedicated manager handles your hotel booking, room upgrades, and special requests from start to finish.",
               icon: UserCheck,
             },
             {
@@ -518,13 +513,13 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
       <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 mb-16">
         <div className="text-center max-w-xl mx-auto mb-10">
           <span className="text-xs uppercase tracking-widest text-amber-400 font-semibold">Simple Process</span>
-          <h2 className="text-2xl sm:text-3xl font-serif text-white mt-1">How Your Concierge Stay Works</h2>
+          <h2 className="text-2xl sm:text-3xl font-serif text-white mt-1">How Your Hotel Booking Works</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 relative">
           {[
             { step: "01", title: "Submit Stay Request", desc: "Share your destination, dates, and stay preferences." },
-            { step: "02", title: "Offline Sourcing", desc: "Concierge team fetches curated live rates & upgrades." },
+            { step: "02", title: "Handpicked Sourcing", desc: "Our travel team sources top hotel rates and room upgrades." },
             { step: "03", title: "Receive Proposal", desc: "Review 2–4 tailored options on WhatsApp or Email." },
             { step: "04", title: "Confirm & Enjoy", desc: "Direct check-in hold with suite key handover." },
           ].map((item, idx) => (

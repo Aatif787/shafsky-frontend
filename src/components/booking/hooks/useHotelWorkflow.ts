@@ -18,7 +18,7 @@ export interface HotelStayData {
   roomCount: number;
   hotelCategory?: string;
   roomType: string;
-  purposeOfStay: "Business" | "Family" | "Honeymoon" | "Anniversary" | "Wellness" | "Leisure";
+  purposeOfStay: "Business" | "Family" | "Honeymoon" | "Anniversary" | "Wellness" | "Leisure" | string;
   brandPreference?: string;
   budgetGuidance?: string;
   mealPlan: string;
