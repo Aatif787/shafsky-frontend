@@ -261,8 +261,8 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
     serviceName: "Hotel Booking",
     category: "travel",
     icon: Hotel,
-    tagline: "Curated 5-Star Suites & Exclusive Concierge Perks",
-    description: "Bespoke hotel reservations with room upgrades, complimentary breakfast, flexible late check-out, and private butler service.",
+    tagline: "Curated Hotel Stays & Exclusive Concierge Perks",
+    description: "Bespoke hotel reservations with room upgrades, complimentary breakfast, flexible late check-out, and dedicated concierge support.",
     ctaText: "Request Hotel Reservation",
     steps: [
       {
@@ -274,9 +274,10 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
           { id: "check_in", label: "Check-in Date", type: "date", required: true, gridCols: 2 },
           { id: "check_out", label: "Check-out Date", type: "date", required: true, gridCols: 2 },
           { id: "room_type", label: "Preferred Room Category", type: "select", options: [
-              { label: "Deluxe Suite", value: "deluxe_suite" },
-              { label: "Executive Boutique Hotel", value: "boutique" },
-              { label: "Presidential / Palace Suite", value: "palace" },
+              { label: "Standard / Deluxe Room", value: "deluxe_room" },
+              { label: "Executive Suite", value: "deluxe_suite" },
+              { label: "Boutique Hotel", value: "boutique" },
+              { label: "Luxury / Palace Suite", value: "palace" },
               { label: "Heritage Villa", value: "heritage_villa" },
               { label: "Business Suite", value: "corporate" },
             ], required: true, gridCols: 2 },

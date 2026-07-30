@@ -85,7 +85,7 @@ export function useHotelWorkflow(initialDest = "Dubai, UAE") {
       roomCount: 1,
       roomType: "deluxe_suite",
       purposeOfStay: "Leisure",
-      brandPreference: "Any 5-Star Luxury",
+      brandPreference: "Any Preferred Hotel",
       budgetGuidance: "",
       mealPlan: "breakfast",
       loyaltyProgram: "Marriott Bonvoy",

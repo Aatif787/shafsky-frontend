@@ -14,7 +14,7 @@ export const Route = createFileRoute("/solutions/travel")({
       {
         name: "description",
         content:
-          "5-star hotel handoffs, priority diplomatic visa processing, First & Business class ticketing, and gourmet inflight catering.",
+          "Bespoke hotel check-ins, priority diplomatic visa processing, First & Business class ticketing, and gourmet inflight catering.",
       },
     ],
   }),
@@ -60,7 +60,7 @@ function TravelServicesPage() {
       benefits={[
         {
           title: "Seamless Handoff",
-          description: "From terminal exit to 5-star hotel suite check-in, your transition is managed by one dedicated team.",
+          description: "From terminal exit to hotel check-in, your transition is managed by one dedicated team.",
           icon: undefined,
           highlight: "Zero Friction",
         },
@@ -112,7 +112,7 @@ function TravelServicesPage() {
       faqs={[
         {
           q: "Which hotel partners are covered by the Hotel Booking service?",
-          a: "We maintain direct concierge relationships with major 5-star chains including Taj Hotels, Oberoi, Four Seasons, Marriott Luxury Collection, and boutique heritage properties across 20+ cities.",
+          a: "We maintain direct concierge relationships with premier hotel chains including Taj Hotels, Oberoi, Four Seasons, Marriott, and boutique heritage properties across 20+ cities.",
         },
         {
           q: "How does Visa Assistance work upon landing?",
