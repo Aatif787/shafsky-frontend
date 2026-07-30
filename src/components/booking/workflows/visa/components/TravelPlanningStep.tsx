@@ -115,7 +115,7 @@ export function TravelPlanningStep({
       </div>
 
       <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 sm:p-8 space-y-6 shadow-2xl">
-        {/* 1. Country Selectors */}
+        {/* 1. Guided Country Selectors */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <SearchableCountrySelect
             label="Destination Country"
@@ -128,7 +128,7 @@ export function TravelPlanningStep({
           <SearchableCountrySelect
             label="Passport Issuing Country"
             value={passportCountry}
-            placeholder="Search passport country"
+            placeholder="Search passport issuing country"
             onChange={setPassportCountry}
             required
           />
@@ -141,7 +141,7 @@ export function TravelPlanningStep({
           />
         </div>
 
-        {/* 2. Booking Mode & Helper Message */}
+        {/* 2. Booking Mode */}
         <div className="space-y-2">
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
             Who are you requesting this visa for?
@@ -245,7 +245,7 @@ export function TravelPlanningStep({
                   type="date"
                   value={departDate}
                   onChange={(e) => setDepartDate(e.target.value)}
-                  placeholder="Choose intended travel date"
+                  placeholder="Select your intended travel date"
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500"
                 />
               </div>
@@ -255,7 +255,7 @@ export function TravelPlanningStep({
                 onChange={(e) => setTentativeMonth(e.target.value)}
                 className="w-full px-4 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500"
               >
-                <option value="">Select intended travel month</option>
+                <option value="">Select your intended travel month</option>
                 <option value="2026-08">August 2026</option>
                 <option value="2026-09">September 2026</option>
                 <option value="2026-10">October 2026</option>
@@ -269,9 +269,12 @@ export function TravelPlanningStep({
         {/* 5. Applicants Selector & Live Summary */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Who will be travelling?
-            </label>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Who will be travelling?
+              </label>
+              <span className="text-[11px] text-slate-400">Choose number of applicants</span>
+            </div>
             <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
               Total Applicants: {totalApplicants}
             </span>
@@ -302,7 +305,7 @@ export function TravelPlanningStep({
           </div>
         </div>
 
-        {/* Dynamic Visa Intelligence Card */}
+        {/* Dynamic Visa Status Intelligence Card */}
         {destinationCountry && passportCountry && (
           <VisaStatusCard evaluation={evaluation} />
         )}

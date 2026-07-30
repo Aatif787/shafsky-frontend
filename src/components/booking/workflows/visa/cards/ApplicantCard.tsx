@@ -41,8 +41,8 @@ export function ApplicantCard({
             type="text"
             value={applicant.firstName}
             onChange={(e) => onUpdate(applicant.id, { firstName: e.target.value })}
-            placeholder="e.g. Sophia"
-            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500"
+            placeholder="Enter traveller first name"
+            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
           />
         </div>
 
@@ -52,8 +52,8 @@ export function ApplicantCard({
             type="text"
             value={applicant.lastName}
             onChange={(e) => onUpdate(applicant.id, { lastName: e.target.value })}
-            placeholder="e.g. Martinez"
-            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500"
+            placeholder="Enter traveller last name"
+            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
           />
         </div>
 
@@ -63,7 +63,8 @@ export function ApplicantCard({
             type="date"
             value={applicant.dob}
             onChange={(e) => onUpdate(applicant.id, { dob: e.target.value })}
-            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500"
+            placeholder="Select date of birth"
+            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
           />
         </div>
 
@@ -73,8 +74,8 @@ export function ApplicantCard({
             type="text"
             value={applicant.nationality}
             onChange={(e) => onUpdate(applicant.id, { nationality: e.target.value })}
-            placeholder="e.g. India"
-            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500"
+            placeholder="Search nationality"
+            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
           />
         </div>
 
@@ -84,8 +85,8 @@ export function ApplicantCard({
             type="text"
             value={applicant.passportNumber}
             onChange={(e) => onUpdate(applicant.id, { passportNumber: e.target.value })}
-            placeholder="e.g. Z1234567"
-            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500"
+            placeholder="Enter passport number"
+            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
           />
         </div>
 
@@ -95,7 +96,8 @@ export function ApplicantCard({
             type="date"
             value={applicant.passportExpiry}
             onChange={(e) => onUpdate(applicant.id, { passportExpiry: e.target.value })}
-            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500"
+            placeholder="Select passport expiry date"
+            className="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
           />
         </div>
       </div>
