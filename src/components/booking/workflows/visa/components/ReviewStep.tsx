@@ -44,28 +44,28 @@ export function ReviewStep({
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="text-center sm:text-left space-y-1">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-widest">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 text-xs font-semibold uppercase tracking-widest">
           Step 5 of 6: Final Review
         </div>
-        <h2 className="text-xl sm:text-3xl font-bold text-white">Review & Confirm Visa Application</h2>
-        <p className="text-slate-400 text-sm">Verify all details before submitting to our visa operations desk.</p>
+        <h2 className="text-xl sm:text-3xl font-bold text-slate-900">Review & Confirm Visa Application</h2>
+        <p className="text-slate-600 text-sm">Verify all details before submitting to our visa operations desk.</p>
       </div>
 
-      <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 sm:p-8 space-y-6 shadow-2xl">
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-8 space-y-6 shadow-sm">
         {/* Structured Applicants List Breakdown */}
-        <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-            <Users className="w-4 h-4" /> Applicants Breakdown ({applicants.length})
+        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-amber-800 flex items-center gap-2">
+            <Users className="w-4 h-4 text-amber-600" /> Applicants Breakdown ({applicants.length})
           </h3>
           <div className="space-y-2">
             {applicants.map((a, i) => (
-              <div key={a.id} className="p-3 rounded-lg bg-slate-900 border border-slate-800/80 flex items-center justify-between text-xs flex-wrap gap-2">
-                <div className="font-semibold text-white">
-                  {i + 1}. {a.firstName || "Applicant"} {a.lastName} ({a.nationality || passportCountry})
+              <div key={a.id} className="p-3 rounded-lg bg-white border border-slate-200 flex items-center justify-between text-xs flex-wrap gap-2">
+                <div className="font-semibold text-slate-900">
+                  {i + 1}. {a.firstName || "Applicant"} {a.lastName} ({a.nationality || passportCountry || "Unspecified"})
                 </div>
-                <div className="flex items-center gap-3 text-slate-400">
+                <div className="flex items-center gap-3 text-slate-600">
                   <span>Passport: {a.passportNumber || "Provided Later"}</span>
-                  {a.hasPreviousVisa && <span className="text-emerald-400 font-medium">Prior Visa Held</span>}
+                  {a.hasPreviousVisa && <span className="text-emerald-700 font-semibold">Prior Visa Held</span>}
                 </div>
               </div>
             ))}
@@ -78,11 +78,11 @@ export function ReviewStep({
           badgeLabel="SLA Category"
           badgeValue={evaluation.requirementType.toUpperCase()}
           items={[
-            { label: "Destination Country", value: destinationCountry },
-            { label: "Passport Country", value: passportCountry },
-            { label: "Country of Residence", value: residenceCountry },
+            { label: "Destination Country", value: destinationCountry || "Not Specified" },
+            { label: "Passport Country", value: passportCountry || "Not Specified" },
+            { label: "Country of Residence", value: residenceCountry || "Not Specified" },
             { label: "Booking Mode", value: behalfOf.toUpperCase() },
-            { label: "Travel Purpose", value: travelPurpose.toUpperCase() },
+            { label: "Travel Purpose", value: travelPurpose ? travelPurpose.toUpperCase() : "Not Specified" },
             { label: "Intended Travel Date", value: departDate || "Tentative Month" },
             { label: "Total Applicants", value: `${applicants.length} Traveller(s)` },
             { label: "Primary Contact", value: contactName },
@@ -98,12 +98,12 @@ export function ReviewStep({
           onSubmit={onSubmit}
         />
 
-        <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
           <button
             type="button"
             onClick={onBack}
             disabled={isSubmitting}
-            className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm transition-all flex items-center gap-2 disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-all flex items-center gap-2 disabled:opacity-40"
           >
             <ArrowLeft className="w-4 h-4" /> Back
           </button>

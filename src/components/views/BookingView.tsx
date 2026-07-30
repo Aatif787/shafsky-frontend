@@ -71,12 +71,9 @@ export default function BookingView({ searchParams }: BookingViewProps) {
     !isLoungeWorkflow;
 
   // Shared Route & Contact State
-  const [flightDirection, setFlightDirection] = useState<"arrival" | "departure" | "transit">("arrival");
-  const [airportBookingMode, setAirportBookingMode] = useState<"individual" | "package">("individual");
   const [pickupCity, setPickupCity] = useState<string>(searchParams?.origin || "");
   const [destinationCity, setDestinationCity] = useState<string>(searchParams?.destination || "");
   const [flightDate, setFlightDate] = useState<string>(searchParams?.depart_date || "");
-  const [flightTime, setFlightTime] = useState<string>("");
   const [leadPassengerName, setLeadPassengerName] = useState<string>("");
   const [passengerEmail, setPassengerEmail] = useState<string>("");
   const [passengerPhone, setPassengerPhone] = useState<string>("");
@@ -114,31 +111,17 @@ export default function BookingView({ searchParams }: BookingViewProps) {
   };
 
   const getBasePrice = () => {
-    if (isCharterWorkflow) return 450000;
-    if (isAirAmbulanceWorkflow) return 185000;
-    if (isTrainAmbulanceWorkflow) return 45000;
-    if (isHumWorkflow) return 65000;
-    if (isCargoWorkflow) return 45000;
-    if (isAviWorkflow) return 28000;
-    if (isHotelWorkflow) return 32000;
     if (isVisaWorkflow) return 8500;
-    if (isTicketingWorkflow) return 85000;
-    if (isMealsWorkflow) return 4500;
-    if (isTransportWorkflow) return 14000;
-    if (isFastTrackWorkflow) return 7500;
-    if (isLoungeWorkflow) return 9500;
     return 12500;
   };
 
   const totalPrice = getBasePrice() * paxAdults;
 
-  const charterStepConfigs = [
-    { title: "Flight Itinerary & Aircraft Category", sub: "Specify origin/destination airports, departure date/time, and aircraft preference.", estTime: "Est. 30 sec", progress: 33 },
-    { title: "Charterer Contact & Review", sub: "Enter lead charterer details and review your private jet quotation request.", estTime: "Est. 30 sec", progress: 66 },
-    { title: "Charter Request Staged", sub: "Your private jet charter quote request is assigned to our flight dispatch team.", estTime: "Completed", progress: 100 },
+  const activeConfigs = [
+    { title: "Service Request", sub: "Enter details", estTime: "Est. 30 sec", progress: 33 },
+    { title: "Review & Confirm", sub: "Review specifications", estTime: "Est. 30 sec", progress: 66 },
+    { title: "Request Staged", sub: "Dispatched to command desk", estTime: "Completed", progress: 100 },
   ];
-
-  const activeConfigs = charterStepConfigs;
   const maxSteps = 3;
   const currentConfig = activeConfigs[Math.min(currentStep - 1, activeConfigs.length - 1)];
 
@@ -214,7 +197,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
 
   if (isVisaWorkflow) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 w-full relative overflow-x-hidden">
+      <div className="min-h-screen bg-[#FAF9F5] text-slate-900 py-6 sm:py-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         <VisaWorkflow
           initialDestination={searchParams?.destination || searchParams?.origin || ""}
           onCancel={() => setShowCancelDialog(true)}
@@ -314,7 +297,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
                 contactName={leadPassengerName}
                 setContactName={setLeadPassengerName}
                 phone={passengerPhone}
-                setPhone={setPassengerPhone}
+                setPhone={setPhone}
                 email={passengerEmail}
                 setEmail={setPassengerEmail}
                 nameLabel="Lead Guest Name *"

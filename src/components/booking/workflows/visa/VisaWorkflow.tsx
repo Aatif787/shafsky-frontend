@@ -5,7 +5,6 @@ import { BookingCancelModal } from "@/components/booking/shared/BookingCancelMod
 import { ContactSection } from "@/components/booking/shared/ContactSection";
 import { createBooking } from "@/lib/bookings.functions";
 import { evaluateVisaRequest, type TravelPurpose, type VisaEvaluationResult } from "@/lib/visa/visaIntelligence";
-import heroJet from "@/assets/desktop-169-hotel-plane.png";
 
 // Import Modular Step Components
 import { TravelPlanningStep } from "./components/TravelPlanningStep";
@@ -51,9 +50,6 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
   const [adultsCount, setAdultsCount] = useState<number>(1);
   const [childrenCount, setChildrenCount] = useState<number>(0);
   const [infantsCount, setInfantsCount] = useState<number>(0);
-  const [hasBookedFlight, setHasBookedFlight] = useState<boolean>(false);
-  const [hasBookedHotel, setHasBookedHotel] = useState<boolean>(false);
-  const [needsHotelAssistance, setNeedsHotelAssistance] = useState<boolean>(false);
 
   // Step 2: Applicant Details - START 100% EMPTY
   const [applicants, setApplicants] = useState<IndividualApplicant[]>([
@@ -169,19 +165,9 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
   };
 
   return (
-    <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans overflow-x-hidden">
-      {/* Background Layer */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <img
-          src={heroJet}
-          alt="Luxury Visa Background"
-          className="w-full h-full object-cover object-center opacity-25 mix-blend-luminosity scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/90 to-slate-950" />
-      </div>
-
+    <div className="relative min-h-screen text-slate-900 flex flex-col font-sans">
       {/* Main Content Container */}
-      <div className="relative z-10 flex-1 flex flex-col max-w-5xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <div className="relative z-10 flex-1 flex flex-col max-w-5xl w-full mx-auto">
         {/* Progress Header */}
         {currentStep <= 6 && (
           <div className="mb-6">
@@ -221,12 +207,6 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
             setChildrenCount={setChildrenCount}
             infantsCount={infantsCount}
             setInfantsCount={setInfantsCount}
-            hasBookedFlight={hasBookedFlight}
-            setHasBookedFlight={setHasBookedFlight}
-            hasBookedHotel={hasBookedHotel}
-            setHasBookedHotel={setHasBookedHotel}
-            needsHotelAssistance={needsHotelAssistance}
-            setNeedsHotelAssistance={setNeedsHotelAssistance}
             evaluation={evaluation}
             onNext={() => setCurrentStep(2)}
           />
@@ -273,14 +253,14 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
         {currentStep === 5 && (
           <div className="space-y-6 animate-in fade-in duration-300">
             <div className="text-center sm:text-left space-y-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 text-xs font-semibold uppercase tracking-widest">
                 Step 5 of 6: Lead Contact
               </div>
-              <h2 className="text-xl sm:text-3xl font-bold text-white">Lead Contact & Special Notes</h2>
-              <p className="text-slate-400 text-sm">Where should our visa operations desk reach you?</p>
+              <h2 className="text-xl sm:text-3xl font-bold text-slate-900">Lead Contact & Special Notes</h2>
+              <p className="text-slate-600 text-sm">Where should our visa operations desk reach you?</p>
             </div>
 
-            <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 sm:p-8 space-y-6 shadow-2xl">
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-8 space-y-6 shadow-sm">
               <ContactSection
                 contactName={contactName}
                 setContactName={setContactName}
@@ -289,27 +269,27 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
                 email={contactEmail}
                 setEmail={setContactEmail}
                 nameLabel="Primary Contact / Coordinator Name *"
-                namePlaceholder="e.g. Sophia Martinez"
+                namePlaceholder="Enter primary contact full name"
               />
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                  Special Notes or Consular Instructions
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+                  Special Consular Notes
                 </label>
                 <textarea
                   value={specialNotes}
                   onChange={(e) => setSpecialNotes(e.target.value)}
-                  placeholder="Any specific instructions, flight timing constraints, or urgency details..."
+                  placeholder="Enter any specific instructions, flight timing constraints, or urgency details"
                   rows={3}
-                  className="w-full px-4 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-all resize-none"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-all resize-none font-sans"
                 />
               </div>
 
-              <div className="flex items-center justify-between pt-4">
+              <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setCurrentStep(4)}
-                  className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm transition-all flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-all flex items-center gap-2"
                 >
                   <ArrowLeft className="w-4 h-4" /> Back
                 </button>
@@ -317,7 +297,7 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
                   type="button"
                   onClick={() => setCurrentStep(6)}
                   disabled={!contactName || !contactEmail || !contactPhone}
-                  className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-sm transition-all flex items-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50"
+                  className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm transition-all flex items-center gap-2 shadow-md shadow-amber-500/20 disabled:opacity-40"
                 >
                   Review Summary
                   <ArrowRight className="w-4 h-4" />
