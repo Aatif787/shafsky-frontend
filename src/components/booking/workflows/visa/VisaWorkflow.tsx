@@ -236,6 +236,16 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
   const sourcedDocs = evaluation.documents.filter((d) => d.status === "already_available").length;
   const pendingDocs = totalDocs - sourcedDocs;
 
+  // Informational Concierge Timeline Steps for Phase 5 Success Experience
+  const conciergeTimelineSteps = [
+    { title: "Request Submitted", desc: "Visa assistance inquiry logged" },
+    { title: "Specialist Review", desc: "Assigned within 15 minutes" },
+    { title: "Document Verification", desc: "Scans & credentials audited" },
+    { title: "Application Preparation", desc: "Consular forms & fees prepared" },
+    { title: "Embassy Filing Support", desc: "Biometric slot & submission" },
+    { title: "Visa Handover", desc: "Passport delivery / eVisa PDF" },
+  ];
+
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans overflow-x-hidden">
       {/* Background Layer */}
@@ -769,7 +779,7 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
           </div>
         )}
 
-        {/* STEP 5: REVIEW & CONFIRM */}
+        {/* STEP 5: PHASE 5 REVIEW & CONFIRM */}
         {currentStep === 5 && (
           <div className="space-y-6 animate-in fade-in duration-300">
             <div className="text-center sm:text-left space-y-1">
@@ -781,6 +791,27 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
             </div>
 
             <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 sm:p-8 space-y-6 shadow-2xl">
+              {/* Structured Applicants List Summary */}
+              <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                  <Users className="w-4 h-4" /> Applicants Breakdown ({applicants.length})
+                </h3>
+                <div className="space-y-2">
+                  {applicants.map((a, i) => (
+                    <div key={a.id} className="p-3 rounded-lg bg-slate-900 border border-slate-800/80 flex items-center justify-between text-xs flex-wrap gap-2">
+                      <div className="font-semibold text-white">
+                        {i + 1}. {a.firstName || "Applicant"} {a.lastName} ({a.nationality || passportCountry})
+                      </div>
+                      <div className="flex items-center gap-3 text-slate-400">
+                        <span>Passport: {a.passportNumber || "Provided Later"}</span>
+                        {a.hasPreviousVisa && <span className="text-emerald-400 font-medium">Prior Visa Held</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Reused Shared ReviewSummary Component */}
               <ReviewSummary
                 serviceTitle="Visa Assistance Request"
                 badgeLabel="SLA Category"
@@ -796,6 +827,7 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
                   { label: "Primary Contact", value: contactName },
                   { label: "Contact Email", value: contactEmail },
                   { label: "Contact Phone", value: contactPhone },
+                  { label: "Company / Org", value: companyName || "N/A" },
                   { label: "Estimated SLA", value: `${evaluation.sla.minBusinessDays}–${evaluation.sla.maxBusinessDays} Business Days` },
                 ]}
                 totalPrice={8500 * applicants.length}
@@ -819,16 +851,38 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
           </div>
         )}
 
-        {/* STEP 6: SUCCESS PASS */}
+        {/* STEP 6: PHASE 5 SUCCESS EXPERIENCE */}
         {currentStep === 6 && (
-          <div className="py-6 animate-in fade-in duration-300">
+          <div className="space-y-6 py-6 animate-in fade-in duration-300">
+            {/* Reused Shared BookingSuccessPass Component */}
             <BookingSuccessPass
-              title="Visa Application Staged"
-              subtitle="Your travel specialist has been assigned and will contact you via WhatsApp within 15 minutes."
-              badge="Request Confirmed"
+              title="Visa Assistance Request Received"
+              subtitle="Your travel specialist has been assigned and will contact you via WhatsApp within 15 minutes to coordinate document verification."
+              badge="Request Staged"
               bookingRef={bookingRef}
               guestSummary={`${contactName} — ${destinationCountry} (${applicants.length} Applicant(s))`}
             />
+
+            {/* Informational Concierge Timeline Journey */}
+            <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 sm:p-8 space-y-5 max-w-3xl mx-auto shadow-2xl">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                <Sparkles className="w-4 h-4" /> Your VIP Concierge Journey
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {conciergeTimelineSteps.map((step, idx) => (
+                  <div key={idx} className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-1">
+                    <div className="text-[11px] font-bold uppercase text-amber-400">Step {idx + 1}</div>
+                    <div className="text-xs font-bold text-white">{step.title}</div>
+                    <div className="text-[11px] text-slate-400">{step.desc}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800 text-[11px] text-slate-400 text-center leading-relaxed">
+                Note: Your request is staged for concierge fulfillment. Shafsky coordinates document verification and embassy liaison. Final visa grant decisions rest solely with sovereign embassy and consular authorities.
+              </div>
+            </div>
           </div>
         )}
       </div>
