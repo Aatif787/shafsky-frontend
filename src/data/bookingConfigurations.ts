@@ -326,25 +326,27 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
   // ── 6. TRAVEL SERVICES: VISA ASSISTANCE ──
   visa: {
     id: "visa",
-    serviceName: "Fast-Track Visa Assistance",
+    serviceName: "Visa Assistance",
     category: "travel",
     icon: Building2,
-    tagline: "Diplomatic Expedited Processing & Document Curation",
-    description: "End-to-end diplomatic visa handling, VIP doorstep biometric collection, and priority approval for corporate travelers.",
+    tagline: "Fast-Track Visa Assistance & Processing",
+    description: "Expedited diplomatic visa processing, VIP doorstep biometrics, and business travel visas.",
     ctaText: "Request Visa Assistance",
     steps: [
       {
         id: "visa_details",
         title: "Visa Requirements",
-        subtitle: "Specify destination country and visa processing type",
+        subtitle: "Specify destination country, passport issuing country, and visa processing category",
         fields: [
-          { id: "destAirport", label: "Destination Country", type: "country_select", required: true, gridCols: 2 },
-          { id: "visaType", label: "Visa Processing Category", type: "select", options: [
-              { label: "Fast-Track Business Visa", value: "business" },
-              { label: "Tourist / Family VIP Visa", value: "tourist" },
+          { id: "destination", label: "Destination Country", type: "country_select", required: true, gridCols: 2 },
+          { id: "passport_country", label: "Passport Issuing Country", type: "country_select", required: true, gridCols: 2 },
+          { id: "visa_category", label: "Visa Processing Category", type: "select", options: [
+              { label: "Business / Corporate Visa", value: "business" },
+              { label: "Tourist / Family Visa", value: "tourist" },
               { label: "Diplomatic / Official Delegation", value: "diplomatic" },
+              { label: "Student / Medical Visa", value: "student" },
             ], required: true, gridCols: 2 },
-          { id: "flightDate", label: "Intended Travel Date", type: "date", required: true, gridCols: 2 },
+          { id: "depart_date", label: "Intended Travel Date", type: "date", required: true, gridCols: 2 },
         ],
       },
       {
@@ -352,10 +354,10 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
         title: "Applicant Information",
         subtitle: "Provide applicant contact and passport details",
         fields: [
-          { id: "leadPassengerName", label: "Applicant Full Name", type: "text", placeholder: "e.g. Sophia Martinez", required: true, gridCols: 2 },
-          { id: "passengerEmail", label: "Email Address", type: "text", placeholder: "sophia@venture.com", required: true, gridCols: 2 },
-          { id: "passengerPhone", label: "Phone Number", type: "phone_input", placeholder: "+91 98765 43210", required: true, gridCols: 2 },
-          { id: "passportNumber", label: "Passport Number (Optional)", type: "text", placeholder: "Z1234567", required: false, gridCols: 2 },
+          { id: "contact_name", label: "Applicant Full Name", type: "text", placeholder: "e.g. Sophia Martinez", required: true, gridCols: 2 },
+          { id: "contact_email", label: "Email Address", type: "text", placeholder: "sophia@venture.com", required: true, gridCols: 2 },
+          { id: "contact_phone", label: "Phone Number", type: "phone_input", placeholder: "+91 98765 43210", required: true, gridCols: 2 },
+          { id: "passport_number", label: "Passport Number (Optional)", type: "text", placeholder: "Z1234567", required: false, gridCols: 2 },
         ],
       },
     ],

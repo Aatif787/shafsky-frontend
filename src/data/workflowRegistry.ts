@@ -212,10 +212,10 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
       },
     ],
     validationRules: {
-      destAirport: { required: true, errorMessage: "Destination city is required." },
-      flightDate: { required: true, errorMessage: "Travel date is required." },
-      leadPassengerName: { required: true, errorMessage: "Lead guest name is required." },
-      passengerEmail: { required: true, errorMessage: "Email address is required." },
+      destination: { required: true, errorMessage: "Destination city is required." },
+      depart_date: { required: true, errorMessage: "Travel date is required." },
+      contact_name: { required: true, errorMessage: "Contact name is required." },
+      contact_email: { required: true, errorMessage: "Email address is required." },
     },
   },
 
