@@ -18,7 +18,7 @@ import type { TravelPurpose } from "@/lib/visa/types";
 import type { VisaEvaluationResult } from "@/lib/visa/visaIntelligence";
 import { ApplicantCounter } from "../shared/ApplicantCounter";
 import { VisaStatusCard } from "../cards/VisaStatusCard";
-import { SearchableCountrySelect } from "../shared/SearchableCountrySelect";
+import { CountrySelector } from "../shared/CountrySelector";
 
 interface TravelPlanningStepProps {
   destinationCountry: string;
@@ -115,9 +115,9 @@ export function TravelPlanningStep({
       </div>
 
       <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-8 space-y-6 shadow-sm">
-        {/* 1. Guided Country Selectors */}
+        {/* Reused Single CountrySelector Component for All 3 Fields */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <SearchableCountrySelect
+          <CountrySelector
             label="Destination Country"
             value={destinationCountry}
             placeholder="Search destination country"
@@ -125,7 +125,7 @@ export function TravelPlanningStep({
             required
           />
 
-          <SearchableCountrySelect
+          <CountrySelector
             label="Passport Issuing Country"
             value={passportCountry}
             placeholder="Search passport issuing country"
@@ -133,7 +133,7 @@ export function TravelPlanningStep({
             required
           />
 
-          <SearchableCountrySelect
+          <CountrySelector
             label="Country of Residence"
             value={residenceCountry}
             placeholder="Search country of residence"
@@ -141,7 +141,7 @@ export function TravelPlanningStep({
           />
         </div>
 
-        {/* 2. Booking Mode */}
+        {/* Booking Mode */}
         <div className="space-y-2">
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
             Who are you requesting this visa for?
@@ -177,7 +177,7 @@ export function TravelPlanningStep({
           </p>
         </div>
 
-        {/* 3. Travel Purpose Grid */}
+        {/* Travel Purpose Grid */}
         <div className="space-y-2">
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
             What is the purpose of your trip? <span className="text-amber-500">*</span>
@@ -209,7 +209,7 @@ export function TravelPlanningStep({
           </div>
         </div>
 
-        {/* 4. Travel Date & Mode */}
+        {/* Travel Date & Mode */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
@@ -266,7 +266,7 @@ export function TravelPlanningStep({
           </div>
         </div>
 
-        {/* 5. Applicants Selector & Live Summary */}
+        {/* Applicants Selector & Live Summary */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
