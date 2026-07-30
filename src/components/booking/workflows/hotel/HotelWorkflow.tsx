@@ -109,8 +109,16 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
 
   return (
     <div className="w-full text-slate-900 min-h-screen relative py-8 sm:py-16 px-4 sm:px-10 max-w-7xl mx-auto">
-      {/* PURE SKY BLUE FULL-SCREEN BACKGROUND */}
-      <div className="fixed inset-0 w-full h-full pointer-events-none -z-10 bg-gradient-to-b from-sky-300 via-sky-400 to-sky-500" />
+      {/* SKY CLOUDS BACKGROUND LAYER */}
+      <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+        <img
+          src={skyCloudsImg}
+          alt="Sky background with clouds"
+          className="w-full h-full object-cover opacity-50 filter brightness-105 saturate-140 mix-blend-overlay"
+        />
+      </div>
+
+      <div className="relative z-10">
 
       {/* SECTION 1: LUXURY HERO HEADER */}
       <div className="relative z-10 max-w-3xl mb-12 pt-4">
@@ -527,6 +535,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
           ))}
         </div>
       </div>
+    </div>
     </div>
   );
 }
