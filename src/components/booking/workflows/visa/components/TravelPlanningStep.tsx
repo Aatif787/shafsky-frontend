@@ -115,7 +115,7 @@ export function TravelPlanningStep({
       </div>
 
       <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-8 space-y-6 shadow-sm">
-        {/* Reused Single CountrySelector Component for All 3 Fields */}
+        {/* 1. Guided Country Selectors */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <CountrySelector
             label="Destination Country"
@@ -141,7 +141,7 @@ export function TravelPlanningStep({
           />
         </div>
 
-        {/* Booking Mode */}
+        {/* 2. Booking Mode with Enhanced Card Interactions */}
         <div className="space-y-2">
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
             Who are you requesting this visa for?
@@ -160,14 +160,14 @@ export function TravelPlanningStep({
                   type="button"
                   onClick={() => setBehalfOf(mode.id as any)}
                   aria-pressed={isSel}
-                  className={`p-3 rounded-xl border text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
+                  className={`p-3.5 rounded-xl border text-xs font-semibold transition-all duration-200 ease-out flex items-center justify-center gap-2 relative ${
                     isSel
-                      ? "bg-amber-500/10 border-amber-500 text-amber-900 ring-1 ring-amber-500/30"
-                      : "bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-100"
+                      ? "bg-amber-500/[0.08] border-amber-500 text-amber-950 shadow-md shadow-amber-500/10 ring-1 ring-amber-500/40 -translate-y-[1px]"
+                      : "bg-slate-50/80 border-slate-200/90 text-slate-700 hover:border-slate-300 hover:bg-slate-100/80 hover:text-slate-900"
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  {mode.label}
+                  <Icon className={`w-4 h-4 transition-colors ${isSel ? "text-amber-600" : "text-slate-500"}`} />
+                  <span>{mode.label}</span>
                 </button>
               );
             })}
@@ -177,7 +177,7 @@ export function TravelPlanningStep({
           </p>
         </div>
 
-        {/* Travel Purpose Grid */}
+        {/* 3. Travel Purpose Grid with Soft Ambient Glow & Active Indicator */}
         <div className="space-y-2">
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
             What is the purpose of your trip? <span className="text-amber-500">*</span>
@@ -192,24 +192,29 @@ export function TravelPlanningStep({
                   type="button"
                   onClick={() => setTravelPurpose(p.id)}
                   aria-pressed={isSel}
-                  className={`text-left p-3.5 rounded-xl border transition-all flex flex-col justify-between ${
+                  className={`text-left p-4 rounded-xl border transition-all duration-200 ease-out flex flex-col justify-between relative ${
                     isSel
-                      ? "bg-amber-500/10 border-amber-500 text-amber-900 ring-1 ring-amber-500/30"
-                      : "bg-slate-50 border-slate-200 text-slate-800 hover:border-slate-300 hover:bg-slate-100"
+                      ? "bg-amber-500/[0.08] border-amber-500 text-amber-950 shadow-md shadow-amber-500/10 ring-1 ring-amber-500/40 -translate-y-[1px]"
+                      : "bg-slate-50/80 border-slate-200/90 text-slate-800 hover:border-slate-300 hover:bg-slate-100/80"
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 mb-1.5">
-                    <Icon className={`w-4 h-4 ${isSel ? "text-amber-600" : "text-slate-500"}`} />
-                    <span className="font-semibold text-sm text-slate-900">{p.label}</span>
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <div className="flex items-center gap-2.5">
+                      <Icon className={`w-4 h-4 transition-colors ${isSel ? "text-amber-600" : "text-slate-500"}`} />
+                      <span className="font-bold text-sm text-slate-900">{p.label}</span>
+                    </div>
+                    {isSel && (
+                      <div className="w-2 h-2 rounded-full bg-amber-500 shadow-xs shadow-amber-500/50 animate-in zoom-in-50 duration-200" />
+                    )}
                   </div>
-                  <p className="text-xs text-slate-600">{p.desc}</p>
+                  <p className="text-xs text-slate-600 leading-relaxed">{p.desc}</p>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Travel Date & Mode */}
+        {/* 4. Travel Date & Mode */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
@@ -266,7 +271,7 @@ export function TravelPlanningStep({
           </div>
         </div>
 
-        {/* Applicants Selector & Live Summary */}
+        {/* 5. Applicants Selector & Live Summary */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
