@@ -111,7 +111,7 @@ function TravelServicesPage() {
       ]}
       faqs={[
         {
-          q: "Which hotel partners are covered by the Hotel Handoff service?",
+          q: "Which hotel partners are covered by the Hotel Booking service?",
           a: "We maintain direct concierge relationships with major 5-star chains including Taj Hotels, Oberoi, Four Seasons, Marriott Luxury Collection, and boutique heritage properties across 20+ cities.",
         },
         {

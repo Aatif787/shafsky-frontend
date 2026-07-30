@@ -129,12 +129,12 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
   // ── 2. TRAVEL SERVICES WORKFLOW (NO FLIGHT NUMBER REQUIRED) ──
   travel_services_workflow: {
     workflowId: "travel_services_workflow",
-    workflowName: "VIP Travel & Hotel Journey",
+    workflowName: "Hotel Booking",
     category: "travel",
     icon: Hotel,
     ctaText: "Submit Travel Enquiry",
     estimatedTime: "1 min",
-    successTitle: "Travel & Suite Reservation Staged",
+    successTitle: "Hotel Suite Reservation Staged",
     successMessage: "Your luxury travel coordinator has received your requirements and is preparing your voucher.",
     badgeLabel: "Suite Voucher Staged",
     stepSequence: [
@@ -154,12 +154,14 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
         stepType: "fields_form",
         fields: [
           { id: "destAirport", label: "Destination City / Country", type: "text", placeholder: "e.g. Dubai, London, Paris, Tokyo", required: true, gridCols: 2 },
-          { id: "flightDate", label: "Check-in Date", type: "date", required: true, gridCols: 2 },
-          { id: "paxAdults", label: "Total Guest Count", type: "passenger_counter", required: true, gridCols: 2 },
-          { id: "hotelCategory", label: "Preferred Accommodation Class", type: "select", options: [
-              { label: "Ultra Luxury 5-Star Palace Suite", value: "palace" },
+          { id: "check_in", label: "Check-in Date", type: "date", required: true, gridCols: 2 },
+          { id: "guests_count", label: "Total Guest Count", type: "passenger_counter", required: true, gridCols: 2 },
+          { id: "room_type", label: "Preferred Room Category", type: "select", options: [
+              { label: "Deluxe Suite", value: "deluxe_suite" },
               { label: "Executive Boutique Hotel", value: "boutique" },
-              { label: "Corporate Business Suite", value: "corporate" },
+              { label: "Presidential / Palace Suite", value: "palace" },
+              { label: "Heritage Villa", value: "heritage_villa" },
+              { label: "Business Suite", value: "corporate" },
             ], required: true, gridCols: 2 },
           { id: "specialRequests", label: "Special Requests / Butler Needs", type: "textarea", placeholder: "Connecting suites, late check-out...", required: false, gridCols: 1 },
         ],

@@ -258,7 +258,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
   // ── 5. TRAVEL SERVICES: HOTEL BOOKING ──
   hotel: {
     id: "hotel",
-    serviceName: "VIP Hotel & Resort Booking",
+    serviceName: "Hotel Booking",
     category: "travel",
     icon: Hotel,
     tagline: "Curated 5-Star Suites & Exclusive Concierge Perks",
@@ -271,12 +271,14 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
         subtitle: "Specify destination city, check-in date, and stay duration",
         fields: [
           { id: "destAirport", label: "Destination City / Region", type: "text", placeholder: "e.g. Dubai, London, Paris, Tokyo, Goa", required: true, gridCols: 2 },
-          { id: "flightDate", label: "Check-in Date", type: "date", required: true, gridCols: 2 },
-          { id: "checkoutDate", label: "Check-out Date", type: "date", required: true, gridCols: 2 },
-          { id: "hotelCategory", label: "Preferred Hotel Category", type: "select", options: [
-              { label: "Ultra Luxury 5-Star / Palace Suite", value: "palace" },
+          { id: "check_in", label: "Check-in Date", type: "date", required: true, gridCols: 2 },
+          { id: "check_out", label: "Check-out Date", type: "date", required: true, gridCols: 2 },
+          { id: "room_type", label: "Preferred Room Category", type: "select", options: [
+              { label: "Deluxe Suite", value: "deluxe_suite" },
               { label: "Executive Boutique Hotel", value: "boutique" },
-              { label: "Business Corporate Suite", value: "corporate" },
+              { label: "Presidential / Palace Suite", value: "palace" },
+              { label: "Heritage Villa", value: "heritage_villa" },
+              { label: "Business Suite", value: "corporate" },
             ], required: true, gridCols: 2 },
         ],
       },
@@ -285,7 +287,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
         title: "Guests & Suite Preferences",
         subtitle: "Specify number of guests and special room requests",
         fields: [
-          { id: "paxAdults", label: "Total Adult Guests", type: "passenger_counter", required: true, gridCols: 2 },
+          { id: "guests_count", label: "Total Adult Guests", type: "passenger_counter", required: true, gridCols: 2 },
           { id: "specialRequests", label: "Room Preferences / Butler Requests", type: "textarea", placeholder: "e.g. Connecting suites, ocean view, late check-out", required: false, gridCols: 1 },
         ],
       },
