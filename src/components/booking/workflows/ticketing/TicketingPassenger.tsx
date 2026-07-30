@@ -239,12 +239,70 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
 
       {/* 1. Lead Contact Section */}
       <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4">
-        <div className="flex items-center gap-2">
-          <User className="w-4 h-4 text-emerald-700" />
-          <h3 className="text-xs font-mono font-bold uppercase text-slate-900 tracking-wider">
-            Lead Contact & Booking Organizer
-          </h3>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <User className="w-4 h-4 text-emerald-700" />
+            <h3 className="text-xs font-mono font-bold uppercase text-slate-900 tracking-wider">
+              Lead Contact & Booking Organizer
+            </h3>
+          </div>
+
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-mono font-bold text-slate-700 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-xs">
+            <input
+              type="checkbox"
+              checked={data.isCorporateBooking || false}
+              onChange={(e) => onChange({ isCorporateBooking: e.target.checked })}
+              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+            />
+            <span>Booking on behalf of someone else?</span>
+          </label>
         </div>
+
+        {data.isCorporateBooking && (
+          <div className="p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-200/60 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-[11px] font-mono text-emerald-900 uppercase tracking-wider font-bold mb-1">
+                Company Name *
+              </label>
+              <input
+                type="text"
+                value={data.companyName || ""}
+                onChange={(e) => onChange({ companyName: e.target.value })}
+                placeholder="e.g. Sterling Global Holdings"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-emerald-200 text-slate-900 text-sm font-sans font-medium"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-mono text-emerald-900 uppercase tracking-wider font-bold mb-1">
+                Traveller Relationship *
+              </label>
+              <select
+                value={data.travellerRelationship || "Employee"}
+                onChange={(e) => onChange({ travellerRelationship: e.target.value })}
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-emerald-200 text-slate-900 text-sm font-sans font-medium"
+              >
+                <option value="Employee">Executive Employee</option>
+                <option value="Executive">C-Suite / Board Member</option>
+                <option value="Client">VIP Client</option>
+                <option value="Family">Family / Guest</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-mono text-emerald-900 uppercase tracking-wider font-bold mb-1">
+                Employee / Cost Center Ref
+              </label>
+              <input
+                type="text"
+                value={data.employeeReference || ""}
+                onChange={(e) => onChange({ employeeReference: e.target.value })}
+                placeholder="e.g. CC-90821"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-emerald-200 text-slate-900 text-sm font-mono font-bold"
+              />
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -257,7 +315,6 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
               onChange={(e) => {
                 const name = e.target.value;
                 onChange({ fullName: name });
-                // Auto pre-fill Passenger 1 first & last name if not edited
                 if (passengers.length > 0) {
                   const parts = name.split(" ");
                   updateIndividualPassenger(passengers[0].id, {
@@ -267,19 +324,6 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                 }
               }}
               placeholder="e.g. Lord Henry Sterling"
-              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
-              Company Name (Optional)
-            </label>
-            <input
-              type="text"
-              value={data.companyName || ""}
-              onChange={(e) => onChange({ companyName: e.target.value })}
-              placeholder="e.g. Sterling Global Enterprises"
               className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
             />
           </div>
@@ -297,7 +341,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
             />
           </div>
 
-          <div>
+          <div className="sm:col-span-2">
             <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
               Email Address *
             </label>
@@ -565,42 +609,55 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
         })}
       </div>
 
-      {/* 3. VIP Assistance Layer */}
-      <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+      {/* 3. VIP Assistance & Special Needs Grid Cards */}
+      <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4">
         <span className="text-xs font-mono font-bold text-slate-800 uppercase tracking-wider block">
-          Special Assistance & VIP Preferences
+          Special Assistance & Accessibility Cards
         </span>
-        <div className="flex flex-wrap gap-4">
-          <label className="flex items-center gap-2 cursor-pointer text-xs font-sans font-semibold text-slate-700">
-            <input
-              type="checkbox"
-              checked={data.wheelchairAssistance || false}
-              onChange={(e) => onChange({ wheelchairAssistance: e.target.checked })}
-              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
-            />
-            <span>Wheelchair Ramp Escort</span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer text-xs font-sans font-semibold text-slate-700">
-            <input
-              type="checkbox"
-              checked={data.medicalAssistance || false}
-              onChange={(e) => onChange({ medicalAssistance: e.target.checked })}
-              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
-            />
-            <span>Medical / Oxygen Assistance</span>
-          </label>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {[
+            { id: "wheelchair", label: "Wheelchair Assistance" },
+            { id: "medical", label: "Medical / Oxygen" },
+            { id: "pregnant", label: "Pregnant Traveller" },
+            { id: "visual", label: "Visual Assistance" },
+            { id: "hearing", label: "Hearing Assistance" },
+            { id: "minor", label: "Unaccompanied Minor" },
+          ].map((card) => {
+            const currentCards = data.specialAssistanceCards || {};
+            const isSelected = Boolean(currentCards[card.id as keyof typeof currentCards]);
+
+            return (
+              <button
+                key={card.id}
+                type="button"
+                onClick={() => {
+                  const updated = { ...currentCards, [card.id]: !isSelected };
+                  onChange({ specialAssistanceCards: updated });
+                }}
+                className={`p-3.5 rounded-xl text-left border text-xs font-sans font-semibold transition-all duration-200 flex items-center justify-between ${
+                  isSelected
+                    ? "bg-emerald-50 text-emerald-900 border-emerald-300 font-bold shadow-xs"
+                    : "bg-white text-slate-700 border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                <span>{card.label}</span>
+                {isSelected && <Check className="w-3.5 h-3.5 text-emerald-700 shrink-0" />}
+              </button>
+            );
+          })}
         </div>
 
         <div>
           <label className="block text-[11px] font-mono text-slate-600 font-bold mb-1">
-            Dietary Restrictions / Meal Preferences
+            Dietary Restrictions / Inflight Meal Preferences
           </label>
           <input
             type="text"
             value={data.dietaryRestrictions || ""}
             onChange={(e) => onChange({ dietaryRestrictions: e.target.value })}
             placeholder="e.g. Diabetic meal, Halal, Kosher, Strict Vegan..."
-            className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 text-xs font-sans font-medium"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-xs font-sans font-medium"
           />
         </div>
       </div>

@@ -105,6 +105,31 @@ export function TicketingWorkflow({ searchParams }: TicketingWorkflowProps) {
         onSaveDraft={handleSaveDraft}
       />
 
+      {/* Live Concierge Itinerary Summary Widget */}
+      {currentStep <= 3 && (
+        <div className="p-3.5 rounded-2xl bg-slate-900 text-white flex flex-wrap items-center justify-between gap-3 text-xs font-mono shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#84cc16] animate-pulse" />
+            <span className="font-bold text-slate-100 uppercase tracking-wider">Live Concierge Itinerary:</span>
+            <span className="text-emerald-400 font-bold">
+              {journey.tripType === "multi_city"
+                ? `${(journey.multiCityLegs || []).length} Flight Legs`
+                : `${journey.fromAirport} → ${journey.toAirport}`}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-300">
+            <span className="font-semibold">{journey.cabinClass}</span>
+            <span>•</span>
+            <span>{journey.passengers} Passenger(s)</span>
+            {journey.dateFlexibility && (
+              <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold">
+                Flexible ±1-3 Days
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       <AnimatePresence mode="wait">
         <motion.div
           key={currentStep}

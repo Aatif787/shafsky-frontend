@@ -64,12 +64,93 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
       </div>
 
       {/* Inputs Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <div>
-          <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-            From Airport *
-          </label>
-          <div className="relative">
+      {data.tripType === "multi_city" ? (
+        <div className="space-y-4 sm:col-span-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono font-bold uppercase text-slate-800 tracking-wider">
+              Multi-City Itinerary Legs
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                const legs = data.multiCityLegs || [];
+                const lastLeg = legs[legs.length - 1] || { toAirport: "Dubai International (DXB)", departDate: data.departDate };
+                const newLegs = [
+                  ...legs,
+                  {
+                    fromAirport: lastLeg.toAirport,
+                    toAirport: "",
+                    departDate: new Date(Date.now() + 86400000 * 3).toISOString().split("T")[0],
+                  },
+                ];
+                onChange({ multiCityLegs: newLegs });
+              }}
+              className="text-xs font-mono font-bold text-emerald-800 hover:text-emerald-900 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full transition-colors"
+            >
+              + Add Another Flight Leg
+            </button>
+          </div>
+
+          {(data.multiCityLegs || []).map((leg, idx) => (
+            <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-[11px] font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+                  Leg {idx + 1} Origin *
+                </label>
+                <input
+                  type="text"
+                  value={leg.fromAirport}
+                  onChange={(e) => {
+                    const legs = [...(data.multiCityLegs || [])];
+                    legs[idx] = { ...legs[idx], fromAirport: e.target.value };
+                    onChange({ multiCityLegs: legs });
+                  }}
+                  placeholder="Departure Airport"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm font-sans font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+                  Leg {idx + 1} Destination *
+                </label>
+                <input
+                  type="text"
+                  value={leg.toAirport}
+                  onChange={(e) => {
+                    const legs = [...(data.multiCityLegs || [])];
+                    legs[idx] = { ...legs[idx], toAirport: e.target.value };
+                    onChange({ multiCityLegs: legs });
+                  }}
+                  placeholder="Arrival Airport"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm font-sans font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono text-slate-700 uppercase tracking-wider font-bold mb-1">
+                  Departure Date *
+                </label>
+                <input
+                  type="date"
+                  value={leg.departDate}
+                  onChange={(e) => {
+                    const legs = [...(data.multiCityLegs || [])];
+                    legs[idx] = { ...legs[idx], departDate: e.target.value };
+                    onChange({ multiCityLegs: legs });
+                  }}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm font-mono font-bold"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:col-span-2">
+          <div>
+            <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
+              From Airport *
+            </label>
             <input
               type="text"
               value={data.fromAirport}
@@ -78,13 +159,11 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
               className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
             />
           </div>
-        </div>
 
-        <div>
-          <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-            To Airport *
-          </label>
-          <div className="relative">
+          <div>
+            <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
+              To Airport *
+            </label>
             <input
               type="text"
               value={data.toAirport}
@@ -93,45 +172,47 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
               className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
             />
           </div>
-        </div>
 
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold">
-              Departure Date *
-            </label>
-            <button
-              type="button"
-              onClick={() => onChange({ dateFlexibility: !data.dateFlexibility })}
-              className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full transition-colors ${
-                data.dateFlexibility ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"
-              }`}
-            >
-              {data.dateFlexibility ? "✓ Flexible ±1-3 days" : "+ Flexible dates?"}
-            </button>
-          </div>
-          <input
-            type="date"
-            value={data.departDate}
-            onChange={(e) => onChange({ departDate: e.target.value })}
-            className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-mono font-bold"
-          />
-        </div>
-
-        {data.tripType === "round_trip" && (
           <div>
-            <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-              Return Date *
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold">
+                Departure Date *
+              </label>
+              <button
+                type="button"
+                onClick={() => onChange({ dateFlexibility: !data.dateFlexibility })}
+                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full transition-colors ${
+                  data.dateFlexibility ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"
+                }`}
+              >
+                {data.dateFlexibility ? "✓ Flexible ±1-3 days" : "+ Flexible dates?"}
+              </button>
+            </div>
             <input
               type="date"
-              value={data.returnDate}
-              onChange={(e) => onChange({ returnDate: e.target.value })}
+              value={data.departDate}
+              onChange={(e) => onChange({ departDate: e.target.value })}
               className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-mono font-bold"
             />
           </div>
-        )}
 
+          {data.tripType === "round_trip" && (
+            <div>
+              <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
+                Return Date *
+              </label>
+              <input
+                type="date"
+                value={data.returnDate}
+                onChange={(e) => onChange({ returnDate: e.target.value })}
+                className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-mono font-bold"
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
           <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
             Cabin Class *

@@ -47,9 +47,15 @@ export function TicketingReview({
       {/* Ancillary Add-on Personalization Layer */}
       {ancillaries && onUpdateAncillaries && (
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
-          <h3 className="text-sm font-mono font-bold text-slate-900 uppercase tracking-wider">
-            Personalize Your Flight Journey (Optional Add-ons)
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-mono font-bold text-slate-900 uppercase tracking-wider">
+              Personalize Your Flight Journey (Optional Add-ons)
+            </h3>
+            <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+              Recommended for {journey.cabinClass.includes("First") || journey.cabinClass.includes("Business") ? "First/Business Class" : "Economy Class"}
+            </span>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
               ancillaries.seatSelection ? "bg-emerald-50/60 border-emerald-300" : "bg-slate-50/60 border-slate-200"
@@ -57,7 +63,12 @@ export function TicketingReview({
               <div className="flex items-center gap-2.5">
                 <Armchair className="w-4 h-4 text-emerald-700" />
                 <div>
-                  <span className="text-xs font-bold text-slate-900 block">Extra Legroom / Preferred Seat</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-900 block">Extra Legroom / Preferred Seat</span>
+                    {journey.cabinClass.includes("Economy") && (
+                      <span className="text-[9px] font-mono font-bold bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded">Recommended</span>
+                    )}
+                  </div>
                   <span className="text-[10px] text-slate-500 font-mono">+₹4,500 / seat</span>
                 </div>
               </div>
@@ -75,7 +86,12 @@ export function TicketingReview({
               <div className="flex items-center gap-2.5">
                 <Utensils className="w-4 h-4 text-emerald-700" />
                 <div>
-                  <span className="text-xs font-bold text-slate-900 block">Michelin Gourmet Inflight Meal</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-900 block">Michelin Gourmet Inflight Meal</span>
+                    {(journey.cabinClass.includes("First") || journey.cabinClass.includes("Business")) && (
+                      <span className="text-[9px] font-mono font-bold bg-emerald-100 text-emerald-900 px-1.5 py-0.2 rounded">Recommended</span>
+                    )}
+                  </div>
                   <span className="text-[10px] text-slate-500 font-mono">Complimentary Pre-select</span>
                 </div>
               </div>
@@ -93,7 +109,12 @@ export function TicketingReview({
               <div className="flex items-center gap-2.5">
                 <Briefcase className="w-4 h-4 text-emerald-700" />
                 <div>
-                  <span className="text-xs font-bold text-slate-900 block">Additional Checked Luggage</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-900 block">Additional Checked Luggage</span>
+                    {journey.cabinClass.includes("Economy") && (
+                      <span className="text-[9px] font-mono font-bold bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded">Recommended</span>
+                    )}
+                  </div>
                   <span className="text-[10px] text-slate-500 font-mono">+₹5,500 / bag</span>
                 </div>
               </div>
@@ -111,7 +132,12 @@ export function TicketingReview({
               <div className="flex items-center gap-2.5">
                 <Crown className="w-4 h-4 text-emerald-700" />
                 <div>
-                  <span className="text-xs font-bold text-slate-900 block">VIP Meet & Assist Airside</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-900 block">VIP Meet & Assist Airside</span>
+                    {(journey.cabinClass.includes("First") || journey.cabinClass.includes("Business")) && (
+                      <span className="text-[9px] font-mono font-bold bg-emerald-100 text-emerald-900 px-1.5 py-0.2 rounded">Recommended</span>
+                    )}
+                  </div>
                   <span className="text-[10px] text-slate-500 font-mono">+₹12,500</span>
                 </div>
               </div>

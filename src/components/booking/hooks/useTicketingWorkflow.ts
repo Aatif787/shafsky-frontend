@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export interface AncillarySelection {
   seatSelection: boolean;
@@ -9,6 +9,12 @@ export interface AncillarySelection {
   loungeAccess: boolean;
   meetAndAssist: boolean;
   airportTransfer: boolean;
+}
+
+export interface MultiCityLeg {
+  fromAirport: string;
+  toAirport: string;
+  departDate: string;
 }
 
 export interface TicketingJourneyData {
@@ -26,6 +32,7 @@ export interface TicketingJourneyData {
   preferredAlliance?: string;
   nonStopOnly?: boolean;
   budgetGuidance?: string;
+  multiCityLegs?: MultiCityLeg[];
 }
 
 export interface IndividualPassenger {
@@ -43,6 +50,15 @@ export interface IndividualPassenger {
   frequentFlyerNumber?: string;
 }
 
+export interface SpecialAssistanceCards {
+  wheelchair?: boolean;
+  medical?: boolean;
+  pregnant?: boolean;
+  visual?: boolean;
+  hearing?: boolean;
+  minor?: boolean;
+}
+
 export interface TicketingPassengerData {
   fullName: string;
   phone: string;
@@ -54,52 +70,107 @@ export interface TicketingPassengerData {
   medicalAssistance?: boolean;
   dietaryRestrictions?: string;
   passengersList?: IndividualPassenger[];
+  isCorporateBooking?: boolean;
+  travellerRelationship?: string;
+  employeeReference?: string;
+  specialAssistanceCards?: SpecialAssistanceCards;
 }
+
+const DRAFT_KEY = "shafsky_ticketing_draft";
 
 export function useTicketingWorkflow(initialOrigin = "London Heathrow (LHR)", initialDest = "Delhi Indira Gandhi (DEL)") {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [busy, setBusy] = useState<boolean>(false);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
 
-  const [journey, setJourney] = useState<TicketingJourneyData>({
-    tripType: "round_trip",
-    fromAirport: initialOrigin,
-    toAirport: initialDest,
-    departDate: new Date().toISOString().split("T")[0],
-    returnDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
-    dateFlexibility: false,
-    passengers: 1,
-    paxAdults: 1,
-    paxChildren: 0,
-    paxInfants: 0,
-    cabinClass: "First / Business Class",
-    preferredAlliance: "Any Alliance",
-    nonStopOnly: false,
-    budgetGuidance: "",
+  const [journey, setJourney] = useState<TicketingJourneyData>(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.journey) return parsed.journey;
+      }
+    } catch (_) {}
+    return {
+      tripType: "round_trip",
+      fromAirport: initialOrigin,
+      toAirport: initialDest,
+      departDate: new Date().toISOString().split("T")[0],
+      returnDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
+      dateFlexibility: false,
+      passengers: 1,
+      paxAdults: 1,
+      paxChildren: 0,
+      paxInfants: 0,
+      cabinClass: "First / Business Class",
+      preferredAlliance: "Any Alliance",
+      nonStopOnly: false,
+      budgetGuidance: "",
+      multiCityLegs: [
+        { fromAirport: initialOrigin, toAirport: initialDest, departDate: new Date().toISOString().split("T")[0] },
+        { fromAirport: initialDest, toAirport: "Dubai International (DXB)", departDate: new Date(Date.now() + 86400000 * 5).toISOString().split("T")[0] },
+      ],
+    };
   });
 
-  const [passenger, setPassenger] = useState<TicketingPassengerData>({
-    fullName: "",
-    phone: "",
-    email: "",
-    companyName: "",
-    vipNotes: "",
-    specialRequests: "",
-    wheelchairAssistance: false,
-    medicalAssistance: false,
-    dietaryRestrictions: "",
+  const [passenger, setPassenger] = useState<TicketingPassengerData>(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.passenger) return parsed.passenger;
+      }
+    } catch (_) {}
+    return {
+      fullName: "",
+      phone: "",
+      email: "",
+      companyName: "",
+      vipNotes: "",
+      specialRequests: "",
+      wheelchairAssistance: false,
+      medicalAssistance: false,
+      dietaryRestrictions: "",
+      isCorporateBooking: false,
+      travellerRelationship: "Employee",
+      employeeReference: "",
+      specialAssistanceCards: {
+        wheelchair: false,
+        medical: false,
+        pregnant: false,
+        visual: false,
+        hearing: false,
+        minor: false,
+      },
+    };
   });
 
-  const [ancillaries, setAncillaries] = useState<AncillarySelection>({
-    seatSelection: false,
-    seatType: "EXTRA_LEG_ROOM",
-    specialMeal: false,
-    mealType: "VEGETARIAN",
-    extraBaggage: false,
-    loungeAccess: false,
-    meetAndAssist: false,
-    airportTransfer: false,
+  const [ancillaries, setAncillaries] = useState<AncillarySelection>(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.ancillaries) return parsed.ancillaries;
+      }
+    } catch (_) {}
+    return {
+      seatSelection: false,
+      seatType: "EXTRA_LEG_ROOM",
+      specialMeal: false,
+      mealType: "VEGETARIAN",
+      extraBaggage: false,
+      loungeAccess: false,
+      meetAndAssist: false,
+      airportTransfer: false,
+    };
   });
+
+  // Auto-save draft to localStorage whenever states change
+  useEffect(() => {
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ journey, passenger, ancillaries }));
+    } catch (_) {}
+  }, [journey, passenger, ancillaries]);
 
   const updateJourney = (fields: Partial<TicketingJourneyData>) => {
     setJourney((prev) => {
