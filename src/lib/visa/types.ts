@@ -38,12 +38,33 @@ export interface PassportStatus {
   warningMessage?: string;
 }
 
+export type DocumentStatus =
+  | "not_required"
+  | "required"
+  | "optional"
+  | "recommended"
+  | "already_available"
+  | "pending";
+
+export type DocumentCategory =
+  | "identity"
+  | "travel"
+  | "financial"
+  | "employment"
+  | "invitation"
+  | "accommodation"
+  | "insurance"
+  | "supporting";
+
 export interface DocumentRequirement {
   id: string;
   name: string;
   description: string;
-  category: "identity" | "financial" | "travel" | "supporting";
+  whyRequired: string;
+  category: DocumentCategory;
   isRequired: boolean;
+  status: DocumentStatus;
+  tooltipInfo?: string;
 }
 
 export interface VisaProcessingSLA {

@@ -16,6 +16,9 @@ import {
   CheckCircle2,
   Plus,
   Trash2,
+  HelpCircle,
+  Info,
+  Check,
 } from "lucide-react";
 
 import {
@@ -23,6 +26,8 @@ import {
   type TravelPurpose,
   type ApplicantType,
   type VisaEvaluationResult,
+  type DocumentRequirement,
+  type DocumentStatus,
 } from "@/lib/visa/visaIntelligence";
 
 import { BookingProgressHeader } from "@/components/booking/shared/BookingProgressHeader";
@@ -56,6 +61,7 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
+  const [activeTooltipId, setActiveTooltipId] = useState<string | null>(null);
 
   // Step 1: Travel Info
   const [destinationCountry, setDestinationCountry] = useState<string>(initialDestination || "United Arab Emirates");
@@ -181,12 +187,54 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
     switch (currentStep) {
       case 1: return "Travel Information";
       case 2: return "Applicant Details";
-      case 3: return "Required Documents Checklist";
+      case 3: return "Required Documents Guidance";
       case 4: return "Lead Contact & Coordinator";
       case 5: return "Review & Confirm Application";
       default: return "Application Submitted";
     }
   };
+
+  // Helper badge styles for document visual states
+  const getStatusBadge = (status: DocumentStatus) => {
+    switch (status) {
+      case "required":
+        return <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 border border-amber-500/30 text-amber-400">Required</span>;
+      case "already_available":
+        return <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-1"><Check className="w-3 h-3" /> Auto-Sourced</span>;
+      case "recommended":
+        return <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-sky-500/10 border border-sky-500/30 text-sky-400">Recommended</span>;
+      case "optional":
+        return <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800 border border-slate-700 text-slate-400">Optional</span>;
+      case "pending":
+        return <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-purple-500/10 border border-purple-500/30 text-purple-400">Pending Setup</span>;
+      default:
+        return <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400">Info Only</span>;
+    }
+  };
+
+  // Document grouping helper
+  const groupedDocuments = evaluation.documents.reduce((acc, doc) => {
+    const key = doc.category || "supporting";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(doc);
+    return acc;
+  }, {} as Record<string, DocumentRequirement[]>);
+
+  const categoryLabels: Record<string, string> = {
+    identity: "Identity & Passport Proof",
+    travel: "Flight & Travel Itinerary",
+    financial: "Financial Solvency Proof",
+    employment: "Employment & Sponsorship",
+    invitation: "Host Business Invitation",
+    accommodation: "Hotel & Stay Proof",
+    insurance: "Travel Health Insurance",
+    supporting: "Supporting Documentation",
+  };
+
+  // Progress Counters
+  const totalDocs = evaluation.documents.length;
+  const sourcedDocs = evaluation.documents.filter((d) => d.status === "already_available").length;
+  const pendingDocs = totalDocs - sourcedDocs;
 
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans overflow-x-hidden">
@@ -537,7 +585,7 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
                   onClick={() => setCurrentStep(3)}
                   className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-sm transition-all flex items-center gap-2 shadow-lg shadow-amber-500/20"
                 >
-                  View Document Checklist
+                  View Document Guidance
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -545,34 +593,98 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
           </div>
         )}
 
-        {/* STEP 3: REQUIRED DOCUMENTS CHECKLIST */}
+        {/* STEP 3: PHASE 4 ELEGANT DOCUMENT EXPERIENCE */}
         {currentStep === 3 && (
           <div className="space-y-6 animate-in fade-in duration-300">
             <div className="text-center sm:text-left space-y-1">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-widest">
-                Step 3 of 5: Document Guidance
+                Step 3 of 5: Document Experience
               </div>
-              <h2 className="text-xl sm:text-3xl font-bold text-white">Required Documents Checklist</h2>
-              <p className="text-slate-400 text-sm">Generated dynamic checklist for embassy filing. No uploads required yet.</p>
+              <h2 className="text-xl sm:text-3xl font-bold text-white">Consular Document Guidance</h2>
+              <p className="text-slate-400 text-sm">Review required documentation. Our specialists handle collection after request staging.</p>
             </div>
 
             <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 sm:p-8 space-y-6 shadow-2xl">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {evaluation.documents.map((doc) => (
-                  <div key={doc.id} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-start gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-xs font-semibold text-white block mb-0.5">{doc.name}</span>
-                      <span className="text-xs text-slate-400 leading-relaxed block">{doc.description}</span>
+              {/* Document Progress Summary Header */}
+              <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+                  <div className="flex items-center gap-2 text-amber-400 font-semibold uppercase tracking-wider">
+                    <FileText className="w-4 h-4 text-amber-400" />
+                    Document Preparation Overview
+                  </div>
+                  <div className="flex items-center gap-3 text-slate-400">
+                    <span>Total Required: <strong className="text-white">{totalDocs}</strong></span>
+                    <span className="text-emerald-400">Auto-Sourced: <strong>{sourcedDocs}</strong></span>
+                    <span className="text-amber-400">Pending Checklist: <strong>{pendingDocs}</strong></span>
+                  </div>
+                </div>
+
+                {/* Visual Progress Bar */}
+                <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 transition-all duration-500"
+                    style={{ width: `${Math.round((sourcedDocs / totalDocs) * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Document Groups */}
+              <div className="space-y-6">
+                {Object.entries(groupedDocuments).map(([categoryKey, docs]) => (
+                  <div key={categoryKey} className="space-y-3">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 pl-1">
+                      {categoryLabels[categoryKey] || categoryKey.toUpperCase()}
+                    </h3>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      {docs.map((doc) => (
+                        <div
+                          key={doc.id}
+                          className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/90 hover:border-slate-700 transition-all space-y-2.5 relative group"
+                        >
+                          {/* Card Top Row: Name & Status Badge */}
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className="text-xs font-bold text-white leading-snug">{doc.name}</h4>
+                            {getStatusBadge(doc.status)}
+                          </div>
+
+                          {/* Description & Why Required */}
+                          <p className="text-xs text-slate-400 leading-relaxed">{doc.description}</p>
+
+                          <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-[11px]">
+                            <span className="text-slate-500 italic line-clamp-1">{doc.whyRequired}</span>
+
+                            {doc.tooltipInfo && (
+                              <button
+                                type="button"
+                                onClick={() => setActiveTooltipId(activeTooltipId === doc.id ? null : doc.id)}
+                                className="text-amber-400/80 hover:text-amber-300 flex items-center gap-1 shrink-0 ml-2"
+                              >
+                                <Info className="w-3.5 h-3.5" />
+                                <span className="underline">Guidance</span>
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Contextual Guidance Tooltip Popup */}
+                          {activeTooltipId === doc.id && doc.tooltipInfo && (
+                            <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs mt-2 animate-in fade-in duration-200 flex items-start gap-2">
+                              <HelpCircle className="w-4 h-4 shrink-0 text-amber-400 mt-0.5" />
+                              <div className="flex-1">{doc.tooltipInfo}</div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
               </div>
 
+              {/* Stress-Free Concierge Banner */}
               <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-3 text-xs text-slate-300">
-                <FileText className="w-5 h-5 text-amber-400 shrink-0" />
+                <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0" />
                 <span>
-                  Our dedicated specialist will collect high-resolution scans or coordinate doorstep document pickup after request confirmation.
+                  No uploads required now. After submitting your request, our visa specialist will review your file and assist with document preparation or doorstep pickup.
                 </span>
               </div>
 

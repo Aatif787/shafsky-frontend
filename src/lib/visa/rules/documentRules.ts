@@ -1,63 +1,76 @@
 import type { DocumentRequirement, TravelPurpose, VisaRequirementType } from "../types";
 
 /**
- * Pure generator of dynamic frontend document requirements.
- * Returns structured arrays for UI display. Does NOT handle files, uploads, or OCR.
+ * Pure generator of dynamic frontend document requirements for presentation in Phase 4.
+ * Returns structured arrays for UI display with status badges, why required notes, and tooltips.
+ * Does NOT handle file uploads, camera access, or OCR.
  */
 
-/**
- * Generates dynamic document checklist based on travel purpose, visa type, and applicant mode.
- */
 export function generateDocumentChecklist(
   purpose: TravelPurpose,
   visaType: VisaRequirementType,
   isCorporate: boolean = false
 ): DocumentRequirement[] {
-  const documents: DocumentRequirement[] = [
-    {
-      id: "doc_passport",
-      name: "Original Passport",
-      description: "Minimum 6 months validity remaining with at least 2 blank pages.",
-      category: "identity",
-      isRequired: true,
-    },
-    {
-      id: "doc_photo",
-      name: "Passport Photographs",
-      description: "Recent color photograph with light background meeting embassy dimensions.",
-      category: "identity",
-      isRequired: true,
-    },
-  ];
-
   if (visaType === "visa_free") {
     return [
       {
         id: "doc_passport_free",
         name: "Valid Passport",
-        description: "Valid passport required for entry checkpoint.",
+        description: "Valid passport required for entry checkpoint upon arrival.",
+        whyRequired: "Immigration requirement for international entry clearance.",
         category: "identity",
         isRequired: true,
+        status: "already_available",
+        tooltipInfo: "Ensure passport has at least 1 blank entry stamp page.",
       },
     ];
   }
 
-  // Purpose-specific additions
+  const documents: DocumentRequirement[] = [
+    {
+      id: "doc_passport",
+      name: "Original Passport Bio Page",
+      description: "Color scan of front & back bio pages including signature line.",
+      whyRequired: "Mandatory for embassy identity verification and border entry.",
+      category: "identity",
+      isRequired: true,
+      status: "required",
+      tooltipInfo: "Must have at least 6 months validity beyond your departure date.",
+    },
+    {
+      id: "doc_photo",
+      name: "Passport Size Photographs",
+      description: "Recent 35x45mm or 2x2 inch photograph with light/white background.",
+      whyRequired: "Required for digital visa issuance and physical passport sticker.",
+      category: "identity",
+      isRequired: true,
+      status: "required",
+      tooltipInfo: "No spectacles or headgear unless for religious purposes.",
+    },
+  ];
+
+  // Purpose & Corporate additions
   if (purpose === "business" || isCorporate) {
     documents.push(
       {
         id: "doc_invitation_letter",
         name: "Host Business Invitation Letter",
-        description: "Official invitation from host company stating purpose and duration of visit.",
-        category: "supporting",
+        description: "Official letter from host company stating trip purpose and visit duration.",
+        whyRequired: "Proves commercial purpose of visit to consular officers.",
+        category: "invitation",
         isRequired: true,
+        status: "pending",
+        tooltipInfo: "Must be on host company letterhead with official seal or stamp.",
       },
       {
         id: "doc_company_cover_letter",
-        name: "Employer Guarantee Letter",
-        description: "Covering letter on company letterhead confirming employment and trip funding.",
-        category: "supporting",
+        name: "Employer Guarantee & Employment Proof",
+        description: "Covering letter from current employer confirming position and trip sponsorship.",
+        whyRequired: "Establishes employment status and financial backing.",
+        category: "employment",
         isRequired: true,
+        status: "required",
+        tooltipInfo: "Includes employee designation, salary, and authorized leave approval.",
       }
     );
   }
@@ -66,17 +79,33 @@ export function generateDocumentChecklist(
     documents.push(
       {
         id: "doc_bank_statement",
-        name: "Bank Statements",
-        description: "Last 3 to 6 months bank statement stamped by bank branch.",
+        name: "Stamped 6-Month Bank Statements",
+        description: "Original or bank-certified statement showing sufficient liquid funds.",
+        whyRequired: "Consular proof of financial solvency for travel duration.",
         category: "financial",
         isRequired: true,
+        status: "required",
+        tooltipInfo: "Ensure bank seal or digital validation QR code is visible.",
       },
       {
-        id: "doc_hotel_flight",
-        name: "Flight & Accommodation Proof",
-        description: "Confirmed return flight itinerary and hotel vouchers.",
+        id: "doc_accommodation",
+        name: "Confirmed Hotel Booking Vouchers",
+        description: "Confirmed reservation vouchers covering your stay in destination cities.",
+        whyRequired: "Proves accommodation arrangements for entire duration.",
+        category: "accommodation",
+        isRequired: true,
+        status: "already_available",
+        tooltipInfo: "If booked through Shafsky Hotels, vouchers are automatically attached.",
+      },
+      {
+        id: "doc_flight_itinerary",
+        name: "Round-Trip Flight Itinerary",
+        description: "Confirmed air tickets showing onward or return travel flight numbers.",
+        whyRequired: "Mandatory return ticket proof for border authority clearance.",
         category: "travel",
         isRequired: true,
+        status: "already_available",
+        tooltipInfo: "Presents flight dates and reservation PNR code.",
       }
     );
   }
@@ -84,20 +113,26 @@ export function generateDocumentChecklist(
   if (purpose === "student") {
     documents.push({
       id: "doc_admission_letter",
-      name: "University Admission Offer",
-      description: "Official letter of acceptance from accredited educational institution.",
+      name: "Official University Acceptance Letter",
+      description: "Letter of enrollment from accredited educational institute.",
+      whyRequired: "Validates academic status for student visa issuance.",
       category: "supporting",
       isRequired: true,
+      status: "required",
+      tooltipInfo: "Must state course start date and tuition fee payment status.",
     });
   }
 
   if (purpose === "medical") {
     documents.push({
       id: "doc_hospital_referral",
-      name: "Hospital Referral & Appointment",
+      name: "Hospital Referral & Doctor Appointment",
       description: "Medical referral letter and appointment confirmation from treating hospital.",
+      whyRequired: "Verifies medical treatment intent and hospital booking.",
       category: "supporting",
       isRequired: true,
+      status: "required",
+      tooltipInfo: "Must contain hospital contact number and attending doctor name.",
     });
   }
 
@@ -105,10 +140,13 @@ export function generateDocumentChecklist(
   if (visaType === "sticker") {
     documents.push({
       id: "doc_travel_insurance",
-      name: "Travel Medical Insurance",
-      description: "Comprehensive medical cover policy valid for entire duration of stay.",
-      category: "financial",
+      name: "International Travel Medical Insurance",
+      description: "Comprehensive health policy with minimum €30,000 / $50,000 medical emergency cover.",
+      whyRequired: "Mandatory requirement for Schengen, UK, and US entry clearance.",
+      category: "insurance",
       isRequired: true,
+      status: "recommended",
+      tooltipInfo: "Can be issued directly by Shafsky Aviation Concierge Desk.",
     });
   }
 
