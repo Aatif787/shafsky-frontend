@@ -39,6 +39,7 @@ export interface IndividualPassenger {
   nationality: string;
   passportNumber?: string;
   passportExpiry?: string;
+  passportIssuingCountry?: string;
   frequentFlyerNumber?: string;
 }
 
