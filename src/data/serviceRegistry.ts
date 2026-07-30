@@ -238,7 +238,7 @@ export const SERVICE_REGISTRY: Record<string, ServiceEntry> = {
     categoryHref: "/solutions/travel",
     icon: Sparkles,
     shortDescription: "Custom Michelin-grade inflight gourmet catering, specialized dietary curation, and fine dining.",
-    tagline: "Bespoke Inflight Dining & Culinary Curation",
+    tagline: "Custom In-Flight Meals & Fine Dining",
     heroTitle: "On-board Meals",
     heroSubtitle: "Custom Michelin-grade inflight catering, specialized dietary curation, and fine dining for commercial and charter flights.",
     ctaText: "Reserve On-board Meals",

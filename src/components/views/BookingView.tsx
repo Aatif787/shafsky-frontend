@@ -323,7 +323,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
 
   if (isHotelWorkflow) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sky-400 via-sky-500 to-blue-600 text-slate-900 w-full relative overflow-x-hidden">
+      <div className="min-h-screen bg-slate-950 text-slate-900 w-full relative overflow-x-hidden">
         <HotelWorkflow searchParams={searchParams} />
         <BookingCancelModal show={showCancelDialog} onClose={() => setShowCancelDialog(false)} />
       </div>

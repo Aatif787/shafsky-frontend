@@ -26,7 +26,7 @@ import { useHotelWorkflow } from "@/components/booking/hooks/useHotelWorkflow";
 import { createBooking } from "@/lib/bookings.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import skyCloudsImg from "@/assets/clouds.jpg";
+import desktop169HotelPlaneImg from "@/assets/desktop-169-hotel-plane.png";
 
 export interface HotelWorkflowProps {
   searchParams?: Record<string, any>;
@@ -109,13 +109,14 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
 
   return (
     <div className="w-full text-slate-900 min-h-screen relative py-8 sm:py-16 px-4 sm:px-10 max-w-7xl mx-auto">
-      {/* SKY CLOUDS BACKGROUND LAYER */}
-      <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+      {/* PERFECT WIDESCREEN 16:9 DESKTOP BACKGROUND (HOTELS & FLYING PLANE) */}
+      <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden bg-sky-950">
         <img
-          src={skyCloudsImg}
-          alt="Sky background with clouds"
-          className="w-full h-full object-cover opacity-50 filter brightness-105 saturate-140 mix-blend-overlay"
+          src={desktop169HotelPlaneImg}
+          alt="Widescreen desktop luxury hotel resort with airplane flying in morning sky"
+          className="w-full h-full object-cover object-top sm:object-[center_20%] lg:object-[center_15%] opacity-90 filter brightness-105 saturate-135 transition-all duration-700"
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/20 to-slate-950/85" />
       </div>
 
       <div className="relative z-10">
