@@ -1,4 +1,11 @@
 import { useState, useEffect } from "react";
+import {
+  calculateStayNights,
+  recommendRoomCategory,
+  detectGroupBooking,
+  detectVipStay,
+  calculateHotelEstimate,
+} from "@/lib/hotel/hotelIntelligence";
 
 export interface HotelStayData {
   destination: string;
@@ -144,47 +151,24 @@ export function useHotelWorkflow(initialDest = "Dubai, UAE") {
     setPersonalization((prev) => ({ ...prev, ...fields }));
   };
 
-  // Intelligence calculations
+  // Delegated Intelligence Calculations
   const totalGuests = stay.paxAdults + stay.paxChildren + stay.paxInfants;
-
-  // Nights calculation
-  const nights = Math.max(
-    1,
-    Math.round(
-      (new Date(stay.checkOut).getTime() - new Date(stay.checkIn).getTime()) /
-        (1000 * 60 * 60 * 24)
-    )
-  );
-
+  const nights = calculateStayNights(stay.checkIn, stay.checkOut);
   const isExtendedStay = nights >= 30;
-  const isGroupBooking = stay.roomCount >= 5;
-  const isVipStay = stay.roomType === "palace" || isExtendedStay || isGroupBooking || guest.isCorporateBooking;
-
-  // Recommended room smart logic
-  let recommendedRoom = "Deluxe Suite";
-  if (stay.paxAdults === 2 && stay.paxChildren === 0 && stay.paxInfants === 0) {
-    recommendedRoom = "Deluxe King Suite";
-  } else if (stay.paxAdults === 2 && stay.paxInfants >= 1) {
-    recommendedRoom = "Deluxe King Suite + Baby Cot";
-  } else if (stay.paxChildren >= 1 || stay.paxAdults > 2) {
-    recommendedRoom = "Executive Family Suite";
-  } else if (stay.roomType === "palace") {
-    recommendedRoom = "Presidential / Palace Suite";
-  }
-
-  // Price estimate calculation
-  let baseNightRate = 35000;
-  if (stay.roomType === "palace") baseNightRate = 120000;
-  else if (stay.roomType === "heritage_villa") baseNightRate = 75000;
-  else if (stay.roomType === "boutique") baseNightRate = 45000;
-  else if (stay.roomType === "corporate") baseNightRate = 28000;
-
-  let extraPrice = 0;
-  if (personalization.airportTransfer) extraPrice += 6500;
-  if (personalization.spaInterest) extraPrice += 8500;
-  if (personalization.earlyCheckin) extraPrice += 8500;
-
-  const estimatedTotal = (baseNightRate * stay.roomCount * nights) + extraPrice;
+  const isGroupBooking = detectGroupBooking(stay.roomCount);
+  const isVipStay = detectVipStay(stay.roomType, nights, stay.roomCount, guest.isCorporateBooking);
+  const recommendedRoom = recommendRoomCategory(
+    stay.paxAdults,
+    stay.paxChildren,
+    stay.paxInfants,
+    stay.roomType
+  );
+  const estimatedTotal = calculateHotelEstimate(
+    stay.roomType,
+    stay.roomCount,
+    nights,
+    personalization
+  );
 
   return {
     currentStep,
