@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRight, Plane, Calendar, Users, Sparkles } from "lucide-react";
+import { ArrowRight, Plane, Calendar, Users, Sparkles, Check, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { TicketingJourneyData } from "../../hooks/useTicketingWorkflow";
 
@@ -96,9 +96,20 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
         </div>
 
         <div>
-          <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-            Departure Date *
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold">
+              Departure Date *
+            </label>
+            <button
+              type="button"
+              onClick={() => onChange({ dateFlexibility: !data.dateFlexibility })}
+              className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full transition-colors ${
+                data.dateFlexibility ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"
+              }`}
+            >
+              {data.dateFlexibility ? "✓ Flexible ±1-3 days" : "+ Flexible dates?"}
+            </button>
+          </div>
           <input
             type="date"
             value={data.departDate}
@@ -139,16 +150,82 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
 
         <div>
           <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-            Passengers *
+            Preferred Airline / Alliance
           </label>
-          <input
-            type="number"
-            min={1}
-            max={9}
-            value={data.passengers}
-            onChange={(e) => onChange({ passengers: Math.max(1, parseInt(e.target.value) || 1) })}
-            className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-mono font-bold"
-          />
+          <select
+            value={data.preferredAlliance || "Any Alliance"}
+            onChange={(e) => onChange({ preferredAlliance: e.target.value })}
+            className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
+          >
+            <option value="Any Alliance">Any Premier Airline</option>
+            <option value="Indian Carriers">All Indian Carriers (Air India, IndiGo, Vistara)</option>
+            <option value="Air India">Air India / Air India Express</option>
+            <option value="IndiGo">IndiGo</option>
+            <option value="Vistara">Vistara / Akasa Air</option>
+            <option value="Star Alliance">Star Alliance (Air India, Singapore Airlines, Lufthansa)</option>
+            <option value="Oneworld">Oneworld (Qatar Airways, British Airways, Cathay)</option>
+            <option value="SkyTeam">SkyTeam (Emirates, Air France, Delta)</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Passenger Breakdown & Preferences */}
+      <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-mono font-bold text-slate-800 uppercase tracking-wider">
+            Passenger Headcount ({data.passengers || 1} Total)
+          </span>
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-sans font-semibold text-slate-700">
+            <input
+              type="checkbox"
+              checked={data.nonStopOnly || false}
+              onChange={(e) => onChange({ nonStopOnly: e.target.checked })}
+              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+            />
+            <span>Non-stop flights only</span>
+          </label>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className="block text-[11px] font-mono text-slate-600 font-bold mb-1">
+              Adults (12+ yrs)
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={9}
+              value={data.paxAdults || 1}
+              onChange={(e) => onChange({ paxAdults: Math.max(1, parseInt(e.target.value) || 1) })}
+              className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm text-center font-mono font-bold"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-mono text-slate-600 font-bold mb-1">
+              Children (2-11 yrs)
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={9}
+              value={data.paxChildren || 0}
+              onChange={(e) => onChange({ paxChildren: Math.max(0, parseInt(e.target.value) || 0) })}
+              className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm text-center font-mono font-bold"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-mono text-slate-600 font-bold mb-1">
+              Infants (&lt;2 yrs)
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={4}
+              value={data.paxInfants || 0}
+              onChange={(e) => onChange({ paxInfants: Math.max(0, parseInt(e.target.value) || 0) })}
+              className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm text-center font-mono font-bold"
+            />
+          </div>
         </div>
       </div>
 

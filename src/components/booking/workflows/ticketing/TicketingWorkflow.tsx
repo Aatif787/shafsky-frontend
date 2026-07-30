@@ -28,13 +28,15 @@ export function TicketingWorkflow({ searchParams }: TicketingWorkflowProps) {
     updateJourney,
     passenger,
     updatePassenger,
+    ancillaries,
+    updateAncillaries,
     estimatedFare,
   } = useTicketingWorkflow(searchParams?.origin, searchParams?.destination);
 
   const stepConfigs = [
     { title: "Select Flight Itinerary", sub: "Specify airports, travel dates, cabin class, and headcount.", estTime: "Est. 30 sec", progress: 33 },
     { title: "Passenger Contact Details", sub: "Enter lead passenger contact information.", estTime: "Est. 30 sec", progress: 66 },
-    { title: "Review & Submit Request", sub: "Verify your flight itinerary and quote request details.", estTime: "Est. 30 sec", progress: 90 },
+    { title: "Personalize & Review Request", sub: "Verify your flight itinerary and ancillary add-on options.", estTime: "Est. 30 sec", progress: 90 },
     { title: "Ticket Request Staged", sub: "Your flight seat hold is active with our commercial ticketing desk.", estTime: "Completed", progress: 100 },
   ];
 
@@ -45,6 +47,7 @@ export function TicketingWorkflow({ searchParams }: TicketingWorkflowProps) {
       service: "air_ticketing",
       journey,
       passenger,
+      ancillaries,
       updatedAt: new Date().toISOString(),
     };
     localStorage.setItem("shafsky_booking_draft", JSON.stringify(draft));
@@ -58,16 +61,25 @@ export function TicketingWorkflow({ searchParams }: TicketingWorkflowProps) {
     try {
       await submitBookingFn({
         data: {
-          flight_number: `SHF-[#TCK]`,
-          departure_airport: journey.fromAirport,
-          arrival_airport: journey.toAirport,
+          contact_name: passenger.fullName,
+          contact_email: passenger.email,
+          contact_phone: passenger.phone,
+          company: passenger.companyName || "",
+          trip_type: journey.tripType,
+          origin: journey.fromAirport,
+          destination: journey.toAirport,
           depart_date: journey.departDate,
-          lead_passenger_name: passenger.fullName,
-          passenger_email: passenger.email,
-          passenger_phone: passenger.phone,
-          total_price: estimatedFare,
-          special_requests: passenger.specialRequests || `Cabin: ${journey.cabinClass}`,
+          return_date: journey.tripType === "round_trip" ? journey.returnDate : undefined,
+          date_flexibility: journey.dateFlexibility,
+          pax_adults: journey.paxAdults || 1,
+          pax_children: journey.paxChildren || 0,
+          pax_infants: journey.paxInfants || 0,
+          cabin_class: journey.cabinClass,
           service_type: "air_ticketing",
+          notes: passenger.specialRequests || `Alliance: ${journey.preferredAlliance || "Any"}`,
+          vip_notes: passenger.vipNotes || "",
+          dietary_restrictions: passenger.dietaryRestrictions || "",
+          ancillaries,
         } as any,
       });
       setBookingRef(generatedRef);
@@ -132,6 +144,8 @@ export function TicketingWorkflow({ searchParams }: TicketingWorkflowProps) {
             <TicketingReview
               journey={journey}
               passenger={passenger}
+              ancillaries={ancillaries}
+              onUpdateAncillaries={updateAncillaries}
               estimatedFare={estimatedFare}
               busy={busy}
               onEdit={() => setCurrentStep(1)}

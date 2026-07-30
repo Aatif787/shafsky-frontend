@@ -23,12 +23,17 @@ export const BookingInput = z.object({
   destination: z.string().trim().min(2).max(120),
   depart_date: z.string().min(8).max(40),
   return_date: z.string().min(8).max(40).optional().or(z.literal("")),
+  date_flexibility: z.boolean().optional(),
   pax_adults: z.number().int().min(1).max(50),
   pax_children: z.number().int().min(0).max(50),
   pax_infants: z.number().int().min(0).max(20),
   aircraft_preference: z.string().trim().max(120).optional().or(z.literal("")),
+  cabin_class: z.string().trim().max(120).optional().or(z.literal("")),
   service_type: z.string().trim().max(120).optional().or(z.literal("")),
   notes: z.string().trim().max(8000).optional().or(z.literal("")),
+  vip_notes: z.string().trim().max(4000).optional().or(z.literal("")),
+  dietary_restrictions: z.string().trim().max(2000).optional().or(z.literal("")),
+  ancillaries: z.record(z.any()).optional(),
   verification_type: z.enum(["AUTO_VERIFIED", "MANUAL_ENTRY"]).optional(),
   services: z
     .array(
