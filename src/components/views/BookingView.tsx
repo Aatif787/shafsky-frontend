@@ -14,6 +14,7 @@ import { ReviewSummary } from "@/components/booking/shared/ReviewSummary";
 import { ContactSection } from "@/components/booking/shared/ContactSection";
 import { TicketingWorkflow } from "@/components/booking/workflows/ticketing/TicketingWorkflow";
 import { AirportWorkflow } from "@/components/booking/workflows/airport/AirportWorkflow";
+import { HotelWorkflow } from "@/components/booking/workflows/hotel/HotelWorkflow";
 
 // Custom Workflow State Hook
 import { useWorkflowState } from "@/components/booking/hooks/useWorkflowState";
@@ -315,6 +316,15 @@ export default function BookingView({ searchParams }: BookingViewProps) {
     return (
       <div className="min-h-screen bg-[#FAF9F5] text-slate-900 py-8 sm:py-12 px-4 sm:px-8 max-w-5xl mx-auto">
         <TicketingWorkflow searchParams={searchParams} />
+        <BookingCancelModal show={showCancelDialog} onClose={() => setShowCancelDialog(false)} />
+      </div>
+    );
+  }
+
+  if (isHotelWorkflow) {
+    return (
+      <div className="min-h-screen text-slate-900 w-full relative overflow-x-hidden">
+        <HotelWorkflow searchParams={searchParams} />
         <BookingCancelModal show={showCancelDialog} onClose={() => setShowCancelDialog(false)} />
       </div>
     );
