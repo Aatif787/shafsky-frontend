@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useId } from "react";
-import { Search, ChevronDown, Check, Globe } from "lucide-react";
-import { ALL_COUNTRIES, type Country } from "@/data/countries";
+import { Search, ChevronDown, Check, Globe, Loader2 } from "lucide-react";
+import { type Country, fetchAllCountries, fetchCountriesByKeyword, getFlagEmoji } from "@/data/countries";
 
 interface CountrySelectorProps {
   label: string;
@@ -20,29 +20,72 @@ export function CountrySelector({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const [countriesList, setCountriesList] = useState<Country[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const listboxId = useId();
 
-  // Find currently selected country object from SSOT dataset
-  const selectedCountry = ALL_COUNTRIES.find(
+  // Load all countries dynamically from API on initial mount
+  useEffect(() => {
+    let isSubscribed = true;
+    setIsLoading(true);
+    fetchAllCountries()
+      .then((data) => {
+        if (isSubscribed) {
+          setCountriesList(data);
+        }
+      })
+      .finally(() => {
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, []);
+
+  // Find currently selected country object from dynamically loaded list
+  const selectedCountry = countriesList.find(
     (c) => c.name.toLowerCase() === value.toLowerCase()
   );
 
-  // Instant prefix & substring search match
-  const filteredCountries = ALL_COUNTRIES.filter((c) => {
-    const q = searchQuery.toLowerCase().trim();
-    if (!q) return true;
-    const nameLower = c.name.toLowerCase();
-    // Prioritize prefix match, also support substring match
-    return nameLower.startsWith(q) || nameLower.includes(q);
-  });
+  // Dynamic Keyword Fetching when user types in search query
+  useEffect(() => {
+    let isSubscribed = true;
+    const q = searchQuery.trim();
+
+    setIsLoading(true);
+    const timer = setTimeout(async () => {
+      try {
+        const results = await fetchCountriesByKeyword(q);
+        if (isSubscribed) {
+          setCountriesList(results);
+        }
+      } catch {
+        if (isSubscribed && !q) {
+          setCountriesList([]);
+        }
+      } finally {
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
+      }
+    }, 250);
+
+    return () => {
+      isSubscribed = false;
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
 
   useEffect(() => {
     setHighlightedIndex(0);
-  }, [searchQuery]);
+  }, [searchQuery, countriesList]);
 
   // Click outside to close
   useEffect(() => {
@@ -69,19 +112,19 @@ export function CountrySelector({
       case "ArrowDown":
         e.preventDefault();
         setHighlightedIndex((prev) =>
-          prev < filteredCountries.length - 1 ? prev + 1 : 0
+          prev < countriesList.length - 1 ? prev + 1 : 0
         );
         break;
       case "ArrowUp":
         e.preventDefault();
         setHighlightedIndex((prev) =>
-          prev > 0 ? prev - 1 : filteredCountries.length - 1
+          prev > 0 ? prev - 1 : countriesList.length - 1
         );
         break;
       case "Enter":
         e.preventDefault();
-        if (filteredCountries[highlightedIndex]) {
-          onChange(filteredCountries[highlightedIndex].name);
+        if (countriesList[highlightedIndex]) {
+          onChange(countriesList[highlightedIndex].name);
           setIsOpen(false);
           setSearchQuery("");
         }
@@ -158,20 +201,23 @@ export function CountrySelector({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={placeholder}
-                className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500"
+                className="w-full pl-9 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500"
               />
+              {isLoading && (
+                <Loader2 className="absolute right-2.5 top-2.5 w-3.5 h-3.5 text-amber-500 animate-spin" />
+              )}
             </div>
           </div>
 
           {/* Country Options List */}
           <div ref={listRef} className="overflow-y-auto p-1.5 space-y-0.5 max-h-48">
-            {filteredCountries.length > 0 ? (
-              filteredCountries.map((c, index) => {
+            {countriesList.length > 0 ? (
+              countriesList.map((c, index) => {
                 const isSelected = value.toLowerCase() === c.name.toLowerCase();
                 const isHighlighted = index === highlightedIndex;
                 return (
                   <div
-                    key={c.code}
+                    key={`${c.code}-${index}`}
                     role="option"
                     aria-selected={isSelected}
                     onClick={() => {
@@ -196,7 +242,7 @@ export function CountrySelector({
               })
             ) : (
               <div className="p-4 text-center text-xs text-slate-400">
-                No matching country found
+                {isLoading ? "Loading countries..." : "No matching country found"}
               </div>
             )}
           </div>

@@ -16,6 +16,7 @@ import { TicketingWorkflow } from "@/components/booking/workflows/ticketing/Tick
 import { AirportWorkflow } from "@/components/booking/workflows/airport/AirportWorkflow";
 import { HotelWorkflow } from "@/components/booking/workflows/hotel/HotelWorkflow";
 import { VisaWorkflow } from "@/components/booking/workflows/visa/VisaWorkflow";
+import { CargoWorkflow } from "@/components/booking/workflows/cargo/CargoWorkflow";
 
 // Custom Workflow State Hook
 import { useWorkflowState } from "@/components/booking/hooks/useWorkflowState";
@@ -207,6 +208,14 @@ export default function BookingView({ searchParams }: BookingViewProps) {
     );
   }
 
+  if (isCargoWorkflow) {
+    return (
+      <div className="min-h-screen bg-[#FAF9F5] text-slate-900 w-full">
+        <CargoWorkflow searchParams={searchParams} />
+      </div>
+    );
+  }
+
   if (isMeetGreetWorkflow || isLoungeWorkflow || isFastTrackWorkflow || isTransportWorkflow) {
     return (
       <div className="min-h-screen bg-[#FAF9F5] text-slate-900 py-8 sm:py-12 px-4 sm:px-8 max-w-5xl mx-auto">
@@ -297,7 +306,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
                 contactName={leadPassengerName}
                 setContactName={setLeadPassengerName}
                 phone={passengerPhone}
-                setPhone={setPhone}
+                setPhone={setPassengerPhone}
                 email={passengerEmail}
                 setEmail={setPassengerEmail}
                 nameLabel="Lead Guest Name *"

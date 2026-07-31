@@ -108,8 +108,21 @@ function AirportsIndexPage() {
     return <Outlet />;
   }
 
-  // Featured 6 items
-  const featuredList = GLOBAL_AIRPORTS_DATA.filter((a) => a.featured);
+  // Featured list of airports
+  const featuredList = useMemo(() => {
+    return GLOBAL_AIRPORTS_DATA.filter((a) => a.featured);
+  }, []);
+
+  // 6 visible items sliced dynamically based on featuredIndex for a single 6-column row
+  const visibleFeatured = useMemo(() => {
+    if (featuredList.length <= 6) return featuredList;
+    const list: typeof featuredList = [];
+    for (let i = 0; i < 6; i++) {
+      const idx = (featuredIndex + i) % featuredList.length;
+      list.push(featuredList[idx]);
+    }
+    return list;
+  }, [featuredList, featuredIndex]);
 
   return (
     <PageJourneyWrapper category="Coverage" categoryHref="/airports" className="bg-[#FAF9F5]">
@@ -210,7 +223,7 @@ function AirportsIndexPage() {
         </div>
 
         {/* 3. FEATURED AIRPORTS CURVED ARC SECTION */}
-        <div className="relative bg-gradient-to-b from-white/60 to-white/90 rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-xs space-y-8">
+        <div className="relative bg-gradient-to-b from-white/70 to-white/95 rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-sm space-y-6">
           <div className="text-center space-y-1">
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-900">
               <Star className="w-4 h-4 text-purple-600 fill-purple-600" />
@@ -220,7 +233,7 @@ function AirportsIndexPage() {
           </div>
 
           {/* CURVED ARC STAGE */}
-          <div className="relative max-w-5xl mx-auto py-4">
+          <div className="relative max-w-5xl mx-auto py-2 px-2 sm:px-6">
             {/* SVG Curved Line */}
             <svg
               className="absolute left-0 right-0 top-12 w-full h-16 pointer-events-none hidden sm:block"
@@ -228,55 +241,75 @@ function AirportsIndexPage() {
               fill="none"
             >
               <path
-                d="M 50 45 Q 400 5 750 45"
+                d="M 60 42 Q 400 6 740 42"
                 stroke="#84cc16"
                 strokeWidth="2"
                 strokeDasharray="4 4"
-                className="opacity-60"
+                className="opacity-70"
               />
             </svg>
 
-            {/* Navigation Buttons */}
+            {/* Navigation Buttons Aligned to Center Axis */}
             <button
               onClick={() => setFeaturedIndex((prev) => (prev > 0 ? prev - 1 : featuredList.length - 1))}
-              className="absolute left-0 top-10 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center shadow-sm hover:border-[#7c3aed] hover:text-[#7c3aed] transition cursor-pointer"
+              aria-label="Previous featured airport"
+              className="absolute -left-2 sm:left-0 top-10 sm:top-12 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center shadow-md hover:border-[#7c3aed] hover:text-[#7c3aed] hover:scale-105 active:scale-95 transition cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => setFeaturedIndex((prev) => (prev < featuredList.length - 1 ? prev + 1 : 0))}
-              className="absolute right-0 top-10 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center shadow-sm hover:border-[#7c3aed] hover:text-[#7c3aed] transition cursor-pointer"
+              aria-label="Next featured airport"
+              className="absolute -right-2 sm:right-0 top-10 sm:top-12 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center shadow-md hover:border-[#7c3aed] hover:text-[#7c3aed] hover:scale-105 active:scale-95 transition cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
 
-            {/* 6 Circular Nodes Row */}
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 sm:gap-6 relative z-10 px-8">
-              {featuredList.map((item, idx) => {
+            {/* 6 Circular Nodes Single Row Grid */}
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 relative z-10 px-4 sm:px-8">
+              {visibleFeatured.map((item, idx) => {
                 const img = getAirportAsset(item.code, "hero-mobile.webp") || "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=400&q=80";
+
+                // Curve Y offset matching the arc
+                const yOffset = idx === 0 || idx === 5 ? "sm:translate-y-4" : idx === 1 || idx === 4 ? "sm:translate-y-1" : "sm:translate-y-0";
 
                 return (
                   <Link
-                    key={item.code}
+                    key={`${item.code}-${idx}`}
                     to="/airports/$code"
                     params={{ code: item.code }}
-                    className="flex flex-col items-center text-center group cursor-pointer"
+                    className={`flex flex-col items-center text-center group cursor-pointer w-full transition-transform duration-300 ${yOffset}`}
                   >
-                    {/* Circle Image Thumbnail with Badge */}
-                    <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-white shadow-md group-hover:border-[#7c3aed] transition-all">
-                      <img src={img} alt={item.city} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                      <span className="absolute top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-[#7c3aed] text-white text-[9px] font-mono font-bold">
+                    {/* Circle Image Thumbnail with Code Badge */}
+                    <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-white shadow-md group-hover:border-[#7c3aed] group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 shrink-0 bg-slate-100">
+                      <img src={img} alt={item.city} className="w-full h-full object-cover" />
+                      <span className="absolute top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-[#7c3aed] text-white text-[9px] font-mono font-bold shadow-xs">
                         {item.code}
                       </span>
                     </div>
 
-                    {/* Node Text Below */}
-                    <div className="mt-2 space-y-0.5">
-                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-[#7c3aed] transition-colors">
-                        {item.city}
-                      </h4>
-                      <p className="text-[10px] text-slate-500 font-medium">{item.country}</p>
-                      <p className="text-[10px] font-bold text-emerald-600">{item.servicesCount} Services</p>
+                    {/* Node Text Below with Strict Pixel-Perfect Height Baselines */}
+                    <div className="mt-3 flex flex-col items-center justify-between w-full min-h-[92px]">
+                      {/* City Name Container */}
+                      <div className="h-9 flex items-center justify-center px-1">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 leading-tight group-hover:text-[#7c3aed] transition-colors line-clamp-2">
+                          {item.city}
+                        </h4>
+                      </div>
+
+                      {/* Country Name Container */}
+                      <div className="h-7 flex items-center justify-center px-1">
+                        <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight line-clamp-2">
+                          {item.country}
+                        </p>
+                      </div>
+
+                      {/* Services Count Badge */}
+                      <div className="h-5 flex items-center justify-center">
+                        <p className="text-[10px] font-bold text-emerald-600 tracking-wide">
+                          {item.servicesCount} Services
+                        </p>
+                      </div>
                     </div>
                   </Link>
                 );

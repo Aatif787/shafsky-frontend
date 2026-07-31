@@ -1,6 +1,7 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
 import type { IndividualApplicant } from "../VisaWorkflow";
+import { CountrySelector } from "../shared/CountrySelector";
 
 interface ApplicantCardProps {
   applicant: IndividualApplicant;
@@ -69,13 +70,11 @@ export function ApplicantCard({
         </div>
 
         <div>
-          <label className="block text-[11px] font-semibold uppercase text-slate-700 mb-1">Nationality</label>
-          <input
-            type="text"
+          <CountrySelector
+            label="Nationality"
             value={applicant.nationality}
-            onChange={(e) => onUpdate(applicant.id, { nationality: e.target.value })}
             placeholder="Search nationality"
-            className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500"
+            onChange={(countryName) => onUpdate(applicant.id, { nationality: countryName })}
           />
         </div>
 

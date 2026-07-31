@@ -1,54 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Search, ChevronDown, Check, Globe } from "lucide-react";
-
-export interface CountryItem {
-  name: string;
-  code: string;
-  flag: string;
-}
-
-export const POPULAR_COUNTRIES: CountryItem[] = [
-  { name: "France", code: "FR", flag: "🇫🇷" },
-  { name: "United Arab Emirates", code: "AE", flag: "🇦🇪" },
-  { name: "India", code: "IN", flag: "🇮🇳" },
-  { name: "United States", code: "US", flag: "🇺🇸" },
-  { name: "United Kingdom", code: "GB", flag: "🇬🇧" },
-  { name: "Singapore", code: "SG", flag: "🇸🇬" },
-  { name: "Canada", code: "CA", flag: "🇨🇦" },
-  { name: "Australia", code: "AU", flag: "🇦🇺" },
-  { name: "Germany", code: "DE", flag: "🇩🇪" },
-  { name: "Italy", code: "IT", flag: "🇮🇹" },
-  { name: "Spain", code: "ES", flag: "🇪🇸" },
-  { name: "Japan", code: "JP", flag: "🇯🇵" },
-  { name: "Thailand", code: "TH", flag: "🇹🇭" },
-  { name: "Malaysia", code: "MY", flag: "🇲🇾" },
-  { name: "Indonesia", code: "ID", flag: "🇮🇩" },
-  { name: "Switzerland", code: "CH", flag: "🇨🇭" },
-  { name: "Netherlands", code: "NL", flag: "🇳🇱" },
-  { name: "Saudi Arabia", code: "SA", flag: "🇸🇦" },
-  { name: "Qatar", code: "QA", flag: "🇶🇦" },
-  { name: "Oman", code: "OM", flag: "🇴🇲" },
-  { name: "Kuwait", code: "KW", flag: "🇰🇼" },
-  { name: "Bahrain", code: "BH", flag: "🇧🇭" },
-  { name: "Turkey", code: "TR", flag: "🇹🇷" },
-  { name: "South Korea", code: "KR", flag: "🇰🇷" },
-  { name: "China", code: "CN", flag: "🇨🇳" },
-  { name: "Vietnam", code: "VN", flag: "🇻🇳" },
-  { name: "Philippines", code: "PH", flag: "🇵🇭" },
-  { name: "South Africa", code: "ZA", flag: "🇿🇦" },
-  { name: "Brazil", code: "BR", flag: "🇧🇷" },
-  { name: "Mexico", code: "MX", flag: "🇲🇽" },
-  { name: "New Zealand", code: "NZ", flag: "🇳🇿" },
-  { name: "Ireland", code: "IE", flag: "🇮🇪" },
-  { name: "Austria", code: "AT", flag: "🇦🇹" },
-  { name: "Belgium", code: "BE", flag: "🇧🇪" },
-  { name: "Sweden", code: "SE", flag: "🇸🇪" },
-  { name: "Norway", code: "NO", flag: "🇳🇴" },
-  { name: "Denmark", code: "DK", flag: "🇩🇰" },
-  { name: "Finland", code: "FI", flag: "🇫🇮" },
-  { name: "Portugal", code: "PT", flag: "🇵🇹" },
-  { name: "Greece", code: "GR", flag: "🇬🇷" },
-];
+import { Search, ChevronDown, Check, Globe, Loader2 } from "lucide-react";
+import { type Country, fetchAllCountries, fetchCountriesByKeyword } from "@/data/countries";
 
 interface SearchableCountrySelectProps {
   label: string;
@@ -67,15 +19,63 @@ export function SearchableCountrySelect({
 }: SearchableCountrySelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [countriesList, setCountriesList] = useState<Country[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const selectedCountry = POPULAR_COUNTRIES.find(
+  // Load all countries dynamically from API on mount
+  useEffect(() => {
+    let isSubscribed = true;
+    setIsLoading(true);
+    fetchAllCountries()
+      .then((data) => {
+        if (isSubscribed) {
+          setCountriesList(data);
+        }
+      })
+      .finally(() => {
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, []);
+
+  const selectedCountry = countriesList.find(
     (c) => c.name.toLowerCase() === value.toLowerCase()
   );
 
-  const filteredCountries = POPULAR_COUNTRIES.filter((c) =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Dynamic Keyword Search on User Input
+  useEffect(() => {
+    let isSubscribed = true;
+    const q = searchQuery.trim();
+
+    setIsLoading(true);
+    const timer = setTimeout(async () => {
+      try {
+        const results = await fetchCountriesByKeyword(q);
+        if (isSubscribed) {
+          setCountriesList(results);
+        }
+      } catch {
+        if (isSubscribed && !q) {
+          setCountriesList([]);
+        }
+      } finally {
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
+      }
+    }, 250);
+
+    return () => {
+      isSubscribed = false;
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -132,19 +132,22 @@ export function SearchableCountrySelect({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={placeholder}
                 autoFocus
-                className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500"
+                className="w-full pl-9 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500"
               />
+              {isLoading && (
+                <Loader2 className="absolute right-2.5 top-2.5 w-3.5 h-3.5 text-amber-500 animate-spin" />
+              )}
             </div>
           </div>
 
           {/* Options List */}
           <div className="overflow-y-auto p-1.5 space-y-0.5 max-h-48">
-            {filteredCountries.length > 0 ? (
-              filteredCountries.map((c) => {
+            {countriesList.length > 0 ? (
+              countriesList.map((c, index) => {
                 const isSelected = value.toLowerCase() === c.name.toLowerCase();
                 return (
                   <button
-                    key={c.code}
+                    key={`${c.code}-${index}`}
                     type="button"
                     onClick={() => {
                       onChange(c.name);
@@ -167,7 +170,7 @@ export function SearchableCountrySelect({
               })
             ) : (
               <div className="p-4 text-center text-xs text-slate-400">
-                No matching country found
+                {isLoading ? "Fetching matching countries..." : "No matching country found"}
               </div>
             )}
           </div>

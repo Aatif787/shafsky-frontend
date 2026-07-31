@@ -1,35 +1,27 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
   ArrowRight,
-  Sparkles,
-  Plane,
   Crown,
-  MapPin,
 } from "lucide-react";
-import { AIRPORTS, type Airport } from "@/data/airports";
+import { AIRPORTS } from "@/data/airports";
 import { getAirportAsset } from "@/lib/airport-assets";
-import { display, mono } from "./Atoms";
-
-// Filter featured airport hubs (e.g. DEL, BOM, DXB, AMD, BLR, LHR, JFK, SIN)
-const FEATURED_CODES = ["DEL", "BOM", "DXB", "AMD", "BLR", "LHR", "JFK", "SIN"];
 
 export function AirportShowcase() {
-  const featuredAirports = AIRPORTS.filter((a) => FEATURED_CODES.includes(a.code));
-  const [activeIndex, setActiveIndex] = useState(0); // DEL as default center
+  const allAirports = AIRPORTS;
+  const total = allAirports.length;
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const handlePrev = () => {
-    setActiveIndex((prev) => (prev > 0 ? prev - 1 : featuredAirports.length - 1));
+    setActiveIndex((prev) => (prev > 0 ? prev - 1 : total - 1));
   };
 
   const handleNext = () => {
-    setActiveIndex((prev) => (prev < featuredAirports.length - 1 ? prev + 1 : 0));
+    setActiveIndex((prev) => (prev < total - 1 ? prev + 1 : 0));
   };
-
-  const activeAirport = featuredAirports[activeIndex] || featuredAirports[0];
 
   return (
     <section className="relative w-full overflow-hidden bg-[#FAF9F5] py-16 sm:py-24 select-none border-y border-slate-200/80">
@@ -59,7 +51,7 @@ export function AirportShowcase() {
               stroke="#7c3aed"
               strokeWidth="2"
               strokeDasharray="6 6"
-              className="opacity-20"
+              className="opacity-25"
             />
           </svg>
         </div>
@@ -84,20 +76,27 @@ export function AirportShowcase() {
 
         {/* DESKTOP CURVED ALIGNMENT STAGE (lg+) */}
         <div className="hidden lg:flex relative h-[380px] items-center justify-center z-10">
-          {featuredAirports.map((airport, index) => {
-            const diff = index - activeIndex;
+          {allAirports.map((airport, index) => {
+            // Shortest signed modular distance from activeIndex
+            let diff = index - activeIndex;
+            if (diff > total / 2) diff -= total;
+            if (diff < -total / 2) diff += total;
+
             const absDiff = Math.abs(diff);
+
+            // Hide cards beyond visible arc window
+            if (absDiff > 3) return null;
 
             // Parabolic curve vertical offset: y = a * diff^2
             const translateY = Math.pow(diff, 2) * 18;
-            // Subtle rotation tilt along the arc
+            // Subtle rotation tilt along the arc path tangent
             const rotateZ = diff * 3.5;
-            // Horizontal position offset
-            const translateX = diff * 210;
+            // Horizontal position offset centered at 0
+            const translateX = diff * 215;
             // Scale center card prominent
-            const scale = diff === 0 ? 1.06 : Math.max(0.82, 1 - absDiff * 0.08);
+            const scale = diff === 0 ? 1.06 : Math.max(0.78, 1 - absDiff * 0.09);
             // Opacity decay for far elements
-            const opacity = absDiff > 3 ? 0 : Math.max(0.4, 1 - absDiff * 0.22);
+            const opacity = absDiff > 2 ? (absDiff === 3 ? 0.25 : 0) : Math.max(0.4, 1 - absDiff * 0.2);
             const isCenter = diff === 0;
 
             const cardImage = getAirportAsset(airport.code, "hero-mobile.webp") || airport.mobCover || airport.cover;
@@ -179,7 +178,7 @@ export function AirportShowcase() {
 
         {/* MOBILE & TABLET HORIZONTAL SNAP SCROLL (< lg) */}
         <div className="lg:hidden flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 py-4 px-2">
-          {featuredAirports.map((airport, index) => {
+          {allAirports.map((airport, index) => {
             const isSelected = index === activeIndex;
             const cardImage = getAirportAsset(airport.code, "hero-mobile.webp") || airport.mobCover || airport.cover;
 
@@ -209,12 +208,12 @@ export function AirportShowcase() {
         </div>
 
         {/* INDICATOR DOTS */}
-        <div className="flex items-center justify-center gap-2 mt-8">
-          {featuredAirports.map((_, idx) => (
+        <div className="flex items-center justify-center gap-1.5 mt-8 flex-wrap max-w-md mx-auto">
+          {allAirports.map((airport, idx) => (
             <button
-              key={idx}
+              key={`dot-${airport.code}`}
               onClick={() => setActiveIndex(idx)}
-              aria-label={`Go to slide ${idx + 1}`}
+              aria-label={`Go to ${airport.city}`}
               className={`h-2 rounded-full transition-all duration-300 ${
                 idx === activeIndex ? "w-8 bg-[#7c3aed]" : "w-2 bg-slate-300 hover:bg-slate-400"
               }`}

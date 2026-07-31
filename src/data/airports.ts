@@ -32,7 +32,7 @@ import mobHydAir from "@/assets/airports/hyd/Mob-Hyd-air.png";
 import dekLkoAir from "@/assets/airports/lko/Dek-lko-air.png";
 import mobLkoAir from "@/assets/airports/lko/Mob-lko-air.png";
 
-import { getAirportRegistryEntry } from "./airportRegistry";
+import { AIRPORT_REGISTRY, getAirportRegistryEntry } from "./airportRegistry";
 
 export type Facility = { name: string; status: "live" | "24x7" | "limited" };
 export type Attraction = {
@@ -1338,8 +1338,118 @@ function buildCity(a: CityArgs): Airport[] {
   ];
 }
 
-export function getAirport(code: string) {
-  return AIRPORTS.find((a) => a.code.toUpperCase() === code.toUpperCase());
+export function getAirport(code: string): Airport {
+  const upperCode = (code || "").toUpperCase().trim();
+  const found = AIRPORTS.find((a) => a.code.toUpperCase() === upperCode);
+  if (found) return found;
+
+  // Check AIRPORT_REGISTRY or fallback lookup for all 200+ global airports
+  const reg = AIRPORT_REGISTRY[upperCode];
+  const cityName = reg?.city || upperCode;
+  const countryName = reg?.country || "International";
+  const airportName = reg?.name || `${cityName} International Airport`;
+
+  const fallbackCover = "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1920&q=95";
+
+  return {
+    code: upperCode,
+    icao: reg?.icao || `V${upperCode}`,
+    city: cityName,
+    country: countryName,
+    countryCode: reg?.countryCode || "IN",
+    landmark: "Airport Sanctuary",
+    tagline: `Premier Gateway to ${cityName}`,
+    timezone: reg?.timezone || "Asia/Kolkata",
+    cover: fallbackCover,
+    mobCover: fallbackCover,
+    slideshow: [
+      fallbackCover,
+      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=95",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=95",
+    ],
+    gallery: [
+      fallbackCover,
+      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=95",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=95",
+    ],
+    videoId: "5qap5aO4i9A",
+    about: `${airportName} (${upperCode}) serves as a primary aviation hub connecting ${cityName}, ${countryName} with major domestic and international destinations. Shafsky Aviation provides full VVIP airside escorts, Meet & Greet, fast-track customs clearance, and chauffeured transit at this hub.`,
+    bestTime: "Year-Round",
+    languages: "English, Local Official Languages",
+    currency: countryName === "India" ? "INR (₹)" : "USD ($)",
+    business: "Aviation, Commerce, International Travel",
+    tourism: "Cultural Landmarks, Heritage Sites, Business Centers",
+    climate: "Subtropical / Temperate",
+    safety: "High Security Protocol Standard",
+    emergency: "24/7 Operations Desk Active",
+    visa: "Standard International Entry / e-Visa Protocols",
+    airport: {
+      name: airportName,
+      elevation: "150 ft",
+      runways: "2 Parallel Runways",
+      operator: "International Airport Authority",
+      type: "International Hub",
+      domestic: "100+ daily flights",
+      intl: "40+ weekly flights",
+      terminals: "2 Terminals",
+      capacity: "15M Pax / Year",
+      annual: "10M+",
+      cargo: "50,000 MT",
+      website: `https://${upperCode.toLowerCase()}-airport.com`,
+      contact: "+1 800 SHAFSKY",
+    },
+    attractions: [
+      {
+        name: `${cityName} City Center`,
+        img: fallbackCover,
+        desc: `The vibrant cultural and business heart of ${cityName}.`,
+        distance: "15 km",
+        travel: "25 mins",
+        hours: "24/7",
+        fee: "Free Access",
+        photo: fallbackCover,
+        maps: "#",
+      },
+    ],
+    facilities: baseFacilities,
+    weather: {
+      temp: "26°C",
+      humidity: "65%",
+      visibility: "10 km",
+      wind: "12 km/h",
+      aqi: "Good (42)",
+      sunrise: "06:15 AM",
+      sunset: "06:45 PM",
+      flying: "Optimal",
+    },
+    transport: [
+      {
+        mode: "VIP Chauffeur Sedan",
+        fare: "Included / Custom Rate",
+        time: "Direct Curbside Pickup",
+        availability: "24/7 On Demand",
+      },
+    ],
+    hotels: [
+      {
+        name: `Grand Hyatt ${cityName}`,
+        stars: 5,
+        distance: "5 km",
+        price: "₹12,000 / night",
+        img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+      },
+    ],
+    experiences: [
+      {
+        kind: "VIP Concierge",
+        title: "Suswagatam Escort",
+        img: fallbackCover,
+        note: "Aerobridge to curbside dedicated officer",
+      },
+    ],
+    faqs: baseFAQ,
+    related: ["DEL", "BOM", "DXB"],
+  };
 }
 
 export interface AirportPackage {
