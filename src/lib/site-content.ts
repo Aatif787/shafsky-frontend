@@ -251,7 +251,7 @@ export interface HubAirport {
 
 export const HUB_AIRPORTS: HubAirport[] = [
   {
-    name: "Delhi · IGI Terminal 3",
+    name: "Delhi · IGI Airport",
     cat: "Flagship Hub",
     pax: "Domestic + Intl",
     range: "24×7",
@@ -260,14 +260,14 @@ export const HUB_AIRPORTS: HubAirport[] = [
   {
     name: "Mumbai · CSMIA",
     cat: "Western Gateway",
-    pax: "T1 + T2",
+    pax: "Full Airport Coverage",
     range: "24×7",
     speed: "All Airlines",
   },
   {
     name: "Bengaluru · Kempegowda",
     cat: "Southern Hub",
-    pax: "T1 + T2",
+    pax: "Full Airport Coverage",
     range: "24×7",
     speed: "All Airlines",
   },

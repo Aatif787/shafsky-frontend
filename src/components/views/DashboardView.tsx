@@ -922,11 +922,11 @@ export default function DashboardView({ userId }: { userId: string }) {
                         Operations Update
                       </h3>
                       <p className="text-xs text-[#0d2a36] font-semibold mt-1">
-                        New Terminal 3 Lounge Open at New Delhi (DEL)
+                        New VIP Lounge Open at New Delhi (DEL)
                       </p>
                       <p className="text-[10px] text-[#5b6b75] leading-relaxed mt-1">
                         Shafsky clients now possess automated elite access credentials to the
-                        private rest suite in DEL terminal 3. No reservation required.
+                        private rest suite at DEL airport. No reservation required.
                       </p>
                     </div>
                   </div>

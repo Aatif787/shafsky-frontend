@@ -493,7 +493,7 @@ export const AIRPORTS: Airport[] = [
       type: "International hub",
       domestic: "1,100+ daily",
       intl: "350+ daily",
-      terminals: "3 (T1, T2, T3)",
+      terminals: "Full Airport Passenger Hubs",
       capacity: "100M pax/yr",
       annual: "73M",
       cargo: "1.1M MT",
@@ -664,7 +664,7 @@ export const AIRPORTS: Airport[] = [
       type: "International hub",
       domestic: "750+ daily",
       intl: "220+ daily",
-      terminals: "2 (T1, T2)",
+      terminals: "Full Airport Passenger Hubs",
       capacity: "55M pax/yr",
       annual: "52M",
       cargo: "0.9M MT",
@@ -1112,7 +1112,7 @@ export const AIRPORTS: Airport[] = [
     q2: "Museum of the Future",
     q3: "Dubai Frame",
     airportName: "Dubai International Airport",
-    terminals: "3 (T1, T2, T3)",
+    terminals: "Full Airport Concourses",
     annual: "87M",
     attr: [
       ["Burj Khalifa", "Burj Khalifa", "World's tallest building, 828-meter skyscraper icon."],
@@ -1130,7 +1130,7 @@ export const AIRPORTS: Airport[] = [
     q2: "Marina Bay Sands",
     q3: "Gardens by the Bay",
     airportName: "Singapore Changi Airport",
-    terminals: "4 (T1, T2, T3, T4 + Jewel)",
+    terminals: "Full Airport Concourses & Jewel",
     annual: "68M",
     attr: [
       ["Jewel Changi & Rain Vortex", "Jewel Changi Rain Vortex", "7-storey indoor waterfall and lush canopy park."],
@@ -1148,7 +1148,7 @@ export const AIRPORTS: Airport[] = [
     q2: "Tower Bridge London",
     q3: "London Eye",
     airportName: "London Heathrow Airport",
-    terminals: "4 (T2, T3, T4, T5)",
+    terminals: "Full Airport Concourses",
     annual: "79M",
     attr: [
       ["Big Ben & Parliament", "Big Ben London", "Iconic Elizabeth Tower and Palace of Westminster."],
@@ -1166,7 +1166,7 @@ export const AIRPORTS: Airport[] = [
     q2: "Times Square",
     q3: "Empire State Building",
     airportName: "John F. Kennedy International Airport",
-    terminals: "6 (T1, T4, T5, T7, T8)",
+    terminals: "Full Airport Concourses",
     annual: "62M",
     attr: [
       ["Statue of Liberty", "Statue of Liberty", "Iconic colossal neoclassical sculpture on Liberty Island."],
@@ -1482,7 +1482,7 @@ export function getAirportServices(airportCode: string): AirportService[] {
       {
         id: "meet_greet",
         title: "Meet & Greet",
-        desc: "Personalized host greeting at aerobridge, electric buggy transfer across T3, and expedited clearance.",
+        desc: "Personalized host greeting at aerobridge, electric buggy transfer across concourse, and expedited clearance.",
         type: "package",
         packages: [
           {
@@ -1498,7 +1498,7 @@ export function getAirportServices(airportCode: string): AirportService[] {
               "Fast-Track Passport Control",
               "Curbside Transport Handoff",
             ],
-            highlights: ["Terminal 3 Express", "Marhaba Porterage"],
+            highlights: ["Airport Express Escort", "Marhaba Porterage"],
           },
           {
             id: "dxb_gold",
@@ -1671,7 +1671,7 @@ export function getAirportServices(airportCode: string): AirportService[] {
       {
         id: "lounge",
         title: "Lounge",
-        desc: "Access to T3 Encalm Lounge & Lounge Suites with chef-curated dining and relaxation.",
+        desc: "Access to Encalm Lounge & Lounge Suites with chef-curated dining and relaxation.",
         type: "direct",
         price: 4500,
       },

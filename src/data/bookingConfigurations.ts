@@ -100,7 +100,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
           { id: "originAirport", label: "Origin Airport", type: "airport_select", required: true, gridCols: 2 },
           { id: "destAirport", label: "Destination Airport", type: "airport_select", required: true, gridCols: 2 },
           { id: "airline", label: "Airline Carrier", type: "text", placeholder: "e.g. Air India, Emirates", required: false, gridCols: 2 },
-          { id: "departureTerminal", label: "Departure Terminal", type: "text", placeholder: "Terminal 3", required: false, gridCols: 2 },
+          { id: "departureTerminal", label: "Departure Terminal", type: "text", placeholder: "e.g. Flight / Concourse Info (Optional)", required: false, gridCols: 2 },
         ],
         customComponent: "flight_search",
       },

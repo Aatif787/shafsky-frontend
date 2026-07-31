@@ -2214,7 +2214,7 @@ function Coverage() {
 function Fleet() {
   const fleet = [
     {
-      name: "Delhi · IGI Terminal 3",
+      name: "Delhi · IGI Airport",
       cat: "Flagship Hub",
       img: heroJet,
       pax: "Domestic + Intl",
@@ -2225,7 +2225,7 @@ function Fleet() {
       name: "Mumbai · CSMIA",
       cat: "Western Gateway",
       img: jetTarmac,
-      pax: "T1 + T2",
+      pax: "Full Airport Coverage",
       range: "24×7",
       speed: "All Airlines",
     },
@@ -2233,7 +2233,7 @@ function Fleet() {
       name: "Bengaluru · Kempegowda",
       cat: "Southern Hub",
       img: interior,
-      pax: "T1 + T2",
+      pax: "Full Airport Coverage",
       range: "24×7",
       speed: "All Airlines",
     },

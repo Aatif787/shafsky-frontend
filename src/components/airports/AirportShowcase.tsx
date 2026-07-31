@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
@@ -14,6 +14,7 @@ export function AirportShowcase() {
   const allAirports = AIRPORTS;
   const total = allAirports.length;
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   const handlePrev = () => {
     setActiveIndex((prev) => (prev > 0 ? prev - 1 : total - 1));
@@ -23,8 +24,21 @@ export function AirportShowcase() {
     setActiveIndex((prev) => (prev < total - 1 ? prev + 1 : 0));
   };
 
+  // Continuous auto-orbit timing (pauses when user hovers)
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      handleNext();
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [activeIndex, isPaused, total]);
+
   return (
-    <section className="relative w-full overflow-hidden bg-[#FAF9F5] py-16 sm:py-24 select-none border-y border-slate-200/80">
+    <section
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      className="relative w-full overflow-hidden bg-[#FAF9F5] py-16 sm:py-24 select-none border-y border-slate-200/80"
+    >
       {/* SECTION HEADER */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12 sm:mb-16">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-[#7c3aed] text-[10px] font-mono font-bold uppercase tracking-widest mb-3">
@@ -74,8 +88,11 @@ export function AirportShowcase() {
           </button>
         </div>
 
-        {/* DESKTOP CURVED ALIGNMENT STAGE (lg+) */}
-        <div className="hidden lg:flex relative h-[380px] items-center justify-center z-10">
+        {/* DESKTOP 3D SPATIAL ORBIT STAGE (lg+) */}
+        <div
+          className="hidden lg:flex relative h-[400px] items-center justify-center z-10"
+          style={{ perspective: "1200px" }}
+        >
           {allAirports.map((airport, index) => {
             // Shortest signed modular distance from activeIndex
             let diff = index - activeIndex;
@@ -84,21 +101,27 @@ export function AirportShowcase() {
 
             const absDiff = Math.abs(diff);
 
-            // Hide cards beyond visible arc window
-            if (absDiff > 3) return null;
+            // Gradual entry/exit window (include absDiff <= 4 for zero-opacity border buffer)
+            if (absDiff > 4) return null;
 
-            // Parabolic curve vertical offset: y = a * diff^2
-            const translateY = Math.pow(diff, 2) * 18;
-            // Subtle rotation tilt along the arc path tangent
-            const rotateZ = diff * 3.5;
-            // Horizontal position offset centered at 0
+            // 3D Orbital Trajectory Math
             const translateX = diff * 215;
-            // Scale center card prominent
-            const scale = diff === 0 ? 1.06 : Math.max(0.78, 1 - absDiff * 0.09);
-            // Opacity decay for far elements
-            const opacity = absDiff > 2 ? (absDiff === 3 ? 0.25 : 0) : Math.max(0.4, 1 - absDiff * 0.2);
-            const isCenter = diff === 0;
+            const translateY = Math.pow(diff, 2) * 16;
+            const translateZ = diff === 0 ? 40 : -absDiff * 85;
+            const rotateY = -diff * 11;
+            const rotateZ = diff * 2.5;
 
+            // Smooth scale decay towards outer space
+            const scale = diff === 0 ? 1.08 : Math.max(0.62, 1 - absDiff * 0.1);
+
+            // Gradual entry/exit opacity decay curve (0 sudden pops)
+            const opacity = absDiff === 0 ? 1 : absDiff === 1 ? 0.88 : absDiff === 2 ? 0.55 : absDiff === 3 ? 0.22 : 0;
+
+            // Optical Depth-of-Field Blur
+            const blurPx = absDiff === 0 ? 0 : absDiff === 1 ? 1.5 : absDiff === 2 ? 4 : 7;
+            const filterStyle = `blur(${blurPx}px)`;
+
+            const isCenter = diff === 0;
             const cardImage = getAirportAsset(airport.code, "hero-mobile.webp") || airport.mobCover || airport.cover;
 
             return (
@@ -108,18 +131,26 @@ export function AirportShowcase() {
                 animate={{
                   x: translateX,
                   y: translateY,
+                  z: translateZ,
+                  rotateY: rotateY,
                   rotateZ: rotateZ,
                   scale: scale,
                   opacity: opacity,
+                  filter: filterStyle,
                 }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                transition={{
+                  duration: 0.6,
+                  ease: [0.16, 1, 0.3, 1], // Apple-style spatial spring easing
+                }}
                 style={{
                   position: "absolute",
-                  zIndex: 20 - absDiff,
+                  zIndex: 30 - absDiff,
+                  willChange: "transform, opacity, filter",
+                  transformStyle: "preserve-3d",
                 }}
-                className={`w-[260px] rounded-3xl bg-white border transition-all duration-300 cursor-pointer overflow-hidden ${
+                className={`w-[260px] rounded-3xl bg-white border transition-shadow duration-500 cursor-pointer overflow-hidden ${
                   isCenter
-                    ? "border-2 border-[#7c3aed] shadow-xl shadow-[#7c3aed]/15 ring-4 ring-[#7c3aed]/10"
+                    ? "border-2 border-[#7c3aed] shadow-2xl shadow-[#7c3aed]/20 ring-4 ring-[#7c3aed]/15"
                     : "border-slate-200/90 shadow-sm hover:border-slate-300"
                 }`}
               >
@@ -224,3 +255,4 @@ export function AirportShowcase() {
     </section>
   );
 }
+

@@ -59,8 +59,8 @@ export function AirportQuickFacts({ a }: AirportQuickFactsProps) {
     { label: "Operator", value: a.airport.operator || "Civil Aviation Authority" },
     { label: "Airport Type", value: a.airport.type || "International Gateway" },
     { label: "Annual Traffic", value: a.airport.annual || "High Capacity" },
-    { label: "Domestic Operations", value: a.airport.domestic || "Terminal 1 / 2" },
-    { label: "International Gateways", value: a.airport.intl || "Terminal 3 / 4" },
+    { label: "Domestic Operations", value: a.airport.domestic || "Domestic Concourse & Gates" },
+    { label: "International Gateways", value: a.airport.intl || "International Concourse & Gates" },
   ];
 
   return (
