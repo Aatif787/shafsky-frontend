@@ -103,3 +103,62 @@ export const changeCustomerPasswordServer = createServerFn({ method: "POST" })
       return { success: false, error: error instanceof Error ? error.message : "Password change failed" };
     }
   });
+
+// ─── Single Booking & Timeline ───
+export const getCustomerBookingByIdServer = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d: unknown) => z.object({ id: z.string() }).parse(d))
+  .handler(async ({ data }) => {
+    try {
+      const token = getTokenFromRequest();
+      const res = await apiGet<any>(`/api/airport/bookings/${data.id}`, token);
+      return res?.data || res || null;
+    } catch (error) {
+      console.warn("[getCustomerBookingByIdServer] Warning:", error);
+      return null;
+    }
+  });
+
+export const getCustomerBookingTimelineServer = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d: unknown) => z.object({ booking_id: z.string() }).parse(d))
+  .handler(async ({ data }) => {
+    try {
+      const token = getTokenFromRequest();
+      const res = await apiGet<any>(`/api/airport/bookings/${data.booking_id}/timeline`, token);
+      return Array.isArray(res) ? res : res?.data ?? [];
+    } catch (error) {
+      console.warn("[getCustomerBookingTimelineServer] Warning:", error);
+      return [];
+    }
+  });
+
+// ─── Attachments / Documents ───
+export const getCustomerAttachmentsServer = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d: unknown) => z.object({ entity_type: z.string(), entity_id: z.string() }).parse(d))
+  .handler(async ({ data }) => {
+    try {
+      const token = getTokenFromRequest();
+      const res = await apiGet<any>(`/api/shared/attachments/${data.entity_type}/${data.entity_id}`, token);
+      return Array.isArray(res) ? res : res?.data ?? [];
+    } catch (error) {
+      console.warn("[getCustomerAttachmentsServer] Warning:", error);
+      return [];
+    }
+  });
+
+// ─── Single Notification Read ───
+export const markSingleNotificationReadServer = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d: unknown) => z.object({ id: z.string() }).parse(d))
+  .handler(async ({ data }) => {
+    try {
+      const token = getTokenFromRequest();
+      await apiPost(`/api/notifications/${data.id}/read`, {}, token);
+      return { success: true };
+    } catch (error) {
+      console.error("[markSingleNotificationReadServer] Error:", error);
+      return { success: false, error: error instanceof Error ? error.message : "Failed to mark notification read" };
+    }
+  });

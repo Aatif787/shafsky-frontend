@@ -346,9 +346,11 @@ export const listMyBookings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
     const token = getTokenFromRequest();
-    const res = await apiGet<any>("/api/airport/bookings", token);
-    const data = Array.isArray(res) ? res : res?.data ?? [];
-    return data ?? [];
+    const res = await apiGet<any>("/api/airport/bookings/me", token);
+    const data = res?.data || res;
+    if (Array.isArray(data)) return data;
+    const fallback = await apiGet<any>("/api/airport/bookings", token);
+    return Array.isArray(fallback) ? fallback : fallback?.data ?? [];
   });
 
 export const listAllBookings = createServerFn({ method: "GET" })

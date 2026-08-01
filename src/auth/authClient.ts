@@ -28,9 +28,12 @@ export interface AuthUser {
 }
 
 export interface AuthResponseData {
-  access_token: string;
+  accessToken?: string;
+  access_token?: string;
+  refreshToken?: string;
   refresh_token?: string;
-  token_type: string;
+  tokenType?: string;
+  token_type?: string;
   user: AuthUser;
 }
 
@@ -162,5 +165,39 @@ export async function apiAuthMe(
     return { user: userData, profile: json.data.profile || userData };
   } catch (err) {
     return { error: err as Error };
+  }
+}
+
+/**
+ * Change Password Endpoint: POST /api/auth/change-password
+ */
+export async function apiAuthChangePassword(
+  token: string,
+  newPassword: string,
+  currentPassword?: string,
+): Promise<{ success: boolean; message?: string; error?: Error }> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/auth/change-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      return { success: false, error: new Error(text || `Failed with status ${res.status}`) };
+    }
+
+    const json = (await res.json()) as ApiResponse<any>;
+    return { success: json.success, message: json.data?.message || "Password updated" };
+  } catch (err) {
+    return { success: false, error: err as Error };
   }
 }

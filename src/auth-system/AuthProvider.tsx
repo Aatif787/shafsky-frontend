@@ -58,8 +58,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log("[AuthProvider] Restoring session via FastAPI refresh cookie...");
       try {
         const { data, error } = await apiAuthRefresh();
+        const tokenStr = data?.accessToken || data?.access_token;
 
-        if (error || !data?.access_token) {
+        if (error || !tokenStr || !data?.user) {
           console.log("[AuthProvider] No active session found via refresh cookie.");
           if (active) {
             syncAuthCookie(null);
@@ -71,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         console.log("[AuthProvider] Session restored for user:", data.user.email);
-        setAccessToken(data.access_token);
+        setAccessToken(tokenStr);
 
         const userObj: User = {
           id: data.user.id,
@@ -108,8 +109,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const refreshInterval = setInterval(async () => {
       if (getAccessToken()) {
         const { data } = await apiAuthRefresh();
-        if (data?.access_token) {
-          setAccessToken(data.access_token);
+        const tokenStr = data?.accessToken || data?.access_token;
+        if (tokenStr) {
+          setAccessToken(tokenStr);
         }
       }
     }, 12 * 60 * 1000);
@@ -124,14 +126,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log("[AuthProvider] Initiating FastAPI login for:", email);
     try {
       const { data, error } = await apiAuthLogin(email, password);
+      const tokenStr = data?.accessToken || data?.access_token;
 
-      if (error || !data) {
+      if (error || !data || !tokenStr || !data.user) {
         console.error("[AuthProvider] FastAPI login error:", error?.message);
         return { error: error || new Error("Login failed") };
       }
 
       console.log("[AuthProvider] Login successful for user:", data.user.email);
-      setAccessToken(data.access_token);
+      setAccessToken(tokenStr);
 
       const userObj: User = {
         id: data.user.id,
