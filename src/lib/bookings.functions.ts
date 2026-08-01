@@ -222,7 +222,37 @@ export const createBooking = createServerFn({ method: "POST" })
       services: services || [],
     };
 
-    const res = await apiPost<any>("/api/bookings", payload, token);
+    const airportPayload = {
+      service_package: cleanData.service_type || "STANDARD_MEET_GREET",
+      special_instructions: appendedNotes,
+      passengers: [
+        {
+          full_name: cleanData.contact_name || "Lead Passenger",
+          gender: cleanData.ancillaries?.gender || null,
+          dob: cleanData.ancillaries?.dob || null,
+          nationality: cleanData.ancillaries?.nationality || null,
+          passport_number: cleanData.ancillaries?.passport_number || null,
+          contact_email: cleanData.contact_email,
+          contact_phone: cleanData.contact_phone,
+          is_primary: true,
+        },
+      ],
+      flight_detail: {
+        airline: cleanData.ancillaries?.airline || cleanData.aircraft_preference || "Emirates",
+        flight_number: (cleanData as any).flight_number || cleanData.ancillaries?.flight_number || "SHF-100",
+        departure_airport: originCode,
+        arrival_airport: destCode,
+        terminal: cleanData.ancillaries?.terminal || null,
+        scheduled_time: localIso1 ? new Date(localIso1).toISOString() : new Date().toISOString(),
+        flight_type: "ARRIVAL",
+      },
+      addons: (services || []).map((s) => ({
+        service_code: (s.service_code || "FAST_TRACK").toUpperCase(),
+        quantity: s.quantity || 1,
+      })),
+    };
+
+    const res = await apiPost<any>("/api/airport/bookings", airportPayload, token);
     const row = res?.data || res || {
       id: crypto.randomUUID(),
       booking_ref: `SH-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -316,7 +346,8 @@ export const listMyBookings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
     const token = getTokenFromRequest();
-    const data = await apiGet<any[]>("/api/bookings/my-bookings", token);
+    const res = await apiGet<any>("/api/airport/bookings", token);
+    const data = Array.isArray(res) ? res : res?.data ?? [];
     return data ?? [];
   });
 
@@ -324,7 +355,8 @@ export const listAllBookings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
     const token = getTokenFromRequest();
-    const data = await apiGet<any[]>("/api/bookings/admin/all", token);
+    const res = await apiGet<any>("/api/airport/bookings", token);
+    const data = Array.isArray(res) ? res : res?.data ?? [];
     return data ?? [];
   });
 
@@ -573,7 +605,11 @@ export async function executeBookingWorkflowActionInternal(
   },
 ) {
   const token = getTokenFromRequest();
-  const res = await apiPatch<any>(`/api/bookings/${data.bookingId}/workflow`, data, token);
+  const res = await apiPost<any>(
+    `/api/airport/bookings/${data.bookingId}/transition`,
+    { action: (data.action || data.overrideStatus || "CONFIRM").toUpperCase(), payload: data },
+    token,
+  );
   return res?.data || res || { success: true, newState: "UNDER_REVIEW" };
 }
 
@@ -636,7 +672,11 @@ export async function autoAssignBookingIfNeeded(
 ) {
   const token = getTokenFromRequest();
   try {
-    await apiPost(`/api/bookings/${bookingId}/assign`, { assigned_to: userId }, token);
+    await apiPost(
+      "/api/shared/assignments",
+      { entity_type: "AIRPORT_BOOKING", entity_id: bookingId, staff_id: userId, role_type: "GREETER" },
+      token,
+    );
   } catch (err) {
     console.warn("autoAssignBookingIfNeeded warning:", err);
   }
@@ -651,7 +691,11 @@ export const assignBooking = createServerFn({ method: "POST" })
   .validator((data: unknown) => z.object({ id: z.string().uuid(), assigned_to: z.string().nullable() }).parse(data))
   .handler(async ({ data }) => {
     const token = getTokenFromRequest();
-    const res = await apiPost<any>(`/api/bookings/${data.id}/assign`, { assigned_to: data.assigned_to }, token);
+    const res = await apiPost<any>(
+      "/api/shared/assignments",
+      { entity_type: "AIRPORT_BOOKING", entity_id: data.id, staff_id: data.assigned_to, role_type: "GREETER" },
+      token,
+    );
     return res?.data || res || { id: data.id, assigned_to: data.assigned_to };
   });
 
@@ -660,7 +704,7 @@ export const listBookingHistory = createServerFn({ method: "POST" })
   .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data }) => {
     const token = getTokenFromRequest();
-    const res = await apiGet<any>(`/api/bookings/${data.id}/history`, token);
+    const res = await apiGet<any>(`/api/workflows/instances/${data.id}/history`, token);
     return Array.isArray(res) ? res : res?.data ?? [];
   });
 
@@ -669,7 +713,7 @@ export const listBookingAudit = createServerFn({ method: "POST" })
   .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data }) => {
     const token = getTokenFromRequest();
-    const res = await apiGet<any>(`/api/bookings/${data.id}/audit-logs`, token);
+    const res = await apiGet<any>(`/api/workflows/instances/${data.id}/audit-logs`, token);
     return Array.isArray(res) ? res : res?.data ?? [];
   });
 
@@ -788,8 +832,25 @@ export const getAdminDashboardMetrics = createServerFn({ method: "GET" })
   .middleware([requireAdminRole])
   .handler(async () => {
     const token = getTokenFromRequest();
-    const res = await apiGet<any>("/api/admin/dashboard-metrics", token);
-    return res?.data || res || { bookings: [], messages: [], notifFailures: 0, recentActivity: [] };
+    try {
+      const res = await apiGet<any>("/api/admin/dashboard", token);
+      const bookingsRes = await apiGet<any>("/api/airport/bookings", token);
+      const bookings = Array.isArray(bookingsRes) ? bookingsRes : bookingsRes?.data ?? [];
+      const metricsData = res?.data || res || {};
+      return {
+        bookings,
+        messages: metricsData.messages || [],
+        notifFailures: metricsData.notifFailures || 0,
+        recentActivity: metricsData.recentActivity || [],
+        status: metricsData.status || "Active",
+        dailyRevenueINR: metricsData.dailyRevenueINR || 0,
+        todayBookings: metricsData.todayBookings || bookings.length,
+        completedToday: metricsData.completedToday || 0,
+      };
+    } catch (err) {
+      console.warn("[getAdminDashboardMetrics] Error:", err);
+      return { bookings: [], messages: [], notifFailures: 0, recentActivity: [] };
+    }
   });
 
 export const getSingleBooking = createServerFn({ method: "POST" })
@@ -797,7 +858,7 @@ export const getSingleBooking = createServerFn({ method: "POST" })
   .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data }) => {
     const token = getTokenFromRequest();
-    const res = await apiGet<any>(`/api/bookings/${data.id}`, token);
+    const res = await apiGet<any>(`/api/airport/bookings/${data.id}`, token);
     return res?.data || res;
   });
 
@@ -1108,9 +1169,9 @@ export const toggleStaffActiveStatus = createServerFn({ method: "POST" })
 export const listBookingNotifications = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
-  .handler(async ({ data }) => {
+  .handler(async () => {
     const token = getTokenFromRequest();
-    const rows = await apiGet<any[]>(`/api/bookings/${data.id}/notifications`, token);
+    const rows = await apiGet<any[]>("/api/notifications/logs", token);
     return rows ?? [];
   });
 
@@ -1119,7 +1180,7 @@ export const listBookingAuditLogs = createServerFn({ method: "POST" })
   .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data }) => {
     const token = getTokenFromRequest();
-    const rows = await apiGet<any[]>(`/api/bookings/${data.id}/audit-logs`, token);
+    const rows = await apiGet<any[]>(`/api/workflows/instances/${data.id}/audit-logs`, token);
     return rows ?? [];
   });
 
@@ -2046,7 +2107,7 @@ export const updateBookingDetailsServer = createServerFn({ method: "POST" })
   .validator((data: any) => data as { bookingId: string; updateData: Record<string, unknown> })
   .handler(async ({ data }) => {
     const token = getTokenFromRequest();
-    const res = await apiPatch<any>(`/api/bookings/${data.bookingId}/details`, data.updateData, token);
+    const res = await apiPatch<any>(`/api/airport/bookings/${data.bookingId}`, data.updateData, token);
     return res?.data || res || { success: true };
   });
 
@@ -2056,8 +2117,8 @@ export const getBookingFullDetailsServer = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     try {
       const token = getTokenFromRequest();
-      const detail = await apiGet<any>(`/api/bookings/${data.bookingId}/full-details`, token);
-      return detail || null;
+      const detail = await apiGet<any>(`/api/airport/bookings/${data.bookingId}`, token);
+      return detail?.data || detail || null;
     } catch {
       return null;
     }
@@ -2067,8 +2128,8 @@ export const getPublicBookingVerificationServer = createServerFn({ method: "GET"
   .validator((id: string) => id)
   .handler(async ({ data: bookingId }) => {
     try {
-      const bookingData = await apiGet<any>(`/api/verify/${bookingId}`);
-      return bookingData || null;
+      const bookingData = await apiGet<any>(`/api/airport/bookings/${bookingId}`);
+      return bookingData?.data || bookingData || null;
     } catch {
       return null;
     }
@@ -2079,8 +2140,11 @@ export const listUserBookingsServer = createServerFn({ method: "GET" })
   .handler(async () => {
     try {
       const token = getTokenFromRequest();
-      const res = await apiGet<any[]>("/api/bookings", token);
-      return res || [];
+      const res = await apiGet<any>("/api/airport/bookings/me", token);
+      const data = res?.data || res;
+      if (Array.isArray(data)) return data;
+      const fallback = await apiGet<any>("/api/airport/bookings", token);
+      return Array.isArray(fallback) ? fallback : fallback?.data ?? [];
     } catch {
       return [];
     }

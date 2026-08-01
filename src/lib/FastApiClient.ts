@@ -1,12 +1,17 @@
 /**
- * FastAPI Client for TanStack Server Functions
+ * FastAPI Client for TanStack Server Functions & Client Requests
  *
- * This module is used by createServerFn handlers to call FastAPI endpoints
- * instead of using Supabase database queries directly.
- * Forwards the Supabase JWT from the incoming request to FastAPI.
+ * Used by createServerFn handlers and client components to call FastAPI endpoints.
+ * Automatically forwards the in-memory Access Token and includes credentials
+ * for HttpOnly refresh cookie handling.
  */
 
-const BACKEND_URL = process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL || "http://localhost:8001";
+import { getAccessToken } from "@/auth/tokenStore";
+
+const BACKEND_URL =
+  (typeof process !== "undefined" &&
+    (process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL)) ||
+  "http://localhost:8001";
 
 export interface FastApiResponse<T = any> {
   success: boolean;
@@ -17,15 +22,13 @@ export interface FastApiResponse<T = any> {
 /**
  * Make a GET request to the FastAPI backend.
  */
-export async function apiGet<T = any>(
-  path: string,
-  token?: string,
-): Promise<T> {
+export async function apiGet<T = any>(path: string, token?: string): Promise<T> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
-  if (token) headers.Authorization = `Bearer ${token}`;
+  const bearer = token || getAccessToken();
+  if (bearer) headers.Authorization = `Bearer ${bearer}`;
 
   const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
-  const res = await fetch(url, { method: "GET", headers });
+  const res = await fetch(url, { method: "GET", headers, credentials: "include" });
 
   if (!res.ok) {
     const body = await res.text();
@@ -36,7 +39,7 @@ export async function apiGet<T = any>(
   if (!json.success && json.error) {
     throw new Error(json.error);
   }
-  return json.data as T;
+  return (json.data ?? json) as T;
 }
 
 /**
@@ -48,12 +51,14 @@ export async function apiPost<T = any>(
   token?: string,
 ): Promise<T> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
-  if (token) headers.Authorization = `Bearer ${token}`;
+  const bearer = token || getAccessToken();
+  if (bearer) headers.Authorization = `Bearer ${bearer}`;
 
   const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
   const res = await fetch(url, {
     method: "POST",
     headers,
+    credentials: "include",
     body: JSON.stringify(body),
   });
 
@@ -66,7 +71,7 @@ export async function apiPost<T = any>(
   if (!json.success && json.error) {
     throw new Error(json.error);
   }
-  return json.data as T;
+  return (json.data ?? json) as T;
 }
 
 /**
@@ -78,12 +83,14 @@ export async function apiPatch<T = any>(
   token?: string,
 ): Promise<T> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
-  if (token) headers.Authorization = `Bearer ${token}`;
+  const bearer = token || getAccessToken();
+  if (bearer) headers.Authorization = `Bearer ${bearer}`;
 
   const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
   const res = await fetch(url, {
     method: "PATCH",
     headers,
+    credentials: "include",
     body: JSON.stringify(body),
   });
 
@@ -96,7 +103,7 @@ export async function apiPatch<T = any>(
   if (!json.success && json.error) {
     throw new Error(json.error);
   }
-  return json.data as T;
+  return (json.data ?? json) as T;
 }
 
 /**
@@ -108,12 +115,14 @@ export async function apiDelete<T = any>(
   token?: string,
 ): Promise<T> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
-  if (token) headers.Authorization = `Bearer ${token}`;
+  const bearer = token || getAccessToken();
+  if (bearer) headers.Authorization = `Bearer ${bearer}`;
 
   const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
   const res = await fetch(url, {
     method: "DELETE",
     headers,
+    credentials: "include",
     body: body ? JSON.stringify(body) : undefined,
   });
 
@@ -126,12 +135,11 @@ export async function apiDelete<T = any>(
   if (!json.success && json.error) {
     throw new Error(json.error);
   }
-  return json.data as T;
+  return (json.data ?? json) as T;
 }
 
 /**
- * Extract the Supabase JWT from the cookie header of the current request.
- * Used by server functions to forward the token to FastAPI.
+ * Extract the Bearer JWT from the request header context.
  */
 export function getTokenFromRequest(): string | undefined {
   try {
@@ -139,7 +147,7 @@ export function getTokenFromRequest(): string | undefined {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { getRequest } = require("@tanstack/react-start/server");
     const request = getRequest();
-    if (!request) return undefined;
+    if (!request) return getAccessToken() || undefined;
 
     // Try Authorization header first (API calls from client)
     const authHeader = request.headers.get("authorization");
@@ -147,22 +155,9 @@ export function getTokenFromRequest(): string | undefined {
       return authHeader.split(" ")[1];
     }
 
-    // Try to get the Supabase access token from cookies
-    const cookies = request.headers.get("cookie") || "";
-    const match = cookies.match(/sb-[^-]+-auth-token=([^;]+)/);
-    if (match?.[1]) {
-      try {
-        const decoded = decodeURIComponent(match[1]);
-        const parsed = JSON.parse(decoded);
-        if (Array.isArray(parsed) && parsed[0]) return parsed[0];
-        if (parsed.access_token) return parsed.access_token;
-      } catch {
-        return match[1];
-      }
-    }
-
-    return undefined;
+    // Fallback to in-memory access token
+    return getAccessToken() || undefined;
   } catch {
-    return undefined;
+    return getAccessToken() || undefined;
   }
 }

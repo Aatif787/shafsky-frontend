@@ -110,8 +110,8 @@ export const listRoleMatrix = createServerFn({ method: "GET" })
   .handler(async (): Promise<Record<string, string[]>> => {
     try {
       const token = getTokenFromRequest();
-      const res = await apiGet<Record<string, string[]>>("/api/admin/roles", token);
-      return res || {};
+      const res = await apiGet<any>("/api/admin/roles", token);
+      return res?.data || res || {};
     } catch (error) {
       console.warn("[listRoleMatrix] Warning:", error);
       return {};
@@ -222,8 +222,9 @@ export const listCoupons = createServerFn({ method: "GET" })
   .handler(async (): Promise<CouponItem[]> => {
     try {
       const token = getTokenFromRequest();
-      const res = await apiGet<CouponItem[]>("/api/admin/coupons", token);
-      return Array.isArray(res) ? res : [];
+      const res = await apiGet<any>("/api/admin/coupons", token);
+      const data = res?.data || res;
+      return Array.isArray(data) ? data : [];
     } catch (error) {
       console.warn("[listCoupons] Warning:", error);
       return [];
@@ -278,8 +279,9 @@ export const listFeatureFlags = createServerFn({ method: "GET" })
   .handler(async (): Promise<any[]> => {
     try {
       const token = getTokenFromRequest();
-      const res = await apiGet<any[]>("/api/admin/feature-flags", token);
-      return Array.isArray(res) ? res : [];
+      const res = await apiGet<any>("/api/admin/feature-flags", token);
+      const data = res?.data || res;
+      return Array.isArray(data) ? data : [];
     } catch (error) {
       console.warn("[listFeatureFlags] Warning:", error);
       return [];
@@ -334,8 +336,8 @@ export const getAuditLogs = createServerFn({ method: "GET" })
   .handler(async (): Promise<any[]> => {
     try {
       const token = getTokenFromRequest();
-      const res = await apiGet<any[]>("/api/admin/security-events", token);
-      return Array.isArray(res) ? res : [];
+      const res = await apiGet<any>("/api/admin/audit-logs", token);
+      return Array.isArray(res) ? res : res?.data ?? [];
     } catch (error) {
       console.warn("[getAuditLogs] Warning:", error);
       return [];

@@ -7,18 +7,23 @@ export const listMyNotifications = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
     const token = getTokenFromRequest();
-    const data = await apiGet<any[]>("/api/notifications/my", token);
-    return data ?? [];
+    const res = await apiGet<any>("/api/notifications", token);
+    const data = res?.data || res;
+    return Array.isArray(data) ? data : [];
   });
 
 export const markNotificationRead = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((d: unknown) =>
-    z.object({ id: z.string().uuid().optional(), all: z.boolean().optional() }).parse(d),
+    z.object({ id: z.string().optional(), all: z.boolean().optional() }).parse(d),
   )
   .handler(async ({ data }) => {
     const token = getTokenFromRequest();
-    await apiPost("/api/notifications/mark-read", data, token);
+    if (data.id) {
+      await apiPost(`/api/notifications/${data.id}/read`, {}, token);
+    } else {
+      await apiPost("/api/notifications/read-all", {}, token);
+    }
     return { ok: true };
   });
 

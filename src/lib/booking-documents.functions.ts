@@ -214,24 +214,24 @@ export async function generateBookingDocumentInternal(
   data: { id: string; kind: "quotation" | "invoice" | "receipt"; amount?: number },
 ) {
   const token = getTokenFromRequest();
-  const b = await apiGet<any>(`/api/bookings/${data.id}`, token);
+  const b = await apiGet<any>(`/api/airport/bookings/${data.id}`, token);
   if (!b) throw new Error("Booking not found");
 
   const amount = data.amount ?? Number(b.quote_amount ?? b.price ?? 0);
   const bytes = await buildPdf({
     kind: data.kind,
-    ref: b.booking_ref,
-    customer: b.contact_name || b.passenger_name,
-    email: b.contact_email || b.passenger_email,
-    phone: b.contact_phone || b.passenger_phone,
-    origin: b.origin || b.origin_code,
-    destination: b.destination || b.dest_code,
+    ref: b.booking_ref || b.booking_reference,
+    customer: b.contact_name || b.passenger_name || "Guest Passenger",
+    email: b.contact_email || b.passenger_email || "guest@shafsky.com",
+    phone: b.contact_phone || b.passenger_phone || "",
+    origin: b.origin || b.origin_code || "DEL",
+    destination: b.destination || b.dest_code || "DXB",
     depart: b.depart_date || b.flight_date || "",
     ret: b.return_date || null,
     pax: `${b.pax_adults || b.num_passengers || 1} adult · ${b.pax_children || 0} child · ${b.pax_infants || 0} infant`,
     amount,
     currency: b.quote_currency ?? b.currency ?? "INR",
-    service_type: b.service_type,
+    service_type: b.service_type || b.service_package,
   });
 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -245,13 +245,14 @@ export async function generateBookingDocumentInternal(
   if (upErr) throw new Error(upErr.message);
 
   const row = await apiPost<any>(
-    `/api/bookings/${b.id}/documents`,
+    "/api/shared/attachments/register",
     {
-      kind: data.kind,
+      entity_type: "AIRPORT_BOOKING",
+      entity_id: b.id,
+      filename: `${data.kind}.pdf`,
       storage_path: path,
-      amount,
-      currency: b.quote_currency ?? b.currency ?? "INR",
-      generated_by: userId,
+      category: "DOCUMENT",
+      access_level: "STAFF",
     },
     token,
   );
@@ -293,7 +294,7 @@ export const listBookingDocuments = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const token = getTokenFromRequest();
-    const rows = await apiGet<any[]>(`/api/bookings/${data.id}/documents`, token);
+    const rows = await apiGet<any[]>(`/api/shared/attachments/AIRPORT_BOOKING/${data.id}`, token);
 
     if (!rows || rows.length === 0) return [];
 
@@ -307,13 +308,13 @@ export const listBookingDocuments = createServerFn({ method: "POST" })
 
     return rows.map((r: any) => ({
       id: r.id,
-      kind: r.kind,
+      kind: r.category?.toLowerCase() || r.kind || "document",
       amount: r.amount as number | null,
       currency: r.currency as string | null,
       created_at: r.created_at as string,
-      url: urlMap.get(r.storage_path) || "",
-      document_type: r.document_type || r.kind,
-      filename: r.filename || `${r.kind}.pdf`,
+      url: urlMap.get(r.storage_path) || r.storage_path || "",
+      document_type: r.category || r.document_type || r.kind,
+      filename: r.filename || `${r.kind || "document"}.pdf`,
       version: r.version || 1,
       checksum: r.checksum || "legacy",
     }));
@@ -325,7 +326,7 @@ export async function generateAllBookingPdfsInternal(
   bookingId: string,
 ) {
   const token = getTokenFromRequest();
-  const booking = await apiGet<any>(`/api/bookings/${bookingId}`, token);
+  const booking = await apiGet<any>(`/api/airport/bookings/${bookingId}`, token);
   if (!booking) throw new Error("Booking not found");
 
   const services = booking.services || [];
@@ -335,7 +336,7 @@ export async function generateAllBookingPdfsInternal(
   const requiredTypes = getRequiredPdfTypes(booking, services);
   const results = [];
 
-  const existingDocs = await apiGet<any[]>(`/api/bookings/${bookingId}/documents`, token);
+  const existingDocs = await apiGet<any[]>(`/api/shared/attachments/AIRPORT_BOOKING/${bookingId}`, token);
 
   for (const type of requiredTypes) {
     try {
@@ -344,7 +345,7 @@ export async function generateAllBookingPdfsInternal(
 
       const existingDoc = (existingDocs || []).find(
         (d: any) =>
-          (d.document_type === type || d.kind === type) && d.checksum === checksum,
+          (d.document_type === type || d.category === type) && d.checksum === checksum,
       );
 
       if (existingDoc) {
@@ -353,7 +354,7 @@ export async function generateAllBookingPdfsInternal(
       }
 
       const matchingVersions = (existingDocs || [])
-        .filter((d: any) => d.document_type === type || d.kind === type)
+        .filter((d: any) => d.document_type === type || d.category === type)
         .map((d: any) => d.version || 1);
 
       const latestVersion = matchingVersions.length > 0 ? Math.max(...matchingVersions) : 0;
@@ -374,22 +375,15 @@ export async function generateAllBookingPdfsInternal(
         continue;
       }
 
-      let mappedKind = "quotation";
-      if (type.includes("invoice")) mappedKind = "invoice";
-      else if (type.includes("receipt")) mappedKind = "receipt";
-
       const row = await apiPost<any>(
-        `/api/bookings/${bookingId}/documents`,
+        "/api/shared/attachments/register",
         {
-          kind: mappedKind,
-          storage_path: path,
-          amount: booking.quote_amount || booking.price || null,
-          currency: booking.quote_currency || booking.currency || "INR",
-          generated_by: userId,
-          document_type: type,
+          entity_type: "AIRPORT_BOOKING",
+          entity_id: bookingId,
           filename,
-          checksum,
-          version: newVersion,
+          storage_path: path,
+          category: type.toUpperCase(),
+          access_level: "STAFF",
         },
         token,
       );
@@ -435,9 +429,9 @@ export const deleteOldDocumentVersions = createServerFn({ method: "POST" })
     await assertStaffUser(supabase as any, userId);
 
     const token = getTokenFromRequest();
-    const currentDocs = await apiGet<any[]>(`/api/bookings/${data.bookingId}/documents`, token);
+    const currentDocs = await apiGet<any[]>(`/api/shared/attachments/AIRPORT_BOOKING/${data.bookingId}`, token);
     const matching = (currentDocs || []).filter(
-      (d: any) => (d.document_type || d.kind) === data.documentType,
+      (d: any) => (d.category || d.document_type || d.kind) === data.documentType,
     );
 
     if (matching.length <= 1) {
@@ -452,7 +446,13 @@ export const deleteOldDocumentVersions = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin.storage.from("booking-docs").remove(oldPaths);
 
-    await apiDelete(`/api/bookings/${data.bookingId}/documents`, { ids: oldIds }, token);
+    for (const oldId of oldIds) {
+      try {
+        await apiDelete(`/api/shared/attachments/${oldId}`, undefined, token);
+      } catch (err) {
+        console.warn("Failed to delete attachment record:", oldId, err);
+      }
+    }
 
     return { success: true, deletedCount: oldIds.length };
   });
@@ -465,7 +465,7 @@ export const resendDocumentEmail = createServerFn({ method: "POST" })
     await assertStaffUser(supabase as any, userId);
 
     const token = getTokenFromRequest();
-    const booking = await apiGet<any>(`/api/bookings/${data.id}`, token);
+    const booking = await apiGet<any>(`/api/airport/bookings/${data.id}`, token);
     if (!booking) throw new Error("Booking not found");
 
     let eventType = "booking_confirmed";
@@ -485,13 +485,13 @@ export const resendDocumentEmail = createServerFn({ method: "POST" })
     const { enqueueNotification } = await import("@/lib/notifications/queue");
     await enqueueNotification({
       bookingId: booking.id,
-      bookingRef: booking.booking_ref,
+      bookingRef: booking.booking_ref || booking.booking_reference,
       recipient,
       channel: "email",
       eventType,
       payload: {
         bookingId: booking.id,
-        bookingRef: booking.booking_ref,
+        bookingRef: booking.booking_ref || booking.booking_reference,
         customerName: booking.contact_name || booking.passenger_name,
         origin: booking.origin || booking.origin_code,
         destination: booking.destination || booking.dest_code,
@@ -509,7 +509,7 @@ export const fetchDocs = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     try {
       const token = getTokenFromRequest();
-      const rows = await apiGet<any[]>(`/api/bookings/${data.id}/documents`, token);
+      const rows = await apiGet<any[]>(`/api/shared/attachments/AIRPORT_BOOKING/${data.id}`, token);
       return rows ?? [];
     } catch {
       return [];

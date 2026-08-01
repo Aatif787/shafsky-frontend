@@ -57,7 +57,7 @@ export async function loadAdminSettings(): Promise<AdminSettings> {
  */
 async function resolveBookingDetails(bookingRef: string): Promise<BookingEmailPayload | null> {
   try {
-    const booking = await apiGet<any>(`/api/bookings/${bookingRef}/full-details`);
+    const booking = await apiGet<any>(`/api/airport/bookings/${bookingRef}`);
     if (!booking) return null;
 
     return {

@@ -22,7 +22,7 @@ async function getEmailAttachments(bookingId: string, eventType: string): Promis
 
     // 2. Fetch the latest documents for this booking from FastAPI backend
     const token = getTokenFromRequest();
-    const docs = await apiGet<any[]>(`/api/bookings/${bookingId}/documents`, token);
+    const docs = await apiGet<any[]>(`/api/shared/attachments/AIRPORT_BOOKING/${bookingId}`, token);
 
     if (!docs || docs.length === 0) return [];
 

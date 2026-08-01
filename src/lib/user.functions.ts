@@ -8,8 +8,9 @@ export const getCurrentUserProfileServer = createServerFn({ method: "GET" })
   .handler(async (): Promise<UserProfile | null> => {
     try {
       const token = getTokenFromRequest();
-      const me = await apiGet<UserProfile>("/api/me", token);
-      return me || null;
+      const res = await apiGet<any>("/api/auth/profile", token);
+      const data = res?.data || res;
+      return data || null;
     } catch (error) {
       console.warn("[getCurrentUserProfileServer] Profile fetch warning:", error);
       return null;
@@ -22,8 +23,8 @@ export const updateMyProfileServer = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<{ success: boolean; data?: UserProfile; error?: string }> => {
     try {
       const token = getTokenFromRequest();
-      const res = await apiPatch<UserProfile>("/api/me", data, token);
-      return { success: true, data: res };
+      const res = await apiPatch<any>("/api/auth/profile", data, token);
+      return { success: true, data: res?.data || res };
     } catch (error) {
       console.error("[updateMyProfileServer] Profile update error:", error);
       return { success: false, error: error instanceof Error ? error.message : "Failed to update profile" };
@@ -35,7 +36,7 @@ export const markMyNotificationsReadServer = createServerFn({ method: "POST" })
   .handler(async (): Promise<{ success: boolean; error?: string }> => {
     try {
       const token = getTokenFromRequest();
-      await apiPost("/api/notifications/mark-read", { all: true }, token);
+      await apiPost("/api/notifications/read-all", {}, token);
       return { success: true };
     } catch (error) {
       console.error("[markMyNotificationsReadServer] Error:", error);
@@ -48,8 +49,9 @@ export const getMyNotificationsServer = createServerFn({ method: "GET" })
   .handler(async (): Promise<NotificationItem[]> => {
     try {
       const token = getTokenFromRequest();
-      const res = await apiGet<NotificationItem[]>("/api/notifications/my", token);
-      return res || [];
+      const res = await apiGet<any>("/api/notifications", token);
+      const data = res?.data || res;
+      return Array.isArray(data) ? data : [];
     } catch (error) {
       console.warn("[getMyNotificationsServer] Warning:", error);
       return [];

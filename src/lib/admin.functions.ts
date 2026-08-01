@@ -58,16 +58,17 @@ export const getAdminProfile = createServerFn({ method: "GET" })
     const { userId } = context;
     try {
       const token = getTokenFromRequest();
-      const me = await apiGet<any>("/api/me", token);
+      const meRes = await apiGet<any>("/api/auth/profile", token);
+      const me = meRes?.data || meRes;
       return {
         profile: {
           id: userId,
           full_name: me?.full_name || me?.email?.split("@")[0] || "Admin",
-          phone: me?.phone || null,
+          phone: me?.phone_number || me?.phone || null,
           company: me?.company || null,
-          avatar_url: null,
-          created_at: "",
-          updated_at: "",
+          avatar_url: me?.avatar_url || null,
+          created_at: me?.created_at || "",
+          updated_at: me?.updated_at || "",
           notes: null,
         },
         activity: [],
@@ -96,6 +97,6 @@ export const updateAdminProfile = createServerFn({ method: "POST" })
   .validator((data: any) => data as { full_name?: string; phone?: string; company?: string })
   .handler(async ({ data }) => {
     const token = getTokenFromRequest();
-    await apiPatch("/api/me", data, token);
+    await apiPatch("/api/auth/profile", data, token);
     return { success: true };
   });
