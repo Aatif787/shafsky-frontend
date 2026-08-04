@@ -14,7 +14,6 @@ export interface AirportWorkflowState {
   serviceDate: string;
   serviceTime: string;
   guestCount: number;
-  bagCount?: number;
   fullName: string;
   phone: string;
   email: string;
@@ -33,12 +32,12 @@ export function formatFlightLookupError(error: unknown, status?: number): string
     typeof error === "string"
       ? error
       : typeof (error as any)?.message === "string"
-      ? (error as any).message
-      : typeof (error as any)?.code === "string"
-      ? (error as any).code
-      : typeof (error as any)?.error === "string"
-      ? (error as any).error
-      : JSON.stringify(error || "");
+        ? (error as any).message
+        : typeof (error as any)?.code === "string"
+          ? (error as any).code
+          : typeof (error as any)?.error === "string"
+            ? (error as any).error
+            : JSON.stringify(error || "");
 
   const upper = rawString.toUpperCase();
 
@@ -112,7 +111,6 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     serviceDate: searchParams?.depart_date || cachedFlightData?.departure?.scheduledTime?.split(" ")[0] || new Date().toISOString().split("T")[0],
     serviceTime: "14:30",
     guestCount: searchParams?.pax_adults || 1,
-    bagCount: searchParams?.pax_bags || 1,
     fullName: "",
     phone: "",
     email: "",

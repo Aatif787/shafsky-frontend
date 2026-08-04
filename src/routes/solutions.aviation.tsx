@@ -55,6 +55,7 @@ function PrivateAviationPage() {
     <ServiceLayout
       category="Private Aviation"
       categoryHref="/solutions/aviation"
+      categoryId="private_aviation"
       serviceName={currentSub.label}
       tagline={currentSub.tagline}
       description={currentSub.description}

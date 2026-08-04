@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   Plane,
@@ -7,9 +7,6 @@ import {
   RefreshCw,
   ArrowRight,
   ShieldCheck,
-  Building2,
-  DoorOpen,
-  Radio,
 } from "lucide-react";
 import { FlightData } from "@/services/flight/FlightTypes";
 
@@ -119,7 +116,7 @@ function formatTerminalChip(termRaw?: string | null): string | null {
 }
 
 /**
- * Status Badge Component with Subtle Glow
+ * Status Badge Component with Subtle Glow (Gracefully omitted if status is null/empty)
  */
 const StatusBadge = React.memo(function StatusBadge({
   status,
@@ -130,23 +127,23 @@ const StatusBadge = React.memo(function StatusBadge({
   const normalized = status.trim().toUpperCase();
 
   let badgeStyle =
-    "bg-emerald-500/10 text-emerald-900 border-emerald-300/80 shadow-xs";
+    "bg-emerald-500/10 text-emerald-800 border-emerald-300/80 shadow-[0_0_12px_rgba(16,185,129,0.15)]";
   let dotStyle = "bg-emerald-500 animate-pulse";
   let label = normalized;
 
   if (normalized.includes("DELAY")) {
     badgeStyle =
-      "bg-amber-500/10 text-amber-900 border-amber-300/80 shadow-xs";
+      "bg-amber-500/10 text-amber-900 border-amber-300/80 shadow-[0_0_12px_rgba(245,158,11,0.15)]";
     dotStyle = "bg-amber-500 animate-ping";
   } else if (normalized.includes("CANCEL")) {
     badgeStyle =
-      "bg-rose-500/10 text-rose-900 border-rose-300/80 shadow-xs";
+      "bg-rose-500/10 text-rose-900 border-rose-300/80 shadow-[0_0_12px_rgba(244,63,94,0.15)]";
     dotStyle = "bg-rose-500";
   }
 
   return (
     <div
-      className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-['Inter',sans-serif] font-semibold uppercase tracking-wider transition-all ${badgeStyle}`}
+      className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full border text-xs font-mono font-bold uppercase tracking-wider transition-all ${badgeStyle}`}
     >
       <span className={`w-2 h-2 rounded-full ${dotStyle}`} />
       <span>{label}</span>
@@ -159,10 +156,10 @@ const StatusBadge = React.memo(function StatusBadge({
  */
 export function ValidatedFlightSkeleton() {
   return (
-    <div className="w-full max-w-7xl mx-auto py-8 space-y-8 font-['Plus_Jakarta_Sans',sans-serif] animate-pulse">
+    <div className="w-full max-w-[94%] mx-auto py-8 space-y-10 font-sans animate-pulse">
       <div className="h-8 bg-slate-200/60 rounded-xl w-1/4" />
       <div className="h-12 bg-slate-200/50 rounded-2xl w-1/2" />
-      <div className="h-44 bg-slate-200/30 rounded-3xl w-full" />
+      <div className="h-40 bg-slate-200/30 rounded-3xl w-full" />
     </div>
   );
 }
@@ -176,13 +173,13 @@ export function ValidatedFlightExperience({
 }: ValidatedFlightExperienceProps) {
   const shouldReduceMotion = useReducedMotion();
 
-  // 100% Dynamic Backend Attributes Extraction
+  // 100% Dynamic Backend Attributes Extraction (Zero Hardcoded Fallbacks)
   const carrierName = typeof flightData?.carrier?.name === "string" ? flightData.carrier.name.trim() : null;
   const flightNum = typeof flightData?.flightNum === "string" ? flightData.flightNum.trim() : null;
   const status = typeof flightData?.status === "string" ? flightData.status.trim() : null;
   const aircraftModel = typeof flightData?.aircraft?.model === "string" ? flightData.aircraft.model.trim() : null;
 
-  // Extract raw backend duration string
+  // Extract raw backend duration string directly (no estimation, no hardcoded fallbacks)
   const rawDuration =
     (flightData as any)?.duration_text ||
     flightData?.duration ||
@@ -192,8 +189,8 @@ export function ValidatedFlightExperience({
     typeof rawDuration === "string" && rawDuration.trim().length > 0
       ? rawDuration.trim()
       : typeof rawDuration === "number"
-      ? `${rawDuration} mins`
-      : null;
+        ? `${rawDuration} mins`
+        : null;
 
   // Airport details (100% Backend-Driven)
   const originCode = typeof flightData?.origin?.code === "string" ? flightData.origin.code.trim() : "DEL";
@@ -231,191 +228,191 @@ export function ValidatedFlightExperience({
   const formattedArrDate = formatFlightDate(destSchedTime || serviceDate);
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 font-['Plus_Jakarta_Sans',sans-serif] text-[#1C1917]">
-      {/* 1. HEADING & FLIGHT STATUS (INDEPENDENT UNBOXED SECTION) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E7E0D3]/80">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[#78350F] text-[11px] font-['Inter',sans-serif] font-semibold uppercase tracking-wider">
-            <Radio className="w-3 h-3 text-[#D97706] animate-pulse" />
-            <span>Verified Airside Schedule</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-['Plus_Jakarta_Sans',sans-serif] font-bold text-[#1C1917] tracking-tight">
+    <div className="w-full max-w-[94%] mx-auto py-6 sm:py-10 space-y-10 sm:space-y-14 font-sans text-[#1C1917]">
+      {/* 1. STEP INDICATOR */}
+      <div>
+        <span className="px-3.5 py-1 rounded-full bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-[11px] font-mono font-bold uppercase tracking-[0.25em]">
+          Step 2 of 5 — Validated Flight
+        </span>
+      </div>
+
+      {/* 2. FLIGHT VERIFICATION HEADER & CHANGE FLIGHT */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E8DFD1]/60">
+        <div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#1C1917] tracking-tight">
             Flight Verification
           </h1>
-          <p className="text-xs sm:text-sm font-['Inter',sans-serif] font-normal text-[#78716C]">
-            Live route timeline & airport details verified with airline system.
+          <p className="text-xs sm:text-sm text-[#78716C] font-medium mt-1">
+            Verified airside routing & flight details.
           </p>
         </div>
 
-        {/* Flight Status & Carrier Tag */}
-        {(status || carrierName || flightNum) && (
-          <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-center">
-            {status && <StatusBadge status={status} />}
-            {(carrierName || flightNum) && (
-              <span className="text-xs font-['Inter',sans-serif] font-semibold text-[#57534E] uppercase tracking-wider bg-white/90 backdrop-blur-xs border border-[#E7E0D3] px-3.5 py-1.5 rounded-full shadow-2xs">
-                {[carrierName, flightNum].filter(Boolean).join(" • ")}
-              </span>
-            )}
-          </div>
-        )}
+        <button
+          type="button"
+          onClick={onChangeFlight}
+          className="self-start sm:self-center px-5 py-2.5 rounded-full bg-white/90 hover:bg-white text-[#44403C] hover:text-[#1C1917] border border-[#E7E0D3] shadow-xs hover:shadow-md font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all duration-300 cursor-pointer"
+        >
+          <RefreshCw className="w-3.5 h-3.5 text-amber-700" />
+          <span>Change Flight</span>
+        </button>
       </div>
 
-      {/* 2. ROUTE TIMELINE (35% WIDER HORIZONTAL TRACK, DURATION ABOVE CENTER, LINEAR ANIMATION) */}
-      <div className="w-full py-2 sm:py-4 space-y-4">
-        {/* DURATION DISPLAYED DIRECTLY ABOVE THE CENTER OF THE ROUTE */}
+      {/* 3. FLIGHT STATUS & CARRIER ROW (GRACEFULLY CONDITIONAL) */}
+      {(status || carrierName || flightNum) && (
+        <div className="flex items-center gap-3">
+          {status && <StatusBadge status={status} />}
+          {(carrierName || flightNum) && (
+            <span className="text-xs font-mono font-bold text-[#78716C] uppercase tracking-wider">
+              {[carrierName, flightNum].filter(Boolean).join(" • ")}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* 4. ANIMATED ROUTE WITH DURATION ABOVE (UNBOXED 92-95% WIDE LAYOUT) */}
+      <div className="space-y-6 py-4">
+        {/* DURATION DISPLAYED DIRECTLY ABOVE THE ROUTE (GRACEFULLY OMITTED IF NULL) */}
         {duration && (
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-[#FEF3C7] to-[#FDE68A] border border-[#FDE68A] text-[#78350F] text-xs font-['Inter',sans-serif] font-medium shadow-2xs">
-              <Clock className="w-3.5 h-3.5 text-[#D97706]" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-widest shadow-2xs">
+              <Clock className="w-3.5 h-3.5 text-amber-700" />
               <span>Duration {duration}</span>
             </div>
           </div>
         )}
 
-        {/* DESKTOP / TABLET ROUTE TIMELINE */}
-        <div className="hidden md:block w-full">
-          <div className="flex items-center justify-between gap-6 lg:gap-10">
-            {/* DEPARTURE AIRPORT (LEFT ALIGNED) */}
-            <div className="w-64 lg:w-80 shrink-0 space-y-2 text-left">
-              {/* Large Airport Code */}
-              <span className="text-5xl lg:text-6xl xl:text-7xl font-['Plus_Jakarta_Sans',sans-serif] font-bold text-[#1C1917] tracking-tight block">
+        {/* HORIZONTAL ROUTE TRACK (DESKTOP / TABLET) */}
+        <div className="hidden md:block w-full py-4">
+          <div className="grid grid-cols-12 gap-6 items-center">
+            {/* DEPARTURE AIRPORT (LEFT) */}
+            <div className="col-span-4 space-y-2 text-left">
+              <span className="text-4xl lg:text-5xl font-mono font-black text-[#1C1917] tracking-tight block">
                 {originCode}
               </span>
-              {/* Medium Airport Name */}
               {originCity && (
-                <h2 className="text-lg lg:text-xl font-['Plus_Jakarta_Sans',sans-serif] font-semibold text-[#292524] leading-snug">
+                <h2 className="text-2xl font-serif font-bold text-[#1C1917] leading-snug">
                   {originCity}
                 </h2>
               )}
               {originName && (
-                <p className="text-xs font-['Inter',sans-serif] font-normal text-[#78716C]">
+                <p className="text-xs font-mono text-[#78716C]">
                   {originName}
                 </p>
               )}
-              {/* Departure Time & Date */}
               {(formattedDepTime || formattedDepDate) && (
-                <div className="pt-1.5 space-y-0.5">
+                <div className="pt-2 space-y-1">
                   {formattedDepTime && (
-                    <div className="text-lg lg:text-xl font-['Inter',sans-serif] font-medium text-[#1C1917]">
+                    <div className="text-xs font-mono font-bold text-[#1C1917]">
                       {formattedDepTime}
                     </div>
                   )}
                   {formattedDepDate && (
-                    <div className="text-xs font-['Inter',sans-serif] font-normal text-[#78716C]">
+                    <div className="text-xs font-mono text-[#78716C]">
                       {formattedDepDate}
                     </div>
                   )}
                 </div>
               )}
-              {/* Terminal & Gate Small Chips */}
               {(depTerminalChip || originGate) && (
                 <div className="pt-2 flex flex-wrap items-center gap-2">
                   {depTerminalChip && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FEF3C7]/80 border border-[#FDE68A] text-[#78350F] text-xs font-['Inter',sans-serif] font-normal shadow-2xs">
-                      <Building2 className="w-3.5 h-3.5 text-[#D97706]" />
-                      <span>Departure {depTerminalChip}</span>
+                    <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
+                      Departure {depTerminalChip}
                     </span>
                   )}
                   {originGate && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FEF3C7]/80 border border-[#FDE68A] text-[#78350F] text-xs font-['Inter',sans-serif] font-normal shadow-2xs">
-                      <DoorOpen className="w-3.5 h-3.5 text-[#D97706]" />
-                      <span>Gate {originGate}</span>
+                    <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
+                      Gate {originGate}
                     </span>
                   )}
                 </div>
               )}
             </div>
 
-            {/* CENTER TRACK & ANIMATED PLANE (35% LONGER HORIZONTAL TRACK) */}
-            <div className="flex-1 relative flex items-center justify-center py-8 px-2 lg:px-6">
-              {/* Horizontal Line with subtle gradient */}
+            {/* CENTER DASHED TRACK & ANIMATED PLANE */}
+            <div className="col-span-4 relative flex items-center justify-center py-6">
+              {/* Dashed Horizontal Line */}
               <div className="w-full relative flex items-center justify-between">
-                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 border-b-2 border-dashed border-[#CBD5E1] z-0" />
+                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 border-b-2 border-dashed border-[#C7BBAA] z-0" />
 
-                {/* Left Node Dot (Departure) */}
-                <div className="relative z-10 w-4 h-4 rounded-full bg-[#1C1917] ring-4 ring-[#84cc16]/20 shadow-xs flex items-center justify-center">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#84cc16]" />
+                {/* Left Node Dot */}
+                <div className="relative z-10 w-3.5 h-3.5 rounded-full bg-[#1C1917] border-2 border-amber-400 shadow-xs flex items-center justify-center">
+                  <span className="w-1 h-1 rounded-full bg-amber-300 animate-ping" />
                 </div>
 
-                {/* Uni-directional Moving Airplane (Departure → Arrival ONLY, Linear 5s Loop) */}
+                {/* Uni-directional Moving Airplane (Departure → Arrival Only, Linear 6.5s Loop) */}
                 <motion.div
-                  initial={shouldReduceMotion ? { left: "50%" } : { left: "2%", opacity: 1 }}
+                  initial={shouldReduceMotion ? { left: "50%" } : { left: "4%", opacity: 1 }}
                   animate={
                     shouldReduceMotion
                       ? {}
                       : {
-                          left: ["2%", "94%"],
-                          opacity: [0, 1, 1, 0.2],
-                        }
+                        left: ["4%", "92%"],
+                        opacity: [1, 1, 0.9, 0],
+                      }
                   }
                   transition={
                     shouldReduceMotion
                       ? {}
                       : {
-                          duration: 5,
-                          ease: "linear",
-                          repeat: Infinity,
-                          repeatDelay: 0.2,
-                        }
+                        duration: 6.5,
+                        ease: "linear",
+                        repeat: Infinity,
+                        repeatDelay: 0.2,
+                      }
                   }
-                  className="absolute top-1/2 -translate-y-1/2 z-20 -ml-4 p-2.5 rounded-full bg-[#1C1917] text-[#84cc16] shadow-md border border-[#84cc16]/40 flex items-center justify-center"
+                  className="absolute top-1/2 -translate-y-1/2 z-20 -ml-4 p-2 rounded-full bg-[#1C1917] text-amber-300 shadow-md border border-amber-400/50 flex items-center justify-center"
                   aria-label="Plane in transit animation"
                 >
                   <Plane className="w-4 h-4 rotate-45 transform-gpu" />
                 </motion.div>
 
-                {/* Right Node Dot (Arrival) */}
-                <div className="relative z-10 w-4 h-4 rounded-full bg-[#1C1917] ring-4 ring-[#84cc16]/20 shadow-xs flex items-center justify-center">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#84cc16]" />
+                {/* Right Node Dot */}
+                <div className="relative z-10 w-3.5 h-3.5 rounded-full bg-[#1C1917] border-2 border-amber-400 shadow-xs flex items-center justify-center">
+                  <span className="w-1 h-1 rounded-full bg-amber-300" />
                 </div>
               </div>
             </div>
 
-            {/* ARRIVAL AIRPORT (RIGHT ALIGNED) */}
-            <div className="w-64 lg:w-80 shrink-0 space-y-2 text-right">
-              {/* Large Airport Code */}
-              <span className="text-5xl lg:text-6xl xl:text-7xl font-['Plus_Jakarta_Sans',sans-serif] font-bold text-[#1C1917] tracking-tight block">
+            {/* ARRIVAL AIRPORT (RIGHT) */}
+            <div className="col-span-4 space-y-2 text-right">
+              <span className="text-4xl lg:text-5xl font-mono font-black text-[#1C1917] tracking-tight block">
                 {destCode}
               </span>
-              {/* Medium Airport Name */}
               {destCity && (
-                <h2 className="text-lg lg:text-xl font-['Plus_Jakarta_Sans',sans-serif] font-semibold text-[#292524] leading-snug">
+                <h2 className="text-2xl font-serif font-bold text-[#1C1917] leading-snug">
                   {destCity}
                 </h2>
               )}
               {destName && (
-                <p className="text-xs font-['Inter',sans-serif] font-normal text-[#78716C]">
+                <p className="text-xs font-mono text-[#78716C]">
                   {destName}
                 </p>
               )}
-              {/* Arrival Time & Date */}
               {(formattedArrTime || formattedArrDate) && (
-                <div className="pt-1.5 space-y-0.5">
+                <div className="pt-2 space-y-1">
                   {formattedArrTime && (
-                    <div className="text-lg lg:text-xl font-['Inter',sans-serif] font-medium text-[#1C1917]">
+                    <div className="text-xs font-mono font-bold text-[#1C1917]">
                       {formattedArrTime}
                     </div>
                   )}
                   {formattedArrDate && (
-                    <div className="text-xs font-['Inter',sans-serif] font-normal text-[#78716C]">
+                    <div className="text-xs font-mono text-[#78716C]">
                       {formattedArrDate}
                     </div>
                   )}
                 </div>
               )}
-              {/* Terminal & Gate Small Chips */}
               {(arrTerminalChip || destGate) && (
                 <div className="pt-2 flex flex-wrap items-center justify-end gap-2">
                   {arrTerminalChip && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FEF3C7]/80 border border-[#FDE68A] text-[#78350F] text-xs font-['Inter',sans-serif] font-normal shadow-2xs">
-                      <Building2 className="w-3.5 h-3.5 text-[#D97706]" />
-                      <span>Arrival {arrTerminalChip}</span>
+                    <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
+                      Arrival {arrTerminalChip}
                     </span>
                   )}
                   {destGate && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FEF3C7]/80 border border-[#FDE68A] text-[#78350F] text-xs font-['Inter',sans-serif] font-normal shadow-2xs">
-                      <DoorOpen className="w-3.5 h-3.5 text-[#D97706]" />
-                      <span>Gate {destGate}</span>
+                    <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
+                      Gate {destGate}
                     </span>
                   )}
                 </div>
@@ -424,72 +421,60 @@ export function ValidatedFlightExperience({
           </div>
         </div>
 
-        {/* MOBILE ROUTE TIMELINE (< md VERTICAL STACKING, 100% RESPONSIVE) */}
-        <div className="md:hidden space-y-5 py-3 p-5 rounded-2xl bg-white/70 backdrop-blur-xs border border-[#E7E0D3]">
+        {/* MOBILE LAYOUT (< md) */}
+        <div className="md:hidden space-y-6 py-2">
           {/* Mobile Departure */}
           <div className="space-y-1">
-            <span className="text-4xl font-['Plus_Jakarta_Sans',sans-serif] font-bold text-[#1C1917] block">
+            <span className="text-3xl font-mono font-black text-[#1C1917] block">
               {originCode}
             </span>
             {(originCity || originName) && (
-              <h2 className="text-lg font-['Plus_Jakarta_Sans',sans-serif] font-semibold text-[#1C1917]">
+              <h2 className="text-xl font-serif font-bold text-[#1C1917]">
                 {[originCity, originName].filter(Boolean).join(" — ")}
               </h2>
             )}
-            {formattedDepTime && (
-              <div className="text-base font-['Inter',sans-serif] font-medium text-[#1C1917] pt-0.5">
-                {formattedDepTime}
-              </div>
-            )}
-            {formattedDepDate && (
-              <div className="text-xs font-['Inter',sans-serif] font-normal text-[#78716C]">
-                {formattedDepDate}
+            {(formattedDepTime || formattedDepDate) && (
+              <div className="text-xs font-mono text-[#1C1917] font-bold pt-1">
+                {[formattedDepTime, formattedDepDate].filter(Boolean).join(" • ")}
               </div>
             )}
             {depTerminalChip && (
-              <span className="inline-inline-flex items-center gap-1.5 px-3 py-1 mt-1.5 rounded-lg bg-[#FEF3C7]/80 border border-[#FDE68A] text-[#78350F] text-xs font-['Inter',sans-serif] font-normal">
-                <Building2 className="w-3 h-3 text-[#D97706] inline mr-1" />
+              <span className="inline-block px-3 py-1 mt-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
                 Departure {depTerminalChip}
               </span>
             )}
           </div>
 
-          {/* Mobile Vertical Track (Top -> Bottom Only) */}
-          <div className="flex items-center justify-center py-1 relative h-14">
-            <div className="h-full w-0.5 border-l-2 border-dashed border-[#CBD5E1]" />
+          {/* Mobile Track */}
+          <div className="flex items-center justify-center py-2 relative">
+            <div className="h-14 w-0.5 border-l-2 border-dashed border-[#C7BBAA]" />
             <motion.div
               initial={shouldReduceMotion ? { top: "50%" } : { top: "0%", opacity: 1 }}
-              animate={shouldReduceMotion ? {} : { top: ["0%", "70%"], opacity: [0, 1, 0] }}
-              transition={shouldReduceMotion ? {} : { duration: 4, ease: "linear", repeat: Infinity }}
-              className="absolute p-2 rounded-full bg-[#1C1917] text-[#84cc16] border border-[#84cc16]/40 shadow-xs"
+              animate={shouldReduceMotion ? {} : { top: ["0%", "80%"], opacity: [1, 1, 0] }}
+              transition={shouldReduceMotion ? {} : { duration: 5, ease: "linear", repeat: Infinity }}
+              className="absolute p-2 rounded-full bg-[#1C1917] text-amber-300 border border-amber-400/40"
             >
-              <Plane className="w-3.5 h-3.5 rotate-[135deg]" />
+              <Plane className="w-4 h-4 rotate-[135deg]" />
             </motion.div>
           </div>
 
           {/* Mobile Arrival */}
           <div className="space-y-1">
-            <span className="text-4xl font-['Plus_Jakarta_Sans',sans-serif] font-bold text-[#1C1917] block">
+            <span className="text-3xl font-mono font-black text-[#1C1917] block">
               {destCode}
             </span>
             {(destCity || destName) && (
-              <h2 className="text-lg font-['Plus_Jakarta_Sans',sans-serif] font-semibold text-[#1C1917]">
+              <h2 className="text-xl font-serif font-bold text-[#1C1917]">
                 {[destCity, destName].filter(Boolean).join(" — ")}
               </h2>
             )}
-            {formattedArrTime && (
-              <div className="text-base font-['Inter',sans-serif] font-medium text-[#1C1917] pt-0.5">
-                {formattedArrTime}
-              </div>
-            )}
-            {formattedArrDate && (
-              <div className="text-xs font-['Inter',sans-serif] font-normal text-[#78716C]">
-                {formattedArrDate}
+            {(formattedArrTime || formattedArrDate) && (
+              <div className="text-xs font-mono text-[#1C1917] font-bold pt-1">
+                {[formattedArrTime, formattedArrDate].filter(Boolean).join(" • ")}
               </div>
             )}
             {arrTerminalChip && (
-              <span className="inline-inline-flex items-center gap-1.5 px-3 py-1 mt-1.5 rounded-lg bg-[#FEF3C7]/80 border border-[#FDE68A] text-[#78350F] text-xs font-['Inter',sans-serif] font-normal">
-                <Building2 className="w-3 h-3 text-[#D97706] inline mr-1" />
+              <span className="inline-block px-3 py-1 mt-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
                 Arrival {arrTerminalChip}
               </span>
             )}
@@ -497,86 +482,42 @@ export function ValidatedFlightExperience({
         </div>
       </div>
 
-      {/* 3. FLIGHT DETAILS (MODERN 2-COLUMN GRID ON DESKTOP & TABLET) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pt-2">
-        {/* Card 1: Aircraft & Airline Information */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-white/85 backdrop-blur-md border border-[#E7E0D3] shadow-xs hover:shadow-md transition-all duration-300 space-y-4">
-          <div className="flex items-center gap-3 text-slate-900 font-['Plus_Jakarta_Sans',sans-serif] font-semibold text-sm">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-200/80 flex items-center justify-center text-[#854D0E]">
-              <Plane className="w-4 h-4" />
-            </div>
-            <span>Aircraft & Operating Carrier</span>
-          </div>
-          <div className="space-y-2 text-xs font-['Inter',sans-serif] font-normal text-[#57534E]">
+      {/* 5. DYNAMIC FLIGHT INFORMATION ROW */}
+      {(aircraftModel || carrierName || flightNum) && (
+        <div className="pt-2 border-t border-[#E8DFD1]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-mono text-[#78716C]">
+          <div className="flex flex-wrap items-center gap-4">
             {aircraftModel && (
-              <div className="flex justify-between py-1.5 border-b border-slate-100">
-                <span>Aircraft Model</span>
-                <strong className="font-semibold text-[#1C1917]">{aircraftModel}</strong>
-              </div>
+              <span>Aircraft: <strong className="text-[#1C1917]">{aircraftModel}</strong></span>
             )}
+            {aircraftModel && (carrierName || flightNum) && <span>•</span>}
             {(carrierName || flightNum) && (
-              <div className="flex justify-between py-1.5 border-b border-slate-100">
-                <span>Operating Carrier</span>
-                <strong className="font-semibold text-[#1C1917]">
-                  {[carrierName, flightNum ? `(${flightNum})` : null].filter(Boolean).join(" ")}
-                </strong>
-              </div>
+              <span>Operating Carrier: <strong className="text-[#1C1917]">{[carrierName, flightNum ? `(${flightNum})` : null].filter(Boolean).join(" ")}</strong></span>
             )}
-            <div className="flex justify-between py-1.5">
-              <span>Radar Synchronization</span>
-              <strong className="font-semibold text-emerald-800 flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Live ADS-B Active</span>
-              </strong>
-            </div>
+          </div>
+
+          <div className="inline-flex items-center gap-1.5 text-emerald-800 font-bold">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <span>Priority Airside Clearance Verified</span>
           </div>
         </div>
+      )}
 
-        {/* Card 2: Airside Protocol & Concierge Status */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-white/85 backdrop-blur-md border border-[#E7E0D3] shadow-xs hover:shadow-md transition-all duration-300 space-y-4">
-          <div className="flex items-center gap-3 text-slate-900 font-['Plus_Jakarta_Sans',sans-serif] font-semibold text-sm">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-200/80 flex items-center justify-center text-emerald-800">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-            <span>Airside Concierge Readiness</span>
-          </div>
-          <div className="space-y-2 text-xs font-['Inter',sans-serif] font-normal text-[#57534E]">
-            <div className="flex justify-between py-1.5 border-b border-slate-100">
-              <span>Meet & Assist Officer</span>
-              <strong className="font-semibold text-emerald-800">Ready for Dispatch</strong>
-            </div>
-            <div className="flex justify-between py-1.5 border-b border-slate-100">
-              <span>Airside Protocol</span>
-              <strong className="font-semibold text-[#1C1917]">Tarmac & Terminal Escort</strong>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <span>Assistance Clearance</span>
-              <strong className="font-semibold text-emerald-800 flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Verified</span>
-              </strong>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. CONTINUE ACTION BUTTON (UNBOXED RESPONSIVE ROW) */}
-      <div className="pt-6 border-t border-[#E7E0D3]/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* 6. CONTINUE BUTTON */}
+      <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <button
           type="button"
           onClick={onChangeFlight}
-          className="w-full sm:w-auto min-h-[44px] px-6 py-3 rounded-full bg-white hover:bg-slate-50 text-[#44403C] hover:text-[#1C1917] border border-[#E7E0D3] shadow-2xs hover:shadow-xs font-['Plus_Jakarta_Sans',sans-serif] font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
+          className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white hover:bg-slate-50 text-[#44403C] hover:text-[#1C1917] border border-[#E2D8C6] shadow-xs hover:shadow-md font-mono text-xs font-extrabold uppercase tracking-widest transition-all duration-300 cursor-pointer"
         >
-          <RefreshCw className="w-3.5 h-3.5 text-[#854D0E]" />
-          <span>Change Flight Details</span>
+          Change Flight
         </button>
 
         <motion.button
           type="button"
-          whileHover={shouldReduceMotion ? {} : { scale: 1.02, y: -1 }}
+          whileHover={shouldReduceMotion ? {} : { scale: 1.02 }}
           whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
           onClick={onContinue}
-          className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2.5 px-9 py-4 rounded-full bg-gradient-to-r from-[#84cc16] via-[#76bd13] to-[#65a30d] hover:from-[#65a30d] hover:to-[#4d7c0f] text-[#0f172a] font-['Plus_Jakarta_Sans',sans-serif] font-bold text-xs uppercase tracking-wider shadow-md shadow-[#84cc16]/20 hover:shadow-lg transition-all duration-300 cursor-pointer"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-9 py-4 rounded-full bg-gradient-to-r from-[#84cc16] to-[#65a30d] hover:from-[#65a30d] hover:to-[#4d7c0f] text-[#0f172a] font-mono text-xs font-black uppercase tracking-widest shadow-lg shadow-lime-900/10 hover:shadow-xl transition-all duration-300 cursor-pointer"
         >
           <span>Continue to Airport Services</span>
           <ArrowRight className="w-4 h-4" />

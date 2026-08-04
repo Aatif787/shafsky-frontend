@@ -8,11 +8,13 @@ import { ServiceAudience, type PersonaItem } from "./ServiceAudience";
 import { ServiceFAQ, type FAQPair } from "./ServiceFAQ";
 import { RelatedServices, type RelatedServiceItem } from "@/components/navigation/RelatedServices";
 import { AssistanceCTA } from "@/components/navigation/AssistanceCTA";
-import { SafetyReliability, QualityStandards } from "@/components/trust/TrustMasterSection";
+import { EnterpriseServicesPlatform } from "./EnterpriseServicesPlatform";
+import { ServiceCategoryId } from "@/data/servicesPlatformData";
 
 interface ServiceLayoutProps {
   category: string;
   categoryHref?: string;
+  categoryId?: ServiceCategoryId;
   serviceName: string;
   tagline: string;
   description: string;
@@ -32,6 +34,7 @@ interface ServiceLayoutProps {
 export function ServiceLayout({
   category,
   categoryHref = "/solutions/concierge",
+  categoryId = "all",
   serviceName,
   tagline,
   description,
@@ -64,22 +67,25 @@ export function ServiceLayout({
         serviceId={serviceId}
       />
 
-      {/* 2. KEY BENEFITS */}
+      {/* 2. REUSABLE ENTERPRISE SERVICES PLATFORM GRID */}
+      <EnterpriseServicesPlatform initialCategoryId={categoryId} />
+
+      {/* 3. KEY BENEFITS */}
       <ServiceWhyChoose serviceName={serviceName} benefits={benefits} />
 
-      {/* 3. SIMPLE 3-STEP PROCESS */}
+      {/* 4. SIMPLE 3-STEP PROCESS */}
       <ServiceHowItWorks serviceName={serviceName} steps={timelineSteps} />
 
-      {/* 4. BOOKING SECTION CTA */}
+      {/* 5. BOOKING SECTION CTA */}
       <AssistanceCTA
         heading={`Reserve ${serviceName} Service`}
         subheading="Experience seamless airside concierge. Proceed to step-by-step reservation."
       />
 
-      {/* 5. RELATED SERVICES */}
+      {/* 6. RELATED SERVICES */}
       <RelatedServices services={relatedServices} title="Explore Connected Services" />
 
-      {/* 6. SMALL FAQ */}
+      {/* 7. SMALL FAQ */}
       <ServiceFAQ serviceName={serviceName} faqs={faqs} />
     </PageJourneyWrapper>
   );

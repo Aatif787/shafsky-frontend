@@ -49,6 +49,7 @@ function TravelServicesPage() {
     <ServiceLayout
       category="Travel Services"
       categoryHref="/solutions/travel"
+      categoryId="travel_support"
       serviceName={currentSub.label}
       tagline={currentSub.tagline}
       description={currentSub.description}

@@ -63,6 +63,7 @@ function MedicalAssistancePage() {
     <ServiceLayout
       category="Medical Assistance"
       categoryHref="/solutions/medical"
+      categoryId="medical_assistance"
       serviceName={currentSub.label}
       tagline={currentSub.tagline}
       description={currentSub.description}

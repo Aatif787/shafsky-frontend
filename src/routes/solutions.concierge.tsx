@@ -73,6 +73,7 @@ function AirportConciergePage() {
     <ServiceLayout
       category="Airport Services"
       categoryHref="/solutions/concierge"
+      categoryId="airport_assistance"
       serviceName={currentSub.label}
       tagline={currentSub.tagline}
       description={currentSub.description}

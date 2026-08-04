@@ -1,5 +1,7 @@
 import React, { lazy, Suspense, useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { Navigation } from "./Navigation";
+import { HeroAircraft } from "./hero/HeroAircraft";
+import { EnterpriseServicesPlatform } from "./services/EnterpriseServicesPlatform";
 import { useBranding } from "@/lib/branding/branding.context";
 import {
   motion,
@@ -176,6 +178,9 @@ export function Hero({ visible = true }: { visible?: boolean }) {
       </ScrollSection>
       <ScrollSection>
         <TrustBar />
+      </ScrollSection>
+      <ScrollSection id="services">
+        <EnterpriseServicesPlatform />
       </ScrollSection>
       <EnterpriseSolutions />
       <ScrollSection id="coverage">
@@ -668,6 +673,7 @@ function BookingPanel() {
 
   return (
     <section id="book" className="relative -mt-20 md:-mt-32 px-4 pb-16 md:px-14 md:pb-32">
+      <HeroAircraft />
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -1300,11 +1306,10 @@ function BookingPanel() {
               type="button"
               disabled={validatingFlight}
               onClick={handleHomepageSearchFlight}
-              className={`mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[11px] font-semibold uppercase tracking-[0.24em] transition ${
-                isFormValid && !validatingFlight
+              className={`mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[11px] font-semibold uppercase tracking-[0.24em] transition ${isFormValid && !validatingFlight
                   ? "hover:brightness-110 shadow-lg cursor-pointer"
                   : "opacity-45 cursor-not-allowed"
-              }`}
+                }`}
               style={{
                 ...mono,
                 background: "linear-gradient(135deg, #0d5a6e 0%, #083c4b 100%)",

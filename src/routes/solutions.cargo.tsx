@@ -55,6 +55,7 @@ function CargoLogisticsPage() {
     <ServiceLayout
       category="Cargo & Logistics"
       categoryHref="/solutions/cargo"
+      categoryId="cargo_logistics"
       serviceName={currentSub.label}
       tagline={currentSub.tagline}
       description={currentSub.description}
