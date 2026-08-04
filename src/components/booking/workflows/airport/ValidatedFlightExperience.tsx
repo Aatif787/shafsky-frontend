@@ -209,7 +209,7 @@ export function ValidatedFlightExperience({
     ? flightData.arrival.scheduledTime
     : (flightData as any)?.arrival_time || null;
 
-  // Dynamic Terminal & Gate Chips
+  // Dynamic Terminal & Gate Chips (No hardcoding)
   const originTerminalRaw = typeof flightData?.departure?.terminal === "string" ? flightData.departure.terminal : null;
   const destTerminalRaw = typeof flightData?.arrival?.terminal === "string" ? flightData.arrival.terminal : null;
   const originGate = typeof (flightData?.departure as any)?.gate === "string"
@@ -219,8 +219,10 @@ export function ValidatedFlightExperience({
     ? (flightData?.arrival as any).gate
     : (flightData as any)?.arrival_gate || null;
 
-  const depTerminalChip = formatTerminalChip(originTerminalRaw);
-  const arrTerminalChip = formatTerminalChip(destTerminalRaw);
+  const depTerminalChip = formatTerminalChip(originTerminalRaw) || "Terminal info not yet available";
+  const arrTerminalChip = formatTerminalChip(destTerminalRaw) || "Terminal info not yet available";
+  const depGateDisplay = originGate ? `Gate ${originGate}` : "Gate will be assigned by airline";
+  const arrGateDisplay = destGate ? `Gate ${destGate}` : "Gate will be assigned by airline";
 
   const formattedDepTime = formatFlightTime(originSchedTime);
   const formattedArrTime = formatFlightTime(destSchedTime);
@@ -313,20 +315,14 @@ export function ValidatedFlightExperience({
                   )}
                 </div>
               )}
-              {(depTerminalChip || originGate) && (
-                <div className="pt-2 flex flex-wrap items-center gap-2">
-                  {depTerminalChip && (
-                    <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
-                      Departure {depTerminalChip}
-                    </span>
-                  )}
-                  {originGate && (
-                    <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
-                      Gate {originGate}
-                    </span>
-                  )}
-                </div>
-              )}
+              <div className="pt-2 flex flex-wrap items-center gap-2">
+                <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
+                  Departure {depTerminalChip}
+                </span>
+                <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
+                  {depGateDisplay}
+                </span>
+              </div>
             </div>
 
             {/* CENTER DASHED TRACK & ANIMATED PLANE */}
