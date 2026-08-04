@@ -93,11 +93,11 @@ export function ServiceHero({
               <span>{category} Flagship Solution</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-slate-900 leading-[1.08] tracking-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-slate-900 leading-[1.08] tracking-tight">
               {activeTitle}
             </h1>
 
-            <p className="mt-4 text-lg sm:text-xl text-emerald-700 font-serif italic max-w-2xl font-bold">
+            <p className="mt-4 text-lg sm:text-xl text-emerald-700 font-heading max-w-2xl font-semibold">
               "{activeTagline}"
             </p>
 

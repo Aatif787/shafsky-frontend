@@ -53,8 +53,8 @@ export function ServiceWhyChoose({ serviceName, benefits }: ServiceWhyChooseProp
               <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
               <span>The Shafsky Distinction</span>
             </div>
-            <h2 className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-slate-900">
-              Why Choose <span className="italic text-emerald-700">{serviceName}</span>.
+            <h2 className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-slate-900">
+              Why Choose <span className="text-emerald-700">{serviceName}</span>.
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-slate-600 font-sans font-medium max-w-xl">
@@ -82,7 +82,7 @@ export function ServiceWhyChoose({ serviceName, benefits }: ServiceWhyChooseProp
                       )}
                     </div>
 
-                    <h3 className="text-xl font-serif text-slate-900 font-bold group-hover:text-emerald-700 transition-colors leading-snug">
+                    <h3 className="text-xl font-heading text-slate-900 font-bold group-hover:text-emerald-700 transition-colors leading-snug">
                       {item.title}
                     </h3>
 

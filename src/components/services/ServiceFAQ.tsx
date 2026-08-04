@@ -45,8 +45,8 @@ export function ServiceFAQ({ serviceName, faqs }: ServiceFAQProps) {
             <HelpCircle className="w-3.5 h-3.5 text-emerald-600" />
             <span>Service Intelligence</span>
           </div>
-          <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-slate-900">
-            Frequently Asked Questions about <span className="italic text-emerald-700">{serviceName}</span>.
+          <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-slate-900">
+            Frequently Asked Questions about <span className="text-emerald-700">{serviceName}</span>.
           </h2>
         </div>
       </FadeInView>
@@ -67,7 +67,7 @@ export function ServiceFAQ({ serviceName, faqs }: ServiceFAQProps) {
                 onClick={() => setOpenIdx(isOpen ? null : idx)}
                 className="w-full p-6 text-left flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors"
               >
-                <span className="text-base sm:text-lg font-serif font-bold text-slate-900 flex items-center gap-3">
+                <span className="text-base sm:text-lg font-heading font-bold text-slate-900 flex items-center gap-3">
                   <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
                   {item.q}
                 </span>

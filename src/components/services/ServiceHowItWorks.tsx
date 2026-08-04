@@ -54,8 +54,8 @@ export function ServiceHowItWorks({ serviceName, steps }: ServiceHowItWorksProps
             <span>End-to-End Execution Protocol</span>
           </div>
 
-          <h2 className="mt-4 text-3xl sm:text-5xl font-serif font-bold text-slate-900">
-            How <span className="italic text-emerald-700">{serviceName}</span> Works.
+          <h2 className="mt-4 text-3xl sm:text-5xl font-heading font-bold text-slate-900">
+            How <span className="text-emerald-700">{serviceName}</span> Works.
           </h2>
 
           <p className="mt-3 text-xs sm:text-sm text-slate-600 font-sans font-medium">
@@ -88,7 +88,7 @@ export function ServiceHowItWorks({ serviceName, steps }: ServiceHowItWorksProps
                 <div className="w-full lg:w-1/2">
                   <div className="p-8 rounded-3xl bg-white border border-slate-200 hover:border-emerald-300 transition-all duration-300 shadow-xs hover:shadow-md relative overflow-hidden group">
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-3xl font-serif font-bold text-emerald-700">
+                      <span className="text-3xl font-heading font-bold text-emerald-700">
                         {step.number}
                       </span>
                       {step.badge && (
@@ -98,7 +98,7 @@ export function ServiceHowItWorks({ serviceName, steps }: ServiceHowItWorksProps
                       )}
                     </div>
 
-                    <h3 className="text-xl font-serif font-bold text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
+                    <h3 className="text-xl font-heading font-bold text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
                       {step.title}
                     </h3>
 

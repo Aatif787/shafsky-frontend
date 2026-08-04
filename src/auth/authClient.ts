@@ -11,10 +11,17 @@
  * cookies are automatically sent & set by the browser.
  */
 
-const BACKEND_URL =
-  (typeof process !== "undefined" &&
-    (process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL)) ||
-  "http://localhost:8001";
+const getBackendUrl = (): string => {
+  if (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_BACKEND_API_URL) {
+    return import.meta.env.VITE_BACKEND_API_URL;
+  }
+  if (typeof process !== "undefined" && process.env && (process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL)) {
+    return process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL!;
+  }
+  return "http://127.0.0.1:8001";
+};
+
+const BACKEND_URL = getBackendUrl();
 
 export interface AuthUser {
   id: string;

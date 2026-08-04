@@ -5,31 +5,34 @@ export interface FlightRequest {
 }
 
 export interface FlightAirport {
-  code: string; // IATA (e.g. BOM, LHR)
-  name: string; // Full airport name
-  city: string; // City name
+  code?: string | null; // IATA (e.g. BOM, LHR)
+  name?: string | null; // Full airport name
+  city?: string | null; // City name
+  country?: string | null;
 }
 
 export interface FlightSchedule {
-  scheduledTime: string; // ISO or local HH:MM format
-  terminal: string; // Terminal details (if known)
+  scheduledTime?: string | null; // ISO or local HH:MM format
+  terminal?: string | null; // Terminal details (if known)
+  gate?: string | null;
 }
 
 export interface FlightData {
   flightNum: string;
   carrier: {
     iata: string; // e.g. AI, EK, UA
-    name: string; // e.g. Air India, Emirates
+    name?: string | null; // e.g. Air India, Emirates
+    logo?: string | null;
   };
   origin: FlightAirport;
   destination: FlightAirport;
   departure: FlightSchedule;
   arrival: FlightSchedule;
-  duration: string; // e.g. 2h 10m
-  status: string; // e.g. Scheduled, Active
-  aircraft: {
-    model: string; // e.g. Boeing 777, Gulfstream G650
-    reg?: string;
+  duration?: string | null; // e.g. 2h 10m
+  status?: string | null; // e.g. Scheduled, Active
+  aircraft?: {
+    model?: string | null; // e.g. Boeing 777, Gulfstream G650
+    reg?: string | null;
   };
   eligibility?: {
     isBookable: boolean;

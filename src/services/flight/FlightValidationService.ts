@@ -19,7 +19,7 @@ export class FlightValidationService {
     threshold: number = 6,
   ): Promise<FlightData | FlightData[]> {
     // 1. Pre-clearance validation pre-checks (regex format syntax check)
-    const cleanedFlightNum = req.flightNum.trim().toUpperCase().replace(/\s+/g, "");
+    const cleanedFlightNum = req.flightNum.trim().toUpperCase().replace(/[\s\-_]+/g, "");
     const cleanedDepartDate = req.departDate.trim();
 
     if (!cleanedFlightNum) {
@@ -50,8 +50,8 @@ export class FlightValidationService {
       const targetTime = isArrival ? f.arrival.scheduledTime : f.departure.scheduledTime;
       const targetAirport = isArrival ? f.destination.code : f.origin.code;
       const eligibility = checkBookingEligibility(
-        targetTime,
-        targetAirport,
+        targetTime || "",
+        targetAirport || "",
         req.tripType,
         threshold,
         isArrival,

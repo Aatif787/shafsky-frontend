@@ -117,7 +117,7 @@ export default {
       secureHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
       secureHeaders.set(
         "Content-Security-Policy",
-        "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; connect-src 'self' https: wss:; font-src 'self' https: data:;",
+        "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; connect-src 'self' https: http://localhost:* http://127.0.0.1:* wss: ws:; font-src 'self' https: data:;",
       );
 
       return new Response(res.body, {

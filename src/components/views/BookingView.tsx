@@ -218,7 +218,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
 
   if (isMeetGreetWorkflow || isLoungeWorkflow || isFastTrackWorkflow || isTransportWorkflow) {
     return (
-      <div className="min-h-screen bg-[#FAF9F5] text-slate-900 py-8 sm:py-12 px-4 sm:px-8 max-w-5xl mx-auto">
+      <div className="min-h-screen min-h-[600px] bg-[#FAF9F5] text-slate-900 py-8 sm:py-12 px-4 sm:px-8 max-w-7xl mx-auto">
         <AirportWorkflow searchParams={searchParams} />
         <BookingCancelModal show={showCancelDialog} onClose={() => setShowCancelDialog(false)} />
       </div>
@@ -226,7 +226,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF9F5] text-slate-900 py-8 sm:py-12 px-4 sm:px-8 max-w-5xl mx-auto">
+    <div className="min-h-screen min-h-[600px] bg-[#FAF9F5] text-slate-900 py-8 sm:py-12 px-4 sm:px-8 max-w-5xl mx-auto">
       <BookingProgressHeader
         currentStep={currentStep}
         maxSteps={maxSteps}
@@ -251,7 +251,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
                 <span className="text-[10px] font-mono text-emerald-700 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200">
                   {getWorkflowTitle()}
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
+                <h2 className="text-2xl sm:text-3xl font-heading text-slate-900 font-bold mt-2">
                   {currentConfig.title}
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">

@@ -9,7 +9,11 @@ import {
   MotionValue,
   AnimatePresence,
 } from "framer-motion";
-import { Link } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
+import { ApiClient } from "@/lib/ApiClient";
+import { toast } from "sonner";
+import { FlightData } from "@/services/flight/FlightTypes";
+import { formatFlightLookupError } from "@/components/booking/hooks/useAirportWorkflow";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Plane,
@@ -20,6 +24,7 @@ import {
   HelpCircle,
   ChevronDown,
   Search,
+  RefreshCw,
   ShieldCheck,
   Headphones,
   Globe2,
@@ -225,6 +230,11 @@ function HeroSection({ visible }: { visible: boolean }) {
             key={currentIdx}
             src={SLIDESHOW_IMAGES[currentIdx]}
             alt="Shafsky Aviation services slideshow"
+            fetchPriority={currentIdx === 0 ? "high" : "auto"}
+            loading={currentIdx === 0 ? "eager" : "lazy"}
+            decoding="async"
+            width={1920}
+            height={1080}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -456,7 +466,9 @@ function ServicesSelectorBar({
 }
 
 function BookingPanel() {
-  const [selectedService, setSelectedService] = useState<string | null>("Meet & Greet");
+  const navigate = useNavigate();
+  const [validatingFlight, setValidatingFlight] = useState(false);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
   const [tab, setTab] = useState<"arrival" | "departure" | "connection">("arrival");
   const [showPassengerModal, setShowPassengerModal] = useState(false);
   const [adults, setAdults] = useState(1);
@@ -528,6 +540,126 @@ function BookingPanel() {
 
   const isFormValid = tab === "connection" ? isConnectionValid : isArrivalDepartureValid;
 
+  const handleHomepageSearchFlight = async (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    if (!isFormValid) {
+      setTouched({
+        flightNumber: true,
+        departDate: true,
+        flightNumber2: true,
+        departDate2: true,
+      });
+      toast.error("Please fill in flight number and travel date.");
+      return;
+    }
+
+    const cleanFlightNum = flightNumber.trim().toUpperCase().replace(/\s+/g, "");
+    if (!cleanFlightNum || cleanFlightNum.length < 3) {
+      toast.error("Please enter a valid flight number (e.g. AI302, EK504).");
+      return;
+    }
+
+    setValidatingFlight(true);
+    try {
+      const response = await ApiClient.fetchWithAuth("/api/flight/validate", {
+        method: "POST",
+        body: JSON.stringify({
+          flightNum: cleanFlightNum,
+          departDate,
+          tripType: tab === "arrival" ? "one_way" : "round_trip",
+        }),
+      });
+
+      const resJson = await response.json();
+
+      if (!response.ok || !resJson.success) {
+        const errorMsg = formatFlightLookupError(resJson?.error || resJson?.message || resJson, response.status);
+        toast.error(errorMsg);
+        setValidatingFlight(false);
+        // STAY ON HOMEPAGE, DO NOT NAVIGATE
+        return;
+      }
+
+      const rawData = resJson.data;
+      const targetObj = rawData?.flightData || rawData?.flight_data || (Array.isArray(rawData) ? rawData[0] : rawData);
+
+      if (!targetObj) {
+        toast.error("No flight schedule was found for the selected flight number and travel date. Try another date or verify the flight number.");
+        setValidatingFlight(false);
+        return;
+      }
+
+      const flightInfo: FlightData = {
+        flightNum: (targetObj?.flight?.iata || targetObj?.flightNum || targetObj?.flight_num || cleanFlightNum).toUpperCase(),
+        carrier: {
+          iata: targetObj?.airline?.iata || targetObj?.carrier?.iata || targetObj?.carrier_iata || cleanFlightNum.slice(0, 2).toUpperCase(),
+          name: targetObj?.airline?.name || targetObj?.carrier?.name || targetObj?.carrier_name || null,
+          logo: targetObj?.airline?.logo || null,
+        },
+        origin: {
+          code: targetObj?.departure?.airport || targetObj?.origin?.code || targetObj?.origin_code || null,
+          name: targetObj?.departure?.airport_name || targetObj?.origin?.name || targetObj?.origin_name || null,
+          city: targetObj?.departure?.city || targetObj?.origin?.city || targetObj?.origin_city || null,
+          country: targetObj?.departure?.country || targetObj?.origin?.country || null,
+        },
+        destination: {
+          code: targetObj?.arrival?.airport || targetObj?.destination?.code || targetObj?.destination_code || null,
+          name: targetObj?.arrival?.airport_name || targetObj?.destination?.name || targetObj?.destination_name || null,
+          city: targetObj?.arrival?.city || targetObj?.destination?.city || targetObj?.destination_city || null,
+          country: targetObj?.arrival?.country || targetObj?.destination?.country || null,
+        },
+        departure: {
+          scheduledTime: targetObj?.departure?.scheduled || targetObj?.departure?.scheduledTime || targetObj?.scheduled_departure || null,
+          terminal: targetObj?.departure?.terminal || null,
+          gate: targetObj?.departure?.gate || null,
+        },
+        arrival: {
+          scheduledTime: targetObj?.arrival?.scheduled || targetObj?.arrival?.scheduledTime || targetObj?.scheduled_arrival || null,
+          terminal: targetObj?.arrival?.terminal || null,
+          gate: targetObj?.arrival?.gate || null,
+        },
+        duration: targetObj?.duration?.formatted || targetObj?.duration_text || targetObj?.duration || targetObj?.flight_duration || null,
+        status: targetObj?.status || "Scheduled",
+        aircraft: {
+          model: targetObj?.aircraft?.model || null,
+        },
+      };
+
+      if (typeof window !== "undefined") {
+        try {
+          sessionStorage.setItem("shafsky_validated_flight", JSON.stringify(flightInfo));
+        } catch {
+          // ignore cache write error
+        }
+      }
+
+      toast.success(`Flight ${flightInfo.flightNum} validated!`);
+      setValidatingFlight(false);
+
+      navigate({
+        to: "/book",
+        search: {
+          service_id: selectedService || undefined,
+          flight_number: cleanFlightNum,
+          depart_date: departDate,
+          direction: tab,
+          pax_adults: adults,
+          pax_children: childrenCount,
+          pax_infants: infants,
+          notes:
+            tab === "connection"
+              ? `Transit Flight 1: ${flightNumber} on ${departDate} | Flight 2: ${flightNumber2} on ${departDate2}`
+              : `Flight Number: ${flightNumber} (${tab})`,
+        } as any,
+      });
+    } catch (err: any) {
+      console.error("[Hero] Validation error:", err);
+      toast.error(formatFlightLookupError(err));
+      setValidatingFlight(false);
+    }
+  };
+
   const tabs: [typeof tab, string, React.ComponentType<{ className?: string }>][] = [
     ["arrival", "Arrival", PlaneLanding],
     ["departure", "Departure", PlaneTakeoff],
@@ -595,7 +727,7 @@ function BookingPanel() {
                         className="text-[9px] font-extrabold uppercase tracking-widest text-[#7c3aed]"
                         style={{ fontFamily: "'JetBrains Mono', monospace" }}
                       >
-                        Booking for
+                        Selected Service
                       </span>
                       <h3
                         className="text-sm font-extrabold text-gray-900 tracking-tight"
@@ -605,9 +737,13 @@ function BookingPanel() {
                       </h3>
                     </div>
                   </div>
-                  <span className="text-[11px] font-medium text-gray-600 bg-purple-50 px-3 py-1 rounded-full border border-purple-100/80">
-                    You can add more services later during checkout.
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedService(null)}
+                    className="text-[10px] font-mono uppercase font-bold text-slate-500 hover:text-purple-700 underline px-2 py-1"
+                  >
+                    Clear Choice
+                  </button>
                 </motion.div>
               ) : (
                 <motion.div
@@ -616,10 +752,10 @@ function BookingPanel() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-white/40 border border-dashed border-gray-300 text-xs font-semibold text-gray-600"
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-white/40 border border-dashed border-gray-300 text-xs font-semibold text-gray-700"
                 >
-                  <HelpCircle className="h-4 w-4 text-[#7c3aed]" />
-                  <span>Select a service above to begin your booking.</span>
+                  <Sparkles className="h-4 w-4 text-[#7c3aed]" />
+                  <span>Select travel details below, or tap an icon above for a specific service.</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -630,7 +766,7 @@ function BookingPanel() {
             style={{ color: C.teal, fontFamily: "'JetBrains Mono', monospace" }}
           >
             <Sparkles size={12} />
-            WELCOME Aboard · GET AN INSTANT QUOTE FOR YOUR NEXT TRIP
+            WELCOME ABOARD · GET AN INSTANT QUOTE FOR YOUR NEXT TRIP
             <Sparkles size={12} />
           </h2>
         </div>
@@ -640,7 +776,7 @@ function BookingPanel() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className="grid gap-8 p-6 md:grid-cols-12 md:gap-10 md:p-10"
+          className="grid gap-8 p-6 md:grid-cols-12 md:gap-10 md:p-10 transition-all duration-300 opacity-100"
         >
           {/* LEFT — Tabs + Flight Info (7 cols on desktop) */}
           <div className="md:col-span-7 flex flex-col gap-6">
@@ -1160,38 +1296,15 @@ function BookingPanel() {
               </div>
             </div>
 
-            <Link
-              to="/book"
-              search={{
-                service_id: selectedService || undefined,
-                origin: tab === "departure" ? flightNumber : "",
-                destination: tab === "arrival" ? flightNumber : "",
-                depart_date: departDate,
-                pax_adults: adults,
-                pax_children: childrenCount,
-                pax_infants: infants,
-                notes:
-                  tab === "connection"
-                    ? `Transit Flight 1: ${flightNumber} on ${departDate} | Flight 2: ${flightNumber2} on ${departDate2}`
-                    : flightNumber
-                      ? `Flight Number: ${flightNumber} (${tab})`
-                      : "",
-              } as any}
-              onClick={(e) => {
-                if (!isFormValid) {
-                  e.preventDefault();
-                  setTouched({
-                    flightNumber: true,
-                    departDate: true,
-                    flightNumber2: true,
-                    departDate2: true,
-                  });
-                }
-              }}
-              className={`mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[11px] font-semibold uppercase tracking-[0.24em] transition ${isFormValid
-                ? "hover:brightness-110 shadow-lg cursor-pointer"
-                : "opacity-45 cursor-not-allowed"
-                }`}
+            <button
+              type="button"
+              disabled={validatingFlight}
+              onClick={handleHomepageSearchFlight}
+              className={`mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[11px] font-semibold uppercase tracking-[0.24em] transition ${
+                isFormValid && !validatingFlight
+                  ? "hover:brightness-110 shadow-lg cursor-pointer"
+                  : "opacity-45 cursor-not-allowed"
+              }`}
               style={{
                 ...mono,
                 background: "linear-gradient(135deg, #0d5a6e 0%, #083c4b 100%)",
@@ -1202,10 +1315,19 @@ function BookingPanel() {
                   : "none",
               }}
             >
-              <Search className="h-4 w-4" />
-              Search Flights
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+              {validatingFlight ? (
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin text-amber-300" />
+                  <span>Validating Flight...</span>
+                </>
+              ) : (
+                <>
+                  <Search className="h-4 w-4" />
+                  <span>Search Flights</span>
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </>
+              )}
+            </button>
           </div>
         </motion.div>
       </motion.div>

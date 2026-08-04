@@ -123,7 +123,7 @@ export function PrevNextNav({ prev, next, className = "" }: PrevNextNavProps) {
               </div>
 
               <div className="mt-4">
-                <h4 className="text-lg sm:text-xl font-serif font-bold text-slate-900 group-hover:text-[#7c3aed] transition-colors">
+                <h4 className="text-lg sm:text-xl font-heading font-bold text-slate-900 group-hover:text-[#7c3aed] transition-colors">
                   {resolvedPrev.title}
                 </h4>
                 {resolvedPrev.description && (
@@ -153,7 +153,7 @@ export function PrevNextNav({ prev, next, className = "" }: PrevNextNavProps) {
               <div className="mt-4">
                 <div className="flex items-center justify-end gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-[#7c3aed]" />
-                  <h4 className="text-lg sm:text-xl font-serif font-bold text-slate-900 group-hover:text-[#7c3aed] transition-colors">
+                  <h4 className="text-lg sm:text-xl font-heading font-bold text-slate-900 group-hover:text-[#7c3aed] transition-colors">
                     {resolvedNext.title}
                   </h4>
                 </div>

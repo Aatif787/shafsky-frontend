@@ -135,7 +135,7 @@ function AirportsIndexPage() {
             <span>✈</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-slate-900 font-bold tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading text-slate-900 font-bold tracking-tight">
             Airports Around the World
           </h1>
 

@@ -1,15 +1,20 @@
 /**
- * ShaftSky Aviation Concierge - Centralized Font Management System
+ * Shafsky Aviation Concierge - Enterprise Typography System
  * Location: /public/fonts/fonts.css
  */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * 1. CSS Font Variables
  * ─────────────────────────────────────────────────────────────────────────── */
 :root {
-  --font-heading: "Playfair Display", "Fraunces", serif;
-  --font-body: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Plus Jakarta Sans", "Outfit", "Inter", sans-serif;
+  --font-service: "Outfit", "Plus Jakarta Sans", "Inter", sans-serif;
+  --font-body: "Plus Jakarta Sans", "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+  --font-serif-luxury: "Fraunces", "Playfair Display", serif;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -64,12 +69,26 @@
  * 3. Typography Application Rules & Utility Classes
  * ─────────────────────────────────────────────────────────────────────────── */
 
-/* Headings, Hero Titles, and Branding Elements */
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Service Names, Card Titles, Section Headings */
 h1, h2, h3, h4, h5, h6,
 .hero-title,
 .brand-title,
-.font-heading {
+.font-heading,
+.service-name,
+.service-title,
+.service-card-title {
   font-family: var(--font-heading);
+  letter-spacing: -0.015em;
+}
+
+.font-service {
+  font-family: var(--font-service);
 }
 
 .font-body {
@@ -78,4 +97,8 @@ h1, h2, h3, h4, h5, h6,
 
 .font-mono {
   font-family: var(--font-mono);
+}
+
+.font-serif {
+  font-family: var(--font-serif-luxury) !important;
 }

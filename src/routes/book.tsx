@@ -20,6 +20,7 @@ const bookSearchSchema = z.object({
   mode: z.string().optional().catch(""),
   sub: z.string().optional().catch(""),
   flight_number: z.string().optional().catch(""),
+  direction: z.string().optional().catch(""),
 });
 
 export const Route = createFileRoute("/book")({

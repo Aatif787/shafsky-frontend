@@ -66,11 +66,8 @@ export function ServiceFeatures({ serviceName, features }: ServiceFeaturesProps)
               <Sparkles className="w-3.5 h-3.5" />
               <span>Technical Capabilities</span>
             </div>
-            <h2
-              className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-serif font-light text-white"
-              style={{ fontFamily: "'Fraunces', serif" }}
-            >
-              Signature Features & <span className="italic text-[#c5a059]">Inclusions.</span>
+            <h2 className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-white">
+              Signature Features & <span className="text-[#c5a059]">Inclusions.</span>
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-white/60 font-sans max-w-xl">
@@ -100,10 +97,7 @@ export function ServiceFeatures({ serviceName, features }: ServiceFeaturesProps)
                       )}
                     </div>
 
-                    <h3
-                      className="text-lg font-serif text-white font-medium group-hover:text-[#c5a059] transition-colors"
-                      style={{ fontFamily: "'Fraunces', serif" }}
-                    >
+                    <h3 className="text-lg font-heading text-white font-bold group-hover:text-[#c5a059] transition-colors">
                       {feat.title}
                     </h3>
 

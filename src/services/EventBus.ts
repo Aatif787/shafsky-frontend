@@ -25,7 +25,7 @@ const getBackendUrl = () => {
   if (typeof process !== "undefined" && process.env?.VITE_BACKEND_API_URL) {
     return process.env.VITE_BACKEND_API_URL;
   }
-  return "http://localhost:8001";
+  return "http://127.0.0.1:8001";
 };
 
 export class EventBus {
