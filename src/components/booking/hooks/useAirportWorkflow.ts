@@ -77,9 +77,10 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       ? "package"
       : "individual";
 
-  // Check for pre-validated flight response cached in sessionStorage from homepage search
+  // Check for pre-validated flight response cached in sessionStorage ONLY if explicitly coming from hero flight search
   let cachedFlightData: FlightData | null = null;
-  if (typeof window !== "undefined") {
+  const isFromHero = Boolean(searchParams?.from_hero || searchParams?.validated);
+  if (typeof window !== "undefined" && (isFromHero || Boolean(searchParams?.flight_number))) {
     try {
       const stored = sessionStorage.getItem("shafsky_validated_flight");
       if (stored) {
@@ -90,13 +91,13 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     }
   }
 
-  const initialFlightNumber = searchParams?.flight_number || cachedFlightData?.flightNum || "";
+  const initialFlightNumber = searchParams?.flight_number || (isFromHero ? cachedFlightData?.flightNum : "") || "";
   const initialDirection: "arrival" | "departure" | "transit" =
     (searchParams?.direction as any) ||
     (searchParams?.origin ? "departure" : searchParams?.destination ? "arrival" : "arrival");
 
-  // If we have cached flight validation or pre-supplied flight params, jump straight to Step 2!
-  const hasValidatedFlight = Boolean(cachedFlightData) || Boolean(initialFlightNumber && searchParams?.depart_date);
+  // Only jump straight to Step 2 if flight number was explicitly provided or came from homepage flight search
+  const hasValidatedFlight = Boolean(searchParams?.flight_number) || (isFromHero && Boolean(cachedFlightData));
   const [currentStep, setCurrentStep] = useState<number>(hasValidatedFlight ? 2 : 1);
   const [busy, setBusy] = useState<boolean>(false);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
@@ -108,7 +109,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     bookingMode: initialBookingMode,
     selectedService: "", // No pre-selected service
     selectedPackage: "",
-    serviceDate: searchParams?.depart_date || cachedFlightData?.departure?.scheduledTime?.split(" ")[0] || new Date().toISOString().split("T")[0],
+    serviceDate: searchParams?.depart_date || (isFromHero ? cachedFlightData?.departure?.scheduledTime?.split(" ")[0] : null) || new Date().toISOString().split("T")[0],
     serviceTime: "14:30",
     guestCount: searchParams?.pax_adults || 1,
     fullName: "",
