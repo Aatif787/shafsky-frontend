@@ -16,79 +16,16 @@ import {
   Ticket,
   Hotel,
   ShieldCheck,
-  CheckCircle2,
+  Search,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
-  PLATFORM_SERVICES,
-  SERVICE_CATEGORIES,
+  useServiceCatalog,
+  OFFICIAL_SHAFSKY_CATEGORIES,
   ServiceCategoryId,
-  PlatformService,
-} from "@/data/servicesPlatformData";
-
-import meetGreetImg from "@/assets/meet-greet.png";
-import meetVideo from "@/assets/meet.mp4";
-import lounge from "@/assets/lounge.png";
-import fastTrackImg from "@/assets/fast-track.png";
-import vipTransport1 from "@/assets/vip-transport-1.png";
-import hotelImg from "@/assets/hotel.png";
-import cargoAssistImg from "@/assets/cargo-assist.png";
-import medicalAssistImg from "@/assets/medical-assist.png";
-import vipConciergeImg from "@/assets/vip-concierge.png";
-import interior from "@/assets/interior.jpg";
-import jetTarmac from "@/assets/jet-tarmac.jpg";
-import cargo from "@/assets/cargo.jpg";
-import medical from "@/assets/medical.jpg";
-import concierge from "@/assets/concierge.jpg";
-import heroJet from "@/assets/hero-jet.png";
-
-// Helper map to retrieve rich asset image per service ID
-function getServiceImage(service: PlatformService): string {
-  switch (service.id) {
-    case "meet_greet":
-      return meetGreetImg;
-    case "vip_lounge":
-      return lounge;
-    case "fast_track":
-      return fastTrackImg;
-    case "wheelchair_assistance":
-      return medicalAssistImg;
-    case "porter_service":
-    case "baggage_assistance":
-      return cargoAssistImg;
-    case "airport_transfer":
-    case "luxury_sedan":
-    case "suv_transfer":
-    case "executive_van":
-    case "chauffeur_service":
-      return vipTransport1;
-    case "private_charter":
-    case "empty_leg":
-      return jetTarmac;
-    case "helicopter_charter":
-      return heroJet;
-    case "business_jet":
-      return interior;
-    case "air_cargo":
-    case "freight_customs":
-    case "customs_clearance":
-      return cargo;
-    case "medical_escort":
-    case "ambulance_transfer":
-    case "oxygen_support":
-    case "medical_team":
-      return medical;
-    case "visa_assistance":
-      return vipConciergeImg;
-    case "hotel_booking":
-      return hotelImg;
-    case "concierge_service":
-      return concierge;
-    default:
-      return meetGreetImg;
-  }
-}
+  ServiceCatalogItem,
+} from "@/services/catalog";
 
 interface EnterpriseServicesPlatformProps {
   initialCategoryId?: ServiceCategoryId;
@@ -99,37 +36,54 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
   initialCategoryId = "all",
   className = "",
 }) => {
+  const { data: services = [], isLoading } = useServiceCatalog();
   const [activeCategory, setActiveCategory] = useState<ServiceCategoryId>(initialCategoryId);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedServiceId, setSelectedServiceId] = useState<string>("meet_greet");
 
-  // Available services under selected category
-  const filteredServices = useMemo(() => {
-    if (activeCategory === "all") {
-      return PLATFORM_SERVICES;
-    }
-    return PLATFORM_SERVICES.filter((s) => s.categoryId === activeCategory);
-  }, [activeCategory]);
+  // Active categories from catalog (sorted by sortOrder)
+  const categories = useMemo(() => {
+    return OFFICIAL_SHAFSKY_CATEGORIES.filter((c) => c.isActive).sort((a, b) => a.sortOrder - b.sortOrder);
+  }, []);
 
-  // Active expanded service (defaults to first service if current selection is not in active category)
+  // Filtered active services by category and search query
+  const filteredServices = useMemo(() => {
+    return services
+      .filter((s) => s.isActive && !s.isHidden)
+      .filter((s) => {
+        const matchesCat = activeCategory === "all" || s.categoryId === activeCategory;
+        const q = searchQuery.toLowerCase().trim();
+        const matchesSearch =
+          !q ||
+          s.name.toLowerCase().includes(q) ||
+          s.oneLiner.toLowerCase().includes(q) ||
+          s.categoryName.toLowerCase().includes(q) ||
+          s.overview.toLowerCase().includes(q);
+
+        return matchesCat && matchesSearch;
+      })
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+  }, [services, activeCategory, searchQuery]);
+
+  // Currently selected active service
   const activeService = useMemo(() => {
     const found = filteredServices.find((s) => s.id === selectedServiceId);
-    return found || filteredServices[0] || PLATFORM_SERVICES[0];
-  }, [filteredServices, selectedServiceId]);
+    return found || filteredServices[0] || services[0];
+  }, [filteredServices, selectedServiceId, services]);
 
   // Booking action handler: passes service details to existing booking engine
-  const handleBookThisService = useCallback((service: PlatformService) => {
+  const handleBookThisService = useCallback((service: ServiceCatalogItem) => {
     try {
       if (typeof window !== "undefined") {
         sessionStorage.setItem("shafsky_selected_service", service.bookingServiceId);
         sessionStorage.setItem("shafsky_selected_service_name", service.name);
         sessionStorage.setItem("shafsky_selected_category", service.categoryId);
       }
-      
+
       toast.success(`${service.name} selected`, {
         description: "Pre-configured into booking engine. Complete your flight details to proceed.",
       });
 
-      // Smooth scroll to existing booking engine section
       const bookEl = document.getElementById("book");
       if (bookEl) {
         bookEl.scrollIntoView({ behavior: "smooth" });
@@ -140,6 +94,8 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
       window.location.hash = "book";
     }
   }, []);
+
+  if (!activeService) return null;
 
   return (
     <section
@@ -152,19 +108,44 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
 
       <div className="relative z-10 mx-auto max-w-[1480px]">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-100/70 border border-amber-300/60 text-amber-900 text-[10px] font-mono uppercase tracking-[0.35em] font-bold mb-4">
-            <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-            <span>FLAGSHIP AIRPORT & CONCIERGE PLATFORM</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-100/70 border border-amber-300/60 text-amber-900 text-[10px] font-mono uppercase tracking-[0.35em] font-bold mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+              <span>OFFICIAL SHAFSKY AVIATION SERVICES</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-slate-900 tracking-tight">
+              Signature Airport & <span className="text-amber-700">Flight Services.</span>
+            </h2>
+
+            <p className="mt-3 text-xs sm:text-sm text-slate-600 font-sans max-w-xl font-medium leading-relaxed">
+              Explore official Shafsky Aviation services across 6 business areas — understandable in 1 second, pre-configured, and bookable instantly.
+            </p>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-slate-900 tracking-tight">
-            Signature Airport <span className="text-amber-700">Concierge Experiences.</span>
-          </h2>
-
-          <p className="mt-4 text-xs sm:text-sm md:text-base text-slate-600 font-sans leading-relaxed max-w-2xl mx-auto font-medium">
-            Select any service from the horizontal menu below to explore instant features, inclusions, and seamless booking options.
-          </p>
+          {/* Instant Search Bar */}
+          <div className="relative w-full md:w-80">
+            <div className="relative flex items-center">
+              <Search className="absolute left-4 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search services (e.g. Lounge, Ticket, Transfer)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-12 rounded-2xl border border-[#e7e0d3] bg-white/90 backdrop-blur-md pl-11 pr-4 text-xs font-semibold placeholder:text-slate-400 outline-none transition focus:border-amber-600 focus:ring-4 focus:ring-amber-100 shadow-xs"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 text-xs font-mono font-bold text-slate-400 hover:text-slate-700 px-1.5 py-0.5 rounded cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* ── 1. UNIFIED HORIZONTAL SELECTOR (Scrollable/Swipeable) ── */}
@@ -172,7 +153,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
           {/* Category Bar */}
           <div className="w-full overflow-x-auto no-scrollbar py-1">
             <div className="flex items-center gap-2 min-w-max px-1 justify-start md:justify-center">
-              {SERVICE_CATEGORIES.map((cat) => {
+              {categories.map((cat) => {
                 const isActive = activeCategory === cat.id;
                 const Icon = cat.icon;
 
@@ -182,7 +163,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
                     type="button"
                     onClick={() => {
                       setActiveCategory(cat.id);
-                      const catServices = cat.id === "all" ? PLATFORM_SERVICES : PLATFORM_SERVICES.filter((s) => s.categoryId === cat.id);
+                      const catServices = cat.id === "all" ? services : services.filter((s) => s.categoryId === cat.id);
                       if (catServices.length > 0) {
                         setSelectedServiceId(catServices[0].id);
                       }
@@ -214,7 +195,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
             <div className="flex items-center gap-2 min-w-max px-1 justify-start md:justify-center">
               {filteredServices.map((service) => {
                 const isSelected = activeService.id === service.id;
-                const SIcon = service.icon;
+                const SIcon = service.icon || Users;
 
                 return (
                   <button
@@ -267,10 +248,10 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
               {/* Media Showcase */}
               <div className="lg:col-span-5 relative h-72 sm:h-96 rounded-3xl overflow-hidden group shadow-xl border border-white/90 bg-slate-900">
-                {activeService.id === "meet_greet" ? (
+                {activeService.videoUrl ? (
                   <video
-                    src={meetVideo}
-                    poster={meetGreetImg}
+                    src={activeService.videoUrl}
+                    poster={activeService.imageUrl}
                     autoPlay
                     loop
                     muted
@@ -279,15 +260,15 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
                   />
                 ) : (
                   <img
-                    src={getServiceImage(activeService)}
+                    src={activeService.imageUrl}
                     alt={activeService.name}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/20 to-transparent" />
-                
+
                 <div className="absolute top-4 left-4 bg-slate-900/85 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[9px] font-mono font-bold uppercase tracking-widest text-amber-300 border border-amber-400/40">
-                  {activeService.badge || "★ Luxury Concierge"}
+                  {activeService.badge || "Official Shafsky Service"}
                 </div>
 
                 <div className="absolute bottom-6 left-6 right-6">
@@ -362,7 +343,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
                 {/* Action CTA Bar */}
                 <div className="pt-4 border-t border-amber-200/60 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-xs text-slate-600 font-sans font-medium text-center sm:text-left">
-                    <span className="font-mono text-amber-800 font-bold">{activeService.startingPrice}</span> • Instant airport dispatch
+                    <span className="font-mono text-amber-800 font-bold">{activeService.startingPrice}</span> • Direct booking dispatch
                   </div>
 
                   <div className="flex items-center gap-3 w-full sm:w-auto">
