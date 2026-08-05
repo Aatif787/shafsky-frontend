@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 import {
   CheckCircle2,
   RefreshCw,
@@ -87,13 +88,49 @@ function formatDisplayDate(rawDate?: string | null): string | null {
   return null;
 }
 
+/**
+ * Airline Logo Avatar Component with graceful fallback
+ */
+function AirlineLogoAvatar({
+  logoUrl,
+  carrierName,
+  flightNum,
+  carrierIata,
+}: {
+  logoUrl?: string | null;
+  carrierName?: string | null;
+  flightNum: string;
+  carrierIata?: string | null;
+}) {
+  const [imgError, setImgError] = useState(false);
+
+  if (logoUrl && !imgError) {
+    return (
+      <div className="w-14 h-14 rounded-full bg-white border border-slate-200 p-1.5 shadow-xs flex items-center justify-center shrink-0 overflow-hidden">
+        <img
+          src={logoUrl}
+          alt=""
+          onError={() => setImgError(true)}
+          className="max-w-full max-h-full object-contain"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-14 h-14 rounded-full bg-[#0f172a] text-amber-400 font-bold font-mono text-base flex items-center justify-center border border-slate-200 shrink-0 shadow-xs">
+      {carrierIata || flightNum.substring(0, 2)}
+    </div>
+  );
+}
+
 export function FlightVerificationResultView({
   flightData,
   searchParams,
 }: FlightVerificationResultViewProps) {
   const navigate = useNavigate();
 
-  // 100% Dynamic attributes from API response (Zero hardcoding, zero fallback strings)
+  // 100% Dynamic attributes from API response (Zero hardcoding)
   const flightNum =
     flightData?.flightNum || searchParams.flight_number?.toUpperCase() || "";
   const carrierName = flightData?.carrier?.name || null;
@@ -213,31 +250,83 @@ export function FlightVerificationResultView({
           </div>
         </div>
 
-        {/* ── 2. FLIGHT HEADER CARD ── */}
+        {/* ── 2. FLIGHT HEADER CARD (With Prominent Full-Width Top Flight Path) ── */}
         <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-            {/* Airline & Flight Number (Left) */}
-            <div className="lg:col-span-4 flex items-center gap-4 border-b lg:border-b-0 lg:border-r border-slate-100 pb-4 lg:pb-0 lg:pr-6">
-              {airlineLogo ? (
-                <img
-                  src={airlineLogo}
-                  alt={carrierName || flightNum}
-                  className="w-14 h-14 rounded-full object-contain bg-slate-50 border border-slate-200 p-1"
-                />
-              ) : (
-                <div className="w-14 h-14 rounded-full bg-[#0f172a] text-amber-400 font-bold font-mono text-lg flex items-center justify-center border border-slate-200 shrink-0">
-                  {carrierIata || flightNum.substring(0, 2)}
+
+          {/* ── TOP FULL-WIDTH ANIMATED FLIGHT PATH BANNER ── */}
+          <div className="bg-slate-50/80 rounded-2xl p-4 sm:p-5 border border-slate-200/80 space-y-3">
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-600 px-1">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-slate-900 text-base font-mono">{originCode}</span>
+                <span className="text-slate-500 text-xs hidden sm:inline">({originName})</span>
+              </div>
+
+              {durationText && (
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-500/10 text-amber-900 border border-amber-300/60 text-xs font-mono font-bold">
+                  <Clock className="w-3.5 h-3.5 text-amber-600" />
+                  <span>{durationText} Verified Schedule</span>
                 </div>
               )}
 
-              <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 text-xs hidden sm:inline">({destName})</span>
+                <span className="font-bold text-slate-900 text-base font-mono">{destCode}</span>
+              </div>
+            </div>
+
+            {/* Long Moving Flight Track Line Across Entire Container (Plane moves flat/level without tilting) */}
+            <div className="w-full relative flex items-center justify-between px-1 pt-1 pb-1">
+              {/* Left Endpoint Circle (Origin) */}
+              <div className="w-4 h-4 rounded-full border-2 border-emerald-600 bg-white flex items-center justify-center shrink-0 z-10 shadow-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+              </div>
+
+              {/* Long Dashed Track Line */}
+              <div className="flex-1 relative h-6 flex items-center mx-2 overflow-hidden">
+                <div className="w-full border-b-2 border-dashed border-amber-400/90" />
+
+                {/* Animated Moving Plane Icon (Glide 0% -> 92% horizontally, NO tilting) */}
+                <motion.div
+                  className="absolute top-1/2 -translate-y-1/2 flex items-center justify-center text-amber-600 bg-white p-1.5 rounded-full shadow-md border border-amber-300 z-20"
+                  initial={{ left: "0%" }}
+                  animate={{ left: "92%" }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    repeatDelay: 0.5,
+                  }}
+                >
+                  <Plane className="w-4 h-4 transform rotate-90 text-amber-600" />
+                </motion.div>
+              </div>
+
+              {/* Right Endpoint Circle (Destination) */}
+              <div className="w-4 h-4 rounded-full border-2 border-amber-600 bg-white flex items-center justify-center shrink-0 z-10 shadow-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+              </div>
+            </div>
+          </div>
+
+          {/* ── AIRLINE & ROUTE DETAILS GRID ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center pt-2">
+            {/* Airline & Flight Number (Left - 4 columns) */}
+            <div className="lg:col-span-4 flex items-center gap-4 border-b lg:border-b-0 lg:border-r border-slate-100 pb-4 lg:pb-0 lg:pr-6">
+              <AirlineLogoAvatar
+                logoUrl={airlineLogo}
+                carrierName={carrierName}
+                flightNum={flightNum}
+                carrierIata={carrierIata}
+              />
+
+              <div className="space-y-1 min-w-0">
                 {carrierName && (
-                  <div className="text-xs text-slate-500 font-medium font-sans">
+                  <div className="text-xs text-slate-500 font-medium font-sans truncate">
                     {carrierName}
                   </div>
                 )}
                 {flightNum && (
-                  <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-slate-900">
+                  <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-slate-900 truncate">
                     {flightNum}
                   </div>
                 )}
@@ -264,54 +353,39 @@ export function FlightVerificationResultView({
               </div>
             </div>
 
-            {/* Flight Route Path (Center) */}
-            <div className="lg:col-span-5 flex items-center justify-between gap-3 text-center px-2">
-              {/* Origin */}
-              <div className="space-y-1 text-left max-w-[130px] sm:max-w-[160px]">
-                {originCode && (
-                  <div className="text-2xl sm:text-3xl font-black font-sans text-slate-900 tracking-tight">
-                    {originCode}
-                  </div>
-                )}
+            {/* Airport Location Labels (Center - 5 columns) */}
+            <div className="lg:col-span-5 flex items-center justify-between gap-4 text-center px-2">
+              {/* Origin Full Location */}
+              <div className="space-y-1 text-left max-w-[170px]">
+                <div className="text-xl sm:text-2xl font-black font-sans text-slate-900 tracking-tight">
+                  {originCode}
+                </div>
                 {originFullLocation && (
-                  <div className="text-xs text-slate-500 font-medium leading-snug line-clamp-2">
+                  <div className="text-xs text-slate-500 font-medium leading-snug">
                     {originFullLocation}
                   </div>
                 )}
               </div>
 
-              {/* Path Track Line */}
-              <div className="flex-1 flex flex-col items-center justify-center px-2">
-                {durationText && (
-                  <span className="text-[11px] font-semibold text-slate-500 mb-1">
-                    {durationText}
-                  </span>
-                )}
-                <div className="w-full flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-slate-300 shrink-0" />
-                  <div className="flex-1 border-b border-dashed border-slate-300 relative flex items-center justify-center">
-                    <Plane className="w-4 h-4 text-amber-600 transform rotate-90 absolute bg-white px-0.5" />
-                  </div>
-                  <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                </div>
+              {/* Route Summary */}
+              <div className="text-xs font-mono text-slate-400 font-bold uppercase tracking-widest px-2">
+                DIRECT
               </div>
 
-              {/* Destination */}
-              <div className="space-y-1 text-right max-w-[130px] sm:max-w-[160px]">
-                {destCode && (
-                  <div className="text-2xl sm:text-3xl font-black font-sans text-slate-900 tracking-tight">
-                    {destCode}
-                  </div>
-                )}
+              {/* Destination Full Location */}
+              <div className="space-y-1 text-right max-w-[170px]">
+                <div className="text-xl sm:text-2xl font-black font-sans text-slate-900 tracking-tight">
+                  {destCode}
+                </div>
                 {destFullLocation && (
-                  <div className="text-xs text-slate-500 font-medium leading-snug line-clamp-2">
+                  <div className="text-xs text-slate-500 font-medium leading-snug">
                     {destFullLocation}
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Aircraft & Status Meta (Right) */}
+            {/* Aircraft & Status Meta (Right - 3 columns) */}
             <div className="lg:col-span-3 border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-6 space-y-3">
               {aircraftModel && (
                 <div>
@@ -505,7 +579,7 @@ export function FlightVerificationResultView({
                 </div>
               )}
 
-              {/* Class (rendered ONLY if returned by API) */}
+              {/* Class */}
               {cabinClass && (
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
@@ -518,7 +592,7 @@ export function FlightVerificationResultView({
                 </div>
               )}
 
-              {/* Meal Service (rendered ONLY if returned by API) */}
+              {/* Meal Service */}
               {mealService && (
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
@@ -531,7 +605,7 @@ export function FlightVerificationResultView({
                 </div>
               )}
 
-              {/* Baggage Allowance (rendered ONLY if returned by API) */}
+              {/* Baggage Allowance */}
               {baggageAllowance && (
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
