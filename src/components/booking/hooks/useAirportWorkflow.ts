@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getAirportBusinessPrice } from "@/data/airportRegistry";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { ApiClient } from "@/lib/ApiClient";
@@ -77,28 +77,15 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       ? "package"
       : "individual";
 
-  // Check for pre-validated flight response cached in sessionStorage ONLY if explicitly coming from hero flight search
-  let cachedFlightData: FlightData | null = null;
+  // SSR-safe: compute only URL-derived values during render. Browser-only state (sessionStorage, Date) is deferred to useEffect.
   const isFromHero = Boolean(searchParams?.from_hero || searchParams?.validated);
-  if (typeof window !== "undefined" && (isFromHero || Boolean(searchParams?.flight_number))) {
-    try {
-      const stored = sessionStorage.getItem("shafsky_validated_flight");
-      if (stored) {
-        cachedFlightData = JSON.parse(stored);
-      }
-    } catch {
-      // Ignore parse error
-    }
-  }
-
-  const initialFlightNumber = searchParams?.flight_number || (isFromHero ? cachedFlightData?.flightNum : "") || "";
+  const initialFlightNumber = searchParams?.flight_number || "";
   const initialDirection: "arrival" | "departure" | "transit" =
     (searchParams?.direction as any) ||
     (searchParams?.origin ? "departure" : searchParams?.destination ? "arrival" : "arrival");
 
-  // Only jump straight to Step 2 if flight number was explicitly provided or came from homepage flight search
-  const hasValidatedFlight = Boolean(searchParams?.flight_number) || (isFromHero && Boolean(cachedFlightData));
-  const [currentStep, setCurrentStep] = useState<number>(hasValidatedFlight ? 2 : 1);
+  // Always start at step 1 during SSR; useEffect will advance to step 2 if cached flight data exists
+  const [currentStep, setCurrentStep] = useState<number>(1);
   const [busy, setBusy] = useState<boolean>(false);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
 
@@ -107,9 +94,9 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     airportName: rawOrigin || "Delhi Indira Gandhi International Airport",
     direction: initialDirection,
     bookingMode: initialBookingMode,
-    selectedService: "", // No pre-selected service
+    selectedService: "",
     selectedPackage: "",
-    serviceDate: searchParams?.depart_date || (isFromHero ? cachedFlightData?.departure?.scheduledTime?.split(" ")[0] : null) || new Date().toISOString().split("T")[0],
+    serviceDate: searchParams?.depart_date || "",
     serviceTime: "14:30",
     guestCount: searchParams?.pax_adults || 1,
     fullName: "",
@@ -117,9 +104,43 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     email: "",
     flightNumber: initialFlightNumber,
     specialRequests: searchParams?.notes || "",
-    isFlightValidated: hasValidatedFlight,
-    validatedFlightData: cachedFlightData,
+    isFlightValidated: false,
+    validatedFlightData: null,
   });
+
+  // Hydrate browser-only state after mount (sessionStorage + Date fallback)
+  useEffect(() => {
+    // Fill in today's date as fallback if no depart_date was provided via URL
+    if (!searchParams?.depart_date) {
+      const today = new Date().toISOString().split("T")[0];
+      setState((prev) => (prev.serviceDate ? prev : { ...prev, serviceDate: today }));
+    }
+
+    // Restore cached flight data from sessionStorage
+    if (isFromHero || Boolean(searchParams?.flight_number)) {
+      try {
+        const stored = sessionStorage.getItem("shafsky_validated_flight");
+        if (stored) {
+          const cachedFlightData: FlightData = JSON.parse(stored);
+          const cachedFlightNum = cachedFlightData?.flightNum || "";
+          const cachedDate = cachedFlightData?.departure?.scheduledTime?.split(" ")[0];
+          setState((prev) => ({
+            ...prev,
+            flightNumber: prev.flightNumber || cachedFlightNum,
+            serviceDate: prev.serviceDate || cachedDate || prev.serviceDate,
+            isFlightValidated: true,
+            validatedFlightData: cachedFlightData,
+          }));
+          setCurrentStep(2);
+        } else if (searchParams?.flight_number) {
+          // URL has flight_number but no cached data — stay at step 1 for re-validation
+        }
+      } catch {
+        // Ignore parse error
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const updateState = (fields: Partial<AirportWorkflowState>) => {
     setState((prev) => ({ ...prev, ...fields }));

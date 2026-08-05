@@ -1,13 +1,6 @@
-import React, { useMemo } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import {
-  Plane,
-  Clock,
-  CheckCircle2,
-  RefreshCw,
-  ArrowRight,
-  ShieldCheck,
-} from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
+import { Plane, Clock, CheckCircle2, RefreshCw, ArrowRight } from "lucide-react";
 import { FlightData } from "@/services/flight/FlightTypes";
 
 interface ValidatedFlightExperienceProps {
@@ -89,33 +82,6 @@ function formatFlightDate(dateStr?: string | null): string | null {
 }
 
 /**
- * Pure Terminal Formatter: Returns "Terminal T3" or raw string.
- * Returns null if missing.
- */
-function formatTerminalChip(termRaw?: string | null): string | null {
-  if (!termRaw || typeof termRaw !== "string") return null;
-  const cleaned = termRaw.trim();
-  if (!cleaned) return null;
-
-  if (/^terminal\s*t?\d+$/i.test(cleaned)) {
-    const num = cleaned.replace(/\D/g, "");
-    return `Terminal T${num}`;
-  }
-  if (/^t\d+$/i.test(cleaned)) {
-    return `Terminal T${cleaned.slice(1)}`;
-  }
-  if (/\bT(\d+)\b/i.test(cleaned)) {
-    const match = cleaned.match(/\bT(\d+)\b/i);
-    if (match) return `Terminal T${match[1]}`;
-  }
-  if (/\bTerminal\s*(\d+)\b/i.test(cleaned)) {
-    const match = cleaned.match(/\bTerminal\s*(\d+)\b/i);
-    if (match) return `Terminal T${match[1]}`;
-  }
-  return cleaned.startsWith("Terminal") ? cleaned : `Terminal ${cleaned}`;
-}
-
-/**
  * Status Badge Component with Subtle Glow (Gracefully omitted if status is null/empty)
  */
 const StatusBadge = React.memo(function StatusBadge({
@@ -151,15 +117,212 @@ const StatusBadge = React.memo(function StatusBadge({
   );
 });
 
+const FlightPathHero = React.memo(function FlightPathHero({
+  originCode,
+  destinationCode,
+  departureMeta,
+  arrivalMeta,
+  shouldReduceMotion,
+}: {
+  originCode: string;
+  destinationCode: string;
+  departureMeta: string | null;
+  arrivalMeta: string | null;
+  shouldReduceMotion: boolean;
+}) {
+  const ids = useMemo(() => {
+    const base = Math.random().toString(36).slice(2);
+    return {
+      gradient: `flight-path-gradient-${base}`,
+      glow: `flight-path-glow-${base}`,
+    };
+  }, []);
+
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const pathRef = useRef<SVGPathElement | null>(null);
+  const dimsRef = useRef({ width: 0, height: 0 });
+  const [hasLayout, setHasLayout] = useState(false);
+
+  const progress = useMotionValue(shouldReduceMotion ? 0.52 : 0);
+  const planeX = useMotionValue(0);
+  const planeY = useMotionValue(0);
+  const planeRotate = useMotionValue(0);
+
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    dimsRef.current = { width: rect.width, height: rect.height };
+    setHasLayout(rect.width > 0 && rect.height > 0);
+
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      const cr = entry?.contentRect;
+      if (!cr) return;
+      dimsRef.current = { width: cr.width, height: cr.height };
+      setHasLayout(cr.width > 0 && cr.height > 0);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      progress.set(0.52);
+      return;
+    }
+    progress.set(0);
+    const controls = animate(progress, 1, {
+      duration: 6.2,
+      ease: "linear",
+      repeat: Infinity,
+      repeatDelay: 0.35,
+    });
+    return () => controls.stop();
+  }, [progress, shouldReduceMotion]);
+
+  useEffect(() => {
+    const path = pathRef.current;
+    if (!path) return;
+    const length = path.getTotalLength();
+
+    const unsub = progress.on("change", (v) => {
+      const clamped = Math.max(0, Math.min(1, v));
+      const target = clamped * length;
+      const p1 = path.getPointAtLength(target);
+      const p2 = path.getPointAtLength(Math.min(length, target + 1));
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+
+      const dims = dimsRef.current;
+      const sx = dims.width / 1200;
+      const sy = dims.height / 220;
+      planeX.set(p1.x * sx);
+      planeY.set(p1.y * sy);
+      planeRotate.set(angle + 90);
+    });
+
+    return () => unsub();
+  }, [planeRotate, planeX, planeY, progress]);
+
+  return (
+    <div
+      ref={wrapperRef}
+      className="relative overflow-hidden rounded-[26px] border border-black/5 bg-white/60 px-5 sm:px-8 py-7 sm:py-10"
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(1100px_circle_at_50%_-20%,rgba(15,23,42,0.14),transparent_62%),radial-gradient(700px_circle_at_20%_70%,rgba(251,191,36,0.12),transparent_56%),radial-gradient(700px_circle_at_82%_55%,rgba(132,204,22,0.10),transparent_58%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(15,23,42,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.05)_1px,transparent_1px)] bg-[size:72px_72px] opacity-30" />
+
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        viewBox="0 0 1200 220"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id={ids.gradient} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="rgba(15,23,42,0)" />
+            <stop offset="18%" stopColor="rgba(15,23,42,0.55)" />
+            <stop offset="50%" stopColor="rgba(251,191,36,0.60)" />
+            <stop offset="82%" stopColor="rgba(132,204,22,0.55)" />
+            <stop offset="100%" stopColor="rgba(15,23,42,0)" />
+          </linearGradient>
+          <filter id={ids.glow} x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <path
+          ref={pathRef}
+          d="M 70 150 C 360 36 840 36 1130 150"
+          stroke={`url(#${ids.gradient})`}
+          strokeWidth="3"
+          fill="none"
+          filter={`url(#${ids.glow})`}
+          opacity="0.95"
+        />
+        <path
+          d="M 70 150 C 360 36 840 36 1130 150"
+          stroke="rgba(15,23,42,0.22)"
+          strokeWidth="1"
+          strokeDasharray="10 14"
+          strokeLinecap="round"
+          fill="none"
+          opacity="0.9"
+        />
+        <circle cx="70" cy="150" r="9" fill="rgba(15,23,42,0.92)" />
+        <circle cx="70" cy="150" r="12" fill="rgba(251,191,36,0.18)" />
+        <circle cx="1130" cy="150" r="9" fill="rgba(15,23,42,0.92)" />
+        <circle cx="1130" cy="150" r="12" fill="rgba(132,204,22,0.18)" />
+      </svg>
+
+      <div className="relative flex items-end justify-between">
+        <div className="space-y-1">
+          <div className="text-[44px] leading-none font-mono font-black tracking-tight text-[#0f172a]">
+            {originCode}
+          </div>
+          {departureMeta && (
+            <div className="text-[11px] font-mono font-bold uppercase tracking-[0.22em] text-[#475569]">
+              {departureMeta}
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-1 text-right">
+          <div className="text-[44px] leading-none font-mono font-black tracking-tight text-[#0f172a]">
+            {destinationCode}
+          </div>
+          {arrivalMeta && (
+            <div className="text-[11px] font-mono font-bold uppercase tracking-[0.22em] text-[#475569]">
+              {arrivalMeta}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <motion.div
+        className="absolute left-0 top-0 z-20 rounded-full bg-[#0f172a] text-amber-200 shadow-[0_10px_30px_rgba(2,6,23,0.22)] border border-white/10 p-2.5"
+        style={{
+          x: planeX,
+          y: planeY,
+          rotate: planeRotate,
+          translateX: "-50%",
+          translateY: "-50%",
+          opacity: hasLayout ? 1 : 0,
+        }}
+        aria-label="Plane in transit animation"
+      >
+        <Plane className="w-4 h-4 transform-gpu" />
+      </motion.div>
+    </div>
+  );
+});
+
 /**
  * Skeleton Loader for Instant Perceived Performance
  */
 export function ValidatedFlightSkeleton() {
   return (
-    <div className="w-full max-w-[94%] mx-auto py-8 space-y-10 font-sans animate-pulse">
-      <div className="h-8 bg-slate-200/60 rounded-xl w-1/4" />
-      <div className="h-12 bg-slate-200/50 rounded-2xl w-1/2" />
-      <div className="h-40 bg-slate-200/30 rounded-3xl w-full" />
+    <div className="w-full max-w-[1040px] mx-auto px-4 sm:px-6 py-8 sm:py-12 font-sans animate-pulse">
+      <div className="rounded-[32px] border border-black/5 bg-white/60 backdrop-blur-xl overflow-hidden">
+        <div className="px-5 sm:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
+          <div className="flex items-center justify-between gap-4">
+            <div className="h-7 w-36 rounded-full bg-slate-200/60" />
+            <div className="h-9 w-24 rounded-full bg-slate-200/50" />
+          </div>
+          <div className="h-[190px] sm:h-[230px] rounded-[26px] bg-slate-200/35" />
+          <div className="flex items-center justify-between gap-4">
+            <div className="h-7 w-40 rounded-full bg-slate-200/50" />
+            <div className="h-12 w-40 rounded-full bg-slate-200/50" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -177,7 +340,6 @@ export function ValidatedFlightExperience({
   const carrierName = typeof flightData?.carrier?.name === "string" ? flightData.carrier.name.trim() : null;
   const flightNum = typeof flightData?.flightNum === "string" ? flightData.flightNum.trim() : null;
   const status = typeof flightData?.status === "string" ? flightData.status.trim() : null;
-  const aircraftModel = typeof flightData?.aircraft?.model === "string" ? flightData.aircraft.model.trim() : null;
 
   // Extract raw backend duration string directly (no estimation, no hardcoded fallbacks)
   const rawDuration =
@@ -194,8 +356,6 @@ export function ValidatedFlightExperience({
 
   // Airport details (100% Backend-Driven)
   const originCode = typeof flightData?.origin?.code === "string" ? flightData.origin.code.trim() : "DEL";
-  const originCity = typeof flightData?.origin?.city === "string" ? flightData.origin.city.trim() : null;
-  const originName = typeof flightData?.origin?.name === "string" ? flightData.origin.name.trim() : null;
   const originSchedTime = typeof flightData?.departure?.scheduledTime === "string"
     ? flightData.departure.scheduledTime
     : (flightData as any)?.departure_time || null;
@@ -203,26 +363,9 @@ export function ValidatedFlightExperience({
   const destCode = typeof flightData?.destination?.code === "string"
     ? flightData.destination.code.trim()
     : (typeof airportCode === "string" ? airportCode.trim() : "BOM");
-  const destCity = typeof flightData?.destination?.city === "string" ? flightData.destination.city.trim() : null;
-  const destName = typeof flightData?.destination?.name === "string" ? flightData.destination.name.trim() : null;
   const destSchedTime = typeof flightData?.arrival?.scheduledTime === "string"
     ? flightData.arrival.scheduledTime
     : (flightData as any)?.arrival_time || null;
-
-  // Dynamic Terminal & Gate Chips (No hardcoding)
-  const originTerminalRaw = typeof flightData?.departure?.terminal === "string" ? flightData.departure.terminal : null;
-  const destTerminalRaw = typeof flightData?.arrival?.terminal === "string" ? flightData.arrival.terminal : null;
-  const originGate = typeof (flightData?.departure as any)?.gate === "string"
-    ? (flightData?.departure as any).gate
-    : (flightData as any)?.departure_gate || null;
-  const destGate = typeof (flightData?.arrival as any)?.gate === "string"
-    ? (flightData?.arrival as any).gate
-    : (flightData as any)?.arrival_gate || null;
-
-  const depTerminalChip = formatTerminalChip(originTerminalRaw) || "Terminal info not yet available";
-  const arrTerminalChip = formatTerminalChip(destTerminalRaw) || "Terminal info not yet available";
-  const depGateDisplay = originGate ? `Gate ${originGate}` : "Gate will be assigned by airline";
-  const arrGateDisplay = destGate ? `Gate ${destGate}` : "Gate will be assigned by airline";
 
   const formattedDepTime = formatFlightTime(originSchedTime);
   const formattedArrTime = formatFlightTime(destSchedTime);
@@ -230,294 +373,65 @@ export function ValidatedFlightExperience({
   const formattedArrDate = formatFlightDate(destSchedTime || serviceDate);
 
   return (
-    <div className="w-full max-w-[94%] mx-auto py-6 sm:py-10 space-y-10 sm:space-y-14 font-sans text-[#1C1917]">
-      {/* 1. STEP INDICATOR */}
-      <div>
-        <span className="px-3.5 py-1 rounded-full bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-[11px] font-mono font-bold uppercase tracking-[0.25em]">
-          Step 2 of 5 — Validated Flight
-        </span>
-      </div>
-
-      {/* 2. FLIGHT VERIFICATION HEADER & CHANGE FLIGHT */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E8DFD1]/60">
-        <div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#1C1917] tracking-tight">
-            Flight Verification
-          </h1>
-          <p className="text-xs sm:text-sm text-[#78716C] font-medium mt-1">
-            Verified airside routing & flight details.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={onChangeFlight}
-          className="self-start sm:self-center px-5 py-2.5 rounded-full bg-white/90 hover:bg-white text-[#44403C] hover:text-[#1C1917] border border-[#E7E0D3] shadow-xs hover:shadow-md font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all duration-300 cursor-pointer"
-        >
-          <RefreshCw className="w-3.5 h-3.5 text-amber-700" />
-          <span>Change Flight</span>
-        </button>
-      </div>
-
-      {/* 3. FLIGHT STATUS & CARRIER ROW (GRACEFULLY CONDITIONAL) */}
-      {(status || carrierName || flightNum) && (
-        <div className="flex items-center gap-3">
-          {status && <StatusBadge status={status} />}
-          {(carrierName || flightNum) && (
-            <span className="text-xs font-mono font-bold text-[#78716C] uppercase tracking-wider">
-              {[carrierName, flightNum].filter(Boolean).join(" • ")}
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* 4. ANIMATED ROUTE WITH DURATION ABOVE (UNBOXED 92-95% WIDE LAYOUT) */}
-      <div className="space-y-6 py-4">
-        {/* DURATION DISPLAYED DIRECTLY ABOVE THE ROUTE (GRACEFULLY OMITTED IF NULL) */}
-        {duration && (
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-widest shadow-2xs">
-              <Clock className="w-3.5 h-3.5 text-amber-700" />
-              <span>Duration {duration}</span>
-            </div>
-          </div>
-        )}
-
-        {/* HORIZONTAL ROUTE TRACK (DESKTOP / TABLET) */}
-        <div className="hidden md:block w-full py-4">
-          <div className="grid grid-cols-12 gap-6 items-center">
-            {/* DEPARTURE AIRPORT (LEFT) */}
-            <div className="col-span-4 space-y-2 text-left">
-              <span className="text-4xl lg:text-5xl font-mono font-black text-[#1C1917] tracking-tight block">
-                {originCode}
-              </span>
-              {originCity && (
-                <h2 className="text-2xl font-serif font-bold text-[#1C1917] leading-snug">
-                  {originCity}
-                </h2>
-              )}
-              {originName && (
-                <p className="text-xs font-mono text-[#78716C]">
-                  {originName}
-                </p>
-              )}
-              {(formattedDepTime || formattedDepDate) && (
-                <div className="pt-2 space-y-1">
-                  {formattedDepTime && (
-                    <div className="text-xs font-mono font-bold text-[#1C1917]">
-                      {formattedDepTime}
-                    </div>
-                  )}
-                  {formattedDepDate && (
-                    <div className="text-xs font-mono text-[#78716C]">
-                      {formattedDepDate}
-                    </div>
-                  )}
-                </div>
-              )}
-              <div className="pt-2 flex flex-wrap items-center gap-2">
-                <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
-                  Departure {depTerminalChip}
-                </span>
-                <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
-                  {depGateDisplay}
-                </span>
+    <div className="w-full max-w-[1040px] mx-auto px-4 sm:px-6 py-8 sm:py-12 font-sans text-[#0f172a]">
+      <div className="relative overflow-hidden rounded-[32px] border border-black/5 bg-white/70 backdrop-blur-xl shadow-[0_18px_70px_rgba(2,6,23,0.06)]">
+        <div className="relative px-5 sm:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-200/70 text-emerald-900 text-[11px] font-mono font-bold uppercase tracking-[0.22em]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Verified</span>
               </div>
-            </div>
-
-            {/* CENTER DASHED TRACK & ANIMATED PLANE */}
-            <div className="col-span-4 relative flex items-center justify-center py-6">
-              {/* Dashed Horizontal Line */}
-              <div className="w-full relative flex items-center justify-between">
-                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 border-b-2 border-dashed border-[#C7BBAA] z-0" />
-
-                {/* Left Node Dot */}
-                <div className="relative z-10 w-3.5 h-3.5 rounded-full bg-[#1C1917] border-2 border-amber-400 shadow-xs flex items-center justify-center">
-                  <span className="w-1 h-1 rounded-full bg-amber-300 animate-ping" />
-                </div>
-
-                {/* Uni-directional Moving Airplane (Departure → Arrival Only, Linear 6.5s Loop) */}
-                <motion.div
-                  initial={shouldReduceMotion ? { left: "50%" } : { left: "4%", opacity: 1 }}
-                  animate={
-                    shouldReduceMotion
-                      ? {}
-                      : {
-                        left: ["4%", "92%"],
-                        opacity: [1, 1, 0.9, 0],
-                      }
-                  }
-                  transition={
-                    shouldReduceMotion
-                      ? {}
-                      : {
-                        duration: 6.5,
-                        ease: "linear",
-                        repeat: Infinity,
-                        repeatDelay: 0.2,
-                      }
-                  }
-                  className="absolute top-1/2 -translate-y-1/2 z-20 -ml-4 p-2 rounded-full bg-[#1C1917] text-amber-300 shadow-md border border-amber-400/50 flex items-center justify-center"
-                  aria-label="Plane in transit animation"
-                >
-                  <Plane className="w-4 h-4 rotate-45 transform-gpu" />
-                </motion.div>
-
-                {/* Right Node Dot */}
-                <div className="relative z-10 w-3.5 h-3.5 rounded-full bg-[#1C1917] border-2 border-amber-400 shadow-xs flex items-center justify-center">
-                  <span className="w-1 h-1 rounded-full bg-amber-300" />
-                </div>
-              </div>
-            </div>
-
-            {/* ARRIVAL AIRPORT (RIGHT) */}
-            <div className="col-span-4 space-y-2 text-right">
-              <span className="text-4xl lg:text-5xl font-mono font-black text-[#1C1917] tracking-tight block">
-                {destCode}
-              </span>
-              {destCity && (
-                <h2 className="text-2xl font-serif font-bold text-[#1C1917] leading-snug">
-                  {destCity}
-                </h2>
-              )}
-              {destName && (
-                <p className="text-xs font-mono text-[#78716C]">
-                  {destName}
-                </p>
-              )}
-              {(formattedArrTime || formattedArrDate) && (
-                <div className="pt-2 space-y-1">
-                  {formattedArrTime && (
-                    <div className="text-xs font-mono font-bold text-[#1C1917]">
-                      {formattedArrTime}
-                    </div>
-                  )}
-                  {formattedArrDate && (
-                    <div className="text-xs font-mono text-[#78716C]">
-                      {formattedArrDate}
-                    </div>
-                  )}
-                </div>
-              )}
-              {(arrTerminalChip || destGate) && (
-                <div className="pt-2 flex flex-wrap items-center justify-end gap-2">
-                  {arrTerminalChip && (
-                    <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
-                      Arrival {arrTerminalChip}
-                    </span>
-                  )}
-                  {destGate && (
-                    <span className="inline-block px-3 py-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
-                      Gate {destGate}
-                    </span>
-                  )}
+              {(carrierName || flightNum) && (
+                <div className="truncate text-[11px] font-mono font-bold uppercase tracking-[0.22em] text-[#475569]">
+                  {[carrierName, flightNum].filter(Boolean).join(" • ")}
                 </div>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* MOBILE LAYOUT (< md) */}
-        <div className="md:hidden space-y-6 py-2">
-          {/* Mobile Departure */}
-          <div className="space-y-1">
-            <span className="text-3xl font-mono font-black text-[#1C1917] block">
-              {originCode}
-            </span>
-            {(originCity || originName) && (
-              <h2 className="text-xl font-serif font-bold text-[#1C1917]">
-                {[originCity, originName].filter(Boolean).join(" — ")}
-              </h2>
-            )}
-            {(formattedDepTime || formattedDepDate) && (
-              <div className="text-xs font-mono text-[#1C1917] font-bold pt-1">
-                {[formattedDepTime, formattedDepDate].filter(Boolean).join(" • ")}
-              </div>
-            )}
-            {depTerminalChip && (
-              <span className="inline-block px-3 py-1 mt-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
-                Departure {depTerminalChip}
-              </span>
-            )}
-          </div>
-
-          {/* Mobile Track */}
-          <div className="flex items-center justify-center py-2 relative">
-            <div className="h-14 w-0.5 border-l-2 border-dashed border-[#C7BBAA]" />
-            <motion.div
-              initial={shouldReduceMotion ? { top: "50%" } : { top: "0%", opacity: 1 }}
-              animate={shouldReduceMotion ? {} : { top: ["0%", "80%"], opacity: [1, 1, 0] }}
-              transition={shouldReduceMotion ? {} : { duration: 5, ease: "linear", repeat: Infinity }}
-              className="absolute p-2 rounded-full bg-[#1C1917] text-amber-300 border border-amber-400/40"
+            <button
+              type="button"
+              onClick={onChangeFlight}
+              className="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white/70 hover:bg-white text-[#0f172a] border border-black/5 shadow-sm hover:shadow-md font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer"
             >
-              <Plane className="w-4 h-4 rotate-[135deg]" />
-            </motion.div>
+              <RefreshCw className="w-3.5 h-3.5 text-[#0f172a]" />
+              <span>Change</span>
+            </button>
           </div>
 
-          {/* Mobile Arrival */}
-          <div className="space-y-1">
-            <span className="text-3xl font-mono font-black text-[#1C1917] block">
-              {destCode}
-            </span>
-            {(destCity || destName) && (
-              <h2 className="text-xl font-serif font-bold text-[#1C1917]">
-                {[destCity, destName].filter(Boolean).join(" — ")}
-              </h2>
-            )}
-            {(formattedArrTime || formattedArrDate) && (
-              <div className="text-xs font-mono text-[#1C1917] font-bold pt-1">
-                {[formattedArrTime, formattedArrDate].filter(Boolean).join(" • ")}
-              </div>
-            )}
-            {arrTerminalChip && (
-              <span className="inline-block px-3 py-1 mt-1 rounded-md bg-[#F4EFE6] border border-[#E2D8C6] text-[#6B5E4A] text-xs font-mono font-bold uppercase tracking-wider">
-                Arrival {arrTerminalChip}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
+          <div className="sr-only">{`Flight route ${originCode} to ${destCode}`}</div>
 
-      {/* 5. DYNAMIC FLIGHT INFORMATION ROW */}
-      {(aircraftModel || carrierName || flightNum) && (
-        <div className="pt-2 border-t border-[#E8DFD1]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-mono text-[#78716C]">
-          <div className="flex flex-wrap items-center gap-4">
-            {aircraftModel && (
-              <span>Aircraft: <strong className="text-[#1C1917]">{aircraftModel}</strong></span>
-            )}
-            {aircraftModel && (carrierName || flightNum) && <span>•</span>}
-            {(carrierName || flightNum) && (
-              <span>Operating Carrier: <strong className="text-[#1C1917]">{[carrierName, flightNum ? `(${flightNum})` : null].filter(Boolean).join(" ")}</strong></span>
-            )}
-          </div>
+          <FlightPathHero
+            originCode={originCode}
+            destinationCode={destCode}
+            departureMeta={[formattedDepTime, formattedDepDate].filter(Boolean).join(" • ") || null}
+            arrivalMeta={[formattedArrTime, formattedArrDate].filter(Boolean).join(" • ") || null}
+            shouldReduceMotion={shouldReduceMotion}
+          />
 
-          <div className="inline-flex items-center gap-1.5 text-emerald-800 font-bold">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>Priority Airside Clearance Verified</span>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-2">
+              {status && <StatusBadge status={status} />}
+              {duration && (
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/70 border border-black/5 text-[#0f172a] text-xs font-mono font-bold uppercase tracking-widest">
+                  <Clock className="w-3.5 h-3.5 text-[#0f172a]" />
+                  <span>{duration}</span>
+                </div>
+              )}
+            </div>
+
+            <motion.button
+              type="button"
+              whileHover={shouldReduceMotion ? {} : { scale: 1.02 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
+              onClick={onContinue}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#0f172a] hover:bg-[#0b1224] text-white font-mono text-xs font-black uppercase tracking-widest shadow-[0_16px_50px_rgba(2,6,23,0.18)] transition-all duration-300 cursor-pointer"
+            >
+              <span>Continue</span>
+              <ArrowRight className="w-4 h-4" />
+            </motion.button>
           </div>
         </div>
-      )}
-
-      {/* 6. CONTINUE BUTTON */}
-      <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <button
-          type="button"
-          onClick={onChangeFlight}
-          className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white hover:bg-slate-50 text-[#44403C] hover:text-[#1C1917] border border-[#E2D8C6] shadow-xs hover:shadow-md font-mono text-xs font-extrabold uppercase tracking-widest transition-all duration-300 cursor-pointer"
-        >
-          Change Flight
-        </button>
-
-        <motion.button
-          type="button"
-          whileHover={shouldReduceMotion ? {} : { scale: 1.02 }}
-          whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
-          onClick={onContinue}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-9 py-4 rounded-full bg-gradient-to-r from-[#84cc16] to-[#65a30d] hover:from-[#65a30d] hover:to-[#4d7c0f] text-[#0f172a] font-mono text-xs font-black uppercase tracking-widest shadow-lg shadow-lime-900/10 hover:shadow-xl transition-all duration-300 cursor-pointer"
-        >
-          <span>Continue to Airport Services</span>
-          <ArrowRight className="w-4 h-4" />
-        </motion.button>
       </div>
     </div>
   );

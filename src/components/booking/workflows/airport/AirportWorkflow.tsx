@@ -197,11 +197,10 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                           key={dir.id}
                           type="button"
                           onClick={() => updateState({ direction: dir.id as any })}
-                          className={`flex-1 py-3 px-3 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all duration-200 ${
-                            state.direction === dir.id
-                              ? "bg-white text-amber-900 shadow-sm border border-slate-200/80"
-                              : "text-slate-600 hover:text-slate-900"
-                          }`}
+                          className={`flex-1 py-3 px-3 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all duration-200 ${state.direction === dir.id
+                            ? "bg-white text-amber-900 shadow-sm border border-slate-200/80"
+                            : "text-slate-600 hover:text-slate-900"
+                            }`}
                         >
                           {dir.label}
                         </button>
@@ -475,6 +474,80 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
             </motion.div>
           </AnimatePresence>
         </div>
+
+        {/* ── STICKY LIVE BOOKING SUMMARY PANEL ── */}
+        {currentStep > 1 && currentStep < 6 && (
+          <div className="lg:col-span-4 sticky top-24 space-y-4">
+            <div className="p-6 rounded-[32px] bg-slate-900 text-white border border-slate-800 shadow-xl space-y-5">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div className="flex items-center gap-2">
+                  <ShoppingBag className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs font-mono font-bold uppercase tracking-widest text-slate-300">
+                    Live Summary
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 font-bold">
+                  {state.airportCode}
+                </span>
+              </div>
+
+              {/* Flight Badge */}
+              <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-1">
+                <div className="text-[10px] font-mono uppercase text-slate-400 font-bold">
+                  Validated Flight & Direction
+                </div>
+                <div className="text-sm font-heading font-bold text-white flex items-center justify-between">
+                  <span>{state.flightNumber || "Direct Dispatch"}</span>
+                  <span className="text-xs font-mono text-amber-300 uppercase">{state.direction}</span>
+                </div>
+                <div className="text-xs text-slate-400 font-sans">
+                  {state.serviceDate} • {state.guestCount} Pax
+                </div>
+              </div>
+
+              {/* Service/Package Item */}
+              <div className="space-y-2 pt-1">
+                <div className="text-[10px] font-mono uppercase text-slate-400 font-bold">
+                  Selected Service Tier
+                </div>
+                <div className="flex items-center justify-between text-xs font-medium">
+                  <span className="text-amber-200 font-bold">{getServiceTitle()}</span>
+                  <span className="font-mono text-white font-bold">
+                    {currencySymbol}{totalPrice.toLocaleString()}
+                  </span>
+                </div>
+
+                {selectedExtrasList.length > 0 && (
+                  <div className="pt-2 space-y-1">
+                    <div className="text-[10px] font-mono uppercase text-slate-400 font-bold">
+                      Add-on Extras ({selectedExtrasList.length})
+                    </div>
+                    {selectedExtrasList.map((extraId) => (
+                      <div key={extraId} className="flex items-center justify-between text-[11px] text-slate-300">
+                        <span>• {extraId.replace("_", " ").toUpperCase()}</span>
+                        <span className="font-mono text-amber-300">+ Included</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Total Summary */}
+              <div className="pt-4 border-t border-slate-800 space-y-2">
+                <div className="flex items-center justify-between text-xs text-slate-400">
+                  <span>Taxes & Fees</span>
+                  <span className="font-mono text-slate-300">Included</span>
+                </div>
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-sm font-heading font-bold text-white">Grand Total</span>
+                  <span className="text-xl font-mono font-bold text-amber-400">
+                    {currencySymbol}{totalPrice.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
