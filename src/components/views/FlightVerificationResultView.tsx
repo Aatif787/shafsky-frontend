@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import {
   CheckCircle2,
   RefreshCw,
@@ -11,14 +11,13 @@ import {
   Info,
   ArrowRight,
   ShieldCheck,
-  Calendar,
   Utensils,
   Briefcase,
   Layers,
   FileText,
 } from "lucide-react";
 import { FlightData } from "@/services/flight/FlightTypes";
-import { format, parseISO, isValid } from "date-fns";
+import { format } from "date-fns";
 
 interface FlightVerificationResultViewProps {
   flightData: FlightData | null;
@@ -35,7 +34,7 @@ interface FlightVerificationResultViewProps {
 }
 
 /**
- * Safely formats time into "10:30 AM" format.
+ * Safely formats raw API timestamp into "10:30 AM" format.
  */
 function formatDisplayTime(rawTime?: string | null): string | null {
   if (!rawTime || typeof rawTime !== "string") return null;
@@ -54,7 +53,7 @@ function formatDisplayTime(rawTime?: string | null): string | null {
       return format(d, "hh:mm a");
     }
   } catch {
-    // fallback
+    // ignore
   }
 
   if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(cleaned)) {
@@ -69,7 +68,7 @@ function formatDisplayTime(rawTime?: string | null): string | null {
 }
 
 /**
- * Safely formats dates into "08 May 2025, Thu" format.
+ * Safely formats raw API date timestamp into "08 May 2025, Thu" format.
  */
 function formatDisplayDate(rawDate?: string | null): string | null {
   if (!rawDate || typeof rawDate !== "string") return null;
@@ -82,7 +81,7 @@ function formatDisplayDate(rawDate?: string | null): string | null {
       return format(d, "dd MMM yyyy, EEE");
     }
   } catch {
-    // fallback
+    // ignore
   }
 
   return null;
@@ -94,9 +93,9 @@ export function FlightVerificationResultView({
 }: FlightVerificationResultViewProps) {
   const navigate = useNavigate();
 
-  // Extract dynamic values strictly from FlightData / searchParams (Zero hardcoded values)
+  // 100% Dynamic attributes from API response (Zero hardcoding, zero fallback strings)
   const flightNum =
-    flightData?.flightNum || searchParams.flight_number?.toUpperCase() || "FLIGHT";
+    flightData?.flightNum || searchParams.flight_number?.toUpperCase() || "";
   const carrierName = flightData?.carrier?.name || null;
   const carrierIata = flightData?.carrier?.iata || null;
   const airlineLogo = flightData?.carrier?.logo || null;
@@ -106,7 +105,7 @@ export function FlightVerificationResultView({
   const isCancelled = statusRaw.toLowerCase().includes("cancel");
 
   // Route Origin
-  const originCode = flightData?.origin?.code || "ORIGIN";
+  const originCode = flightData?.origin?.code || "";
   const originName = flightData?.origin?.name || flightData?.origin?.city || originCode;
   const originCityCountry = [flightData?.origin?.city, flightData?.origin?.country]
     .filter(Boolean)
@@ -114,14 +113,14 @@ export function FlightVerificationResultView({
   const originFullLocation = originCityCountry ? `${originName}, ${originCityCountry}` : originName;
 
   // Route Destination
-  const destCode = flightData?.destination?.code || "DEST";
+  const destCode = flightData?.destination?.code || "";
   const destName = flightData?.destination?.name || flightData?.destination?.city || destCode;
   const destCityCountry = [flightData?.destination?.city, flightData?.destination?.country]
     .filter(Boolean)
     .join(", ");
   const destFullLocation = destCityCountry ? `${destName}, ${destCityCountry}` : destName;
 
-  // Timings
+  // Timings from API
   const departureSchedTimeRaw =
     flightData?.departure?.scheduledTime || (flightData as any)?.departure_time || searchParams.depart_date;
   const arrivalSchedTimeRaw =
@@ -139,7 +138,7 @@ export function FlightVerificationResultView({
   const arrGate = flightData?.arrival?.gate ? `Gate ${flightData.arrival.gate}` : null;
   const arrTerminalGate = [arrTerminal, arrGate].filter(Boolean).join(", ");
 
-  // Flight Stats
+  // Optional fields from API
   const durationText =
     flightData?.duration ||
     (flightData as any)?.duration_text ||
@@ -147,8 +146,12 @@ export function FlightVerificationResultView({
     null;
   const distanceText = (flightData as any)?.distance || null;
   const aircraftModel = flightData?.aircraft?.model || (flightData as any)?.aircraft_type || null;
+  const cabinClass = (flightData as any)?.cabin_class || (flightData as any)?.class || null;
+  const mealService = (flightData as any)?.meal_service || (flightData as any)?.meal || null;
+  const baggageAllowance = (flightData as any)?.baggage_allowance || (flightData as any)?.baggage || null;
+  const icaoCode = (flightData as any)?.icao || null;
+  const registration = (flightData as any)?.registration || null;
 
-  // Timestamp
   const searchTimestamp = useMemo(() => {
     return format(new Date(), "dd MMM yyyy, hh:mm a");
   }, []);
@@ -233,27 +236,31 @@ export function FlightVerificationResultView({
                     {carrierName}
                   </div>
                 )}
-                <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-slate-900">
-                  {flightNum}
-                </div>
-                <div className="pt-0.5">
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider ${
-                      isCancelled
-                        ? "bg-rose-100 text-rose-800 border border-rose-200"
-                        : isDelay
-                        ? "bg-amber-100 text-amber-800 border border-amber-200"
-                        : "bg-emerald-100 text-emerald-800 border border-emerald-200"
-                    }`}
-                  >
+                {flightNum && (
+                  <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-slate-900">
+                    {flightNum}
+                  </div>
+                )}
+                {statusRaw && (
+                  <div className="pt-0.5">
                     <span
-                      className={`w-2 h-2 rounded-full ${
-                        isCancelled ? "bg-rose-500" : isDelay ? "bg-amber-500" : "bg-emerald-500"
+                      className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider ${
+                        isCancelled
+                          ? "bg-rose-100 text-rose-800 border border-rose-200"
+                          : isDelay
+                          ? "bg-amber-100 text-amber-800 border border-amber-200"
+                          : "bg-emerald-100 text-emerald-800 border border-emerald-200"
                       }`}
-                    />
-                    <span>{statusRaw}</span>
-                  </span>
-                </div>
+                    >
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          isCancelled ? "bg-rose-500" : isDelay ? "bg-amber-500" : "bg-emerald-500"
+                        }`}
+                      />
+                      <span>{statusRaw}</span>
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -261,12 +268,16 @@ export function FlightVerificationResultView({
             <div className="lg:col-span-5 flex items-center justify-between gap-3 text-center px-2">
               {/* Origin */}
               <div className="space-y-1 text-left max-w-[130px] sm:max-w-[160px]">
-                <div className="text-2xl sm:text-3xl font-black font-sans text-slate-900 tracking-tight">
-                  {originCode}
-                </div>
-                <div className="text-xs text-slate-500 font-medium leading-snug line-clamp-2">
-                  {originFullLocation}
-                </div>
+                {originCode && (
+                  <div className="text-2xl sm:text-3xl font-black font-sans text-slate-900 tracking-tight">
+                    {originCode}
+                  </div>
+                )}
+                {originFullLocation && (
+                  <div className="text-xs text-slate-500 font-medium leading-snug line-clamp-2">
+                    {originFullLocation}
+                  </div>
+                )}
               </div>
 
               {/* Path Track Line */}
@@ -287,12 +298,16 @@ export function FlightVerificationResultView({
 
               {/* Destination */}
               <div className="space-y-1 text-right max-w-[130px] sm:max-w-[160px]">
-                <div className="text-2xl sm:text-3xl font-black font-sans text-slate-900 tracking-tight">
-                  {destCode}
-                </div>
-                <div className="text-xs text-slate-500 font-medium leading-snug line-clamp-2">
-                  {destFullLocation}
-                </div>
+                {destCode && (
+                  <div className="text-2xl sm:text-3xl font-black font-sans text-slate-900 tracking-tight">
+                    {destCode}
+                  </div>
+                )}
+                {destFullLocation && (
+                  <div className="text-xs text-slate-500 font-medium leading-snug line-clamp-2">
+                    {destFullLocation}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -309,18 +324,20 @@ export function FlightVerificationResultView({
                 </div>
               )}
 
-              <div>
-                <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                  Flight Status
+              {statusRaw && (
+                <div>
+                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                    Flight Status
+                  </div>
+                  <div className="text-sm font-bold text-emerald-600">
+                    {statusRaw}
+                  </div>
                 </div>
-                <div className="text-sm font-bold text-emerald-600">
-                  {statusRaw}
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
-          {/* ── 3. FLIGHT TIMING CARDS GRID (4 Columns) ── */}
+          {/* ── 3. FLIGHT TIMING CARDS GRID ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-100">
             {/* Card 1: Departure */}
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3.5">
@@ -373,40 +390,44 @@ export function FlightVerificationResultView({
             </div>
 
             {/* Card 3: Duration */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3.5">
-              <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                <Clock className="w-5 h-5" />
+            {durationText && (
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3.5">
+                <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div className="space-y-0.5">
+                  <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    Duration
+                  </div>
+                  <div className="text-lg font-bold text-slate-900">
+                    {durationText}
+                  </div>
+                  <div className="text-xs text-slate-500 font-medium">
+                    Verified Schedule
+                  </div>
+                </div>
               </div>
-              <div className="space-y-0.5">
-                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  Duration
-                </div>
-                <div className="text-lg font-bold text-slate-900">
-                  {durationText || "Direct Route"}
-                </div>
-                <div className="text-xs text-slate-500 font-medium">
-                  Non-stop
-                </div>
-              </div>
-            </div>
+            )}
 
-            {/* Card 4: Distance / Route */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3.5">
-              <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
-                <Navigation className="w-5 h-5" />
+            {/* Card 4: Distance / Route Path */}
+            {(distanceText || (originCode && destCode)) && (
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3.5">
+                <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                  <Navigation className="w-5 h-5" />
+                </div>
+                <div className="space-y-0.5">
+                  <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    {distanceText ? "Distance" : "Route Path"}
+                  </div>
+                  <div className="text-lg font-bold text-slate-900">
+                    {distanceText || `${originCode} → ${destCode}`}
+                  </div>
+                  <div className="text-xs text-slate-500 font-medium">
+                    Verified Route
+                  </div>
+                </div>
               </div>
-              <div className="space-y-0.5">
-                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  Route Path
-                </div>
-                <div className="text-lg font-bold text-slate-900">
-                  {distanceText || `${originCode} → ${destCode}`}
-                </div>
-                <div className="text-xs text-slate-500 font-medium">
-                  Verified Flight Path
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -420,15 +441,17 @@ export function FlightVerificationResultView({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs">
               {/* Flight Number */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
-                  <Plane className="w-3.5 h-3.5" />
-                  <span>Flight Number</span>
+              {flightNum && (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
+                    <Plane className="w-3.5 h-3.5" />
+                    <span>Flight Number</span>
+                  </div>
+                  <div className="text-sm font-bold text-slate-900">
+                    {flightNum}
+                  </div>
                 </div>
-                <div className="text-sm font-bold text-slate-900">
-                  {flightNum}
-                </div>
-              </div>
+              )}
 
               {/* Airline */}
               {carrierName && (
@@ -456,38 +479,70 @@ export function FlightVerificationResultView({
                 </div>
               )}
 
-              {/* Class */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>Class</span>
+              {/* ICAO Code */}
+              {icaoCode && (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>ICAO Code</span>
+                  </div>
+                  <div className="text-sm font-bold text-slate-900">
+                    {icaoCode}
+                  </div>
                 </div>
-                <div className="text-sm font-bold text-slate-900">
-                  Economy / Commercial
-                </div>
-              </div>
+              )}
 
-              {/* Meal Service */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
-                  <Utensils className="w-3.5 h-3.5" />
-                  <span>Meal Service</span>
+              {/* Registration */}
+              {registration && (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Registration</span>
+                  </div>
+                  <div className="text-sm font-bold text-slate-900">
+                    {registration}
+                  </div>
                 </div>
-                <div className="text-sm font-bold text-slate-900">
-                  Complimentary
-                </div>
-              </div>
+              )}
 
-              {/* Baggage Allowance */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
-                  <Briefcase className="w-3.5 h-3.5" />
-                  <span>Baggage Allowance</span>
+              {/* Class (rendered ONLY if returned by API) */}
+              {cabinClass && (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Class</span>
+                  </div>
+                  <div className="text-sm font-bold text-slate-900">
+                    {cabinClass}
+                  </div>
                 </div>
-                <div className="text-sm font-bold text-slate-900">
-                  20 kg Standard
+              )}
+
+              {/* Meal Service (rendered ONLY if returned by API) */}
+              {mealService && (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
+                    <Utensils className="w-3.5 h-3.5" />
+                    <span>Meal Service</span>
+                  </div>
+                  <div className="text-sm font-bold text-slate-900">
+                    {mealService}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* Baggage Allowance (rendered ONLY if returned by API) */}
+              {baggageAllowance && (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
+                    <Briefcase className="w-3.5 h-3.5" />
+                    <span>Baggage Allowance</span>
+                  </div>
+                  <div className="text-sm font-bold text-slate-900">
+                    {baggageAllowance}
+                  </div>
+                </div>
+              )}
 
               {/* Last Updated */}
               <div className="space-y-1">
