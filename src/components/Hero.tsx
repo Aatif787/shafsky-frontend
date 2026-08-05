@@ -643,7 +643,7 @@ function BookingPanel() {
       setValidatingFlight(false);
 
       navigate({
-        to: "/book",
+        to: "/flight-verification",
         search: {
           service_id: selectedService || undefined,
           flight_number: cleanFlightNum,
