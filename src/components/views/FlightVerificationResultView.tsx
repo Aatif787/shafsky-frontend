@@ -35,22 +35,40 @@ interface FlightVerificationResultViewProps {
 }
 
 /**
- * Safely formats raw API timestamp (e.g. "2026-08-07T13:15:00" or "13:15") into exact local "01:15 PM" format.
- * Prevents timezone offset distortion.
+ * Safely formats raw API timestamp into exact local 12-hour "01:15 PM" format.
+ * Converts UTC ISO timestamps using target airport timezone.
  */
-function formatDisplayTime(rawTime?: string | null): string | null {
+function formatDisplayTime(rawTime?: string | null, targetTimezone?: string | null): string | null {
   if (!rawTime || typeof rawTime !== "string") return null;
   const cleaned = rawTime.trim();
   if (!cleaned) return null;
 
-  // Case 1: Already formatted e.g. "01:15 PM"
+  // Case 1: Standard ISO string with UTC 'Z' or offset (convert to target airport timezone)
+  if (targetTimezone && (cleaned.includes("Z") || cleaned.includes("+") || (cleaned.includes("T") && cleaned.length > 16))) {
+    try {
+      const parsedDate = new Date(cleaned);
+      if (!isNaN(parsedDate.getTime())) {
+        const formatter = new Intl.DateTimeFormat("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+          timeZone: targetTimezone,
+        });
+        return formatter.format(parsedDate);
+      }
+    } catch {
+      // Fallback below
+    }
+  }
+
+  // Case 2: Already formatted e.g. "01:15 PM"
   if (/^\d{1,2}:\d{2}\s*(AM|PM)$/i.test(cleaned)) {
     const [time, period] = cleaned.split(/\s+/);
     const [h, m] = time.split(":");
     return `${h.padStart(2, "0")}:${m} ${period.toUpperCase()}`;
   }
 
-  // Case 2: Extract time directly from ISO string or time string e.g. "2026-08-07T13:15:00" or "13:15"
+  // Case 3: Extract time directly from local ISO string or 24-hour time string e.g. "2026-08-07T13:15:00" or "13:15"
   const timeMatch = cleaned.match(/(?:T|\s|^)(\d{1,2}):(\d{2})(?::\d{2})?/);
   if (timeMatch) {
     const hourNum = parseInt(timeMatch[1], 10);
@@ -74,13 +92,32 @@ function formatDisplayTime(rawTime?: string | null): string | null {
 
 /**
  * Safely formats raw API date timestamp into exact local "08 May 2025, Thu" format.
+ * Respects airport timezone for UTC ISO strings.
  */
-function formatDisplayDate(rawDate?: string | null): string | null {
+function formatDisplayDate(rawDate?: string | null, targetTimezone?: string | null): string | null {
   if (!rawDate || typeof rawDate !== "string") return null;
   const cleaned = rawDate.trim();
   if (!cleaned) return null;
 
-  // Case 1: Extract YYYY-MM-DD
+  if (targetTimezone && (cleaned.includes("Z") || cleaned.includes("+") || (cleaned.includes("T") && cleaned.length > 16))) {
+    try {
+      const parsedDate = new Date(cleaned);
+      if (!isNaN(parsedDate.getTime())) {
+        const formatter = new Intl.DateTimeFormat("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          weekday: "short",
+          timeZone: targetTimezone,
+        });
+        return formatter.format(parsedDate);
+      }
+    } catch {
+      // Fallback below
+    }
+  }
+
+  // Case 2: Extract YYYY-MM-DD
   const dateMatch = cleaned.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (dateMatch) {
     const year = parseInt(dateMatch[1], 10);
@@ -173,20 +210,23 @@ export function FlightVerificationResultView({
     .join(", ");
   const destFullLocation = destCityCountry ? `${destName}, ${destCityCountry}` : destName;
 
-  // Timings from API
+  // Timings from API with Airport Timezone conversion
+  const depTimezone = flightData?.departure?.timezone || flightData?.origin?.timezone || null;
+  const arrTimezone = flightData?.arrival?.timezone || flightData?.destination?.timezone || null;
+
   const departureSchedTimeRaw =
     flightData?.departure?.scheduledTime || (flightData as any)?.departure_time || searchParams.depart_date;
   const arrivalSchedTimeRaw =
     flightData?.arrival?.scheduledTime || (flightData as any)?.arrival_time;
 
-  const depTime = formatDisplayTime(departureSchedTimeRaw);
-  const depDate = formatDisplayDate(departureSchedTimeRaw || searchParams.depart_date);
+  const depTime = formatDisplayTime(departureSchedTimeRaw, depTimezone);
+  const depDate = formatDisplayDate(departureSchedTimeRaw || searchParams.depart_date, depTimezone);
   const depTerminal = flightData?.departure?.terminal ? `Terminal ${flightData.departure.terminal}` : null;
   const depGate = flightData?.departure?.gate ? `Gate ${flightData.departure.gate}` : null;
   const depTerminalGate = [depTerminal, depGate].filter(Boolean).join(", ");
 
-  const arrTime = formatDisplayTime(arrivalSchedTimeRaw);
-  const arrDate = formatDisplayDate(arrivalSchedTimeRaw || searchParams.depart_date);
+  const arrTime = formatDisplayTime(arrivalSchedTimeRaw, arrTimezone);
+  const arrDate = formatDisplayDate(arrivalSchedTimeRaw || searchParams.depart_date, arrTimezone);
   const arrTerminal = flightData?.arrival?.terminal ? `Terminal ${flightData.arrival.terminal}` : null;
   const arrGate = flightData?.arrival?.gate ? `Gate ${flightData.arrival.gate}` : null;
   const arrTerminalGate = [arrTerminal, arrGate].filter(Boolean).join(", ");
