@@ -131,9 +131,10 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
             isFlightValidated: true,
             validatedFlightData: cachedFlightData,
           }));
-          setCurrentStep(2);
+          // Advance directly to Service Selection (Step 3) - NO DUPLICATE STEP 2 CARD!
+          setCurrentStep(3);
         } else if (searchParams?.flight_number) {
-          // URL has flight_number but no cached data — stay at step 1 for re-validation
+          // URL has flight_number but no cached data — stay at step 1 for validation
         }
       } catch {
         // Ignore parse error

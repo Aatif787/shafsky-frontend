@@ -77,7 +77,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
   const handleSearchFlight = useCallback(async () => {
     const success = await validateAndSearchFlight();
     if (success) {
-      setCurrentStep(2);
+      setCurrentStep(3);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [validateAndSearchFlight, setCurrentStep]);
@@ -326,10 +326,10 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                     <button
                       type="button"
                       onClick={() => {
-                        setCurrentStep(2);
+                        setCurrentStep(1);
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
-                      className="px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition-all"
+                      className="px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
                     >
                       Back
                     </button>
