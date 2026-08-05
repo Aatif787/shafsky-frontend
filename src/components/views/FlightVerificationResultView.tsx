@@ -35,17 +35,29 @@ interface FlightVerificationResultViewProps {
 }
 
 /**
- * Safely formats raw API timestamp into "10:30 AM" format.
+ * Safely formats raw API timestamp (e.g. "2026-08-07T13:15:00" or "13:15") into exact local "01:15 PM" format.
+ * Prevents timezone offset distortion.
  */
 function formatDisplayTime(rawTime?: string | null): string | null {
   if (!rawTime || typeof rawTime !== "string") return null;
   const cleaned = rawTime.trim();
   if (!cleaned) return null;
 
+  // Case 1: Already formatted e.g. "01:15 PM"
   if (/^\d{1,2}:\d{2}\s*(AM|PM)$/i.test(cleaned)) {
     const [time, period] = cleaned.split(/\s+/);
     const [h, m] = time.split(":");
     return `${h.padStart(2, "0")}:${m} ${period.toUpperCase()}`;
+  }
+
+  // Case 2: Extract time directly from ISO string or time string e.g. "2026-08-07T13:15:00" or "13:15"
+  const timeMatch = cleaned.match(/(?:T|\s|^)(\d{1,2}):(\d{2})(?::\d{2})?/);
+  if (timeMatch) {
+    const hourNum = parseInt(timeMatch[1], 10);
+    const minStr = timeMatch[2];
+    const ampm = hourNum >= 12 ? "PM" : "AM";
+    const displayHour = (hourNum % 12 || 12).toString().padStart(2, "0");
+    return `${displayHour}:${minStr} ${ampm}`;
   }
 
   try {
@@ -57,24 +69,28 @@ function formatDisplayTime(rawTime?: string | null): string | null {
     // ignore
   }
 
-  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(cleaned)) {
-    const [h, m] = cleaned.split(":");
-    const hourNum = parseInt(h, 10);
-    const ampm = hourNum >= 12 ? "PM" : "AM";
-    const displayHour = (hourNum % 12 || 12).toString().padStart(2, "0");
-    return `${displayHour}:${m.padStart(2, "0")} ${ampm}`;
-  }
-
   return null;
 }
 
 /**
- * Safely formats raw API date timestamp into "08 May 2025, Thu" format.
+ * Safely formats raw API date timestamp into exact local "08 May 2025, Thu" format.
  */
 function formatDisplayDate(rawDate?: string | null): string | null {
   if (!rawDate || typeof rawDate !== "string") return null;
   const cleaned = rawDate.trim();
   if (!cleaned) return null;
+
+  // Case 1: Extract YYYY-MM-DD
+  const dateMatch = cleaned.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (dateMatch) {
+    const year = parseInt(dateMatch[1], 10);
+    const monthIndex = parseInt(dateMatch[2], 10) - 1;
+    const day = parseInt(dateMatch[3], 10);
+    const d = new Date(year, monthIndex, day);
+    if (!isNaN(d.getTime())) {
+      return format(d, "dd MMM yyyy, EEE");
+    }
+  }
 
   try {
     const d = new Date(cleaned);
@@ -285,19 +301,19 @@ export function FlightVerificationResultView({
               <div className="flex-1 relative h-6 flex items-center mx-2 overflow-hidden">
                 <div className="w-full border-b-2 border-dashed border-amber-400/90" />
 
-                {/* Animated Moving Plane Icon (Glide 0% -> 92% horizontally, NO tilting) */}
+                {/* Animated Moving Plane Icon (Glide 0% -> 90% horizontally, LEVEL / NO tilt down, slow speed, larger icon) */}
                 <motion.div
-                  className="absolute top-1/2 -translate-y-1/2 flex items-center justify-center text-amber-600 bg-white p-1.5 rounded-full shadow-md border border-amber-300 z-20"
+                  className="absolute top-1/2 -translate-y-1/2 flex items-center justify-center text-amber-600 bg-white p-2 rounded-full shadow-md border-2 border-amber-300 z-20"
                   initial={{ left: "0%" }}
-                  animate={{ left: "92%" }}
+                  animate={{ left: "90%" }}
                   transition={{
-                    duration: 5,
+                    duration: 10.5,
                     repeat: Infinity,
-                    ease: "easeInOut",
+                    ease: "linear",
                     repeatDelay: 0.5,
                   }}
                 >
-                  <Plane className="w-4 h-4 transform rotate-90 text-amber-600" />
+                  <Plane className="w-6 h-6 text-amber-600 transform rotate-45" />
                 </motion.div>
               </div>
 
