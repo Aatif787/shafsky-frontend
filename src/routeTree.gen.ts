@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as CharterRouteImport } from './routes/charter'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as FlightVerificationRouteImport } from './routes/flight-verification'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -101,6 +102,11 @@ const CharterRoute = CharterRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlightVerificationRoute = FlightVerificationRouteImport.update({
+  id: '/flight-verification',
+  path: '/flight-verification',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -370,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/book': typeof BookRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
+  '/flight-verification': typeof FlightVerificationRoute
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -425,6 +432,7 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
+  '/flight-verification': typeof FlightVerificationRoute
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -480,6 +488,7 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
+  '/flight-verification': typeof FlightVerificationRoute
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -537,6 +546,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/charter'
     | '/contact'
+    | '/flight-verification'
     | '/login'
     | '/sitemap.xml'
     | '/admin'
@@ -592,6 +602,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/charter'
     | '/contact'
+    | '/flight-verification'
     | '/login'
     | '/sitemap.xml'
     | '/dashboard'
@@ -646,6 +657,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/charter'
     | '/contact'
+    | '/flight-verification'
     | '/login'
     | '/sitemap.xml'
     | '/_authenticated/admin'
@@ -703,6 +715,7 @@ export interface RootRouteChildren {
   BookRoute: typeof BookRoute
   CharterRoute: typeof CharterRoute
   ContactRoute: typeof ContactRoute
+  FlightVerificationRoute: typeof FlightVerificationRoute
   LoginRoute: typeof LoginRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiProcessQueueRoute: typeof ApiProcessQueueRoute
@@ -772,6 +785,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flight-verification': {
+      id: '/flight-verification'
+      path: '/flight-verification'
+      fullPath: '/flight-verification'
+      preLoaderRoute: typeof FlightVerificationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1232,6 +1252,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookRoute: BookRoute,
   CharterRoute: CharterRoute,
   ContactRoute: ContactRoute,
+  FlightVerificationRoute: FlightVerificationRoute,
   LoginRoute: LoginRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiProcessQueueRoute: ApiProcessQueueRoute,

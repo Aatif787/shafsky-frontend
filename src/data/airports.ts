@@ -493,7 +493,7 @@ export const AIRPORTS: Airport[] = [
       type: "International hub",
       domestic: "1,100+ daily",
       intl: "350+ daily",
-      terminals: "Full Airport Passenger Hubs",
+      terminals: "Terminal 1, Terminal 2 & Terminal 3",
       capacity: "100M pax/yr",
       annual: "73M",
       cargo: "1.1M MT",

@@ -15,6 +15,7 @@ import { useNavigate, Link } from "@tanstack/react-router";
 import { ApiClient } from "@/lib/ApiClient";
 import { toast } from "sonner";
 import { FlightData } from "@/services/flight/FlightTypes";
+import { ManualFlightEntryForm } from "@/components/booking/shared/ManualFlightEntryForm";
 import { formatFlightLookupError } from "@/components/booking/hooks/useAirportWorkflow";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -81,7 +82,7 @@ import { AirportShowcase } from "./airports/AirportShowcase";
 
 const SLIDESHOW_IMAGES = [world, slide0, slide1, slide2, slide3, lounge, interior];
 
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 const MotionA = motion.a;
 
 const display = { fontFamily: "'Fraunces', serif", fontWeight: 300, letterSpacing: "-0.02em" };
@@ -489,6 +490,10 @@ function BookingPanel() {
   const [departDate2, setDepartDate2] = useState("");
   const [datePopoverOpen2, setDatePopoverOpen2] = useState(false);
 
+  // Manual Flight Entry Mode state & overwrite prompt state
+  const [isManualMode, setIsManualMode] = useState(false);
+  const [pendingVerifiedFlight, setPendingVerifiedFlight] = useState<FlightData | null>(null);
+
   const selectedServiceObj = useMemo(
     () => SELECTOR_SERVICES.find((s) => s.t === selectedService) || null,
     [selectedService]
@@ -579,10 +584,9 @@ function BookingPanel() {
       const resJson = await response.json();
 
       if (!response.ok || !resJson.success) {
-        const errorMsg = formatFlightLookupError(resJson?.error || resJson?.message || resJson, response.status);
-        toast.error(errorMsg);
+        // Non-interruptive smooth expansion of manual flight details form
+        setIsManualMode(true);
         setValidatingFlight(false);
-        // STAY ON HOMEPAGE, DO NOT NAVIGATE
         return;
       }
 
@@ -590,7 +594,8 @@ function BookingPanel() {
       const targetObj = rawData?.flightData || rawData?.flight_data || (Array.isArray(rawData) ? rawData[0] : rawData);
 
       if (!targetObj) {
-        toast.error("No flight schedule was found for the selected flight number and travel date. Try another date or verify the flight number.");
+        // Non-interruptive smooth expansion of manual flight details form
+        setIsManualMode(true);
         setValidatingFlight(false);
         return;
       }
@@ -631,38 +636,51 @@ function BookingPanel() {
         },
       };
 
-      if (typeof window !== "undefined") {
-        try {
-          sessionStorage.setItem("shafsky_validated_flight", JSON.stringify(flightInfo));
-        } catch {
-          // ignore cache write error
-        }
+      // If user had manual mode open, prompt user before overwriting manual entries
+      if (isManualMode) {
+        setPendingVerifiedFlight(flightInfo);
+        setValidatingFlight(false);
+        return;
       }
 
-      toast.success(`Flight ${flightInfo.flightNum} validated!`);
-      setValidatingFlight(false);
-
-      navigate({
-        to: "/flight-verification",
-        search: {
-          service_id: selectedService || undefined,
-          flight_number: cleanFlightNum,
-          depart_date: departDate,
-          direction: tab,
-          pax_adults: adults,
-          pax_children: childrenCount,
-          pax_infants: infants,
-          notes:
-            tab === "connection"
-              ? `Transit Flight 1: ${flightNumber} on ${departDate} | Flight 2: ${flightNumber2} on ${departDate2}`
-              : `Flight Number: ${flightNumber} (${tab})`,
-        } as any,
-      });
+      proceedWithFlightData(flightInfo);
     } catch (err: any) {
       console.error("[Hero] Validation error:", err);
-      toast.error(formatFlightLookupError(err));
+      setIsManualMode(true);
       setValidatingFlight(false);
     }
+  };
+
+  const proceedWithFlightData = (flightInfo: FlightData) => {
+    if (typeof window !== "undefined") {
+      try {
+        sessionStorage.setItem("shafsky_validated_flight", JSON.stringify(flightInfo));
+      } catch {
+        // ignore cache write error
+      }
+    }
+
+    toast.success(`Flight ${flightInfo.flightNum} configured!`);
+    setValidatingFlight(false);
+
+    navigate({
+      to: "/book",
+      search: {
+        service_id: selectedService || undefined,
+        flight_number: flightInfo.flightNum,
+        depart_date: departDate,
+        direction: tab,
+        pax_adults: adults,
+        pax_children: childrenCount,
+        pax_infants: infants,
+        notes:
+          tab === "connection"
+            ? `Transit Flight 1: ${flightNumber} on ${departDate} | Flight 2: ${flightNumber2} on ${departDate2}`
+            : `Flight Number: ${flightNumber} (${tab})`,
+        from_hero: "true",
+        validated: "true",
+      } as any,
+    });
   };
 
   const tabs: [typeof tab, string, React.ComponentType<{ className?: string }>][] = [
@@ -1333,8 +1351,86 @@ function BookingPanel() {
                 </>
               )}
             </button>
+
+            {/* Secondary Option: Manual Flight Entry Toggle */}
+            <div className="mt-3.5 text-center">
+              <button
+                type="button"
+                onClick={() => setIsManualMode((prev) => !prev)}
+                className="inline-flex items-center gap-2 text-xs font-bold text-slate-800 hover:text-purple-700 transition underline underline-offset-4 cursor-pointer"
+                style={mono}
+              >
+                <Sparkles className="h-3.5 w-3.5 text-purple-600" />
+                <span>{isManualMode ? "Hide Manual Flight Form" : "Or Enter Flight Details Manually"}</span>
+              </button>
+            </div>
           </div>
         </motion.div>
+
+        {/* Prompt User Before Overwriting Manual Entry with API Verified Data */}
+        <AnimatePresence>
+          {pendingVerifiedFlight && (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="mx-6 mb-6 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 backdrop-blur-md flex flex-col md:flex-row items-center justify-between gap-4 z-30"
+            >
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="h-6 w-6 text-amber-500 shrink-0" />
+                <div>
+                  <h4 className="text-xs font-extrabold text-slate-900" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    Verified Official Flight Schedule Found for {pendingVerifiedFlight.flightNum}
+                  </h4>
+                  <p className="text-[11px] text-slate-600 font-mono" style={mono}>
+                    Route: {pendingVerifiedFlight.origin.code} → {pendingVerifiedFlight.destination.code} | Carrier: {pendingVerifiedFlight.carrier.name}. Replace custom manual entries with official schedule?
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const info = pendingVerifiedFlight;
+                    setPendingVerifiedFlight(null);
+                    proceedWithFlightData(info);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-[10px] font-bold uppercase tracking-wider shadow-md transition"
+                  style={mono}
+                >
+                  Use Verified Schedule
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPendingVerifiedFlight(null)}
+                  className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-[10px] font-bold uppercase tracking-wider transition"
+                  style={mono}
+                >
+                  Keep Custom Details
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Smooth Expandable Manual Flight Entry Form */}
+        <AnimatePresence>
+          {isManualMode && (
+            <div className="px-6 pb-8 md:px-10">
+              <ManualFlightEntryForm
+                direction={tab}
+                initialValues={{
+                  flightNum: flightNumber,
+                  depDate: departDate,
+                }}
+                onClose={() => setIsManualMode(false)}
+                onSubmit={(manualFlightData) => {
+                  proceedWithFlightData(manualFlightData);
+                }}
+              />
+            </div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </section>
   );

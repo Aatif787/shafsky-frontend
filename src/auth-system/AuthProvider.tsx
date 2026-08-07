@@ -55,13 +55,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Restore session on mount via HttpOnly Refresh Cookie -> POST /api/auth/refresh
     const restoreSession = async () => {
-      console.log("[AuthProvider] Restoring session via FastAPI refresh cookie...");
+      const hasSessionCookie =
+        typeof document !== "undefined" &&
+        (document.cookie.includes("shafsky_user_id") || document.cookie.includes("shafsky_auth"));
+
+      if (!hasSessionCookie && !getAccessToken()) {
+        if (active) {
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         const { data, error } = await apiAuthRefresh();
         const tokenStr = data?.accessToken || data?.access_token;
 
         if (error || !tokenStr || !data?.user) {
-          console.log("[AuthProvider] No active session found via refresh cookie.");
           if (active) {
             syncAuthCookie(null);
             clearAccessToken();

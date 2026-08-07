@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function useWorkflowState() {
   // Medical
@@ -22,9 +22,15 @@ export function useWorkflowState() {
 
   // Hotel
   const [hotelDestination, setHotelDestination] = useState<string>("New Delhi, India");
-  const [checkInDate, setCheckInDate] = useState<string>(new Date().toISOString().split("T")[0]);
-  const [checkOutDate, setCheckOutDate] = useState<string>(new Date(Date.now() + 86400000 * 2).toISOString().split("T")[0]);
+  const [checkInDate, setCheckInDate] = useState<string>("");
+  const [checkOutDate, setCheckOutDate] = useState<string>("");
   const [roomPreference, setRoomPreference] = useState<string>("Executive Presidential Suite");
+
+  // Hydrate date-dependent defaults after mount to avoid SSR mismatch
+  useEffect(() => {
+    setCheckInDate((prev) => prev || new Date().toISOString().split("T")[0]);
+    setCheckOutDate((prev) => prev || new Date(Date.now() + 86400000 * 2).toISOString().split("T")[0]);
+  }, []);
 
   // Visa
   const [visaCountry, setVisaCountry] = useState<string>("India");

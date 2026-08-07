@@ -9,6 +9,7 @@ import {
   Car,
   HeartPulse,
   Sparkles,
+  Zap,
   Plus,
   Minus,
   ShieldCheck,
@@ -17,133 +18,264 @@ import {
 } from "lucide-react";
 import { AirportWorkflowState } from "../../hooks/useAirportWorkflow";
 import { getAirportBusinessPrice, getAirportCurrencySymbol } from "@/data/airportRegistry";
+import { AvailableServiceItem, UrgentAssistanceInfo } from "@/hooks/useJourneyEngine";
+import { UnsupportedAirportSection } from "../../shared/UnsupportedAirportSection";
+import { UrgentAssistanceSection } from "../../shared/UrgentAssistanceSection";
+import { ServiceUnavailableSection } from "../../shared/ServiceUnavailableSection";
 
 interface AirportServiceSelectionProps {
   state: AirportWorkflowState;
   onChange: (fields: Partial<AirportWorkflowState>) => void;
+  availableServices?: AvailableServiceItem[];
+  isSupported?: boolean;
+  urgentAssistance?: UrgentAssistanceInfo | null;
+  isRequestedServiceAvailable?: boolean;
+  unavailableMessage?: string | null;
+  availableTerminals?: string[];
+  selectedTerminal?: string | null;
 }
 
-export function AirportServiceSelection({ state, onChange }: AirportServiceSelectionProps) {
+export function AirportServiceSelection({
+  state,
+  onChange,
+  availableServices,
+  isSupported = true,
+  urgentAssistance,
+  isRequestedServiceAvailable = true,
+  unavailableMessage,
+  availableTerminals,
+  selectedTerminal,
+}: AirportServiceSelectionProps) {
   const currencySymbol = getAirportCurrencySymbol(state.airportCode);
+  const [isEditingTerminal, setIsEditingTerminal] = useState(false);
 
-  // Packages array
-  const packages = [
-    {
-      id: "essential",
-      name: "Essential Escort",
-      tagline: "Standard terminal guidance & luggage porterage",
-      price: getAirportBusinessPrice(state.airportCode, "package", "essential") || 3499,
-      badge: "Best Value",
-      features: ["Personal terminal host", "Porter for checked luggage", "Fast-track security line"],
-      includedServices: ["meet_greet", "porter"],
-    },
-    {
-      id: "premium",
-      name: "Premium VIP Sanctuary",
-      tagline: "Full aerobridge greeting, lounge pass & priority clearance",
-      price: getAirportBusinessPrice(state.airportCode, "package", "premium") || 6999,
-      badge: "Most Popular",
-      features: [
-        "Aerobridge placard greeting",
-        "Dedicated porterage for all bags",
-        "Priority diplomatic immigration lane",
-        "VIP lounge suite access",
-      ],
-      includedServices: ["meet_greet", "fast_track", "lounge", "porter"],
-    },
-    {
-      id: "vip",
-      name: "VIP Executive Tarmac",
-      tagline: "Private luxury tarmac transfer & dedicated diplomat escort",
-      price: getAirportBusinessPrice(state.airportCode, "package", "vip") || 12999,
-      badge: "Flagship Luxury",
-      features: [
-        "Private luxury tarmac car transfer",
-        "Diplomatic fast-track clearance",
-        "Private lounge suite & buffet",
-        "Dedicated VIP host & team",
-        "Chauffeured sedan transfer",
-      ],
-      includedServices: ["meet_greet", "fast_track", "lounge", "buggy", "porter", "transport"],
-    },
-  ];
+  const availableTerminalsList = availableTerminals || [];
+  const hasMultipleTerminals = availableTerminalsList.length > 1;
+  const currentTerminal = state.selectedTerminal || selectedTerminal || availableTerminalsList[0] || "";
 
-  // Individual add-on services list
-  const individualServices = [
-    {
-      id: "meet_greet",
-      name: "Meet & Greet Escort",
-      desc: "Personal gate welcome, placard greeting & host escort.",
-      price: 2499,
-      estTime: "30 sec",
-      icon: Users,
-      badge: "Flagship",
-    },
-    {
-      id: "lounge",
-      name: "VIP Lounge Pass",
-      desc: "Private lounge suite access with hot buffet, Wi-Fi & showers.",
-      price: 1999,
-      estTime: "1 min",
-      icon: Hotel,
-      badge: "Sanctuary",
-    },
-    {
-      id: "fast_track",
-      name: "Fast-Track Clearance",
-      desc: "Diplomatic priority lane passport control and security skip.",
-      price: 1899,
-      estTime: "1 min",
-      icon: Ticket,
-      badge: "Express",
-    },
-    {
-      id: "porter",
-      name: "Baggage Porter Service",
-      desc: "Dedicated porter service for all checked and hand luggage.",
-      price: 999,
-      estTime: "Instant",
-      icon: Package,
-      badge: "Luggage",
-    },
-    {
-      id: "buggy",
-      name: "Electric Buggy Ride",
-      desc: "Airside golf cart transit between gates and lounge suites.",
-      price: 1299,
-      estTime: "Instant",
-      icon: Car,
-      badge: "Airside",
-    },
-    {
-      id: "wheelchair",
-      name: "Wheelchair Assistance",
-      desc: "Dedicated mobility ramp escort & assistance.",
-      price: 1499,
-      estTime: "Instant",
-      icon: HeartPulse,
-      badge: "Care",
-    },
-    {
-      id: "transport",
-      name: "Airport Chauffeur Transfer",
-      desc: "Chauffeured executive sedan or SUV airport pickup & dropoff.",
-      price: 2999,
-      estTime: "Scheduled",
-      icon: Car,
-      badge: "Transfer",
-    },
-  ];
+  // Requirement #5: If airport is unsupported, display contact assistance section
+  if (isSupported === false) {
+    return (
+      <UnsupportedAirportSection
+        airportCode={state.airportCode}
+        airportName={state.airportName}
+      />
+    );
+  }
 
-  // Smart Recommendations Engine
-  const isArrival = state.direction === "arrival";
-  const isTransit = state.direction === "transit";
+  // Requirement #6: If requested service is unavailable for the chosen airport or journey type, display fallback section
+  if (state.selectedService && isRequestedServiceAvailable === false) {
+    return (
+      <ServiceUnavailableSection
+        requestedServiceName={state.selectedService.replace(/_/g, " ").toUpperCase()}
+        airportCode={state.airportCode}
+        journeyType={state.direction}
+        onViewAvailableServices={() => {
+          onChange({ selectedService: "", bookingMode: "individual" });
+        }}
+      />
+    );
+  }
+
+  // Requirement #6: If booking falls inside global minimum notice window, display Urgent Assistance section
+  if (urgentAssistance?.is_urgent) {
+    return (
+      <UrgentAssistanceSection
+        urgentInfo={urgentAssistance}
+        serviceName="Airport Concierge Services"
+      />
+    );
+  }
+
+  const getIconComponent = (iconName?: string, slug?: string) => {
+    const term = (iconName || slug || "").toLowerCase();
+    if (term.includes("user") || term.includes("meet")) return Users;
+    if (term.includes("zap") || term.includes("fast")) return Zap;
+    if (term.includes("crown") || term.includes("vip")) return Crown;
+    if (term.includes("package") || term.includes("porter")) return Package;
+    if (term.includes("car") || term.includes("buggy") || term.includes("transport")) return Car;
+    if (term.includes("heart") || term.includes("wheelchair")) return HeartPulse;
+    if (term.includes("hotel") || term.includes("lounge")) return Hotel;
+    if (term.includes("ticket")) return Ticket;
+    return Sparkles;
+  };
+
+  const [expandedCardIds, setExpandedCardIds] = useState<Record<string, boolean>>({});
+
+  const toggleExpand = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedCardIds((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // Dynamic Packages array from database if available (e.g., Silver, Gold, Elite for HYD / Platinum, Elite for AMD)
+  const packages =
+    availableServices && availableServices.length > 0
+      ? availableServices.map((svc) => ({
+          id: svc.slug,
+          name: svc.name,
+          tagline: svc.short_description || svc.description || "VIP Airport Package",
+          price: svc.price || getAirportBusinessPrice(state.airportCode, "package", svc.slug) || 2420,
+          badge:
+            svc.slug === "silver"
+              ? "Silver Tier"
+              : svc.slug === "gold"
+              ? "Gold Tier"
+              : svc.slug === "elite"
+              ? "Elite Tier"
+              : svc.display_priority === 1
+              ? "Platinum Tier"
+              : svc.display_priority === 2
+              ? "Elite Tier"
+              : "Featured",
+          features:
+            svc.features && svc.features.length > 0
+              ? svc.features
+              : [
+                  "Welcome guest from the aerobridge",
+                  "Dedicated representative with personalized placard",
+                  "Baggage assistance",
+                  "Escort until car parking",
+                ],
+          additionalBenefits: svc.additional_benefits || [],
+          includedServices: [svc.slug],
+        }))
+      : [
+          {
+            id: "essential",
+            name: "Essential Escort",
+            tagline: "Standard terminal guidance & luggage porterage",
+            price: getAirportBusinessPrice(state.airportCode, "package", "essential") || 3499,
+            badge: "Best Value",
+            features: ["Personal terminal host", "Porter for checked luggage", "Fast-track security line"],
+            includedServices: ["meet_greet", "porter"],
+          },
+          {
+            id: "premium",
+            name: "Premium VIP Sanctuary",
+            tagline: "Full aerobridge greeting, lounge pass & priority clearance",
+            price: getAirportBusinessPrice(state.airportCode, "package", "premium") || 6999,
+            badge: "Most Popular",
+            features: [
+              "Aerobridge placard greeting",
+              "Fast-track immigration escort",
+              "Priority lounge access (2 hours)",
+              "Porter for all baggage",
+            ],
+            includedServices: ["meet_greet", "lounge", "fast_track", "porter"],
+          },
+          {
+            id: "charter",
+            name: "Royal Diplomatic Suite",
+            tagline: "Private lounge transfer, Maybach tarmac ride & expedited customs",
+            price: getAirportBusinessPrice(state.airportCode, "package", "charter") || 14999,
+            badge: "Ultra Luxury",
+            features: [
+              "Private airside Maybach transfer",
+              "Private VIP lounge suite",
+              "Diplomatic fast-track clearance",
+              "Uncapped luggage handling",
+              "Dedicated VIP manager",
+            ],
+            includedServices: ["meet_greet", "lounge", "fast_track", "porter", "transport"],
+          },
+        ];
+
+  // Map dynamic services from database if available; fallback to default list
+  const individualServices =
+    availableServices && availableServices.length > 0
+      ? availableServices.map((svc) => ({
+          id: svc.slug,
+          name: svc.name,
+          desc: svc.short_description || svc.description || "Airside concierge service.",
+          price: svc.price || getAirportBusinessPrice(state.airportCode, "individual", svc.slug) || 2499,
+          estTime: `${svc.min_booking_notice_hours}h lead`,
+          icon: getIconComponent(svc.icon, svc.slug),
+          badge: svc.min_booking_notice_hours <= 2 ? "Fast Lead" : "Standard",
+          isBookableOnline: svc.is_bookable_online,
+          urgentAssistance: svc.urgent_assistance,
+        }))
+      : [
+          {
+            id: "meet_greet",
+            name: "Meet & Greet Escort",
+            desc: "Personal gate welcome, placard greeting & host escort.",
+            price: 2499,
+            estTime: "30 sec",
+            icon: Users,
+            badge: "Flagship",
+            isBookableOnline: true,
+          },
+          {
+            id: "lounge",
+            name: "VIP Lounge Pass",
+            desc: "Private lounge suite access with hot buffet, Wi-Fi & showers.",
+            price: 1999,
+            estTime: "1 min",
+            icon: Hotel,
+            badge: "Sanctuary",
+            isBookableOnline: true,
+          },
+          {
+            id: "fast_track",
+            name: "Fast-Track Clearance",
+            desc: "Diplomatic priority lane passport control and security skip.",
+            price: 1899,
+            estTime: "1 min",
+            icon: Ticket,
+            badge: "Express",
+            isBookableOnline: true,
+          },
+          {
+            id: "porter",
+            name: "Baggage Porter Service",
+            desc: "Dedicated porter service for all checked and hand luggage.",
+            price: 999,
+            estTime: "Instant",
+            icon: Package,
+            badge: "Luggage",
+            isBookableOnline: true,
+          },
+          {
+            id: "buggy",
+            name: "Terminal Buggy Transit",
+            desc: "Electric golf buggy transport between gates or to arrival exit.",
+            price: 799,
+            estTime: "Instant",
+            icon: Car,
+            badge: "Transit",
+            isBookableOnline: true,
+          },
+          {
+            id: "wheelchair",
+            name: "Wheelchair Assistance",
+            desc: "Dedicated mobility ramp escort & assistance.",
+            price: 1499,
+            estTime: "Instant",
+            icon: HeartPulse,
+            badge: "Care",
+            isBookableOnline: true,
+          },
+          {
+            id: "transport",
+            name: "Airport Chauffeur Transfer",
+            desc: "Chauffeured executive sedan or SUV airport pickup & dropoff.",
+            price: 2999,
+            estTime: "Scheduled",
+            icon: Car,
+            badge: "Transfer",
+            isBookableOnline: true,
+          },
+        ];
+
+  // Dynamic context-aware smart recommendation flags
   const passengerCount = state.guestCount || 1;
+  const isDeparture = state.direction === "departure";
+  const isTransit = state.direction === "transit";
 
   const recommendations = [
     {
-      condition: isArrival,
-      title: "Recommended for Arrival",
+      condition: isDeparture,
+      title: "Fast-Track Security & Porter Recommended",
       text: "Fast-Track Immigration & Baggage Porter for zero queue delays at customs.",
       serviceId: "fast_track",
     },
@@ -176,6 +308,76 @@ export function AirportServiceSelection({ state, onChange }: AirportServiceSelec
 
   return (
     <div className="space-y-8">
+      {/* ── TERMINAL SELECTION SECTION ── */}
+      {hasMultipleTerminals && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+          {state.isFlightValidated && !state.isManualMode && !isEditingTerminal ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+                  Terminal:
+                </span>
+                <span className="text-sm font-bold text-slate-900 bg-amber-100 text-amber-900 px-3 py-1 rounded-lg border border-amber-300">
+                  {currentTerminal}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditingTerminal(true)}
+                className="text-xs font-bold text-amber-700 hover:text-amber-800 underline transition-all cursor-pointer"
+              >
+                Change
+              </button>
+            </div>
+          ) : (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-xs font-mono font-bold text-slate-900 uppercase tracking-wider">
+                  Select Terminal
+                </label>
+                {state.isFlightValidated && !state.isManualMode && (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingTerminal(false)}
+                    className="text-xs font-medium text-slate-500 hover:text-slate-700 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {availableTerminalsList.map((term) => {
+                  const isSelected = currentTerminal === term;
+                  return (
+                    <label
+                      key={term}
+                      onClick={() => {
+                        onChange({ selectedTerminal: term });
+                        setIsEditingTerminal(false);
+                      }}
+                      className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border cursor-pointer transition-all ${
+                        isSelected
+                          ? "border-amber-500 bg-amber-50 text-slate-900 font-bold shadow-xs"
+                          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                      }`}
+                    >
+                      <div
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          isSelected ? "border-amber-600 bg-amber-500" : "border-slate-300"
+                        }`}
+                      >
+                        {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      </div>
+                      <span className="text-xs sm:text-sm font-medium">{term}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ── 1. SMART RECOMMENDATIONS BANNER ── */}
       {recommendations.length > 0 && (
         <div className="p-4 sm:p-5 rounded-3xl bg-amber-50/80 border border-amber-200 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
@@ -285,15 +487,30 @@ export function AirportServiceSelection({ state, onChange }: AirportServiceSelec
 
                   <div className="space-y-2.5 pt-4 border-t border-slate-100">
                     <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
-                      Includes:
+                      What's Included:
                     </div>
-                    {pkg.features.map((feat, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-xs text-slate-700 font-medium">
-                        <Check className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    {pkg.features.map((feat: string, idx: number) => (
+                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-700 font-medium">
+                        <Check className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
                         <span>{feat}</span>
                       </div>
                     ))}
                   </div>
+
+                  {(pkg as any).additionalBenefits && (pkg as any).additionalBenefits.length > 0 && (
+                    <div className="space-y-2 pt-3 mt-3 border-t border-slate-100">
+                      <div className="text-[10px] font-mono uppercase tracking-wider text-amber-700 font-bold flex items-center gap-1">
+                        <ShieldCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span>Additional Benefits:</span>
+                      </div>
+                      {(pkg as any).additionalBenefits.map((ben: string, idx: number) => (
+                        <div key={idx} className="flex items-start gap-2 text-xs text-slate-800 font-medium">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                          <span>{ben}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-slate-100">

@@ -378,9 +378,19 @@ export function ValidatedFlightExperience({
         <div className="relative px-5 sm:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-200/70 text-emerald-900 text-[11px] font-mono font-bold uppercase tracking-[0.22em]">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
-                <span>Verified</span>
+              <div
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-mono font-bold uppercase tracking-[0.18em] border ${
+                  flightData?.isManual
+                    ? "bg-slate-100 text-slate-700 border-slate-300"
+                    : "bg-emerald-500/10 border-emerald-200/70 text-emerald-900"
+                }`}
+              >
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    flightData?.isManual ? "bg-slate-500" : "bg-emerald-500 animate-pulse"
+                  }`}
+                />
+                <span>{flightData?.isManual ? "Provided Information" : "Live Data"}</span>
               </div>
               {(carrierName || flightNum) && (
                 <div className="truncate text-[11px] font-mono font-bold uppercase tracking-[0.22em] text-[#475569]">

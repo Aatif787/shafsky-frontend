@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
-import { createFileRoute, useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
-import { FlightVerificationResultView } from "@/components/views/FlightVerificationResultView";
-import { FlightData } from "@/services/flight/FlightTypes";
-import { Navigation } from "@/components/Navigation";
 
 const flightVerificationSearchSchema = z.object({
   flight_number: z.string().optional().catch(""),
@@ -20,12 +17,7 @@ export const Route = createFileRoute("/flight-verification")({
   validateSearch: (search) => flightVerificationSearchSchema.parse(search),
   head: () => ({
     meta: [
-      { title: "Flight Verification Result — Shafsky Aviation" },
-      {
-        name: "description",
-        content:
-          "Real-time flight schedule and status verification result powered by live aviation database providers.",
-      },
+      { title: "Journey Details — Shafsky Aviation" },
     ],
   }),
   component: FlightVerificationPage,
@@ -33,42 +25,19 @@ export const Route = createFileRoute("/flight-verification")({
 
 function FlightVerificationPage() {
   const searchParams = Route.useSearch();
-  const [flightData, setFlightData] = useState<FlightData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Hydrate verified flight data from sessionStorage
-    if (typeof window !== "undefined") {
-      try {
-        const stored = sessionStorage.getItem("shafsky_validated_flight");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          setFlightData(parsed);
-        }
-      } catch (err) {
-        console.error("[FlightVerification] Error parsing cached flight data:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-  }, []);
+    navigate({
+      to: "/book",
+      search: {
+        ...searchParams,
+        from_hero: "true",
+        validated: "true",
+      } as any,
+      replace: true,
+    });
+  }, [navigate, searchParams]);
 
-  return (
-    <div className="min-h-screen bg-[#f8fafc]">
-      <Navigation />
-      <div className="pt-20">
-        {loading ? (
-          <div className="w-full max-w-[1100px] mx-auto p-12 text-center animate-pulse space-y-4">
-            <div className="h-16 bg-slate-200 rounded-2xl w-full" />
-            <div className="h-64 bg-slate-200 rounded-3xl w-full" />
-          </div>
-        ) : (
-          <FlightVerificationResultView
-            flightData={flightData}
-            searchParams={searchParams}
-          />
-        )}
-      </div>
-    </div>
-  );
+  return null;
 }

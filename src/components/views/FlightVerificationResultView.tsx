@@ -16,9 +16,16 @@ import {
   Briefcase,
   Layers,
   FileText,
+  Edit2,
+  Sparkles,
+  AlertCircle,
+  RotateCcw,
 } from "lucide-react";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { format } from "date-fns";
+import { IntelligentAirlineAutocomplete } from "@/components/booking/shared/IntelligentAirlineAutocomplete";
+import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
+import { IntelligentFlightNumberAutocomplete } from "@/components/booking/shared/IntelligentFlightNumberAutocomplete";
 
 interface FlightVerificationResultViewProps {
   flightData: FlightData | null;
@@ -178,78 +185,128 @@ function AirlineLogoAvatar({
 }
 
 export function FlightVerificationResultView({
-  flightData,
+  flightData: initialFlightData,
   searchParams,
 }: FlightVerificationResultViewProps) {
   const navigate = useNavigate();
 
-  // 100% Dynamic attributes from API response (Zero hardcoding)
-  const flightNum =
-    flightData?.flightNum || searchParams.flight_number?.toUpperCase() || "";
-  const carrierName = flightData?.carrier?.name || null;
-  const carrierIata = flightData?.carrier?.iata || null;
-  const airlineLogo = flightData?.carrier?.logo || null;
+  const [activeFlightData, setActiveFlightData] = useState<FlightData | null>(initialFlightData);
+  const [isEditing, setIsEditing] = useState(false);
+  const [backgroundUpdate, setBackgroundUpdate] = useState<FlightData | null>(null);
 
-  const statusRaw = flightData?.status || "Scheduled";
+  // Edit form temporary state
+  const [editAirline, setEditAirline] = useState(initialFlightData?.carrier?.name || "");
+  const [editFlightNum, setEditFlightNum] = useState(
+    initialFlightData?.flightNum || searchParams.flight_number?.toUpperCase() || ""
+  );
+  const [editDepCode, setEditDepCode] = useState(initialFlightData?.origin?.code || "DEL");
+  const [editArrCode, setEditArrCode] = useState(initialFlightData?.destination?.code || "BOM");
+
+  // Information Source Indicator State: 'Live Data' | 'Provided Information' | 'Updating'
+  const isManual = Boolean(activeFlightData?.isManual);
+  const sourceIndicator = isManual
+    ? { label: "Provided Information", bg: "bg-slate-100 text-slate-700 border-slate-300", icon: "pencil" }
+    : { label: "Live Data", bg: "bg-emerald-50 text-emerald-800 border-emerald-300", icon: "live" };
+
+  // 100% Dynamic attributes from activeFlightData
+  const flightNum = activeFlightData?.flightNum || searchParams.flight_number?.toUpperCase() || "";
+  const carrierName = activeFlightData?.carrier?.name || null;
+  const carrierIata = activeFlightData?.carrier?.iata || null;
+  const airlineLogo = activeFlightData?.carrier?.logo || null;
+
+  const statusRaw = activeFlightData?.status || "Scheduled";
   const isDelay = statusRaw.toLowerCase().includes("delay");
   const isCancelled = statusRaw.toLowerCase().includes("cancel");
 
   // Route Origin
-  const originCode = flightData?.origin?.code || "";
-  const originName = flightData?.origin?.name || flightData?.origin?.city || originCode;
-  const originCityCountry = [flightData?.origin?.city, flightData?.origin?.country]
+  const originCode = activeFlightData?.origin?.code || "";
+  const originName = activeFlightData?.origin?.name || activeFlightData?.origin?.city || originCode;
+  const originCityCountry = [activeFlightData?.origin?.city, activeFlightData?.origin?.country]
     .filter(Boolean)
     .join(", ");
   const originFullLocation = originCityCountry ? `${originName}, ${originCityCountry}` : originName;
 
   // Route Destination
-  const destCode = flightData?.destination?.code || "";
-  const destName = flightData?.destination?.name || flightData?.destination?.city || destCode;
-  const destCityCountry = [flightData?.destination?.city, flightData?.destination?.country]
+  const destCode = activeFlightData?.destination?.code || "";
+  const destName = activeFlightData?.destination?.name || activeFlightData?.destination?.city || destCode;
+  const destCityCountry = [activeFlightData?.destination?.city, activeFlightData?.destination?.country]
     .filter(Boolean)
     .join(", ");
   const destFullLocation = destCityCountry ? `${destName}, ${destCityCountry}` : destName;
 
-  // Timings from API with Airport Timezone conversion
-  const depTimezone = flightData?.departure?.timezone || flightData?.origin?.timezone || null;
-  const arrTimezone = flightData?.arrival?.timezone || flightData?.destination?.timezone || null;
+  // Timings with Airport Timezone conversion
+  const depTimezone = activeFlightData?.departure?.timezone || activeFlightData?.origin?.timezone || null;
+  const arrTimezone = activeFlightData?.arrival?.timezone || activeFlightData?.destination?.timezone || null;
 
   const departureSchedTimeRaw =
-    flightData?.departure?.scheduledTime || (flightData as any)?.departure_time || searchParams.depart_date;
+    activeFlightData?.departure?.scheduledTime || (activeFlightData as any)?.departure_time || searchParams.depart_date;
   const arrivalSchedTimeRaw =
-    flightData?.arrival?.scheduledTime || (flightData as any)?.arrival_time;
+    activeFlightData?.arrival?.scheduledTime || (activeFlightData as any)?.arrival_time;
 
   const depTime = formatDisplayTime(departureSchedTimeRaw, depTimezone);
   const depDate = formatDisplayDate(departureSchedTimeRaw || searchParams.depart_date, depTimezone);
-  const depTerminal = flightData?.departure?.terminal ? `Terminal ${flightData.departure.terminal}` : null;
-  const depGate = flightData?.departure?.gate ? `Gate ${flightData.departure.gate}` : null;
+  const depTerminal = activeFlightData?.departure?.terminal ? `Terminal ${activeFlightData.departure.terminal}` : null;
+  const depGate = activeFlightData?.departure?.gate ? `Gate ${activeFlightData.departure.gate}` : null;
   const depTerminalGate = [depTerminal, depGate].filter(Boolean).join(", ");
 
   const arrTime = formatDisplayTime(arrivalSchedTimeRaw, arrTimezone);
   const arrDate = formatDisplayDate(arrivalSchedTimeRaw || searchParams.depart_date, arrTimezone);
-  const arrTerminal = flightData?.arrival?.terminal ? `Terminal ${flightData.arrival.terminal}` : null;
-  const arrGate = flightData?.arrival?.gate ? `Gate ${flightData.arrival.gate}` : null;
+  const arrTerminal = activeFlightData?.arrival?.terminal ? `Terminal ${activeFlightData.arrival.terminal}` : null;
+  const arrGate = activeFlightData?.arrival?.gate ? `Gate ${activeFlightData.arrival.gate}` : null;
   const arrTerminalGate = [arrTerminal, arrGate].filter(Boolean).join(", ");
 
-  // Optional fields from API
   const durationText =
-    flightData?.duration ||
-    (flightData as any)?.duration_text ||
-    (flightData as any)?.flight_duration ||
+    activeFlightData?.duration ||
+    (activeFlightData as any)?.duration_text ||
+    (activeFlightData as any)?.flight_duration ||
     null;
-  const distanceText = (flightData as any)?.distance || null;
-  const aircraftModel = flightData?.aircraft?.model || (flightData as any)?.aircraft_type || null;
-  const cabinClass = (flightData as any)?.cabin_class || (flightData as any)?.class || null;
-  const mealService = (flightData as any)?.meal_service || (flightData as any)?.meal || null;
-  const baggageAllowance = (flightData as any)?.baggage_allowance || (flightData as any)?.baggage || null;
-  const icaoCode = (flightData as any)?.icao || null;
-  const registration = (flightData as any)?.registration || null;
+  const distanceText = (activeFlightData as any)?.distance || null;
+  const aircraftModel = activeFlightData?.aircraft?.model || (activeFlightData as any)?.aircraft_type || null;
+  const cabinClass = (activeFlightData as any)?.cabin_class || (activeFlightData as any)?.class || null;
+  const mealService = (activeFlightData as any)?.meal_service || (activeFlightData as any)?.meal || null;
+  const baggageAllowance = (activeFlightData as any)?.baggage_allowance || (activeFlightData as any)?.baggage || null;
+  const icaoCode = (activeFlightData as any)?.icao || null;
+  const registration = (activeFlightData as any)?.registration || null;
 
   const searchTimestamp = useMemo(() => {
     return format(new Date(), "dd MMM yyyy, hh:mm a");
   }, []);
 
+  const handleSaveInPlaceEdits = () => {
+    const cleanNum = editFlightNum.trim().toUpperCase();
+    const carrier = cleanNum.slice(0, 2).toUpperCase();
+    const updated: FlightData = {
+      ...activeFlightData,
+      flightNum: cleanNum,
+      carrier: {
+        iata: carrier,
+        name: editAirline || `${carrier} Airways`,
+        logo: `https://images.aviation-edge.com/airline-logos/${carrier}.png`,
+      },
+      origin: {
+        code: editDepCode,
+        name: `${editDepCode} Airport`,
+        city: editDepCode,
+      },
+      destination: {
+        code: editArrCode,
+        name: `${editArrCode} Airport`,
+        city: editArrCode,
+      },
+      isManual: true,
+    };
+    setActiveFlightData(updated);
+    setIsEditing(false);
+  };
+
   const handleProceedToBooking = () => {
+    if (typeof window !== "undefined") {
+      try {
+        sessionStorage.setItem("shafsky_validated_flight", JSON.stringify(activeFlightData));
+      } catch {
+        // ignore cache write error
+      }
+    }
     navigate({
       to: "/book",
       search: {
@@ -267,44 +324,158 @@ export function FlightVerificationResultView({
     });
   };
 
-  const handleSearchAgain = () => {
-    navigate({ to: "/" });
-  };
-
   return (
     <div className="w-full min-h-screen bg-[#f8fafc] text-slate-900 py-6 sm:py-10 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-[1100px] mx-auto space-y-6">
 
-        {/* ── 1. SUCCESS TOP BANNER ── */}
+        {/* ── 1. HEADER BANNER WITH SOURCE INDICATOR ── */}
         <div className="bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0 shadow-sm">
-              <CheckCircle2 className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-amber-400 shrink-0 shadow-sm">
+              <Plane className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
-                Flight validated successfully
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-base sm:text-lg font-extrabold text-slate-900 leading-snug">
+                  Review Your Journey
+                </h1>
+                {/* Subtle Information Source Indicator */}
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border ${sourceIndicator.bg}`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      isManual ? "bg-slate-500" : "bg-emerald-500 animate-pulse"
+                    }`}
+                  />
+                  <span>{sourceIndicator.label}</span>
+                </span>
+              </div>
               <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                Here is your real-time flight information.
+                Confirm your journey itinerary and select your VIP airport concierge options.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4 self-end sm:self-auto">
-            <span className="text-xs font-mono text-slate-600 hidden sm:inline">
-              Searched on: {searchTimestamp}
-            </span>
+          <div className="flex items-center gap-2.5 sm:gap-3 self-end sm:self-auto">
             <button
               type="button"
-              onClick={handleSearchAgain}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-xs transition-all cursor-pointer"
+              onClick={() => setIsEditing((prev) => !prev)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-900 font-bold text-xs transition-all cursor-pointer"
             >
-              <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
-              <span>Search Again</span>
+              <Edit2 className="w-3.5 h-3.5 text-purple-700" />
+              <span>{isEditing ? "Close Editor" : "Edit Journey Details"}</span>
             </button>
           </div>
         </div>
+
+        {/* Lightweight Non-Interruptive Inline Notification for Background Updates */}
+        {backgroundUpdate && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-4"
+          >
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+              <span className="text-xs font-bold text-slate-900">
+                We found updated flight information.
+              </span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveFlightData(backgroundUpdate);
+                  setBackgroundUpdate(null);
+                }}
+                className="px-3 py-1 rounded-lg bg-purple-700 text-white text-[10px] font-bold uppercase tracking-wider"
+              >
+                Review Changes
+              </button>
+              <button
+                type="button"
+                onClick={() => setBackgroundUpdate(null)}
+                className="px-3 py-1 rounded-lg bg-slate-200 text-slate-800 text-[10px] font-bold uppercase tracking-wider"
+              >
+                Keep Current Details
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Inline Direct Editor Card */}
+        {isEditing && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="bg-white rounded-3xl border border-purple-200 p-6 shadow-lg space-y-4"
+          >
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-purple-900">
+                Edit Journey Details In-Place
+              </h3>
+              <span className="text-[10px] text-slate-500 font-mono">No need to start over</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Airline
+                </label>
+                <IntelligentAirlineAutocomplete
+                  value={editAirline}
+                  onChangeText={setEditAirline}
+                  onSelect={(a) => setEditAirline(a.name)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Flight Number
+                </label>
+                <IntelligentFlightNumberAutocomplete
+                  value={editFlightNum}
+                  onChangeText={setEditFlightNum}
+                  onSelect={(f) => setEditFlightNum(f.flightNum)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Departure Airport
+                </label>
+                <IntelligentAirportAutocomplete
+                  value={editDepCode}
+                  onChangeText={setEditDepCode}
+                  onSelect={(ap) => setEditDepCode(ap.code)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  Arrival Airport
+                </label>
+                <IntelligentAirportAutocomplete
+                  value={editArrCode}
+                  onChangeText={setEditArrCode}
+                  onSelect={(ap) => setEditArrCode(ap.code)}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={handleSaveInPlaceEdits}
+                className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-purple-900 text-white font-mono text-xs font-bold uppercase tracking-widest transition shadow-md"
+              >
+                Save & Update Journey
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         {/* ── 2. FLIGHT HEADER CARD (With Prominent Full-Width Top Flight Path) ── */}
         <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6">
@@ -561,10 +732,10 @@ export function FlightVerificationResultView({
           </div>
         </div>
 
-        {/* ── 4. FLIGHT DETAILS & LIVE STATUS GRID (2 Columns) ── */}
+        {/* ── 4. FLIGHT DETAILS & LIVE STATUS GRID (2 Columns or 1 Full Column for Manual) ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Card: Flight Details */}
-          <div className="lg:col-span-8 bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6">
+          <div className={`${isManual ? "lg:col-span-12" : "lg:col-span-8"} bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6`}>
             <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
               Flight Details
             </h2>
@@ -674,63 +845,65 @@ export function FlightVerificationResultView({
                 </div>
               )}
 
-              {/* Last Updated */}
+              {/* Information Source */}
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5 text-slate-400 font-semibold uppercase tracking-wider">
                   <Clock className="w-3.5 h-3.5" />
-                  <span>Last Updated</span>
+                  <span>Information Source</span>
                 </div>
-                <div className="text-sm font-bold text-emerald-600 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Just now</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Card: Live Flight Status */}
-          <div className="lg:col-span-4 bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h2 className="text-base font-bold text-slate-900">
-                  Live Flight Status
-                </h2>
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              </div>
-
-              <div className="space-y-4 pt-4 text-xs font-semibold">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Flight Scheduled</span>
-                  </div>
-                  <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
-                    Confirmed
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Departure</span>
-                  </div>
-                  <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
-                    {statusRaw}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Arrival</span>
-                  </div>
-                  <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
-                    {statusRaw}
-                  </span>
+                <div className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full ${isManual ? "bg-slate-400" : "bg-emerald-500 animate-pulse"}`} />
+                  <span>{isManual ? "Provided Information" : "Live Flight Radar"}</span>
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Right Card: Live Flight Status (Only rendered when NOT manual entry) */}
+          {!isManual && (
+            <div className="lg:col-span-4 bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <h2 className="text-base font-bold text-slate-900">
+                    Live Flight Status
+                  </h2>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                </div>
+
+                <div className="space-y-4 pt-4 text-xs font-semibold">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-slate-700">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>Flight Scheduled</span>
+                    </div>
+                    <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
+                      Confirmed
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-slate-700">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>Departure</span>
+                    </div>
+                    <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
+                      {statusRaw}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-slate-700">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>Arrival</span>
+                    </div>
+                    <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
+                      {statusRaw}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── 5. FOOTER BANNER & BOTTOM CTA ── */}

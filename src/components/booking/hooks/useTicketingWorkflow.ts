@@ -83,87 +83,89 @@ export function useTicketingWorkflow(initialOrigin = "London Heathrow (LHR)", in
   const [busy, setBusy] = useState<boolean>(false);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
 
-  const [journey, setJourney] = useState<TicketingJourneyData>(() => {
-    try {
-      const saved = localStorage.getItem(DRAFT_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.journey) return parsed.journey;
-      }
-    } catch (_) {}
-    return {
-      tripType: "round_trip",
-      fromAirport: initialOrigin,
-      toAirport: initialDest,
-      departDate: new Date().toISOString().split("T")[0],
-      returnDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
-      dateFlexibility: false,
-      passengers: 1,
-      paxAdults: 1,
-      paxChildren: 0,
-      paxInfants: 0,
-      cabinClass: "First / Business Class",
-      preferredAlliance: "Any Alliance",
-      nonStopOnly: false,
-      budgetGuidance: "",
-      multiCityLegs: [
-        { fromAirport: initialOrigin, toAirport: initialDest, departDate: new Date().toISOString().split("T")[0] },
-        { fromAirport: initialDest, toAirport: "Dubai International (DXB)", departDate: new Date(Date.now() + 86400000 * 5).toISOString().split("T")[0] },
-      ],
-    };
+  const [journey, setJourney] = useState<TicketingJourneyData>({
+    tripType: "round_trip",
+    fromAirport: initialOrigin,
+    toAirport: initialDest,
+    departDate: "",
+    returnDate: "",
+    dateFlexibility: false,
+    passengers: 1,
+    paxAdults: 1,
+    paxChildren: 0,
+    paxInfants: 0,
+    cabinClass: "First / Business Class",
+    preferredAlliance: "Any Alliance",
+    nonStopOnly: false,
+    budgetGuidance: "",
+    multiCityLegs: [
+      { fromAirport: initialOrigin, toAirport: initialDest, departDate: "" },
+      { fromAirport: initialDest, toAirport: "Dubai International (DXB)", departDate: "" },
+    ],
   });
 
-  const [passenger, setPassenger] = useState<TicketingPassengerData>(() => {
-    try {
-      const saved = localStorage.getItem(DRAFT_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.passenger) return parsed.passenger;
-      }
-    } catch (_) {}
-    return {
-      fullName: "",
-      phone: "",
-      email: "",
-      companyName: "",
-      vipNotes: "",
-      specialRequests: "",
-      wheelchairAssistance: false,
-      medicalAssistance: false,
-      dietaryRestrictions: "",
-      isCorporateBooking: false,
-      travellerRelationship: "Employee",
-      employeeReference: "",
-      specialAssistanceCards: {
-        wheelchair: false,
-        medical: false,
-        pregnant: false,
-        visual: false,
-        hearing: false,
-        minor: false,
-      },
-    };
+  const [passenger, setPassenger] = useState<TicketingPassengerData>({
+    fullName: "",
+    phone: "",
+    email: "",
+    companyName: "",
+    vipNotes: "",
+    specialRequests: "",
+    wheelchairAssistance: false,
+    medicalAssistance: false,
+    dietaryRestrictions: "",
+    isCorporateBooking: false,
+    travellerRelationship: "Employee",
+    employeeReference: "",
+    specialAssistanceCards: {
+      wheelchair: false,
+      medical: false,
+      pregnant: false,
+      visual: false,
+      hearing: false,
+      minor: false,
+    },
   });
 
-  const [ancillaries, setAncillaries] = useState<AncillarySelection>(() => {
+  const [ancillaries, setAncillaries] = useState<AncillarySelection>({
+    seatSelection: false,
+    seatType: "EXTRA_LEG_ROOM",
+    specialMeal: false,
+    mealType: "VEGETARIAN",
+    extraBaggage: false,
+    loungeAccess: false,
+    meetAndAssist: false,
+    airportTransfer: false,
+  });
+
+  // Hydrate from localStorage + Date after mount (SSR-safe)
+  useEffect(() => {
+    // Populate Date defaults
+    const today = new Date().toISOString().split("T")[0];
+    const returnDefault = new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0];
+    const multiDate = new Date(Date.now() + 86400000 * 5).toISOString().split("T")[0];
+
+    setJourney((prev) => ({
+      ...prev,
+      departDate: prev.departDate || today,
+      returnDate: prev.returnDate || returnDefault,
+      multiCityLegs: prev.multiCityLegs?.map((leg, i) => ({
+        ...leg,
+        departDate: leg.departDate || (i === 0 ? today : multiDate),
+      })),
+    }));
+
+    // Restore draft from localStorage
     try {
       const saved = localStorage.getItem(DRAFT_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.ancillaries) return parsed.ancillaries;
+        if (parsed.journey) setJourney(parsed.journey);
+        if (parsed.passenger) setPassenger(parsed.passenger);
+        if (parsed.ancillaries) setAncillaries(parsed.ancillaries);
       }
     } catch (_) {}
-    return {
-      seatSelection: false,
-      seatType: "EXTRA_LEG_ROOM",
-      specialMeal: false,
-      mealType: "VEGETARIAN",
-      extraBaggage: false,
-      loungeAccess: false,
-      meetAndAssist: false,
-      airportTransfer: false,
-    };
-  });
+  }, []);
 
   // Auto-save draft to localStorage whenever states change
   useEffect(() => {

@@ -39,6 +39,7 @@ export interface FlightData {
     remainingTimeHours: number;
     blockingMessage?: string;
   };
+  isManual?: boolean;
 }
 
 export interface FlightResponse {

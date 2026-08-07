@@ -132,7 +132,7 @@ export class AeroDataBoxProvider implements IFlightProvider {
             await new Promise((resolve) => setTimeout(resolve, backoff));
             continue;
           }
-          throw new FlightAPIError("Flight verification timed out. Please try again.", "TIMEOUT");
+          throw new FlightAPIError("Unable to retrieve flight details at this moment.", "TIMEOUT");
         }
 
         if (attempt < maxAttempts) {
@@ -141,12 +141,12 @@ export class AeroDataBoxProvider implements IFlightProvider {
           continue;
         }
         throw new FlightAPIError(
-          "Flight verification service is currently unreachable. Please check your network connection.",
+          "Flight information service is temporarily busy.",
           "CONNECTION_FAILURE"
         );
       }
     }
 
-    throw new FlightAPIError("Flight verification failed after multiple retries.");
+    throw new FlightAPIError("Flight details are currently unavailable.");
   }
 }

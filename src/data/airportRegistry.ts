@@ -77,7 +77,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     coordinates: { lat: 28.5562, lng: 77.1000 },
     airportType: "International Hub",
-    terminals: "All Passenger Hubs & Airside Gates",
+    terminals: "Terminal 1, Terminal 2 & Terminal 3",
     operator: "Delhi International Airport Limited (DIAL)",
     status: "Active",
     featured: true,
@@ -262,21 +262,36 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     availableServiceIds: ["meet_greet", "transport"],
     meetGreetPackages: [
       {
-        id: "gold",
-        title: "Gujarat Executive Gold",
-        tagline: "Aerobridge Greeting & Priority Customs",
-        price: "₹6,200 / pax",
-        isRecommended: true,
-        duration: "2 Hours",
-        features: ["Aerobridge exit welcome with placard", "Baggage porter assistance", "Executive chauffeur handoff"],
+        id: "platinum",
+        title: "Platinum Service",
+        tagline: "Premium airport arrival assistance with baggage support and personalized meet & greet.",
+        price: "₹2,420 / pax",
+        isRecommended: false,
+        duration: "Arrival Escort",
+        features: [
+          "Welcome at the Aerobridge",
+          "Dedicated Staff with Personalized Placard",
+          "Baggage Assistance (Up to 3 Pieces)",
+          "Assistance at the Baggage Belt Area",
+          "Coordination with the Receiving Party",
+          "Escort to the Car Parking Area",
+        ],
       },
       {
         id: "elite",
-        title: "Gujarat Royal Escort",
-        tagline: "Full Tarmac Escort & Chauffeur Transfer",
-        price: "₹12,000 / pax",
-        duration: "Full Transit",
-        features: ["Personal Guest Relations Officer", "Priority queue clearance", "Private sedan city transfer"],
+        title: "Elite Service",
+        tagline: "Premium personalized airport arrival assistance with dedicated baggage support and complete arrival coordination.",
+        price: "₹4,400 / pax",
+        isRecommended: true,
+        duration: "Full Arrival Escort",
+        features: [
+          "Welcome at the Aerobridge",
+          "Dedicated Staff with Personalized Placard",
+          "Baggage Assistance",
+          "Assistance at the Baggage Belt Area",
+          "Coordination with the Receiving Party",
+          "Escort to the Car Parking Area",
+        ],
       },
     ],
     faqs: [
@@ -633,6 +648,109 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
       keywords: ["pune airport meet and greet", "pune lounge booking", "pune airport fast track"],
     },
   },
+
+  // ── 12. KOLKATA (CCU) ──
+  CCU: {
+    code: "CCU",
+    icao: "VECC",
+    name: "Netaji Subhas Chandra Bose International Airport",
+    city: "Kolkata",
+    country: "India",
+    countryCode: "IN",
+    timezone: "Asia/Kolkata",
+    heroTitle: "Kolkata Airport Concierge",
+    heroSubtitle: "Netaji Subhas Chandra Bose International Airport (CCU) — Airside Escort & Airport Services",
+    shortDescription: "Gateway to Eastern India. Experience dedicated aerobridge greetings, luggage assistance, fast-track support, and executive car parking escort.",
+    coverImage: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    ],
+    coordinates: { lat: 22.6520, lng: 88.4463 },
+    airportType: "International Hub",
+    terminals: "Terminal 1 (Integrated)",
+    operator: "Airports Authority of India (AAI)",
+    status: "Active",
+    featured: true,
+    availableServiceIds: ["meet_greet", "transport"],
+    faqs: [
+      ["Where does the Guest Relations Officer meet me at Kolkata Airport?", "Your dedicated escort officer meets you near the baggage belt or post-customs/curbside area based on your service package."],
+      ["Are both Domestic and International services available at Kolkata Airport?", "Yes, Silver and Gold packages are available across Domestic and International departure and arrival flows."],
+    ],
+    relatedAirportCodes: ["DEL", "BOM", "HYD", "LKO"],
+    seo: {
+      title: "Kolkata Airport Concierge & Meet & Greet (CCU) — Shafsky Aviation",
+      description: "Book VIP Meet & Greet escort and concierge services at Netaji Subhas Chandra Bose International Airport (CCU).",
+      keywords: ["kolkata airport meet and greet", "ccu airport concierge", "kolkata airport fast track"],
+    },
+  },
+
+  // ── 13. CHENNAI (MAA) ──
+  MAA: {
+    code: "MAA",
+    icao: "VOMM",
+    name: "Chennai International Airport",
+    city: "Chennai",
+    country: "India",
+    countryCode: "IN",
+    timezone: "Asia/Kolkata",
+    heroTitle: "Chennai Airport Concierge",
+    heroSubtitle: "Chennai International Airport (MAA) — Airside Escort & Airport Services",
+    shortDescription: "Gateway of South India. Enjoy aerobridge placard greeting, luggage assistance, lounge access, and executive car transfers.",
+    coverImage: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    ],
+    coordinates: { lat: 12.9941, lng: 80.1709 },
+    airportType: "International Hub",
+    terminals: "Terminals 1, 2, 3 & 4",
+    operator: "Airports Authority of India (AAI)",
+    status: "Active",
+    featured: false,
+    availableServiceIds: ["meet_greet", "transport"],
+    faqs: [
+      ["Where does the officer meet me at Chennai Airport?", "Your escort officer greets you at the aerobridge gate exit with a personalized name placard."],
+    ],
+    relatedAirportCodes: ["BLR", "HYD", "DEL", "BOM"],
+    seo: {
+      title: "Chennai Airport Concierge & Meet & Greet (MAA) — Shafsky Aviation",
+      description: "Book VIP Meet & Greet escort and chauffeur transfers at Chennai International Airport (MAA).",
+      keywords: ["chennai airport meet and greet", "maa airport concierge"],
+    },
+  },
+
+  // ── 14. GOA (GOI) ──
+  GOI: {
+    code: "GOI",
+    icao: "VOGO",
+    name: "Dabolim International Airport",
+    city: "Goa",
+    country: "India",
+    countryCode: "IN",
+    timezone: "Asia/Kolkata",
+    heroTitle: "Goa Airport Concierge",
+    heroSubtitle: "Dabolim International Airport (GOI) — VIP Escort & Chauffeur",
+    shortDescription: "Premier coastal destination gateway. Dedicated arrival greeting, luggage porterage, and luxury resort transfers.",
+    coverImage: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    ],
+    coordinates: { lat: 15.3808, lng: 73.8314 },
+    airportType: "International Hub",
+    terminals: "Terminal 1",
+    operator: "Airports Authority of India (AAI)",
+    status: "Active",
+    featured: false,
+    availableServiceIds: ["meet_greet", "transport"],
+    faqs: [
+      ["Where does the officer meet me at Goa Airport?", "Your officer greets you at the exit gate holding a discrete name placard."],
+    ],
+    relatedAirportCodes: ["BOM", "DEL", "BLR"],
+    seo: {
+      title: "Goa Airport Concierge & Meet & Greet (GOI) — Shafsky Aviation",
+      description: "Book VIP Meet & Greet escort and resort transfers at Goa Dabolim Airport (GOI).",
+      keywords: ["goa airport meet and greet", "goi airport concierge"],
+    },
+  },
 };
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -640,8 +758,46 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 export function getAirportRegistryEntry(code: string): AirportRegistryEntry {
-  const upper = code.toUpperCase().trim();
-  return AIRPORT_REGISTRY[upper] || AIRPORT_REGISTRY.DEL;
+  const upper = (code || "").toUpperCase().trim();
+  if (upper && AIRPORT_REGISTRY[upper]) {
+    return AIRPORT_REGISTRY[upper];
+  }
+
+  const city = upper || "Selected Airport";
+  const name = city !== "Selected Airport" ? `${city} International Airport` : "Selected Airport";
+
+  return {
+    code: upper || "—",
+    icao: upper ? `V${upper}` : "—",
+    name: name,
+    city: city,
+    country: "India",
+    countryCode: "IN",
+    timezone: "Asia/Kolkata",
+    heroTitle: `${city} Airport Concierge`,
+    heroSubtitle: `${name} — Airside Escort & Airport Services`,
+    shortDescription: `Premium airport concierge experience for ${city}.`,
+    coverImage: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    ],
+    coordinates: { lat: 20.5937, lng: 78.9629 },
+    airportType: "International Hub",
+    terminals: "Integrated Terminal",
+    operator: "Airports Authority of India (AAI)",
+    status: "Active",
+    featured: false,
+    availableServiceIds: ["meet_greet", "transport"],
+    faqs: [
+      [`Where does the officer meet me at ${city}?`, `Your dedicated escort officer meets you at ${name} holding a discrete name placard.`],
+    ],
+    relatedAirportCodes: ["DEL", "BOM", "HYD"],
+    seo: {
+      title: `${city} Airport Concierge & Meet & Greet — Shafsky Aviation`,
+      description: `Book VIP Meet & Greet escort and concierge services at ${name}.`,
+      keywords: [`${city.toLowerCase()} airport meet and greet`, `airport concierge`],
+    },
+  };
 }
 
 export function getAllAirportRegistryEntries(): AirportRegistryEntry[] {

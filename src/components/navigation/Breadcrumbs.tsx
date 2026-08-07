@@ -63,9 +63,7 @@ export function Breadcrumbs({
   const activeSubFromUrl =
     typeof searchObj === "object" && searchObj.sub
       ? String(searchObj.sub)
-      : typeof window !== "undefined"
-        ? new URLSearchParams(window.location.search).get("sub") || subService
-        : subService;
+      : subService;
 
   let computedItems: BreadcrumbItem[] = [];
 

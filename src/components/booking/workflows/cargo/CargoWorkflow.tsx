@@ -58,7 +58,7 @@ export function CargoWorkflow({ searchParams }: CargoWorkflowProps) {
 
   // Step 3: Shipping Timeline
   const [preferredShippingDate, setPreferredShippingDate] = useState<string>(
-    searchParams?.depart_date || new Date().toISOString().split("T")[0]
+    searchParams?.depart_date || ""
   );
   const [isFlexibleShipping, setIsFlexibleShipping] = useState<boolean>(false);
   const [isUrgentShipment, setIsUrgentShipment] = useState<boolean>(false);
@@ -73,8 +73,12 @@ export function CargoWorkflow({ searchParams }: CargoWorkflowProps) {
   const [phone, setPhone] = useState<string>("");
   const [email, setEmail] = useState<string>("");
 
-  // Load saved draft
+  // Load saved draft + hydrate date default after mount (SSR-safe)
   useEffect(() => {
+    // Fill in today's date if not provided via URL
+    if (!searchParams?.depart_date) {
+      setPreferredShippingDate((prev) => prev || new Date().toISOString().split("T")[0]);
+    }
     try {
       const draft = localStorage.getItem("shafsky_cargo_draft");
       if (draft) {
