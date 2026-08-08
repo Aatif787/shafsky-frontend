@@ -11,6 +11,8 @@ import bomDesktop from "../assets/airports/bom/Dek-mum-air.png";
 import bomMobile from "../assets/airports/bom/Dek-mum-air.png";
 import ixrDesktop from "../assets/airports/ixr/Dek-Ran-air.png";
 import ixrMobile from "../assets/airports/ixr/Mob-Ran-air.png";
+import jaiDesktop from "../assets/airports/jai/Dek-Jai_air.png";
+import jaiMobile from "../assets/airports/jai/Mob-Jai-air.png";
 
 const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: string }> = {
   del: {
@@ -37,6 +39,14 @@ const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: s
   ixr: {
     desktop: ixrDesktop,
     mobile: ixrMobile,
+  },
+  jai: {
+    desktop: jaiDesktop,
+    mobile: jaiMobile,
+  },
+  atq: {
+    desktop: jaiDesktop,
+    mobile: jaiMobile,
   },
 };
 

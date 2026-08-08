@@ -30,6 +30,7 @@ export function MeetGreetPackageComparison({
   // Dynamic packages loaded from backend DB API
   const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [expandedPackages, setExpandedPackages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     let isMounted = true;
@@ -91,7 +92,7 @@ export function MeetGreetPackageComparison({
                 rawPrice: item.price,
                 features: itemFeatures,
                 additionalBenefits: item.additional_benefits || [],
-                isRecommended: item.display_priority === 2 || slug === "elite",
+                isRecommended: !!item.is_recommended,
               };
             });
             setPackages(mapped);
@@ -322,6 +323,11 @@ export function MeetGreetPackageComparison({
           {packages.map((pkg: any, index: number) => {
             const isRec = !!pkg.isRecommended;
             const isSelected = selectedPackageId === pkg.id;
+            const isExpanded = !!expandedPackages[pkg.id];
+            const maxInitialFeatures = 5;
+            const allFeatures: string[] = pkg.features || [];
+            const hasMoreFeatures = allFeatures.length > maxInitialFeatures;
+            const displayedFeatures = hasMoreFeatures && !isExpanded ? allFeatures.slice(0, maxInitialFeatures) : allFeatures;
 
             return (
               <motion.div
@@ -363,19 +369,29 @@ export function MeetGreetPackageComparison({
                     </span>
                   </div>
 
-                  {/* SERVICE INCLUDES / WHAT'S INCLUDED SECTION */}
+                  {/* WHAT'S INCLUDED SECTION */}
                   <div className="mt-6 pt-4 border-t border-slate-100 space-y-3">
                     <div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">
-                      Service Includes:
+                      What's Included:
                     </div>
                     <div className="space-y-2">
-                      {(pkg.features || []).map((feat: string, i: number) => (
+                      {displayedFeatures.map((feat: string, i: number) => (
                         <div key={i} className="flex items-start gap-2.5 text-xs text-slate-700 font-medium leading-normal">
                           <Check className="w-4 h-4 text-[#84cc16] shrink-0 mt-0.5" />
                           <span>{feat}</span>
                         </div>
                       ))}
                     </div>
+                    {hasMoreFeatures && (
+                      <button
+                        type="button"
+                        onClick={() => setExpandedPackages((prev) => ({ ...prev, [pkg.id]: !prev[pkg.id] }))}
+                        className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#7c3aed] hover:text-[#6d28d9] mt-2 cursor-pointer transition-colors"
+                      >
+                        <span>{isExpanded ? "Show Less" : "View All Benefits"}</span>
+                        {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
                   </div>
 
                   {/* ADDITIONAL BENEFITS SECTION (Only if present) */}

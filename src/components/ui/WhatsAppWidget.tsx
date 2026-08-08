@@ -6,12 +6,22 @@ export function WhatsAppWidget() {
   const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
-    // Show a gentle notification tooltip after 4 seconds to welcome the user
-    const timer = setTimeout(() => {
+    // Show notification tooltip after 4 seconds
+    const showTimer = setTimeout(() => {
       setShowNotification(true);
     }, 4000);
-    return () => clearTimeout(timer);
+    return () => clearTimeout(showTimer);
   }, []);
+
+  useEffect(() => {
+    if (!showNotification) return;
+
+    // Automatically hide/remove the popup message after 6 seconds
+    const hideTimer = setTimeout(() => {
+      setShowNotification(false);
+    }, 6000);
+    return () => clearTimeout(hideTimer);
+  }, [showNotification]);
 
   const waUrl =
     "https://wa.me/919599087959?text=Hi!%20I'm%20interested%20in%20booking%20airport%20concierge%20services.";

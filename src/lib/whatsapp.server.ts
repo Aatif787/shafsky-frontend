@@ -7,7 +7,7 @@
 import { createHash } from "crypto";
 import { generateWhatsAppText, generateAdminNotificationText } from "./notification-templates";
 import type { BookingEmailPayload } from "./notification-templates";
-import { apiGet } from "./FastApiClient";
+import { apiGet, apiPost } from "./FastApiClient";
 
 interface RequestOptions {
   method?: string;
@@ -161,14 +161,28 @@ async function fetchWithRetry(url: string, options: RequestOptions = {}): Promis
 }
 
 /**
- * Resolves Meta Credentials from the environment.
+ * Resolves Meta Integration status from FastAPI backend.
  */
-function getMetaCredentials() {
-  const token = process.env.WHATSAPP_ACCESS_TOKEN;
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-  const apiVersion = process.env.WHATSAPP_API_VERSION || "v23.0";
+async function sendViaBackend(
+  recipient: string,
+  message?: string,
+  templateName?: string
+): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  try {
+    const res = await apiPost<any>("/api/whatsapp/test-send", {
+      recipient_phone: recipient,
+      message: message,
+      template_name: templateName,
+    });
 
-  return { token, phoneNumberId, apiVersion };
+    if (res && res.success) {
+      return { success: true, messageId: res.data?.message_id };
+    }
+    return { success: false, error: res?.error || "FastAPI backend WhatsApp send failed." };
+  } catch (err: any) {
+    console.error("[WhatsApp Frontend Client] Error delegating to FastAPI backend:", err.message || err);
+    return { success: false, error: err.message || String(err) };
+  }
 }
 
 /**
@@ -245,7 +259,7 @@ async function logToNotificationLogs({
 }
 
 /**
- * Sends a raw text message using the Meta WhatsApp Cloud API.
+ * Sends a raw text message via FastAPI Backend WhatsApp Cloud API integration.
  */
 export async function sendWhatsAppMessage(
   to: string,
@@ -259,9 +273,8 @@ export async function sendWhatsAppMessage(
     }
 
     const recipient = normalizePhoneNumber(to);
-    const { token, phoneNumberId, apiVersion } = getMetaCredentials();
 
-    // Check for duplicate sends in the last 60 seconds (persistent database check)
+    // Check for duplicate sends (idempotency)
     if (await isDuplicateRequest(recipient, body, templateName, bookingRef)) {
       console.warn(
         `[Meta WhatsApp Idempotency] Duplicate message to ${maskPhoneNumber(recipient)} blocked.`,
@@ -277,98 +290,15 @@ export async function sendWhatsAppMessage(
       return { success: true, error: "Duplicate request bypassed" };
     }
 
-    // Support simulation fallback mode
-    if (!token || !phoneNumberId) {
-      console.warn(
-        "[Meta WhatsApp API] Credentials not defined. Running in Simulation/Bypass mode.",
-      );
-      await logToNotificationLogs({
-        bookingRef,
-        recipient: to,
-        body,
-        status: "simulated",
-        templateName,
-      });
-      return { success: true, error: "Meta WhatsApp credentials missing; simulated successfully." };
-    }
-
-    const url = `https://graph.facebook.com/${apiVersion}/${phoneNumberId}/messages`;
-    const payload = {
-      messaging_product: "whatsapp",
-      recipient_type: "individual",
-      to: recipient,
-      type: "text",
-      text: {
-        preview_url: false,
-        body,
-      },
-    };
-
-    const res = await fetchWithRetry(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: payload,
-    });
-
-    const resData = await res.json();
-    if (!res.ok) {
-      const errCode = resData.error?.code || String(res.status);
-      const errMsg = resData.error?.message || `HTTP error ${res.status}`;
-
-      await logToNotificationLogs({
-        bookingRef,
-        recipient: to,
-        body,
-        status: "failed",
-        errorCode: errCode,
-        errorMessage: errMsg,
-        httpStatus: res.status,
-        rawMetaResponse: resData,
-        templateName,
-      });
-
-      return { success: false, error: errMsg };
-    }
-
-    const messageId = resData.messages?.[0]?.id;
-    console.log(
-      `[Meta WhatsApp API] Message successfully sent to ${maskPhoneNumber(recipient)}. ID: ${messageId}`,
-    );
-
-    await logToNotificationLogs({
-      bookingRef,
-      recipient: to,
-      body,
-      status: "sent",
-      messageId,
-      httpStatus: res.status,
-      rawMetaResponse: resData,
-      templateName,
-    });
-
-    return { success: true, messageId };
+    return await sendViaBackend(recipient, body, templateName);
   } catch (err: any) {
-    const errMsg = err.message || String(err);
-    console.error("[Meta WhatsApp API] Execution Exception:", errMsg);
-
-    await logToNotificationLogs({
-      bookingRef,
-      recipient: to,
-      body,
-      status: "failed",
-      errorMessage: errMsg,
-      templateName,
-    });
-
-    return { success: false, error: errMsg };
+    console.error("[WhatsApp Client Error]:", err.message || err);
+    return { success: false, error: err.message || String(err) };
   }
 }
 
 /**
- * Sends a WhatsApp Template message.
+ * Sends a WhatsApp Template message via FastAPI Backend integration.
  */
 export async function sendTemplateMessage(
   to: string,
@@ -379,7 +309,6 @@ export async function sendTemplateMessage(
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
     const recipient = normalizePhoneNumber(to);
-    const { token, phoneNumberId, apiVersion } = getMetaCredentials();
 
     const uniqueKey = `template:${templateName}:${JSON.stringify(components)}`;
     if (await isDuplicateRequest(recipient, uniqueKey, templateName, bookingRef)) {
@@ -389,95 +318,10 @@ export async function sendTemplateMessage(
       return { success: true, error: "Duplicate request bypassed" };
     }
 
-    if (!token || !phoneNumberId) {
-      console.warn(
-        `[Meta WhatsApp API] Credentials not defined. Simulation fallback for template: ${templateName}`,
-      );
-      await logToNotificationLogs({
-        bookingRef,
-        recipient: to,
-        body: `[Template: ${templateName}] Language: ${languageCode}`,
-        status: "simulated",
-        templateName,
-      });
-      return { success: true, error: "Meta WhatsApp credentials missing; simulated template." };
-    }
-
-    const url = `https://graph.facebook.com/${apiVersion}/${phoneNumberId}/messages`;
-    const payload = {
-      messaging_product: "whatsapp",
-      recipient_type: "individual",
-      to: recipient,
-      type: "template",
-      template: {
-        name: templateName,
-        language: {
-          code: languageCode,
-        },
-        components,
-      },
-    };
-
-    const res = await fetchWithRetry(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: payload,
-    });
-
-    const resData = await res.json();
-    if (!res.ok) {
-      const errCode = resData.error?.code || String(res.status);
-      const errMsg = resData.error?.message || `HTTP error ${res.status}`;
-
-      await logToNotificationLogs({
-        bookingRef,
-        recipient: to,
-        body: `[Template: ${templateName}] Language: ${languageCode} failed`,
-        status: "failed",
-        errorCode: errCode,
-        errorMessage: errMsg,
-        httpStatus: res.status,
-        rawMetaResponse: resData,
-        templateName,
-      });
-
-      return { success: false, error: errMsg };
-    }
-
-    const messageId = resData.messages?.[0]?.id;
-    console.log(
-      `[Meta WhatsApp API] Template message sent to ${maskPhoneNumber(recipient)}. ID: ${messageId}`,
-    );
-
-    await logToNotificationLogs({
-      bookingRef,
-      recipient: to,
-      body: `[Template: ${templateName}] Language: ${languageCode}`,
-      status: "sent",
-      messageId,
-      httpStatus: res.status,
-      rawMetaResponse: resData,
-      templateName,
-    });
-
-    return { success: true, messageId };
+    return await sendViaBackend(recipient, undefined, templateName);
   } catch (err: any) {
-    const errMsg = err.message || String(err);
-    console.error("[Meta WhatsApp API] Template Exception:", errMsg);
-
-    await logToNotificationLogs({
-      bookingRef,
-      recipient: to,
-      body: `[Template: ${templateName}] Exception`,
-      status: "failed",
-      errorMessage: errMsg,
-      templateName,
-    });
-
-    return { success: false, error: errMsg };
+    console.error("[Meta WhatsApp API] Template exception:", err.message || err);
+    return { success: false, error: err.message || String(err) };
   }
 }
 

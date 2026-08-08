@@ -31,6 +31,8 @@ import dekHydAir from "@/assets/airports/hyd/Dek-Hyd-air.png";
 import mobHydAir from "@/assets/airports/hyd/Mob-Hyd-air.png";
 import dekLkoAir from "@/assets/airports/lko/Dek-lko-air.png";
 import mobLkoAir from "@/assets/airports/lko/Mob-lko-air.png";
+import dekJaiAir from "@/assets/airports/jai/Dek-Jai_air.png";
+import mobJaiAir from "@/assets/airports/jai/Mob-Jai-air.png";
 
 import { AIRPORT_REGISTRY, getAirportRegistryEntry } from "./airportRegistry";
 
@@ -817,17 +819,22 @@ export const AIRPORTS: Airport[] = [
     landmark: "Hawa Mahal",
     tagline: "The Pink City",
     q1: "Hawa Mahal",
-    q2: "Amber Fort",
-    q3: "Jaipur palace",
+    q2: "City Palace Jaipur",
+    q3: "Jal Mahal",
     airportName: "Jaipur International Airport",
     terminals: "2",
     annual: "5.5M",
     attr: [
       ["Hawa Mahal", "Hawa Mahal", "953-jharokha façade in pink sandstone."],
-      ["Amber Fort", "Amber Fort Jaipur", "Rajput hill fort with mirror palace."],
       ["City Palace", "City Palace Jaipur", "Living royal residence."],
     ],
-  }),
+  }).map((a) => ({
+    ...a,
+    cover: dekJaiAir,
+    mobCover: mobJaiAir,
+    slideshow: [dekJaiAir],
+    gallery: [dekJaiAir, a.gallery[0]],
+  })),
   ...buildCity({
     code: "ATQ",
     icao: "VIAR",
@@ -845,7 +852,13 @@ export const AIRPORTS: Airport[] = [
       ["Wagah Border", "Wagah Border ceremony", "Daily flag-lowering parade."],
       ["Jallianwala Bagh", "Jallianwala Bagh", "1919 memorial garden."],
     ],
-  }),
+  }).map((a) => ({
+    ...a,
+    cover: dekJaiAir,
+    mobCover: mobJaiAir,
+    slideshow: [dekJaiAir],
+    gallery: [dekJaiAir, a.gallery[0]],
+  })),
   ...buildCity({
     code: "AMD",
     icao: "VAAH",
