@@ -1,9 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getAirportBusinessPrice } from "@/data/airportRegistry";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { ApiClient } from "@/lib/ApiClient";
 import { toast } from "sonner";
 import { useJourneyEngine } from "@/hooks/useJourneyEngine";
+
+import {
+  resolveServiceAirport,
+  checkAirportCoverage,
+  fetchAirportServices,
+  ResolvedServiceAirport,
+} from "../utils/serviceAirportResolver";
 
 export type FlightValidationMode = "IDLE" | "LOADING" | "VERIFIED" | "ERROR" | "MANUAL";
 
@@ -28,6 +35,13 @@ export interface AirportWorkflowState {
   isManualMode?: boolean;
   flightStateMode?: FlightValidationMode;
   flightErrorMessage?: string;
+  resolvedAirport?: ResolvedServiceAirport | null;
+  isResolvingAirport?: boolean;
+  isLoadingServices?: boolean;
+  serviceFetchError?: string | null;
+  isAirportCovered?: boolean;
+  availableServicesList?: any[];
+  availablePackagesList?: any[];
 }
 
 /**
@@ -169,6 +183,74 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
   const updateState = (fields: Partial<AirportWorkflowState>) => {
     setState((prev) => ({ ...prev, ...fields }));
   };
+
+  // Core Rules 1, 2, 3, 11, 13, 14, 15: Automatic Service Airport Resolution & Dynamic Service Fetching
+  const triggerServiceResolution = useCallback(async () => {
+    const resolved = resolveServiceAirport({
+      flightData: state.validatedFlightData,
+      direction: state.direction,
+      fallbackAirportCode: state.airportCode,
+    });
+
+    // Clear previous services to prevent stale service lists (Rule 13)
+    setState((prev) => ({
+      ...prev,
+      resolvedAirport: resolved,
+      airportCode: resolved.code || prev.airportCode,
+      airportName: resolved.name || prev.airportName,
+      isAirportCovered: resolved.isCovered,
+      isResolvingAirport: true,
+      isLoadingServices: true,
+      serviceFetchError: null,
+      availableServicesList: [],
+      availablePackagesList: [],
+    }));
+
+    if (!resolved.code) {
+      setState((prev) => ({
+        ...prev,
+        isResolvingAirport: false,
+        isLoadingServices: false,
+        isAirportCovered: false,
+      }));
+      return;
+    }
+
+    try {
+      const fetchRes = await fetchAirportServices(resolved.code, resolved.journeyType);
+
+      if (fetchRes.success) {
+        setState((prev) => ({
+          ...prev,
+          isResolvingAirport: false,
+          isLoadingServices: false,
+          isAirportCovered: fetchRes.isCovered,
+          availableServicesList: fetchRes.services,
+          availablePackagesList: fetchRes.packages,
+          serviceFetchError: null,
+        }));
+      } else {
+        // Rule 15: Distinguish API/Service Error from Airport Uncovered
+        setState((prev) => ({
+          ...prev,
+          isResolvingAirport: false,
+          isLoadingServices: false,
+          serviceFetchError: fetchRes.error || `Unable to load service catalog for ${resolved.name} (${resolved.code}).`,
+        }));
+      }
+    } catch {
+      setState((prev) => ({
+        ...prev,
+        isResolvingAirport: false,
+        isLoadingServices: false,
+        serviceFetchError: `Network connection issue while retrieving services for ${resolved.name}. Please retry.`,
+      }));
+    }
+  }, [state.direction, state.validatedFlightData, state.airportCode]);
+
+  useEffect(() => {
+    triggerServiceResolution();
+  }, [triggerServiceResolution]);
 
   const validateAndSearchFlight = async (): Promise<boolean> => {
     const flightNum = state.flightNumber.trim().toUpperCase().replace(/\s+/g, "");
@@ -390,6 +472,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     setManualFlightData,
     totalPrice,
     journeyEngine,
+    retryFetchServices: triggerServiceResolution,
   };
 }
 

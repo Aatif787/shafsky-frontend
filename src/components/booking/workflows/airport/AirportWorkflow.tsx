@@ -445,7 +445,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                 </div>
               )}
 
-              {/* STEP 2: SELECT SERVICES (With Sticky Compact Journey Summary Card) */}
+              {/* STEP 2: SELECT SERVICES (With Automatic Service Airport Resolution & Dynamic Coverage Check) */}
               {currentStep === 2 && (
                 <div className="space-y-6">
                   {/* Compact Sticky "Journey Summary" Header */}
@@ -492,61 +492,185 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                     </button>
                   </div>
 
-                  <div className="border-b border-slate-100 pb-4">
-                    <span className="text-[10px] font-mono text-amber-800 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-50 border border-amber-200">
-                      Step 2 of 5 — Service Selection
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
-                      Select Packages & Extra Services
-                    </h2>
-                    <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
-                      Airport-filtered catalog for {state.airportName || state.airportCode}. Choose packages or customize individual options.
-                    </p>
-                  </div>
+                  {/* LOADING STATE (Rule 14) */}
+                  {(state.isLoadingServices || state.isResolvingAirport) && (
+                    <div className="p-12 rounded-3xl bg-slate-50 border border-slate-200 text-center space-y-3">
+                      <RefreshCw className="w-8 h-8 text-amber-600 animate-spin mx-auto" />
+                      <h4 className="text-sm font-extrabold text-slate-900 font-mono uppercase tracking-wider">
+                        Determining Service Airport & Catalog...
+                      </h4>
+                      <p className="text-xs text-slate-500 font-sans">
+                        Resolving journey requirements for {state.direction.toUpperCase()}...
+                      </p>
+                    </div>
+                  )}
 
-                  {/* Airport Services & Package Grid */}
-                  <AirportServiceSelection
-                    state={state}
-                    onChange={(fields) => updateState(fields)}
-                    availableServices={journeyEngine?.availableServices}
-                    isSupported={journeyEngine?.isSupported}
-                    urgentAssistance={journeyEngine?.urgentAssistance}
-                    isRequestedServiceAvailable={journeyEngine?.isRequestedServiceAvailable}
-                    unavailableMessage={journeyEngine?.unavailableMessage}
-                    availableTerminals={journeyEngine?.result?.available_terminals}
-                    selectedTerminal={journeyEngine?.result?.selected_terminal}
-                  />
+                  {/* API FETCH ERROR STATE (Rule 15 - Distinguish API error from uncovered) */}
+                  {!state.isLoadingServices && state.serviceFetchError && (
+                    <div className="p-8 rounded-3xl bg-amber-50 border border-amber-200 text-amber-900 space-y-4">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="text-sm font-extrabold text-amber-950 font-mono uppercase">
+                            Temporary Service Catalog Error
+                          </h4>
+                          <p className="text-xs text-amber-800 font-sans mt-1">
+                            {state.serviceFetchError}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3 pt-2">
+                        <button
+                          type="button"
+                          onClick={() => retryFetchServices()}
+                          className="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-mono text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+                        >
+                          Retry Fetching Services
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsEditDrawerOpen(true)}
+                          className="px-5 py-2.5 rounded-xl bg-white border border-amber-300 text-amber-950 font-mono text-xs font-bold uppercase tracking-wider transition hover:bg-amber-100 cursor-pointer"
+                        >
+                          Edit Journey
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
-                  {/* Action Buttons */}
-                  <div className="pt-4 flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCurrentStep(1);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
-                    >
-                      Back
-                    </button>
+                  {/* UNCOVERED AIRPORT STATE (Rule 7, 8, 9) */}
+                  {!state.isLoadingServices && !state.serviceFetchError && state.isAirportCovered === false && (
+                    <div className="p-8 sm:p-10 rounded-3xl bg-slate-900 text-white border border-slate-800 text-center space-y-6 shadow-lg">
+                      <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+                        <AlertCircle className="w-7 h-7" />
+                      </div>
 
-                    <button
-                      type="button"
-                      disabled={!state.selectedService && !state.selectedPackage}
-                      onClick={() => {
-                        if (!state.selectedService && !state.selectedPackage) {
-                          toast.error("Please select an airport package or service to continue.");
-                          return;
-                        }
-                        setCurrentStep(3);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-sm hover:scale-105 transition-all disabled:opacity-40 disabled:hover:scale-100 cursor-pointer"
-                    >
-                      <span>Continue to Passenger Details</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
+                      <div className="max-w-md mx-auto space-y-2">
+                        <span className="text-[10px] font-mono text-amber-400 font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/20">
+                          Services Unavailable at this Airport
+                        </span>
+                        <h3 className="text-xl sm:text-2xl font-serif font-bold text-white pt-2">
+                          We currently don't offer services at {state.resolvedAirport?.name || state.resolvedAirport?.code || state.airportCode} for {state.resolvedAirport?.journeyType || state.direction} journeys.
+                        </h3>
+                        <p className="text-xs text-slate-400 font-sans leading-relaxed">
+                          Shafsky Aviation VIP concierge services are rapidly expanding. Contact our 24/7 Command Desk for bespoke arrangement or custom airport dispatch.
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            window.open(
+                              "https://wa.me/919876543210?text=" +
+                                encodeURIComponent(
+                                  `VIP Assistance Request for ${state.resolvedAirport?.name || state.airportCode} (${state.direction})`
+                                ),
+                              "_blank"
+                            );
+                          }}
+                          className="px-6 py-3.5 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-md hover:scale-105 transition-all cursor-pointer"
+                        >
+                          Contact Team for VIP Assistance
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setIsEditDrawerOpen(true)}
+                          className="px-6 py-3.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                        >
+                          Edit Journey / Change Airport
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* COVERED AIRPORT STATE (Rule 6) */}
+                  {!state.isLoadingServices && !state.serviceFetchError && state.isAirportCovered !== false && (
+                    <>
+                      {/* Context Header */}
+                      <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white border border-slate-700 shadow-md space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/20">
+                            YOUR SERVICE AIRPORT
+                          </span>
+                          <span className="text-xs font-mono text-emerald-400 font-bold uppercase flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Covered Location</span>
+                          </span>
+                        </div>
+                        <div className="pt-1 flex flex-wrap items-baseline justify-between gap-2">
+                          <div>
+                            <h3 className="text-xl sm:text-2xl font-serif font-extrabold text-white">
+                              {state.resolvedAirport?.city || state.airportName}
+                            </h3>
+                            <p className="text-xs text-slate-300 font-sans font-medium">
+                              {state.resolvedAirport?.name || state.airportName} ({state.resolvedAirport?.code || state.airportCode})
+                            </p>
+                          </div>
+                          <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
+                            {state.resolvedAirport?.journeyType || state.direction} Services
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-b border-slate-100 pb-4">
+                        <span className="text-[10px] font-mono text-amber-800 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-50 border border-amber-200">
+                          Step 2 of 5 — Service Selection
+                        </span>
+                        <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
+                          Select Packages & Extra Services
+                        </h2>
+                        <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
+                          Airport-filtered catalog for {state.resolvedAirport?.name || state.airportName || state.airportCode}. Choose packages or customize individual options.
+                        </p>
+                      </div>
+
+                      {/* Airport Services & Package Grid */}
+                      <AirportServiceSelection
+                        state={state}
+                        onChange={(fields) => updateState(fields)}
+                        availableServices={journeyEngine?.availableServices}
+                        isSupported={journeyEngine?.isSupported}
+                        urgentAssistance={journeyEngine?.urgentAssistance}
+                        isRequestedServiceAvailable={journeyEngine?.isRequestedServiceAvailable}
+                        unavailableMessage={journeyEngine?.unavailableMessage}
+                        availableTerminals={journeyEngine?.result?.available_terminals}
+                        selectedTerminal={journeyEngine?.result?.selected_terminal}
+                      />
+
+                      {/* Action Buttons */}
+                      <div className="pt-4 flex items-center justify-between">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentStep(1);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className="px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                        >
+                          Back
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={!state.selectedService && !state.selectedPackage}
+                          onClick={() => {
+                            if (!state.selectedService && !state.selectedPackage) {
+                              toast.error("Please select an airport package or service to continue.");
+                              return;
+                            }
+                            setCurrentStep(3);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-sm hover:scale-105 transition-all disabled:opacity-40 disabled:hover:scale-100 cursor-pointer"
+                        >
+                          <span>Continue to Passenger Details</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
