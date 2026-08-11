@@ -256,7 +256,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                       <option value="" disabled>-- Select Service Airport --</option>
                       {activeAirportsList.map((ap) => (
                         <option key={ap.code} value={ap.code}>
-                          {ap.name} ({ap.code}) — {ap.city}, {ap.country}
+                          {ap.code} · {ap.city}
                         </option>
                       ))}
                     </select>
@@ -660,15 +660,15 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                   state={state}
                   onChange={(fields) => updateState(fields)}
                   onBack={() => setCurrentStep(2)}
-                  onContinue={async () => {
+                  onSaveDraft={async () => {
                     const saved = await saveDraftWithBackend();
                     if (saved) {
                       setCurrentStep(4);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }
+                    return saved;
                   }}
-                  isSavingDraft={state.isSavingDraft}
-                  fieldErrors={state.draftFieldErrors}
+                  priceBreakdown={priceBreakdown}
                 />
               )}
 
@@ -676,33 +676,24 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
               {currentStep === 4 && (
                 <BookingSummaryReviewStep
                   state={state}
+                  bookingRef={bookingRef || "SHF-DRAFT"}
                   priceBreakdown={priceBreakdown}
-                  totalPrice={totalPrice}
-                  onBack={() => setCurrentStep(3)}
-                  onConfirmBooking={handleSubmit}
-                  busy={busy}
-                  isValidatingBooking={state.isValidatingBooking}
-                  validationErrors={state.validationErrors}
-                  hasPriceChanged={state.hasPriceChanged}
-                  authoritativeValidationResult={state.authoritativeValidationResult}
-                  onRevalidate={validateWithBackend}
+                  onEditJourney={() => setCurrentStep(1)}
+                  onEditServices={() => setCurrentStep(2)}
+                  onEditPassengers={() => setCurrentStep(3)}
+                  onProceedToPayment={handleSubmit}
+                  validateWithBackend={validateWithBackend}
                 />
               )}
 
               {/* STEP 5: BOOKING CONFIRMED */}
               {currentStep === 5 && (
                 <BookingSuccessPass
+                  title="Booking Confirmed"
+                  subtitle={`Your concierge service at ${state.airportCode} has been requested.`}
+                  badge="SUCCESS"
                   bookingRef={bookingRef || "SHF-AIR-CONFIRMED"}
-                  passengerName={state.fullName}
-                  passengerEmail={state.email}
-                  serviceType={state.selectedPackage || state.selectedService || "Meet & Assist"}
-                  flightNum={state.flightNumber || "MANUAL-ENTRY"}
-                  originCode={state.validatedFlightData?.origin?.code || state.airportCode}
-                  destCode={state.validatedFlightData?.destination?.code || state.airportCode}
-                  departureTime={state.serviceDate ? `${state.serviceDate} ${state.serviceTime}` : "Scheduled Date"}
-                  totalAmount={totalPrice}
-                  currency={state.catalogCurrency || "INR"}
-                  status="CONFIRMED"
+                  guestSummary={`${state.fullName || "Guest"} — ${state.passengerCount} Pax`}
                 />
               )}
             </motion.div>
@@ -713,9 +704,14 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
         <EditJourneyDrawer
           isOpen={isEditDrawerOpen}
           onClose={() => setIsEditDrawerOpen(false)}
-          state={state}
-          onSave={(updatedFields) => {
-            updateState(updatedFields);
+          flightData={state.validatedFlightData}
+          serviceDate={state.serviceDate}
+          onSave={(updatedData) => {
+            updateState({
+              flightNumber: updatedData.flightNum,
+              serviceDate: updatedData.date,
+              serviceTime: updatedData.time,
+            });
             setIsEditDrawerOpen(false);
           }}
         />

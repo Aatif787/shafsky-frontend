@@ -867,7 +867,7 @@ function BookingPanel() {
                 <option value="" disabled>-- Select Covered Service Airport --</option>
                 {(Object.values(AIRPORT_REGISTRY) as any[]).filter((a: any) => a.status === "Active").map((ap: any) => (
                   <option key={ap.code} value={ap.code}>
-                    {ap.name} ({ap.code}) — {ap.city}, {ap.country}
+                    {ap.code} · {ap.city}
                   </option>
                 ))}
               </select>
