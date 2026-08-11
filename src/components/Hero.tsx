@@ -16,8 +16,8 @@ import { ApiClient } from "@/lib/ApiClient";
 import { toast } from "sonner";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { ManualFlightEntryForm } from "@/components/booking/shared/ManualFlightEntryForm";
-import { formatFlightLookupError } from "@/components/booking/hooks/useAirportWorkflow";
 import { supabase } from "@/integrations/supabase/client";
+import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
 import {
   Plane,
   PlaneLanding,
@@ -477,6 +477,7 @@ function BookingPanel() {
   const navigate = useNavigate();
   const [validatingFlight, setValidatingFlight] = useState(false);
   const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedAirportCode, setSelectedAirportCode] = useState<string>("DEL");
   const [tab, setTab] = useState<"arrival" | "departure" | "connection">("arrival");
   const [showPassengerModal, setShowPassengerModal] = useState(false);
   const [adults, setAdults] = useState(1);
@@ -674,6 +675,7 @@ function BookingPanel() {
     navigate({
       to: "/book",
       search: {
+        origin: selectedAirportCode || "DEL",
         service_id: selectedService || undefined,
         flight_number: flightInfo.flightNum,
         depart_date: departDate,
@@ -844,6 +846,31 @@ function BookingPanel() {
                   </button>
                 );
               })}
+            </div>
+
+            {/* Covered Service Airport Selector */}
+            <div className="flex flex-col gap-1.5 w-full">
+              <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
+                <span>Service Airport *</span>
+                <span className="text-[9px] text-[#7c3aed] font-semibold font-sans">19 Covered Indian Hubs</span>
+              </label>
+              <select
+                value={selectedAirportCode}
+                onChange={(e) => setSelectedAirportCode(e.target.value)}
+                className="w-full h-12 rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-serif font-bold text-slate-900 outline-none transition-all hover:bg-white/15 focus:border-[#7c3aed] cursor-pointer shadow-xs"
+                style={{
+                  borderColor: "rgba(255,255,255,0.25)",
+                  color: C.ink,
+                  boxShadow: "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
+                }}
+              >
+                <option value="" disabled>-- Select Covered Service Airport --</option>
+                {(Object.values(AIRPORT_REGISTRY) as any[]).filter((a: any) => a.status === "Active").map((ap: any) => (
+                  <option key={ap.code} value={ap.code}>
+                    {ap.name} ({ap.code}) — {ap.city}, {ap.country}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Inputs */}
