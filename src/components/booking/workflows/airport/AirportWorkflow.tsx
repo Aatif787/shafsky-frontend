@@ -13,6 +13,7 @@ import { useAirportWorkflow } from "../../hooks/useAirportWorkflow";
 import { AirportServiceSelection } from "./AirportServiceSelection";
 import { ManualFlightEntryForm } from "../../shared/ManualFlightEntryForm";
 import { EditJourneyDrawer } from "../../shared/EditJourneyDrawer";
+import { IntelligentAirportAutocomplete } from "../../shared/IntelligentAirportAutocomplete";
 import { BookingSummaryReviewStep } from "./BookingSummaryReviewStep";
 import { PassengerDetailsStep } from "./PassengerDetailsStep";
 import { AIRPORT_REGISTRY, getAirportCurrencySymbol } from "@/data/airportRegistry";
@@ -232,34 +233,38 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                     </p>
                   </div>
 
-                  {/* Covered Airport Selector */}
+                  {/* Intelligent Searchable Airport Autocomplete */}
                   <div>
-                    <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-2">
-                      Service Airport *
+                    <label className="flex items-center justify-between text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-2">
+                      <span>Service Airport *</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (state.airportCode) {
+                            navigate({ to: "/airports/$code", params: { code: state.airportCode } });
+                          }
+                        }}
+                        className="text-[10px] text-[#7c3aed] hover:underline font-semibold font-sans flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>Explore {state.airportCode} Hub Page</span>
+                        <span>→</span>
+                      </button>
                     </label>
-                    <select
-                      value={state.airportCode}
-                      onChange={(e) => {
-                        const selectedCode = e.target.value;
-                        const entry = activeAirportsList.find((a) => a.code === selectedCode);
+                    <IntelligentAirportAutocomplete
+                      value={state.airportCode ? `${AIRPORT_REGISTRY[state.airportCode]?.city || state.airportCode} (${state.airportCode})` : ""}
+                      onSelect={(ap) => {
+                        const entry = activeAirportsList.find((a) => a.code === ap.code) || AIRPORT_REGISTRY[ap.code];
                         updateState({
-                          airportCode: selectedCode,
-                          airportName: entry?.name || `${selectedCode} Airport`,
+                          airportCode: ap.code,
+                          airportName: entry?.name || `${ap.code} International Airport`,
                           isFlightValidated: false,
                           validatedFlightData: null,
                           flightErrorMessage: undefined,
                           routeMatchError: undefined,
                         });
                       }}
-                      className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm font-serif font-bold focus:outline-none focus:border-amber-600 shadow-xs cursor-pointer"
-                    >
-                      <option value="" disabled>-- Select Service Airport --</option>
-                      {activeAirportsList.map((ap) => (
-                        <option key={ap.code} value={ap.code}>
-                          {ap.code} · {ap.city}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="Type Airport Code (e.g. DEL, BOM), City or Name..."
+                    />
                   </div>
 
                   {/* Direction Selector */}
