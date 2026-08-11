@@ -10,27 +10,27 @@ import {
   HeartPulse,
   Sparkles,
   Zap,
-  Plus,
-  Minus,
   ShieldCheck,
-  Star,
+  AlertCircle,
   Info,
+  CheckCircle2,
 } from "lucide-react";
 import { AirportWorkflowState } from "../../hooks/useAirportWorkflow";
-import { getAirportBusinessPrice, getAirportCurrencySymbol } from "@/data/airportRegistry";
-import { AvailableServiceItem, UrgentAssistanceInfo } from "@/hooks/useJourneyEngine";
-import { UnsupportedAirportSection } from "../../shared/UnsupportedAirportSection";
-import { UrgentAssistanceSection } from "../../shared/UrgentAssistanceSection";
-import { ServiceUnavailableSection } from "../../shared/ServiceUnavailableSection";
+import {
+  PackageCatalogItem,
+  ServiceCatalogItem,
+  PriceBreakdown,
+} from "../../utils/serviceAirportResolver";
 
 interface AirportServiceSelectionProps {
   state: AirportWorkflowState;
   onChange: (fields: Partial<AirportWorkflowState>) => void;
-  availableServices?: AvailableServiceItem[];
-  isSupported?: boolean;
-  urgentAssistance?: UrgentAssistanceInfo | null;
-  isRequestedServiceAvailable?: boolean;
-  unavailableMessage?: string | null;
+  availablePackages?: PackageCatalogItem[];
+  availableServices?: ServiceCatalogItem[];
+  catalogCurrency?: string;
+  priceBreakdown?: PriceBreakdown;
+  onSelectPackage?: (id: string | null) => void;
+  onToggleIndividualService?: (id: string) => void;
   availableTerminals?: string[];
   selectedTerminal?: string | null;
 }
@@ -38,61 +38,54 @@ interface AirportServiceSelectionProps {
 export function AirportServiceSelection({
   state,
   onChange,
-  availableServices,
-  isSupported = true,
-  urgentAssistance,
-  isRequestedServiceAvailable = true,
-  unavailableMessage,
+  availablePackages = [],
+  availableServices = [],
+  catalogCurrency = "INR",
+  priceBreakdown,
+  onSelectPackage,
+  onToggleIndividualService,
   availableTerminals,
   selectedTerminal,
 }: AirportServiceSelectionProps) {
-  const currencySymbol = getAirportCurrencySymbol(state.airportCode);
+  const currencySymbol =
+    catalogCurrency === "USD" ? "$" : catalogCurrency === "AED" ? "AED " : "₹";
   const [isEditingTerminal, setIsEditingTerminal] = useState(false);
+  const [expandedCardIds, setExpandedCardIds] = useState<Record<string, boolean>>({});
 
   const availableTerminalsList = availableTerminals || [];
   const hasMultipleTerminals = availableTerminalsList.length > 1;
   const currentTerminal = state.selectedTerminal || selectedTerminal || availableTerminalsList[0] || "";
 
-  // Requirement #5: If airport is unsupported, display contact assistance section
-  if (isSupported === false) {
-    return (
-      <UnsupportedAirportSection
-        airportCode={state.airportCode}
-        airportName={state.airportName}
-      />
-    );
-  }
+  const activeMode = state.bookingMode || "package";
 
-  // Requirement #6: If requested service is unavailable for the chosen airport or journey type, display fallback section
-  if (state.selectedService && isRequestedServiceAvailable === false) {
-    return (
-      <ServiceUnavailableSection
-        requestedServiceName={state.selectedService.replace(/_/g, " ").toUpperCase()}
-        airportCode={state.airportCode}
-        journeyType={state.direction}
-        onViewAvailableServices={() => {
-          onChange({ selectedService: "", bookingMode: "individual" });
-        }}
-      />
-    );
-  }
+  const packagesList: PackageCatalogItem[] =
+    availablePackages.length > 0
+      ? availablePackages
+      : (state.availablePackagesList || []);
 
-  // Requirement #6: If booking falls inside global minimum notice window, display Urgent Assistance section
-  if (urgentAssistance?.is_urgent) {
-    return (
-      <UrgentAssistanceSection
-        urgentInfo={urgentAssistance}
-        serviceName="Airport Concierge Services"
-      />
-    );
-  }
+  const individualServicesList: ServiceCatalogItem[] =
+    availableServices.length > 0
+      ? availableServices
+      : (state.availableServicesList || []);
 
-  const getIconComponent = (iconName?: string, slug?: string) => {
-    const term = (iconName || slug || "").toLowerCase();
+  const selectedPackageId = state.selectedPackageId || null;
+  const selectedServiceIds = state.selectedServiceIds || [];
+
+  // Currently selected package object to resolve included service IDs
+  const activeSelectedPackage = packagesList.find((p) => p.id === selectedPackageId) || null;
+  const packageIncludedServiceIds = new Set<string>(activeSelectedPackage?.serviceIds || []);
+
+  const toggleExpand = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedCardIds((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const getIconComponent = (iconName?: string, id?: string) => {
+    const term = (iconName || id || "").toLowerCase();
     if (term.includes("user") || term.includes("meet")) return Users;
     if (term.includes("zap") || term.includes("fast")) return Zap;
     if (term.includes("crown") || term.includes("vip")) return Crown;
-    if (term.includes("package") || term.includes("porter")) return Package;
+    if (term.includes("package") || term.includes("porter") || term.includes("baggage")) return Package;
     if (term.includes("car") || term.includes("buggy") || term.includes("transport")) return Car;
     if (term.includes("heart") || term.includes("wheelchair")) return HeartPulse;
     if (term.includes("hotel") || term.includes("lounge")) return Hotel;
@@ -100,211 +93,67 @@ export function AirportServiceSelection({
     return Sparkles;
   };
 
-  const [expandedCardIds, setExpandedCardIds] = useState<Record<string, boolean>>({});
-
-  const toggleExpand = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedCardIds((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  // Dynamic Packages array from database if available (e.g., Silver, Gold, Elite for HYD / Platinum, Elite for AMD)
-  const packages =
-    availableServices && availableServices.length > 0
-      ? availableServices.map((svc) => ({
-          id: svc.slug,
-          name: svc.name,
-          tagline: svc.short_description || svc.description || "VIP Airport Package",
-          price: svc.price || getAirportBusinessPrice(state.airportCode, "package", svc.slug) || 2420,
-          badge:
-            svc.slug === "silver"
-              ? "Silver Tier"
-              : svc.slug === "gold"
-              ? "Gold Tier"
-              : svc.slug === "elite"
-              ? "Elite Tier"
-              : svc.display_priority === 1
-              ? "Platinum Tier"
-              : svc.display_priority === 2
-              ? "Elite Tier"
-              : "Featured",
-          features:
-            svc.features && svc.features.length > 0
-              ? svc.features
-              : [
-                  "Welcome guest from the aerobridge",
-                  "Dedicated representative with personalized placard",
-                  "Baggage assistance",
-                  "Escort until car parking",
-                ],
-          additionalBenefits: svc.additional_benefits || [],
-          includedServices: [svc.slug],
-        }))
-      : [
-          {
-            id: "essential",
-            name: "Essential Escort",
-            tagline: "Standard terminal guidance & luggage porterage",
-            price: getAirportBusinessPrice(state.airportCode, "package", "essential") || 3499,
-            badge: "Best Value",
-            features: ["Personal terminal host", "Porter for checked luggage", "Fast-track security line"],
-            includedServices: ["meet_greet", "porter"],
-          },
-          {
-            id: "premium",
-            name: "Premium VIP Sanctuary",
-            tagline: "Full aerobridge greeting, lounge pass & priority clearance",
-            price: getAirportBusinessPrice(state.airportCode, "package", "premium") || 6999,
-            badge: "Most Popular",
-            features: [
-              "Aerobridge placard greeting",
-              "Fast-track immigration escort",
-              "Priority lounge access (2 hours)",
-              "Porter for all baggage",
-            ],
-            includedServices: ["meet_greet", "lounge", "fast_track", "porter"],
-          },
-          {
-            id: "charter",
-            name: "Royal Diplomatic Suite",
-            tagline: "Private lounge transfer, Maybach tarmac ride & expedited customs",
-            price: getAirportBusinessPrice(state.airportCode, "package", "charter") || 14999,
-            badge: "Ultra Luxury",
-            features: [
-              "Private airside Maybach transfer",
-              "Private VIP lounge suite",
-              "Diplomatic fast-track clearance",
-              "Uncapped luggage handling",
-              "Dedicated VIP manager",
-            ],
-            includedServices: ["meet_greet", "lounge", "fast_track", "porter", "transport"],
-          },
-        ];
-
-  // Map dynamic services from database if available; fallback to default list
-  const individualServices =
-    availableServices && availableServices.length > 0
-      ? availableServices.map((svc) => ({
-          id: svc.slug,
-          name: svc.name,
-          desc: svc.short_description || svc.description || "Airside concierge service.",
-          price: svc.price || getAirportBusinessPrice(state.airportCode, "individual", svc.slug) || 2499,
-          estTime: `${svc.min_booking_notice_hours}h lead`,
-          icon: getIconComponent(svc.icon, svc.slug),
-          badge: svc.min_booking_notice_hours <= 2 ? "Fast Lead" : "Standard",
-          isBookableOnline: svc.is_bookable_online,
-          urgentAssistance: svc.urgent_assistance,
-        }))
-      : [
-          {
-            id: "meet_greet",
-            name: "Meet & Greet Escort",
-            desc: "Personal gate welcome, placard greeting & host escort.",
-            price: 2499,
-            estTime: "30 sec",
-            icon: Users,
-            badge: "Flagship",
-            isBookableOnline: true,
-          },
-          {
-            id: "lounge",
-            name: "VIP Lounge Pass",
-            desc: "Private lounge suite access with hot buffet, Wi-Fi & showers.",
-            price: 1999,
-            estTime: "1 min",
-            icon: Hotel,
-            badge: "Sanctuary",
-            isBookableOnline: true,
-          },
-          {
-            id: "fast_track",
-            name: "Fast-Track Clearance",
-            desc: "Diplomatic priority lane passport control and security skip.",
-            price: 1899,
-            estTime: "1 min",
-            icon: Ticket,
-            badge: "Express",
-            isBookableOnline: true,
-          },
-          {
-            id: "porter",
-            name: "Baggage Porter Service",
-            desc: "Dedicated porter service for all checked and hand luggage.",
-            price: 999,
-            estTime: "Instant",
-            icon: Package,
-            badge: "Luggage",
-            isBookableOnline: true,
-          },
-          {
-            id: "buggy",
-            name: "Terminal Buggy Transit",
-            desc: "Electric golf buggy transport between gates or to arrival exit.",
-            price: 799,
-            estTime: "Instant",
-            icon: Car,
-            badge: "Transit",
-            isBookableOnline: true,
-          },
-          {
-            id: "wheelchair",
-            name: "Wheelchair Assistance",
-            desc: "Dedicated mobility ramp escort & assistance.",
-            price: 1499,
-            estTime: "Instant",
-            icon: HeartPulse,
-            badge: "Care",
-            isBookableOnline: true,
-          },
-          {
-            id: "transport",
-            name: "Airport Chauffeur Transfer",
-            desc: "Chauffeured executive sedan or SUV airport pickup & dropoff.",
-            price: 2999,
-            estTime: "Scheduled",
-            icon: Car,
-            badge: "Transfer",
-            isBookableOnline: true,
-          },
-        ];
-
-  // Dynamic context-aware smart recommendation flags
-  const passengerCount = state.guestCount || 1;
-  const isDeparture = state.direction === "departure";
-  const isTransit = state.direction === "transit";
-
-  const recommendations = [
-    {
-      condition: isDeparture,
-      title: "Fast-Track Security & Porter Recommended",
-      text: "Fast-Track Immigration & Baggage Porter for zero queue delays at customs.",
-      serviceId: "fast_track",
-    },
-    {
-      condition: passengerCount >= 3,
-      title: "Group Porter Recommended",
-      text: "Dedicated luggage porter handles multiple bags for groups effortlessly.",
-      serviceId: "porter",
-    },
-    {
-      condition: isTransit,
-      title: "Transit Buggy & Lounge Pass",
-      text: "Transfer quickly between gates with gate-to-gate buggy transport.",
-      serviceId: "buggy",
-    },
-  ].filter((r) => r.condition);
-
-  // Active selected extra services (multiselect array stored in state)
-  const selectedExtras: string[] = (state as any).selectedExtras || [];
-
-  const toggleExtraService = (id: string) => {
-    let updated: string[];
-    if (selectedExtras.includes(id)) {
-      updated = selectedExtras.filter((item) => item !== id);
+  const handlePackageClick = (pkgId: string) => {
+    if (onSelectPackage) {
+      onSelectPackage(pkgId);
     } else {
-      updated = [...selectedExtras, id];
+      const isSelected = selectedPackageId === pkgId;
+      const nextPkgId = isSelected ? null : pkgId;
+      onChange({
+        selectedPackageId: nextPkgId,
+        selectedPackage: nextPkgId || "",
+        bookingMode: nextPkgId ? "package" : state.bookingMode,
+      });
     }
-    onChange({ selectedExtras: updated, selectedService: id } as any);
   };
+
+  const handleIndividualServiceClick = (svcId: string) => {
+    if (onToggleIndividualService) {
+      onToggleIndividualService(svcId);
+    } else {
+      const currentIds = selectedServiceIds;
+      const exists = currentIds.includes(svcId);
+      const nextIds = exists ? currentIds.filter((id) => id !== svcId) : [...currentIds, svcId];
+      onChange({
+        selectedServiceIds: nextIds,
+        selectedService: nextIds.length > 0 ? nextIds[0] : "",
+      });
+    }
+  };
+
+  // Rule 13: Empty State when airport is covered but no bookable services exist
+  if (packagesList.length === 0 && individualServicesList.length === 0) {
+    return (
+      <div className="p-8 sm:p-10 rounded-3xl bg-slate-50 border border-slate-200 text-center space-y-5">
+        <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mx-auto">
+          <AlertCircle className="w-6 h-6" />
+        </div>
+        <div className="max-w-md mx-auto space-y-1.5">
+          <h3 className="text-lg font-serif font-extrabold text-slate-900">
+            No services are currently available
+          </h3>
+          <p className="text-xs text-slate-600 font-sans leading-relaxed">
+            We currently don't have bookable services for {state.direction.toUpperCase()} journeys at {state.airportName || state.airportCode}.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            window.open(
+              "https://wa.me/919876543210?text=" +
+                encodeURIComponent(
+                  `Inquiry for ${state.airportName} (${state.airportCode}) ${state.direction} services`
+                ),
+              "_blank"
+            );
+          }}
+          className="px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+        >
+          Contact Team for VIP Assistance
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -349,27 +198,21 @@ export function AirportServiceSelection({
                 {availableTerminalsList.map((term) => {
                   const isSelected = currentTerminal === term;
                   return (
-                    <label
+                    <button
                       key={term}
+                      type="button"
                       onClick={() => {
                         onChange({ selectedTerminal: term });
                         setIsEditingTerminal(false);
                       }}
-                      className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border cursor-pointer transition-all ${
+                      className={`px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all ${
                         isSelected
-                          ? "border-amber-500 bg-amber-50 text-slate-900 font-bold shadow-xs"
-                          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                          ? "bg-slate-900 text-amber-400 border border-slate-900 shadow-sm"
+                          : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
                       }`}
                     >
-                      <div
-                        className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                          isSelected ? "border-amber-600 bg-amber-500" : "border-slate-300"
-                        }`}
-                      >
-                        {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                      </div>
-                      <span className="text-xs sm:text-sm font-medium">{term}</span>
-                    </label>
+                      {term}
+                    </button>
                   );
                 })}
               </div>
@@ -378,242 +221,326 @@ export function AirportServiceSelection({
         </div>
       )}
 
-      {/* ── 1. SMART RECOMMENDATIONS BANNER ── */}
-      {recommendations.length > 0 && (
-        <div className="p-4 sm:p-5 rounded-3xl bg-amber-50/80 border border-amber-200 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
-          <div className="flex items-start gap-3">
-            <div className="h-8 w-8 rounded-xl bg-amber-200/80 text-amber-900 flex items-center justify-center shrink-0 mt-0.5 font-bold">
-              <Sparkles className="w-4 h-4 text-amber-700" />
-            </div>
-            <div>
-              <div className="text-xs font-mono font-bold uppercase tracking-wider text-amber-900">
-                {recommendations[0].title}
-              </div>
-              <div className="text-xs text-amber-800 font-sans mt-0.5 font-medium">
-                {recommendations[0].text}
-              </div>
-            </div>
-          </div>
-          <span className="text-[10px] font-mono uppercase tracking-widest px-3 py-1 rounded-full bg-amber-200/60 font-bold text-amber-900 shrink-0">
-            Smart Choice
-          </span>
-        </div>
-      )}
+      {/* ── MODE SWITCHER TABS (Packages vs Individual Services) ── */}
+      <div className="flex items-center p-1.5 rounded-2xl bg-slate-100 border border-slate-200 max-w-md">
+        <button
+          type="button"
+          onClick={() => onChange({ bookingMode: "package" })}
+          className={`flex-1 py-3 px-4 rounded-xl text-xs font-mono font-extrabold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+            activeMode === "package"
+              ? "bg-slate-900 text-amber-400 shadow-md"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Packages ({packagesList.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange({ bookingMode: "individual" })}
+          className={`flex-1 py-3 px-4 rounded-xl text-xs font-mono font-extrabold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+            activeMode === "individual"
+              ? "bg-slate-900 text-amber-400 shadow-md"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          Individual Services ({individualServicesList.length})
+        </button>
+      </div>
 
-      {/* ── 2. PACKAGES SECTION (Show Packages First) ── */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-sm font-mono text-slate-900 uppercase tracking-widest font-bold flex items-center gap-2">
-              <Crown className="w-4 h-4 text-amber-600" />
-              <span>Select VIP Package Tier</span>
-            </h3>
-            <p className="text-xs text-slate-500 font-sans mt-0.5">
-              Bundled experiences offering highest assistance level and savings for {state.airportCode}.
-            </p>
-          </div>
-
-          <div className="inline-flex rounded-xl bg-slate-100 p-1 text-[10px] font-mono uppercase tracking-widest font-bold">
-            <button
-              type="button"
-              onClick={() => onChange({ bookingMode: "package" })}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
-                state.bookingMode === "package"
-                  ? "bg-amber-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Packages
-            </button>
-            <button
-              type="button"
-              onClick={() => onChange({ bookingMode: "individual" })}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
-                state.bookingMode === "individual"
-                  ? "bg-amber-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Individual
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {packages.map((pkg) => {
-            const isSelected = state.bookingMode === "package" && state.selectedPackage === pkg.id;
+      {/* ── PACKAGES TAB CONTENT (Rule 5) ── */}
+      {activeMode === "package" && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {packagesList.map((pkg) => {
+            const isSelected = selectedPackageId === pkg.id;
+            const price = pkg.basePrice || pkg.price || 0;
+            const features = pkg.features || [];
 
             return (
               <div
                 key={pkg.id}
-                onClick={() =>
-                  onChange({
-                    bookingMode: "package",
-                    selectedPackage: pkg.id,
-                    selectedService: pkg.id,
-                  })
-                }
-                className={`relative p-6 rounded-3xl border transition-all duration-300 cursor-pointer flex flex-col justify-between ${
+                onClick={() => handlePackageClick(pkg.id)}
+                className={`relative rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between cursor-pointer border ${
                   isSelected
-                    ? "bg-gradient-to-b from-amber-50/90 via-white to-amber-50/40 border-amber-500 shadow-xl ring-2 ring-amber-400/30"
-                    : "bg-white border-slate-200 hover:border-slate-300 hover:shadow-md"
+                    ? "bg-slate-900 text-white border-amber-500 shadow-xl ring-2 ring-amber-500/30 scale-[1.02]"
+                    : "bg-white text-slate-900 border-slate-200/90 hover:border-amber-400 hover:shadow-md"
                 }`}
               >
-                {pkg.badge && (
-                  <div
-                    className={`absolute -top-3 right-6 px-3 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase tracking-widest ${
-                      isSelected
-                        ? "bg-amber-700 text-white shadow-xs"
-                        : "bg-slate-100 text-slate-700 border border-slate-200"
-                    }`}
-                  >
-                    {pkg.badge}
+                {/* Optional Badge from backend ONLY (Rule 5) */}
+                {pkg.recommendedBadge && (
+                  <div className="absolute -top-3 left-6">
+                    <span className="px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[10px] font-mono font-extrabold uppercase tracking-widest shadow-sm flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" />
+                      <span>{pkg.recommendedBadge}</span>
+                    </span>
                   </div>
                 )}
 
-                <div>
-                  <h4 className="text-lg font-heading font-bold text-slate-900">{pkg.name}</h4>
-                  <p className="text-xs text-slate-500 font-sans mt-1 leading-snug font-medium">
-                    {pkg.tagline}
-                  </p>
-
-                  <div className="mt-4 mb-5">
-                    <span className="text-2xl font-mono font-bold text-amber-800">
-                      {currencySymbol}
-                      {pkg.price.toLocaleString()}
-                    </span>
-                    <span className="text-[10px] font-mono text-slate-400 ml-1">/ booking</span>
-                  </div>
-
-                  <div className="space-y-2.5 pt-4 border-t border-slate-100">
-                    <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
-                      What's Included:
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h3
+                        className={`text-xl font-serif font-extrabold ${
+                          isSelected ? "text-white" : "text-slate-900"
+                        }`}
+                      >
+                        {pkg.title}
+                      </h3>
+                      {pkg.tagline && (
+                        <p
+                          className={`text-xs font-sans mt-1 ${
+                            isSelected ? "text-slate-300" : "text-slate-500"
+                          }`}
+                        >
+                          {pkg.tagline}
+                        </p>
+                      )}
                     </div>
-                    {pkg.features.map((feat: string, idx: number) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-700 font-medium">
-                        <Check className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-                        <span>{feat}</span>
-                      </div>
-                    ))}
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center border shrink-0 transition-all ${
+                        isSelected
+                          ? "bg-amber-400 border-amber-400 text-slate-950"
+                          : "border-slate-300 bg-slate-50"
+                      }`}
+                    >
+                      {isSelected && <Check className="w-4 h-4 stroke-[3]" />}
+                    </div>
                   </div>
 
-                  {(pkg as any).additionalBenefits && (pkg as any).additionalBenefits.length > 0 && (
-                    <div className="space-y-2 pt-3 mt-3 border-t border-slate-100">
-                      <div className="text-[10px] font-mono uppercase tracking-wider text-amber-700 font-bold flex items-center gap-1">
-                        <ShieldCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                        <span>Additional Benefits:</span>
-                      </div>
-                      {(pkg as any).additionalBenefits.map((ben: string, idx: number) => (
-                        <div key={idx} className="flex items-start gap-2 text-xs text-slate-800 font-medium">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-                          <span>{ben}</span>
-                        </div>
+                  <div className="border-t border-b py-3 my-2 font-mono">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl sm:text-3xl font-extrabold text-amber-500">
+                        {currencySymbol}
+                        {price.toLocaleString()}
+                      </span>
+                      <span
+                        className={`text-[10px] uppercase font-bold ${
+                          isSelected ? "text-slate-400" : "text-slate-500"
+                        }`}
+                      >
+                        / pax
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Included Services & Features List */}
+                  {features.length > 0 && (
+                    <ul className="space-y-2 text-xs font-sans">
+                      {features.map((feat, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <CheckCircle2
+                            className={`w-4 h-4 shrink-0 mt-0.5 ${
+                              isSelected ? "text-amber-400" : "text-amber-600"
+                            }`}
+                          />
+                          <span
+                            className={
+                              isSelected ? "text-slate-200" : "text-slate-700"
+                            }
+                          >
+                            {feat}
+                          </span>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   )}
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-100">
+                <div className="pt-6">
                   <button
                     type="button"
-                    className={`w-full py-3 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                    className={`w-full py-3 rounded-2xl text-xs font-mono font-extrabold uppercase tracking-wider transition-all ${
                       isSelected
-                        ? "bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white shadow-md shadow-amber-700/20"
-                        : "bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200"
+                        ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-md"
+                        : "bg-slate-100 hover:bg-slate-200 text-slate-900"
                     }`}
                   >
-                    <span>{isSelected ? "PACKAGE SELECTED" : "SELECT PACKAGE"}</span>
-                    {isSelected && <Check className="w-4 h-4 text-white" />}
+                    {isSelected ? "✓ Selected Package" : "Select Package"}
                   </button>
                 </div>
               </div>
             );
           })}
         </div>
-      </div>
+      )}
 
-      {/* ── 3. CUSTOMIZE EXPERIENCE SECTION (Individual Add-ons) ── */}
-      <div className="space-y-4 pt-4 border-t border-slate-200">
-        <div>
-          <h3 className="text-sm font-mono text-slate-900 uppercase tracking-widest font-bold flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-600" />
-            <span>Customize Experience (Individual Add-Ons)</span>
-          </h3>
-          <p className="text-xs text-slate-500 font-sans mt-0.5">
-            Add standalone services or combine custom options with your package selection.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {individualServices.map((service) => {
-            const Icon = service.icon;
-            const isSelected =
-              state.selectedService === service.id || selectedExtras.includes(service.id);
+      {/* ── INDIVIDUAL SERVICES TAB CONTENT (Rule 6 & 9) ── */}
+      {activeMode === "individual" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {individualServicesList.map((svc) => {
+            const isSelected = selectedServiceIds.includes(svc.id);
+            const isIncludedInPackage = packageIncludedServiceIds.has(svc.id);
+            const isAvailable = svc.isAvailable !== false;
+            const Icon = getIconComponent(svc.icon, svc.id);
 
             return (
               <div
-                key={service.id}
-                className={`p-4.5 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
-                  isSelected
-                    ? "bg-amber-50/70 border-amber-400 shadow-xs"
-                    : "bg-white border-slate-200/90 hover:border-slate-300"
+                key={svc.id}
+                onClick={() => isAvailable && handleIndividualServiceClick(svc.id)}
+                className={`p-5 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
+                  !isAvailable
+                    ? "bg-slate-100 border-slate-200 opacity-60 cursor-not-allowed"
+                    : isIncludedInPackage
+                    ? "bg-emerald-50/70 border-emerald-300 cursor-pointer shadow-xs"
+                    : isSelected
+                    ? "bg-slate-900 text-white border-amber-500 shadow-md cursor-pointer"
+                    : "bg-white text-slate-900 border-slate-200 hover:border-slate-300 cursor-pointer"
                 }`}
               >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="h-8 w-8 rounded-xl bg-amber-100/70 border border-amber-300/50 text-amber-800 flex items-center justify-center">
-                      <Icon className="w-4 h-4" />
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                        isSelected
+                          ? "bg-amber-400 text-slate-950"
+                          : isIncludedInPackage
+                          ? "bg-emerald-600 text-white"
+                          : "bg-slate-100 text-slate-700"
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900">
-                      {service.badge}
-                    </span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4
+                          className={`font-serif font-extrabold text-sm ${
+                            isSelected ? "text-white" : "text-slate-900"
+                          }`}
+                        >
+                          {svc.title}
+                        </h4>
+                        {svc.badge && (
+                          <span className="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-[9px] font-mono font-bold text-slate-600 uppercase">
+                            {svc.badge}
+                          </span>
+                        )}
+                      </div>
+                      {svc.description && (
+                        <p
+                          className={`text-xs font-sans mt-1 leading-relaxed ${
+                            isSelected ? "text-slate-300" : "text-slate-500"
+                          }`}
+                        >
+                          {svc.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
-                  <h4 className="text-sm font-heading font-bold text-slate-900">{service.name}</h4>
-                  <p className="text-xs text-slate-500 font-sans mt-1 leading-snug font-medium line-clamp-2">
-                    {service.desc}
-                  </p>
+                  <div className="text-right shrink-0 font-mono">
+                    {/* Overlap Badge (Rule 9) */}
+                    {isIncludedInPackage ? (
+                      <span className="text-[10px] font-bold font-mono text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                        ✓ Included in Package
+                      </span>
+                    ) : (
+                      <div
+                        className={`text-base font-extrabold ${
+                          isSelected ? "text-amber-400" : "text-slate-900"
+                        }`}
+                      >
+                        {currencySymbol}
+                        {svc.price.toLocaleString()}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-sm font-mono font-bold text-amber-800">
-                    {currencySymbol}
-                    {service.price.toLocaleString()}
+                <div className="pt-4 flex items-center justify-between border-t border-slate-100/20 mt-3">
+                  <span
+                    className={`text-[10px] font-mono font-bold uppercase ${
+                      isSelected ? "text-slate-400" : "text-slate-500"
+                    }`}
+                  >
+                    {!isAvailable ? "Unavailable" : isIncludedInPackage ? "Included Free" : "Selectable"}
                   </span>
 
                   <button
                     type="button"
-                    onClick={() => {
-                      onChange({
-                        bookingMode: "individual",
-                        selectedService: service.id,
-                      });
-                      toggleExtraService(service.id);
-                    }}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      isSelected
-                        ? "bg-amber-700 text-white shadow-xs"
-                        : "bg-white border border-slate-200 hover:bg-slate-50 text-slate-700"
+                    disabled={!isAvailable}
+                    className={`px-4 py-1.5 rounded-xl text-[11px] font-mono font-bold uppercase tracking-wider transition ${
+                      !isAvailable
+                        ? "bg-slate-200 text-slate-500"
+                        : isIncludedInPackage
+                        ? "bg-emerald-600 text-white cursor-pointer"
+                        : isSelected
+                        ? "bg-amber-400 text-slate-950 font-extrabold cursor-pointer"
+                        : "bg-slate-100 hover:bg-slate-200 text-slate-800 cursor-pointer"
                     }`}
                   >
-                    {isSelected ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-white" />
-                        <span>ADDED</span>
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="w-3.5 h-3.5 text-slate-500" />
-                        <span>ADD</span>
-                      </>
-                    )}
+                    {!isAvailable
+                      ? "Disabled"
+                      : isIncludedInPackage
+                      ? "Included"
+                      : isSelected
+                      ? "Selected"
+                      : "+ Add Service"}
                   </button>
                 </div>
               </div>
             );
           })}
         </div>
-      </div>
+      )}
+
+      {/* ── LIVE BOOKING SUMMARY CARD (Rule 10) ── */}
+      {priceBreakdown && (priceBreakdown.packageItem || priceBreakdown.additionalServices.length > 0) && (
+        <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-xl space-y-4 font-mono">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <span className="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-amber-400" />
+              <span>Live Booking Summary</span>
+            </span>
+            <span className="text-[10px] text-slate-400 font-bold uppercase">
+              {state.guestCount} Guest{state.guestCount > 1 ? "s" : ""}
+            </span>
+          </div>
+
+          <div className="space-y-2 text-xs">
+            {/* Selected Package */}
+            {priceBreakdown.packageItem && (
+              <div className="flex items-center justify-between">
+                <span className="text-slate-300 font-semibold">
+                  Package: {priceBreakdown.packageItem.title}
+                </span>
+                <span className="font-bold text-amber-400">
+                  {currencySymbol}{priceBreakdown.packageItem.price.toLocaleString()}
+                </span>
+              </div>
+            )}
+
+            {/* Additional Non-Overlapping Services */}
+            {priceBreakdown.additionalServices.map((svc) => (
+              <div key={svc.id} className="flex items-center justify-between pl-3 border-l-2 border-amber-500/40">
+                <span className="text-slate-300">{svc.title}</span>
+                <span className="font-bold text-white">
+                  +{currencySymbol}{svc.price.toLocaleString()}
+                </span>
+              </div>
+            ))}
+
+            {/* Overlapping Ignored Services Notice (Rule 9) */}
+            {priceBreakdown.overlappingIgnoredServiceIds.length > 0 && (
+              <div className="text-[10px] text-emerald-400 font-sans italic pt-1">
+                Note: {priceBreakdown.overlappingIgnoredServiceIds.length} service(s) already included free in selected package.
+              </div>
+            )}
+          </div>
+
+          <div className="pt-3 border-t border-slate-800 flex items-baseline justify-between">
+            <div>
+              <div className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">
+                Total Price ({state.guestCount} pax)
+              </div>
+              <div className="text-[9px] text-amber-400/80 font-sans">
+                Authoritative calculation validated by backend
+              </div>
+            </div>
+            <div className="text-2xl font-extrabold text-amber-400">
+              {currencySymbol}{priceBreakdown.grandTotal.toLocaleString()}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

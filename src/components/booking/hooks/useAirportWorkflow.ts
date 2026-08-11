@@ -9,7 +9,11 @@ import {
   resolveServiceAirport,
   checkAirportCoverage,
   fetchAirportServices,
+  computePriceBreakdown,
   ResolvedServiceAirport,
+  PackageCatalogItem,
+  ServiceCatalogItem,
+  PriceBreakdown,
 } from "../utils/serviceAirportResolver";
 
 export type FlightValidationMode = "IDLE" | "LOADING" | "VERIFIED" | "ERROR" | "MANUAL";
@@ -40,8 +44,11 @@ export interface AirportWorkflowState {
   isLoadingServices?: boolean;
   serviceFetchError?: string | null;
   isAirportCovered?: boolean;
-  availableServicesList?: any[];
-  availablePackagesList?: any[];
+  catalogCurrency?: string;
+  availablePackagesList?: PackageCatalogItem[];
+  availableServicesList?: ServiceCatalogItem[];
+  selectedPackageId?: string | null;
+  selectedServiceIds?: string[];
 }
 
 /**
@@ -184,73 +191,87 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     setState((prev) => ({ ...prev, ...fields }));
   };
 
-  // Core Rules 1, 2, 3, 11, 13, 14, 15: Automatic Service Airport Resolution & Dynamic Service Fetching
-  const triggerServiceResolution = useCallback(async () => {
-    const resolved = resolveServiceAirport({
-      flightData: state.validatedFlightData,
-      direction: state.direction,
-      fallbackAirportCode: state.airportCode,
-    });
+  // Core Rules 1, 2, 3, 11, 13, 14, 15: Automatic Service Airport Resolution & Dynamic Service Fetching with AbortController
+  useEffect(() => {
+    const controller = new AbortController();
 
-    // Clear previous services to prevent stale service lists (Rule 13)
-    setState((prev) => ({
-      ...prev,
-      resolvedAirport: resolved,
-      airportCode: resolved.code || prev.airportCode,
-      airportName: resolved.name || prev.airportName,
-      isAirportCovered: resolved.isCovered,
-      isResolvingAirport: true,
-      isLoadingServices: true,
-      serviceFetchError: null,
-      availableServicesList: [],
-      availablePackagesList: [],
-    }));
+    const runResolution = async () => {
+      const resolved = resolveServiceAirport({
+        flightData: state.validatedFlightData,
+        direction: state.direction,
+        fallbackAirportCode: state.airportCode,
+      });
 
-    if (!resolved.code) {
+      // Clear previous selection & stale services (Rule 14 & 13)
       setState((prev) => ({
         ...prev,
-        isResolvingAirport: false,
-        isLoadingServices: false,
-        isAirportCovered: false,
+        resolvedAirport: resolved,
+        airportCode: resolved.code || prev.airportCode,
+        airportName: resolved.name || prev.airportName,
+        isAirportCovered: resolved.isCovered,
+        isResolvingAirport: true,
+        isLoadingServices: true,
+        serviceFetchError: null,
+        availableServicesList: [],
+        availablePackagesList: [],
+        selectedPackageId: null,
+        selectedServiceIds: [],
+        selectedService: "",
+        selectedPackage: "",
       }));
-      return;
-    }
 
-    try {
-      const fetchRes = await fetchAirportServices(resolved.code, resolved.journeyType);
-
-      if (fetchRes.success) {
+      if (!resolved.code) {
         setState((prev) => ({
           ...prev,
           isResolvingAirport: false,
           isLoadingServices: false,
-          isAirportCovered: fetchRes.isCovered,
-          availableServicesList: fetchRes.services,
-          availablePackagesList: fetchRes.packages,
-          serviceFetchError: null,
+          isAirportCovered: false,
         }));
-      } else {
-        // Rule 15: Distinguish API/Service Error from Airport Uncovered
+        return;
+      }
+
+      try {
+        const fetchRes = await fetchAirportServices(resolved.code, resolved.journeyType, controller.signal);
+
+        if (controller.signal.aborted) return;
+
+        if (fetchRes.success) {
+          setState((prev) => ({
+            ...prev,
+            isResolvingAirport: false,
+            isLoadingServices: false,
+            isAirportCovered: fetchRes.isCovered,
+            catalogCurrency: fetchRes.currency || "INR",
+            availableServicesList: fetchRes.services,
+            availablePackagesList: fetchRes.packages,
+            serviceFetchError: null,
+          }));
+        } else {
+          // Rule 15: Distinguish API/Service Error from Airport Uncovered
+          setState((prev) => ({
+            ...prev,
+            isResolvingAirport: false,
+            isLoadingServices: false,
+            serviceFetchError: fetchRes.error || `Unable to load service catalog for ${resolved.name} (${resolved.code}).`,
+          }));
+        }
+      } catch (err: any) {
+        if (err.name === "AbortError" || controller.signal.aborted) return;
         setState((prev) => ({
           ...prev,
           isResolvingAirport: false,
           isLoadingServices: false,
-          serviceFetchError: fetchRes.error || `Unable to load service catalog for ${resolved.name} (${resolved.code}).`,
+          serviceFetchError: `Network connection issue while retrieving services for ${resolved.name}. Please retry.`,
         }));
       }
-    } catch {
-      setState((prev) => ({
-        ...prev,
-        isResolvingAirport: false,
-        isLoadingServices: false,
-        serviceFetchError: `Network connection issue while retrieving services for ${resolved.name}. Please retry.`,
-      }));
-    }
-  }, [state.direction, state.validatedFlightData, state.airportCode]);
+    };
 
-  useEffect(() => {
-    triggerServiceResolution();
-  }, [triggerServiceResolution]);
+    runResolution();
+
+    return () => {
+      controller.abort();
+    };
+  }, [state.direction, state.validatedFlightData, state.airportCode]);
 
   const validateAndSearchFlight = async (): Promise<boolean> => {
     const flightNum = state.flightNumber.trim().toUpperCase().replace(/\s+/g, "");
@@ -445,19 +466,86 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     enabled: true,
   });
 
-  const getBasePrice = () => {
-    const serviceKey = state.bookingMode === "package" ? state.selectedPackage : state.selectedService;
-    if (!serviceKey) return 0;
-    if (state.bookingMode === "individual" && journeyEngine.availableServices.length > 0) {
-      const match = journeyEngine.availableServices.find((s) => s.slug.toLowerCase() === serviceKey.toLowerCase());
-      if (match && typeof match.price === "number") {
-        return match.price;
-      }
-    }
-    return getAirportBusinessPrice(state.airportCode, state.bookingMode, serviceKey);
-  };
+  const selectPackage = useCallback((packageId: string | null) => {
+    setState((prev) => {
+      const isAlreadySelected = prev.selectedPackageId === packageId;
+      const nextPkgId = isAlreadySelected ? null : packageId;
+      return {
+        ...prev,
+        selectedPackageId: nextPkgId,
+        selectedPackage: nextPkgId || "",
+        bookingMode: nextPkgId ? "package" : prev.bookingMode,
+      };
+    });
+  }, []);
 
-  const totalPrice = getBasePrice() * state.guestCount;
+  const toggleIndividualService = useCallback((serviceId: string) => {
+    setState((prev) => {
+      const currentIds = prev.selectedServiceIds || [];
+      const exists = currentIds.includes(serviceId);
+      const nextIds = exists ? currentIds.filter((id) => id !== serviceId) : [...currentIds, serviceId];
+      return {
+        ...prev,
+        selectedServiceIds: nextIds,
+        selectedService: nextIds.length > 0 ? nextIds[0] : "",
+      };
+    });
+  }, []);
+
+  const priceBreakdown: PriceBreakdown = computePriceBreakdown({
+    packages: state.availablePackagesList || [],
+    individualServices: state.availableServicesList || [],
+    selectedPackageId: state.selectedPackageId || null,
+    selectedServiceIds: state.selectedServiceIds || [],
+    guestCount: state.guestCount,
+    currencySymbol: state.catalogCurrency === "USD" ? "$" : state.catalogCurrency === "AED" ? "AED " : "₹",
+  });
+
+  const retryFetchServices = useCallback(() => {
+    const resolved = resolveServiceAirport({
+      flightData: state.validatedFlightData,
+      direction: state.direction,
+      fallbackAirportCode: state.airportCode,
+    });
+    setState((prev) => ({
+      ...prev,
+      isResolvingAirport: true,
+      isLoadingServices: true,
+      serviceFetchError: null,
+    }));
+    fetchAirportServices(resolved.code, resolved.journeyType)
+      .then((fetchRes) => {
+        if (fetchRes.success) {
+          setState((prev) => ({
+            ...prev,
+            isResolvingAirport: false,
+            isLoadingServices: false,
+            isAirportCovered: fetchRes.isCovered,
+            catalogCurrency: fetchRes.currency || "INR",
+            availableServicesList: fetchRes.services,
+            availablePackagesList: fetchRes.packages,
+            serviceFetchError: null,
+          }));
+        } else {
+          setState((prev) => ({
+            ...prev,
+            isResolvingAirport: false,
+            isLoadingServices: false,
+            serviceFetchError: fetchRes.error || `Unable to load service catalog.`,
+          }));
+        }
+      })
+      .catch(() => {
+        setState((prev) => ({
+          ...prev,
+          isResolvingAirport: false,
+          isLoadingServices: false,
+          serviceFetchError: `Network connection issue. Please retry.`,
+        }));
+      });
+  }, [state.direction, state.validatedFlightData, state.airportCode]);
+
+  const totalPrice = priceBreakdown.grandTotal;
 
   return {
     currentStep,
@@ -470,9 +558,12 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     updateState,
     validateAndSearchFlight,
     setManualFlightData,
+    selectPackage,
+    toggleIndividualService,
+    priceBreakdown,
     totalPrice,
     journeyEngine,
-    retryFetchServices: triggerServiceResolution,
+    retryFetchServices,
   };
 }
 

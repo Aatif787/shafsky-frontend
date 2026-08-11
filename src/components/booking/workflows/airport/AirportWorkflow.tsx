@@ -16,6 +16,7 @@ import { EditJourneyDrawer } from "../../shared/EditJourneyDrawer";
 import { BookingSummaryReviewStep } from "./BookingSummaryReviewStep";
 import { getAirportCurrencySymbol } from "@/data/airportRegistry";
 import { ApiClient } from "@/lib/ApiClient";
+import { FlightData } from "@/services/flight/FlightTypes";
 
 interface AirportWorkflowProps {
   searchParams?: any;
@@ -36,8 +37,12 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
     updateState,
     validateAndSearchFlight,
     setManualFlightData,
+    selectPackage,
+    toggleIndividualService,
+    priceBreakdown,
     totalPrice,
     journeyEngine,
+    retryFetchServices,
   } = useAirportWorkflow(searchParams);
 
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
@@ -630,11 +635,12 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                       <AirportServiceSelection
                         state={state}
                         onChange={(fields) => updateState(fields)}
-                        availableServices={journeyEngine?.availableServices}
-                        isSupported={journeyEngine?.isSupported}
-                        urgentAssistance={journeyEngine?.urgentAssistance}
-                        isRequestedServiceAvailable={journeyEngine?.isRequestedServiceAvailable}
-                        unavailableMessage={journeyEngine?.unavailableMessage}
+                        availablePackages={state.availablePackagesList}
+                        availableServices={state.availableServicesList}
+                        catalogCurrency={state.catalogCurrency}
+                        priceBreakdown={priceBreakdown}
+                        onSelectPackage={(id) => selectPackage(id)}
+                        onToggleIndividualService={(id) => toggleIndividualService(id)}
                         availableTerminals={journeyEngine?.result?.available_terminals}
                         selectedTerminal={journeyEngine?.result?.selected_terminal}
                       />
@@ -654,9 +660,9 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
 
                         <button
                           type="button"
-                          disabled={!state.selectedService && !state.selectedPackage}
+                          disabled={!state.selectedPackageId && (state.selectedServiceIds?.length || 0) === 0 && !state.selectedService && !state.selectedPackage}
                           onClick={() => {
-                            if (!state.selectedService && !state.selectedPackage) {
+                            if (!state.selectedPackageId && (state.selectedServiceIds?.length || 0) === 0 && !state.selectedService && !state.selectedPackage) {
                               toast.error("Please select an airport package or service to continue.");
                               return;
                             }
