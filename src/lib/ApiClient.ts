@@ -82,9 +82,22 @@ export class ApiClient {
       ...options.headers,
     };
 
+    let controller: AbortController | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
+    let signal = options.signal;
+
+    if (!signal) {
+      controller = new AbortController();
+      signal = controller.signal;
+      timeoutId = setTimeout(() => controller?.abort(), 12000);
+    }
+
     try {
-      return await fetch(primaryUrl, { ...options, headers });
+      const res = await fetch(primaryUrl, { ...options, headers, signal });
+      if (timeoutId) clearTimeout(timeoutId);
+      return res;
     } catch (err) {
+      if (timeoutId) clearTimeout(timeoutId);
       if (!endpoint.startsWith("http")) {
         const altBase = primaryBase.includes(":8001")
           ? primaryBase.replace(":8001", ":8003")
@@ -93,7 +106,11 @@ export class ApiClient {
           : null;
         if (altBase) {
           try {
-            return await fetch(`${altBase}${path}`, { ...options, headers });
+            const altController = new AbortController();
+            const altTimeout = setTimeout(() => altController.abort(), 8000);
+            const resAlt = await fetch(`${altBase}${path}`, { ...options, headers, signal: altController.signal });
+            clearTimeout(altTimeout);
+            return resAlt;
           } catch {
             // Fallthrough to throw primary error
           }

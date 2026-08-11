@@ -446,7 +446,6 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       });
 
       toast.success(`Flight ${flightInfo.flightNum} verified for ${state.airportName}!`);
-      setBusy(false);
       return true;
     } catch (err: any) {
       console.error("[useAirportWorkflow] Flight validation error:", err);
@@ -458,8 +457,9 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         validatedFlightData: null,
         isManualMode: false,
       });
-      setBusy(false);
       return false;
+    } finally {
+      setBusy(false);
     }
   };
 

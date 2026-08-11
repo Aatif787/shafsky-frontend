@@ -650,13 +650,13 @@ function BookingPanel() {
 
       setVerifiedHeroFlight(flightInfo);
       setHeroFlightStateMode("VERIFIED");
-      setValidatingFlight(false);
       toast.success(`Flight ${flightInfo.flightNum} verified successfully!`);
     } catch (err: any) {
       console.error("[Hero] Validation error:", err);
       const errMsg = formatFlightLookupError(err);
       setHeroFlightError(errMsg);
       setHeroFlightStateMode("ERROR");
+    } finally {
       setValidatingFlight(false);
     }
   };
