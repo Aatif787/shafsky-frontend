@@ -15,7 +15,7 @@ import { ManualFlightEntryForm } from "../../shared/ManualFlightEntryForm";
 import { EditJourneyDrawer } from "../../shared/EditJourneyDrawer";
 import { BookingSummaryReviewStep } from "./BookingSummaryReviewStep";
 import { PassengerDetailsStep } from "./PassengerDetailsStep";
-import { getAirportCurrencySymbol } from "@/data/airportRegistry";
+import { AIRPORT_REGISTRY, getAirportCurrencySymbol } from "@/data/airportRegistry";
 import { ApiClient } from "@/lib/ApiClient";
 import { FlightData } from "@/services/flight/FlightTypes";
 
@@ -44,8 +44,6 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
     saveDraftWithBackend,
     priceBreakdown,
     totalPrice,
-    journeyEngine,
-    retryFetchServices,
   } = useAirportWorkflow(searchParams);
 
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
@@ -150,68 +148,51 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       toast.error("Please fill in Lead Guest Name, Phone Number, and Email.");
       return;
     }
-    if (!state.selectedService && !state.selectedPackage) {
-      toast.error("Please select an airport service before proceeding.");
-      return;
-    }
+
     setBusy(true);
-    const prefix = getRefPrefix();
-    const generatedRef = `${prefix}${Math.floor(100000 + Math.random() * 900000)}`;
+
+    const ref = bookingRef || `${getRefPrefix()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
     try {
-      await submitBookingFn({
+      const result = await submitBookingFn({
         data: {
-          flight_number: state.flightNumber || `SHF-[#${getServiceKey().toUpperCase()}]`,
-          departure_airport: state.validatedFlightData?.origin?.name || state.airportName,
-          arrival_airport: state.validatedFlightData?.destination?.name || state.airportCode,
-          depart_date: state.serviceDate,
-          lead_passenger_name: state.fullName,
-          passenger_email: state.email,
-          passenger_phone: state.phone,
-          total_price: totalPrice,
-          special_requests: state.specialRequests || `Direction: ${state.direction}`,
-          service_type: getServiceKey(),
-        } as any,
+          bookingRef: ref,
+          passengerName: state.fullName,
+          passengerEmail: state.email,
+          passengerPhone: state.phone,
+          serviceCategory: "Airport Assistance",
+          serviceType: state.selectedPackage || state.selectedService || "Meet & Assist",
+          flightNum: state.flightNumber || "MANUAL-ENTRY",
+          originCode: state.validatedFlightData?.origin?.code || state.airportCode,
+          destCode: state.validatedFlightData?.destination?.code || state.airportCode,
+          departureTime: state.serviceDate ? new Date(`${state.serviceDate}T${state.serviceTime}:00Z`) : new Date(),
+          totalAmount: totalPrice,
+          currency: state.catalogCurrency || "INR",
+          status: "PENDING",
+          notes: state.specialRequests || `Airport: ${state.airportCode}, Direction: ${state.direction}`,
+        },
       });
-      setBookingRef(generatedRef);
+
+      if (result && result.success) {
+        setBookingRef(ref);
+        setCurrentStep(5);
+        toast.success("Booking request submitted successfully!");
+      } else {
+        toast.error("Error creating booking. Please try again.");
+      }
+    } catch (err) {
+      console.error("Booking error:", err);
+      toast.error("Failed to submit booking. Using offline fallback reference.");
+      setBookingRef(ref);
       setCurrentStep(5);
-      toast.success("Airport concierge booking request submitted!");
-    } catch {
-      setBookingRef(generatedRef);
-      setCurrentStep(5);
-      toast.success("Airport concierge booking request submitted!");
     } finally {
       setBusy(false);
     }
-  }, [state, getRefPrefix, getServiceKey, totalPrice, submitBookingFn, setBusy, setBookingRef, setCurrentStep]);
+  }, [state, totalPrice, getRefPrefix, submitBookingFn, setCurrentStep, setBusy, setBookingRef, bookingRef]);
 
-  const getServiceTitle = useCallback(() => {
-    if (state.bookingMode === "package") {
-      const pkg = (state.selectedPackage || state.selectedService || "").toLowerCase();
-      if (pkg.includes("platinum")) return "Platinum Service Package";
-      if (pkg.includes("elite")) return "Elite Service Package";
-      if (pkg.includes("gold")) return "Gold Service Package";
-      if (pkg.includes("silver")) return "Silver Service Package";
-      if (pkg.includes("essential")) return "Essential Escort Package";
-      if (pkg.includes("premium")) return "Premium VIP Sanctuary Package";
-      if (pkg.includes("vip")) return "VIP Executive Tarmac Package";
-      return state.selectedPackage ? `${state.selectedPackage.replace(/_/g, " ").toUpperCase()} Package` : "Select a Package";
-    }
-    const map: Record<string, string> = {
-      meet_greet: "Meet & Greet Escort",
-      lounge: "Executive Airport Lounge Pass",
-      fast_track: "VIP Fast-Track Clearance",
-      transport: "Airport Chauffeur Transfer",
-      porter: "Baggage Porter Service",
-      buggy: "Electric Buggy Transfer",
-      wheelchair: "Wheelchair Assistance",
-    };
-    return map[state.selectedService] || "No Service Selected";
-  }, [state.bookingMode, state.selectedPackage, state.selectedService]);
-
-  const selectedExtrasList: string[] = (state as any).selectedExtras || [];
-
-  const isManualData = Boolean(state.validatedFlightData?.isManual);
+  const activeAirportsList: any[] = useMemo(() => {
+    return (Object.values(AIRPORT_REGISTRY) as any[]).filter((a: any) => a.status === "Active");
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -244,29 +225,67 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                       Step 1 of 5 — Journey Details
                     </span>
                     <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
-                      Enter Travel & Flight Details
+                      Select Airport & Enter Travel Details
                     </h2>
                     <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
-                      Search flight number or enter travel information to continue with booking.
+                      Select your service airport, journey type, and verify flight details to continue.
                     </p>
+                  </div>
+
+                  {/* Covered Airport Selector */}
+                  <div>
+                    <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-2">
+                      Service Airport *
+                    </label>
+                    <select
+                      value={state.airportCode}
+                      onChange={(e) => {
+                        const selectedCode = e.target.value;
+                        const entry = activeAirportsList.find((a) => a.code === selectedCode);
+                        updateState({
+                          airportCode: selectedCode,
+                          airportName: entry?.name || `${selectedCode} Airport`,
+                          isFlightValidated: false,
+                          validatedFlightData: null,
+                          flightErrorMessage: undefined,
+                          routeMatchError: undefined,
+                        });
+                      }}
+                      className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm font-serif font-bold focus:outline-none focus:border-amber-600 shadow-xs cursor-pointer"
+                    >
+                      <option value="" disabled>-- Select Service Airport --</option>
+                      {activeAirportsList.map((ap) => (
+                        <option key={ap.code} value={ap.code}>
+                          {ap.name} ({ap.code}) — {ap.city}, {ap.country}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   {/* Direction Selector */}
                   <div>
                     <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-2">
-                      Flight Direction *
+                      Flight Direction / Journey Type *
                     </label>
                     <div className="p-1.5 rounded-2xl bg-slate-100 border border-slate-200 flex items-center gap-1">
                       {[
                         { id: "arrival", label: "Arrival" },
                         { id: "departure", label: "Departure" },
-                        { id: "transit", label: "Transit / Transfer" },
+                        { id: "transit", label: "Transit / Connection" },
                       ].map((dir) => (
                         <button
                           key={dir.id}
                           type="button"
-                          onClick={() => updateState({ direction: dir.id as any })}
-                          className={`flex-1 py-3 px-3 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all duration-200 ${
+                          onClick={() =>
+                            updateState({
+                              direction: dir.id as any,
+                              isFlightValidated: false,
+                              validatedFlightData: null,
+                              flightErrorMessage: undefined,
+                              routeMatchError: undefined,
+                            })
+                          }
+                          className={`flex-1 py-3 px-3 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                             state.direction === dir.id
                               ? "bg-white text-amber-900 shadow-sm border border-slate-200/80"
                               : "text-slate-600 hover:text-slate-900"
@@ -287,8 +306,16 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                       <input
                         type="text"
                         value={state.flightNumber}
-                        onChange={(e) => updateState({ flightNumber: e.target.value.toUpperCase() })}
-                        placeholder="e.g. AI302, EK504"
+                        onChange={(e) =>
+                          updateState({
+                            flightNumber: e.target.value.toUpperCase(),
+                            isFlightValidated: false,
+                            validatedFlightData: null,
+                            flightErrorMessage: undefined,
+                            routeMatchError: undefined,
+                          })
+                        }
+                        placeholder="e.g. AI2424, EK504"
                         className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-600 shadow-xs font-mono font-bold uppercase"
                       />
                     </div>
@@ -320,28 +347,47 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                     </div>
                   </div>
 
-                  {/* ERROR STATE BANNER */}
+                  {/* ERROR STATE & ROUTE MATCH MISMATCH BANNER */}
                   {state.flightErrorMessage && (
-                    <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs font-sans space-y-3">
-                      <div className="flex items-start gap-2.5 font-semibold">
-                        <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-                        <span className="leading-relaxed">{state.flightErrorMessage}</span>
+                    <div className="p-5 rounded-3xl bg-red-50 border border-red-200 text-red-900 space-y-4 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                          <h4 className="text-xs font-mono font-extrabold uppercase tracking-wider text-red-800">
+                            Verification / Route Notice
+                          </h4>
+                          <p className="text-xs font-sans leading-relaxed font-medium">
+                            {state.flightErrorMessage}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex flex-wrap items-center gap-3 pt-1">
+
+                      <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-red-200/60">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateState({ flightErrorMessage: undefined, routeMatchError: undefined });
+                            const el = document.querySelector("select");
+                            if (el) el.focus();
+                          }}
+                          className="px-4 py-2.5 rounded-xl bg-white border border-red-300 text-red-900 hover:bg-red-100 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
+                        >
+                          [ Change Airport ]
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateState({ flightNumber: "", flightErrorMessage: undefined, routeMatchError: undefined })}
+                          className="px-4 py-2.5 rounded-xl bg-white border border-red-300 text-red-900 hover:bg-red-100 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
+                        >
+                          [ Change Flight ]
+                        </button>
                         <button
                           type="button"
                           disabled={busy}
                           onClick={handleSearchFlight}
-                          className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-mono text-[10px] uppercase tracking-wider font-bold transition shadow-xs cursor-pointer"
+                          className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-mono text-[10px] uppercase tracking-wider font-bold transition shadow-xs cursor-pointer"
                         >
-                          Try Again / Fetch Flight
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => updateState({ isManualMode: true, flightStateMode: "MANUAL" })}
-                          className="px-4 py-2 rounded-xl bg-white border border-red-300 text-red-900 hover:bg-red-100 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
-                        >
-                          Enter Flight Details Manually
+                          [ Try Again ]
                         </button>
                       </div>
                     </div>
@@ -349,40 +395,47 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
 
                   {/* VERIFIED FLIGHT RESULT CARD */}
                   {state.isFlightValidated && state.validatedFlightData ? (
-                    <div className="p-5 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-4 shadow-sm">
-                      <div className="flex items-center justify-between">
+                    <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-5 shadow-xl">
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono uppercase font-bold tracking-wider">
                           <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>✓ Flight Verified</span>
+                          <span>✓ Flight Verified for {state.airportName}</span>
                         </div>
                         <span className="text-[10px] font-mono text-slate-400 font-bold uppercase">
                           {state.validatedFlightData.status || "Scheduled"}
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between border-y border-slate-800 py-3 font-mono">
+                      <div className="flex items-center justify-between border-y border-slate-800/80 py-4 font-mono">
                         <div>
-                          <div className="text-xl font-extrabold text-amber-400">{state.validatedFlightData.origin.code || "DEP"}</div>
-                          <div className="text-[10px] text-slate-400 font-sans">{state.validatedFlightData.origin.city || state.validatedFlightData.origin.name || "Origin"}</div>
+                          <div className="text-xl sm:text-2xl font-extrabold text-amber-400">{state.validatedFlightData.origin.code || "DEP"}</div>
+                          <div className="text-xs text-slate-300 font-sans">{state.validatedFlightData.origin.city || state.validatedFlightData.origin.name || "Origin"}</div>
                         </div>
                         <div className="flex flex-col items-center">
-                          <Plane className="w-4 h-4 text-amber-500" />
-                          <div className="text-[9px] text-slate-300 mt-0.5 font-bold">{state.validatedFlightData.carrier.name || state.validatedFlightData.flightNum}</div>
+                          <span className="text-[9px] text-amber-400 font-bold tracking-widest uppercase mb-1">
+                            {state.validatedFlightData.duration || "Direct"}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <div className="h-[2px] w-8 sm:w-16 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+                            <Plane className="w-4 h-4 text-amber-500" />
+                            <div className="h-[2px] w-8 sm:w-16 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+                          </div>
+                          <div className="text-[9px] text-slate-400 mt-1 font-bold">{state.validatedFlightData.carrier.name || state.validatedFlightData.flightNum}</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-xl font-extrabold text-amber-400">{state.validatedFlightData.destination.code || "ARR"}</div>
-                          <div className="text-[10px] text-slate-400 font-sans">{state.validatedFlightData.destination.city || state.validatedFlightData.destination.name || "Destination"}</div>
+                          <div className="text-xl sm:text-2xl font-extrabold text-amber-400">{state.validatedFlightData.destination.code || "ARR"}</div>
+                          <div className="text-xs text-slate-300 font-sans">{state.validatedFlightData.destination.city || state.validatedFlightData.destination.name || "Destination"}</div>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
                         <button
                           type="button"
                           onClick={() => {
                             setCurrentStep(2);
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }}
-                          className="flex-1 py-3.5 px-6 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 hover:from-amber-700 hover:to-amber-900 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                          className="flex-1 py-4 px-8 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 hover:from-amber-700 hover:to-amber-900 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
                         >
                           <span>Continue to Select Services</span>
                           <ArrowRight className="w-4 h-4" />
@@ -390,7 +443,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                         <button
                           type="button"
                           onClick={() => updateState({ flightStateMode: "IDLE", isFlightValidated: false, validatedFlightData: null })}
-                          className="py-3.5 px-5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
+                          className="py-4 px-6 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
                         >
                           Search Another Flight
                         </button>
@@ -418,12 +471,12 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                           {busy ? (
                             <>
                               <RefreshCw className="w-4 h-4 animate-spin" />
-                              <span>Fetching Flight...</span>
+                              <span>Verifying Flight...</span>
                             </>
                           ) : (
                             <>
                               <Search className="w-4 h-4" />
-                              <span>Fetch Flight</span>
+                              <span>Verify Flight</span>
                             </>
                           )}
                         </button>
@@ -453,74 +506,17 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                 </div>
               )}
 
-              {/* STEP 2: SELECT SERVICES (With Automatic Service Airport Resolution & Dynamic Coverage Check) */}
+              {/* STEP 2: SELECT SERVICES FROM MASTER AIRPORT CATALOG */}
               {currentStep === 2 && (
                 <div className="space-y-6">
-                  {/* Compact Sticky "Journey Summary" Header */}
-                  <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-3 mb-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold shrink-0">
-                        <Plane className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-extrabold text-sm text-slate-900 font-mono">
-                            {state.flightNumber || "DIRECT"}
-                          </span>
-                          <span className="text-xs text-slate-500 font-semibold hidden sm:inline">
-                            ({state.validatedFlightData?.carrier?.name || "Commercial Airline"})
-                          </span>
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase border ${
-                              isManualData
-                                ? "bg-slate-100 text-slate-700 border-slate-300"
-                                : "bg-emerald-50 text-emerald-800 border-emerald-300"
-                            }`}
-                          >
-                            {isManualData ? "Provided Information" : "Live Data"}
-                          </span>
-                        </div>
-                        <div className="text-xs text-slate-600 font-sans">
-                          <span className="font-bold">{state.validatedFlightData?.origin?.code || state.airportCode || "DEL"}</span>
-                          {" → "}
-                          <span className="font-bold">{state.validatedFlightData?.destination?.code || "BOM"}</span>
-                          {" • "}
-                          <span>{state.serviceDate}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsEditDrawerOpen(true)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-900 font-bold text-xs transition-all cursor-pointer"
-                    >
-                      <Edit2 className="w-3.5 h-3.5 text-purple-700" />
-                      <span>Edit Journey</span>
-                    </button>
-                  </div>
-
-                  {/* LOADING STATE (Rule 14) */}
-                  {(state.isLoadingServices || state.isResolvingAirport) && (
-                    <div className="p-12 rounded-3xl bg-slate-50 border border-slate-200 text-center space-y-3">
-                      <RefreshCw className="w-8 h-8 text-amber-600 animate-spin mx-auto" />
-                      <h4 className="text-sm font-extrabold text-slate-900 font-mono uppercase tracking-wider">
-                        Determining Service Airport & Catalog...
-                      </h4>
-                      <p className="text-xs text-slate-500 font-sans">
-                        Resolving journey requirements for {state.direction.toUpperCase()}...
-                      </p>
-                    </div>
-                  )}
-
-                  {/* API FETCH ERROR STATE (Rule 15 - Distinguish API error from uncovered) */}
-                  {!state.isLoadingServices && state.serviceFetchError && (
-                    <div className="p-8 rounded-3xl bg-amber-50 border border-amber-200 text-amber-900 space-y-4">
+                  {/* SERVICE FETCH ERROR STATE */}
+                  {state.serviceFetchError && (
+                    <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 space-y-3">
                       <div className="flex items-start gap-3">
                         <AlertTriangle className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
                         <div>
                           <h4 className="text-sm font-extrabold text-amber-950 font-mono uppercase">
-                            Temporary Service Catalog Error
+                            Service Catalog Error
                           </h4>
                           <p className="text-xs text-amber-800 font-sans mt-1">
                             {state.serviceFetchError}
@@ -530,7 +526,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                       <div className="flex flex-wrap items-center gap-3 pt-2">
                         <button
                           type="button"
-                          onClick={() => retryFetchServices()}
+                          onClick={() => updateState({ isLoadingServices: true })}
                           className="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-mono text-xs font-bold uppercase tracking-wider transition cursor-pointer"
                         >
                           Retry Fetching Services
@@ -546,7 +542,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                     </div>
                   )}
 
-                  {/* UNCOVERED AIRPORT STATE (Rule 7, 8, 9) */}
+                  {/* UNCOVERED AIRPORT STATE */}
                   {!state.isLoadingServices && !state.serviceFetchError && state.isAirportCovered === false && (
                     <div className="p-8 sm:p-10 rounded-3xl bg-slate-900 text-white border border-slate-800 text-center space-y-6 shadow-lg">
                       <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
@@ -558,7 +554,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                           Services Unavailable at this Airport
                         </span>
                         <h3 className="text-xl sm:text-2xl font-serif font-bold text-white pt-2">
-                          We currently don't offer services at {state.resolvedAirport?.name || state.resolvedAirport?.code || state.airportCode} for {state.resolvedAirport?.journeyType || state.direction} journeys.
+                          We currently don't offer services at {state.airportName || state.airportCode} for {state.direction} journeys.
                         </h3>
                         <p className="text-xs text-slate-400 font-sans leading-relaxed">
                           Shafsky Aviation VIP concierge services are rapidly expanding. Contact our 24/7 Command Desk for bespoke arrangement or custom airport dispatch.
@@ -572,7 +568,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                             window.open(
                               "https://wa.me/919876543210?text=" +
                                 encodeURIComponent(
-                                  `VIP Assistance Request for ${state.resolvedAirport?.name || state.airportCode} (${state.direction})`
+                                  `VIP Assistance Request for ${state.airportName || state.airportCode} (${state.direction})`
                                 ),
                               "_blank"
                             );
@@ -593,45 +589,29 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                     </div>
                   )}
 
-                  {/* COVERED AIRPORT STATE (Rule 6) */}
+                  {/* COVERED AIRPORT STATE */}
                   {!state.isLoadingServices && !state.serviceFetchError && state.isAirportCovered !== false && (
                     <>
-                      {/* Context Header */}
-                      <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white border border-slate-700 shadow-md space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/20">
-                            YOUR SERVICE AIRPORT
+                      <div className="border-b border-slate-100 pb-4 flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] font-mono text-amber-800 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-50 border border-amber-200">
+                            Step 2 of 5 — Service Selection
                           </span>
-                          <span className="text-xs font-mono text-emerald-400 font-bold uppercase flex items-center gap-1.5">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            <span>Covered Location</span>
-                          </span>
+                          <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
+                            Select Packages & Extra Services
+                          </h2>
+                          <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
+                            Airport-filtered catalog for {state.airportName || state.airportCode}. Choose packages or customize individual options.
+                          </p>
                         </div>
-                        <div className="pt-1 flex flex-wrap items-baseline justify-between gap-2">
-                          <div>
-                            <h3 className="text-xl sm:text-2xl font-serif font-extrabold text-white">
-                              {state.resolvedAirport?.city || state.airportName}
-                            </h3>
-                            <p className="text-xs text-slate-300 font-sans font-medium">
-                              {state.resolvedAirport?.name || state.airportName} ({state.resolvedAirport?.code || state.airportCode})
-                            </p>
-                          </div>
-                          <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
-                            {state.resolvedAirport?.journeyType || state.direction} Services
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="border-b border-slate-100 pb-4">
-                        <span className="text-[10px] font-mono text-amber-800 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-50 border border-amber-200">
-                          Step 2 of 5 — Service Selection
-                        </span>
-                        <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
-                          Select Packages & Extra Services
-                        </h2>
-                        <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
-                          Airport-filtered catalog for {state.resolvedAirport?.name || state.airportName || state.airportCode}. Choose packages or customize individual options.
-                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setIsEditDrawerOpen(true)}
+                          className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                          <span>Edit Journey</span>
+                        </button>
                       </div>
 
                       {/* Airport Services & Package Grid */}
@@ -644,35 +624,26 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                         priceBreakdown={priceBreakdown}
                         onSelectPackage={(id) => selectPackage(id)}
                         onToggleIndividualService={(id) => toggleIndividualService(id)}
-                        availableTerminals={journeyEngine?.result?.available_terminals}
-                        selectedTerminal={journeyEngine?.result?.selected_terminal}
+                        selectedTerminal={state.selectedTerminal}
                       />
 
                       {/* Action Buttons */}
                       <div className="pt-4 flex items-center justify-between">
                         <button
                           type="button"
-                          onClick={() => {
-                            setCurrentStep(1);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                          className="px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                          onClick={() => setCurrentStep(1)}
+                          className="px-6 py-3.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition cursor-pointer"
                         >
-                          Back
+                          Back to Step 1
                         </button>
 
                         <button
                           type="button"
-                          disabled={!state.selectedPackageId && (state.selectedServiceIds?.length || 0) === 0 && !state.selectedService && !state.selectedPackage}
                           onClick={() => {
-                            if (!state.selectedPackageId && (state.selectedServiceIds?.length || 0) === 0 && !state.selectedService && !state.selectedPackage) {
-                              toast.error("Please select an airport package or service to continue.");
-                              return;
-                            }
                             setCurrentStep(3);
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }}
-                          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-sm hover:scale-105 transition-all disabled:opacity-40 disabled:hover:scale-100 cursor-pointer"
+                          className="px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 hover:from-amber-700 hover:to-amber-900 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-md transition-all flex items-center gap-2 cursor-pointer"
                         >
                           <span>Continue to Passenger Details</span>
                           <ArrowRight className="w-4 h-4" />
@@ -683,150 +654,72 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                 </div>
               )}
 
-              {/* STEP 3: PASSENGER & CONTACT INFORMATION */}
+              {/* STEP 3: PASSENGER DETAILS */}
               {currentStep === 3 && (
                 <PassengerDetailsStep
                   state={state}
-                  onChange={updateState}
-                  onBack={() => {
-                    setCurrentStep(2);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  onSaveDraft={async () => {
-                    const isOk = await saveDraftWithBackend();
-                    if (isOk) {
+                  onChange={(fields) => updateState(fields)}
+                  onBack={() => setCurrentStep(2)}
+                  onContinue={async () => {
+                    const saved = await saveDraftWithBackend();
+                    if (saved) {
                       setCurrentStep(4);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }
-                    return isOk;
                   }}
-                  priceBreakdown={priceBreakdown}
+                  isSavingDraft={state.isSavingDraft}
+                  fieldErrors={state.draftFieldErrors}
                 />
               )}
 
-              {/* STEP 4: BOOKING SUMMARY & PAYMENT */}
+              {/* STEP 4: REVIEW SUMMARY & VALIDATION */}
               {currentStep === 4 && (
                 <BookingSummaryReviewStep
                   state={state}
-                  bookingRef={validationData?.booking_reference || bookingRef || "SHK-20260806-PEND"}
                   priceBreakdown={priceBreakdown}
-                  onEditJourney={() => setIsEditDrawerOpen(true)}
-                  onEditServices={() => setCurrentStep(2)}
-                  onEditPassengers={() => setCurrentStep(3)}
-                  onProceedToPayment={handleSubmit}
-                  validateWithBackend={validateWithBackend}
+                  totalPrice={totalPrice}
+                  onBack={() => setCurrentStep(3)}
+                  onConfirmBooking={handleSubmit}
+                  busy={busy}
+                  isValidatingBooking={state.isValidatingBooking}
+                  validationErrors={state.validationErrors}
+                  hasPriceChanged={state.hasPriceChanged}
+                  authoritativeValidationResult={state.authoritativeValidationResult}
+                  onRevalidate={validateWithBackend}
                 />
               )}
 
               {/* STEP 5: BOOKING CONFIRMED */}
               {currentStep === 5 && (
                 <BookingSuccessPass
-                  badge="Airside Pass Active"
-                  title={`${getServiceTitle()} Confirmed`}
-                  subtitle={`Your request for Flight ${state.flightNumber || "VIP Direct"} at ${state.airportCode} (${state.direction.toUpperCase()}) is assigned to our 24/7 command desk.`}
-                  bookingRef={bookingRef || "SHF-[#MEET]-849201"}
-                  guestSummary={`${state.guestCount} Guest(s) | ${state.serviceDate}`}
+                  bookingRef={bookingRef || "SHF-AIR-CONFIRMED"}
+                  passengerName={state.fullName}
+                  passengerEmail={state.email}
+                  serviceType={state.selectedPackage || state.selectedService || "Meet & Assist"}
+                  flightNum={state.flightNumber || "MANUAL-ENTRY"}
+                  originCode={state.validatedFlightData?.origin?.code || state.airportCode}
+                  destCode={state.validatedFlightData?.destination?.code || state.airportCode}
+                  departureTime={state.serviceDate ? `${state.serviceDate} ${state.serviceTime}` : "Scheduled Date"}
+                  totalAmount={totalPrice}
+                  currency={state.catalogCurrency || "INR"}
+                  status="CONFIRMED"
                 />
               )}
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* ── STICKY LIVE BOOKING SUMMARY PANEL ── */}
-        {currentStep > 1 && currentStep < 5 && (
-          <div className="lg:col-span-4 sticky top-24 space-y-4">
-            <div className="p-6 rounded-[32px] bg-slate-900 text-white border border-slate-800 shadow-xl space-y-5">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-                <div className="flex items-center gap-2">
-                  <ShoppingBag className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs font-mono font-bold uppercase tracking-widest text-slate-300">
-                    Live Summary
-                  </span>
-                </div>
-                <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 font-bold">
-                  {state.airportCode}
-                </span>
-              </div>
-
-              {/* Flight Badge */}
-              <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-1">
-                <div className="text-[10px] font-mono uppercase text-slate-400 font-bold">
-                  Journey Flight & Direction
-                </div>
-                <div className="text-sm font-heading font-bold text-white flex items-center justify-between">
-                  <span>{state.flightNumber || "Direct Dispatch"}</span>
-                  <span className="text-xs font-mono text-amber-300 uppercase">{state.direction}</span>
-                </div>
-                <div className="text-xs text-slate-400 font-sans">
-                  {state.serviceDate} • {state.guestCount} Pax
-                </div>
-              </div>
-
-              {/* Service/Package Item */}
-              <div className="space-y-2 pt-1">
-                <div className="text-[10px] font-mono uppercase text-slate-400 font-bold">
-                  Selected Service Tier
-                </div>
-                <div className="flex items-center justify-between text-xs font-medium">
-                  <span className="text-amber-200 font-bold">{getServiceTitle()}</span>
-                  <span className="font-mono text-white font-bold">
-                    {currencySymbol}{totalPrice.toLocaleString()}
-                  </span>
-                </div>
-
-                {selectedExtrasList.length > 0 && (
-                  <div className="pt-2 space-y-1">
-                    <div className="text-[10px] font-mono uppercase text-slate-400 font-bold">
-                      Add-on Extras ({selectedExtrasList.length})
-                    </div>
-                    {selectedExtrasList.map((extraId) => (
-                      <div key={extraId} className="flex items-center justify-between text-[11px] text-slate-300">
-                        <span>• {extraId.replace("_", " ").toUpperCase()}</span>
-                        <span className="font-mono text-amber-300">+ Included</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Total Summary */}
-              <div className="pt-4 border-t border-slate-800 space-y-2">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>Taxes & Fees</span>
-                  <span className="font-mono text-slate-300">Included</span>
-                </div>
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-sm font-heading font-bold text-white">Grand Total</span>
-                  <span className="text-xl font-mono font-bold text-amber-400">
-                    {currencySymbol}{totalPrice.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Edit Journey Drawer */}
+        <EditJourneyDrawer
+          isOpen={isEditDrawerOpen}
+          onClose={() => setIsEditDrawerOpen(false)}
+          state={state}
+          onSave={(updatedFields) => {
+            updateState(updatedFields);
+            setIsEditDrawerOpen(false);
+          }}
+        />
       </div>
-
-      {/* Edit Journey In-Place Side Drawer */}
-      <EditJourneyDrawer
-        isOpen={isEditDrawerOpen}
-        onClose={() => setIsEditDrawerOpen(false)}
-        flightData={state.validatedFlightData}
-        serviceDate={state.serviceDate}
-        onSave={(updated) => {
-          const manualFlightInfo: FlightData = {
-            flightNum: updated.flightNum,
-            carrier: { iata: updated.flightNum.slice(0, 2).toUpperCase(), name: updated.airlineName },
-            origin: { code: updated.depCode, name: null, city: null, country: null },
-            destination: { code: updated.arrCode, name: null, city: null, country: null },
-            departure: { scheduledTime: `${updated.date} ${updated.time}` },
-            arrival: { scheduledTime: `${updated.date} ${updated.time}` },
-            isManual: true,
-          };
-          setManualFlightData(manualFlightInfo);
-          toast.success("Journey details updated!");
-        }}
-      />
     </div>
   );
 }

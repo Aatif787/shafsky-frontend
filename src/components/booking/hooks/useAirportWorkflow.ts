@@ -1,16 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { getAirportBusinessPrice } from "@/data/airportRegistry";
+import { getAirportBusinessPrice, getAirportRegistryEntry } from "@/data/airportRegistry";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { ApiClient } from "@/lib/ApiClient";
 import { toast } from "sonner";
-import { useJourneyEngine } from "@/hooks/useJourneyEngine";
-
 import {
-  resolveServiceAirport,
-  checkAirportCoverage,
   fetchAirportServices,
   computePriceBreakdown,
-  ResolvedServiceAirport,
   PackageCatalogItem,
   ServiceCatalogItem,
   PriceBreakdown,
@@ -39,8 +34,7 @@ export interface AirportWorkflowState {
   isManualMode?: boolean;
   flightStateMode?: FlightValidationMode;
   flightErrorMessage?: string;
-  resolvedAirport?: ResolvedServiceAirport | null;
-  isResolvingAirport?: boolean;
+  routeMatchError?: string;
   isLoadingServices?: boolean;
   serviceFetchError?: string | null;
   isAirportCovered?: boolean;
@@ -57,11 +51,12 @@ export interface AirportWorkflowState {
   draftFieldErrors?: Record<string, string>;
   bookingRef?: string;
   flightType?: string;
+  isResolvingAirport?: boolean;
+  resolvedAirport?: any;
 }
 
 /**
  * Formats flight validation errors into user-friendly messages.
- * Never exposes raw backend codes (e.g. FLIGHT_NOT_FOUND) or technical stack traces.
  */
 export function formatFlightLookupError(error: unknown, status?: number): string {
   const rawString =
@@ -105,29 +100,31 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     };
   }
 
-  const rawOrigin = searchParams?.origin || "";
-  const extractedCode = rawOrigin.match(/\(([A-Z]{3})\)/)?.[1] || (rawOrigin.length === 3 ? rawOrigin.toUpperCase() : "");
+  const rawOrigin = searchParams?.origin || searchParams?.airport || "";
+  const extractedCode = rawOrigin.match(/\(([A-Z]{3})\)/)?.[1] || (rawOrigin.length === 3 ? rawOrigin.toUpperCase() : searchParams?.airport || "DEL");
 
   const initialBookingMode: "individual" | "package" =
     searchParams?.booking_mode === "package" || searchParams?.package_id || searchParams?.mode === "package"
       ? "package"
       : "individual";
 
-  // SSR-safe: compute only URL-derived values during render. Browser-only state (sessionStorage, Date) is deferred to useEffect.
   const isFromHero = Boolean(searchParams?.from_hero || searchParams?.validated);
   const initialFlightNumber = searchParams?.flight_number || "";
   const initialDirection: "arrival" | "departure" | "transit" =
     (searchParams?.direction as any) ||
     (searchParams?.origin ? "departure" : searchParams?.destination ? "arrival" : "arrival");
 
-  // Always start at step 1 during SSR; useEffect will advance to step 2 if cached flight data exists
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [busy, setBusy] = useState<boolean>(false);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
 
+  // Look up initial airport name from airportRegistry
+  const initialRegistryEntry = getAirportRegistryEntry(extractedCode);
+  const initialAirportName = initialRegistryEntry?.name || rawOrigin || `${extractedCode.toUpperCase()} Airport`;
+
   const [state, setState] = useState<AirportWorkflowState>({
-    airportCode: extractedCode,
-    airportName: rawOrigin || "Selected Airport",
+    airportCode: extractedCode.toUpperCase(),
+    airportName: initialAirportName,
     direction: initialDirection,
     bookingMode: initialBookingMode,
     selectedService: searchParams?.service_id || searchParams?.package_id || "",
@@ -145,11 +142,11 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     selectedTerminal: searchParams?.terminal || "",
     flightStateMode: "IDLE",
     isManualMode: false,
+    isAirportCovered: true,
   });
 
-  // Hydrate browser-only state after mount (sessionStorage + Date fallback)
+  // Hydrate browser-only state after mount
   useEffect(() => {
-    // Fill in today's date as fallback if no depart_date was provided via URL
     if (!searchParams?.depart_date) {
       const today = new Date().toISOString().split("T")[0];
       setState((prev) => (prev.serviceDate ? prev : { ...prev, serviceDate: today }));
@@ -161,7 +158,6 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         if (cached) {
           const parsed = JSON.parse(cached) as FlightData;
           if (parsed && parsed.flightNum) {
-            const targetAirport = initialDirection === "arrival" ? parsed.destination : parsed.origin;
             const rawTerm = initialDirection === "arrival" ? parsed.arrival?.terminal : parsed.departure?.terminal;
             let inferredTerminal: string | undefined = undefined;
             if (rawTerm) {
@@ -178,8 +174,6 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
               isFlightValidated: true,
               validatedFlightData: parsed,
               flightNumber: parsed.flightNum || prev.flightNumber,
-              airportCode: targetAirport?.code || prev.airportCode,
-              airportName: targetAirport?.name || targetAirport?.city || prev.airportName,
               selectedTerminal: inferredTerminal || prev.selectedTerminal,
               flightStateMode: "VERIFIED",
             }));
@@ -190,7 +184,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
           }
         }
       } catch {
-        // ignore cache read error
+        // ignore cache error
       }
     }
   }, []);
@@ -199,92 +193,81 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     setState((prev) => ({ ...prev, ...fields }));
   };
 
-  // Core Rules 1, 2, 3, 11, 13, 14, 15: Automatic Service Airport Resolution & Dynamic Service Fetching with AbortController
+  // ─── CANONICAL MASTER CATALOG FETCHING EFFECT ───
+  // Reads ONLY from selected state.airportCode and state.direction.
+  // ZERO automatic airport replacement!
   useEffect(() => {
+    if (!state.airportCode) return;
     const controller = new AbortController();
 
-    const runResolution = async () => {
-      const resolved = resolveServiceAirport({
-        flightData: state.validatedFlightData,
-        direction: state.direction,
-        fallbackAirportCode: state.airportCode,
-      });
-
-      // Clear previous selection & stale services (Rule 14 & 13)
+    const loadCatalog = async () => {
       setState((prev) => ({
         ...prev,
-        resolvedAirport: resolved,
-        airportCode: resolved.code || prev.airportCode,
-        airportName: resolved.name || prev.airportName,
-        isAirportCovered: resolved.isCovered,
-        isResolvingAirport: true,
         isLoadingServices: true,
         serviceFetchError: null,
-        availableServicesList: [],
-        availablePackagesList: [],
-        selectedPackageId: null,
-        selectedServiceIds: [],
-        selectedService: "",
-        selectedPackage: "",
       }));
 
-      if (!resolved.code) {
-        setState((prev) => ({
-          ...prev,
-          isResolvingAirport: false,
-          isLoadingServices: false,
-          isAirportCovered: false,
-        }));
-        return;
-      }
-
       try {
-        const fetchRes = await fetchAirportServices(resolved.code, resolved.journeyType, controller.signal);
+        const fetchRes = await fetchAirportServices(
+          state.airportCode,
+          state.direction,
+          controller.signal,
+          {
+            origin: state.validatedFlightData?.origin?.code || undefined,
+            destination: state.validatedFlightData?.destination?.code || undefined,
+            terminal: state.selectedTerminal,
+          }
+        );
 
         if (controller.signal.aborted) return;
 
         if (fetchRes.success) {
           setState((prev) => ({
             ...prev,
-            isResolvingAirport: false,
             isLoadingServices: false,
             isAirportCovered: fetchRes.isCovered,
             catalogCurrency: fetchRes.currency || "INR",
             availableServicesList: fetchRes.services,
             availablePackagesList: fetchRes.packages,
-            flightType: fetchRes.flightType || prev.flightType,
+            flightType: fetchRes.flightType,
             serviceFetchError: null,
           }));
         } else {
-          // Rule 15: Distinguish API/Service Error from Airport Uncovered
           setState((prev) => ({
             ...prev,
-            isResolvingAirport: false,
             isLoadingServices: false,
-            serviceFetchError: fetchRes.error || `Unable to load service catalog for ${resolved.name} (${resolved.code}).`,
+            isAirportCovered: fetchRes.isCovered,
+            availableServicesList: [],
+            availablePackagesList: [],
+            serviceFetchError: fetchRes.error || `Unable to load service catalog for ${state.airportName}.`,
           }));
         }
       } catch (err: any) {
         if (err.name === "AbortError" || controller.signal.aborted) return;
         setState((prev) => ({
           ...prev,
-          isResolvingAirport: false,
           isLoadingServices: false,
-          serviceFetchError: `Network connection issue while retrieving services for ${resolved.name}. Please retry.`,
+          serviceFetchError: `Network connection issue while loading services. Please retry.`,
         }));
       }
     };
 
-    runResolution();
+    loadCatalog();
 
     return () => {
       controller.abort();
     };
-  }, [state.direction, state.validatedFlightData, state.airportCode]);
+  }, [state.airportCode, state.direction, state.validatedFlightData, state.selectedTerminal]);
 
+  // ─── FLIGHT VERIFICATION & ROUTE MATCH VALIDATION ───
   const validateAndSearchFlight = async (): Promise<boolean> => {
     const flightNum = state.flightNumber.trim().toUpperCase().replace(/\s+/g, "");
     const departDate = state.serviceDate.trim();
+
+    if (!state.airportCode) {
+      toast.error("Please select a covered airport.");
+      return false;
+    }
 
     if (!flightNum || flightNum.length < 3) {
       toast.error("Please enter a valid flight number (e.g. AI302, EK504).");
@@ -299,6 +282,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     updateState({
       flightStateMode: "LOADING",
       flightErrorMessage: undefined,
+      routeMatchError: undefined,
     });
     setBusy(true);
 
@@ -379,8 +363,58 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         },
       };
 
-      // Automatically determine relevant airport & terminal from validated flight data
-      const targetAirport = state.direction === "arrival" ? flightInfo.destination : flightInfo.origin;
+      // ─── ROUTE MATCH VALIDATION ───
+      const selectedCode = (state.airportCode || "").trim().toUpperCase();
+      const originCode = (flightInfo.origin?.code || "").trim().toUpperCase();
+      const destCode = (flightInfo.destination?.code || "").trim().toUpperCase();
+
+      const transitCodes: string[] = [
+        (targetObj as any)?.transit?.code,
+        (targetObj as any)?.connectingAirport?.code,
+        (targetObj as any)?.layover?.code,
+        ...(Array.isArray(targetObj?.segments) ? targetObj.segments.map((s: any) => s?.destination?.code || s?.arrival?.airport) : []),
+      ].filter(Boolean).map((c: string) => String(c).trim().toUpperCase());
+
+      let isMatchValid = false;
+      let matchErrMsg = "";
+
+      if (state.direction === "arrival") {
+        if (selectedCode && destCode && selectedCode === destCode) {
+          isMatchValid = true;
+        } else {
+          isMatchValid = false;
+          matchErrMsg = `This flight does not arrive at ${state.airportName || selectedCode} (${selectedCode}). Flight ${flightInfo.flightNum} arrives at ${flightInfo.destination.name || destCode} (${destCode}).`;
+        }
+      } else if (state.direction === "departure") {
+        if (selectedCode && originCode && selectedCode === originCode) {
+          isMatchValid = true;
+        } else {
+          isMatchValid = false;
+          matchErrMsg = `This flight does not depart from ${state.airportName || selectedCode} (${selectedCode}). Flight ${flightInfo.flightNum} departs from ${flightInfo.origin.name || originCode} (${originCode}).`;
+        }
+      } else if (state.direction === "transit") {
+        if (transitCodes.includes(selectedCode) || selectedCode === destCode || selectedCode === originCode) {
+          isMatchValid = true;
+        } else {
+          isMatchValid = false;
+          matchErrMsg = `This flight does not have a connection at ${state.airportName || selectedCode} (${selectedCode}).`;
+        }
+      }
+
+      if (!isMatchValid) {
+        updateState({
+          flightStateMode: "ERROR",
+          flightErrorMessage: matchErrMsg,
+          routeMatchError: matchErrMsg,
+          isFlightValidated: false,
+          validatedFlightData: flightInfo, // Preserve verified flight so user sees details
+          isManualMode: false,
+        });
+        setBusy(false);
+        return false;
+      }
+
+      // MATCH IS VALID!
       const rawTerm = state.direction === "arrival" ? flightInfo.arrival?.terminal : flightInfo.departure?.terminal;
       let inferredTerminal: string | undefined = undefined;
       if (rawTerm) {
@@ -396,23 +430,22 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         try {
           sessionStorage.setItem("shafsky_validated_flight", JSON.stringify(flightInfo));
         } catch {
-          // ignore cache write error
+          // ignore cache error
         }
       }
 
       updateState({
         flightStateMode: "VERIFIED",
         flightErrorMessage: undefined,
+        routeMatchError: undefined,
         isFlightValidated: true,
         validatedFlightData: flightInfo,
         flightNumber: flightInfo.flightNum || flightNum,
-        airportCode: targetAirport?.code || state.airportCode,
-        airportName: targetAirport?.name || targetAirport?.city || state.airportName,
         selectedTerminal: inferredTerminal || state.selectedTerminal,
         isManualMode: false,
       });
 
-      toast.success(`Flight ${flightInfo.flightNum} verified successfully!`);
+      toast.success(`Flight ${flightInfo.flightNum} verified for ${state.airportName}!`);
       setBusy(false);
       return true;
     } catch (err: any) {
@@ -435,10 +468,10 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       try {
         sessionStorage.setItem("shafsky_validated_flight", JSON.stringify(flightInfo));
       } catch {
-        // ignore cache write error
+        // ignore cache error
       }
     }
-    const targetAirport = state.direction === "arrival" ? flightInfo.destination : flightInfo.origin;
+
     const rawTerm = state.direction === "arrival" ? flightInfo.arrival?.terminal : flightInfo.departure?.terminal;
     let inferredTerminal: string | undefined = undefined;
     if (rawTerm) {
@@ -454,26 +487,10 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       isFlightValidated: true,
       validatedFlightData: flightInfo,
       flightNumber: flightInfo.flightNum,
-      airportCode: targetAirport?.code || state.airportCode,
-      airportName: targetAirport?.name || targetAirport?.city || state.airportName,
       selectedTerminal: inferredTerminal || state.selectedTerminal,
       isManualMode: true,
     });
   };
-
-  const depCode = (state.direction === "departure" ? state.airportCode : state.validatedFlightData?.origin?.code) || undefined;
-  const arrCode = (state.direction === "arrival" ? state.airportCode : state.validatedFlightData?.destination?.code) || undefined;
-
-  const journeyEngine = useJourneyEngine({
-    departureCode: depCode,
-    arrivalCode: arrCode,
-    journeyType: state.direction,
-    serviceDate: state.serviceDate,
-    serviceTime: state.serviceTime,
-    requestedServiceSlug: state.selectedService || undefined,
-    terminal: state.selectedTerminal || undefined,
-    enabled: true,
-  });
 
   const selectPackage = useCallback((packageId: string | null) => {
     setState((prev) => {
@@ -510,62 +527,11 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     currencySymbol: state.catalogCurrency === "USD" ? "$" : state.catalogCurrency === "AED" ? "AED " : "₹",
   });
 
-  const retryFetchServices = useCallback(() => {
-    const resolved = resolveServiceAirport({
-      flightData: state.validatedFlightData,
-      direction: state.direction,
-      fallbackAirportCode: state.airportCode,
-    });
-    setState((prev) => ({
-      ...prev,
-      isResolvingAirport: true,
-      isLoadingServices: true,
-      serviceFetchError: null,
-    }));
-    fetchAirportServices(resolved.code, resolved.journeyType)
-      .then((fetchRes) => {
-        if (fetchRes.success) {
-          setState((prev) => ({
-            ...prev,
-            isResolvingAirport: false,
-            isLoadingServices: false,
-            isAirportCovered: fetchRes.isCovered,
-            catalogCurrency: fetchRes.currency || "INR",
-            availableServicesList: fetchRes.services,
-            availablePackagesList: fetchRes.packages,
-            serviceFetchError: null,
-          }));
-        } else {
-          setState((prev) => ({
-            ...prev,
-            isResolvingAirport: false,
-            isLoadingServices: false,
-            serviceFetchError: fetchRes.error || `Unable to load service catalog.`,
-          }));
-        }
-      })
-      .catch(() => {
-        setState((prev) => ({
-          ...prev,
-          isResolvingAirport: false,
-          isLoadingServices: false,
-          serviceFetchError: `Network connection issue. Please retry.`,
-        }));
-      });
-  }, [state.direction, state.validatedFlightData, state.airportCode]);
-
   const validateWithBackend = useCallback(async (): Promise<boolean> => {
-    setState((prev) => ({
-      ...prev,
-      isValidatingBooking: true,
-      validationErrors: [],
-      hasPriceChanged: false,
-    }));
-
     const payload = {
       flight_number: state.flightNumber,
-      journey_type: state.direction,
-      airport_code: state.resolvedAirport?.code || state.airportCode,
+      journey_type: state.direction.toUpperCase(),
+      airport_code: state.airportCode,
       selected_package_id: state.selectedPackageId || null,
       selected_service_ids: state.selectedServiceIds || [],
       guest_count: state.guestCount,
@@ -573,180 +539,135 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       service_time: state.serviceTime,
     };
 
+    updateState({ isValidatingBooking: true, validationErrors: [], hasPriceChanged: false });
+
     try {
       const res = await ApiClient.fetchWithAuth("/api/airport/bookings/validate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const data = await res.json();
 
-      if (data && data.valid) {
-        const previousEstimate = priceBreakdown.grandTotal;
-        const authoritativeTotal = data.total ?? previousEstimate;
-        const priceChanged = Boolean(
-          previousEstimate > 0 && Math.abs(authoritativeTotal - previousEstimate) > 0.01
-        );
-
-        setState((prev) => ({
-          ...prev,
+      if (res.ok && data.valid) {
+        updateState({
           isValidatingBooking: false,
-          validationErrors: [],
           authoritativeValidationResult: data,
-          hasPriceChanged: priceChanged,
-          catalogCurrency: data.currency || prev.catalogCurrency,
-        }));
-
-        if (priceChanged) {
-          toast.info(
-            `Booking summary updated with backend authoritative price: ${
-              data.currency === "USD" ? "$" : "₹"
-            }${authoritativeTotal.toLocaleString()}`
-          );
-        }
-
+          validationErrors: [],
+        });
         return true;
       } else {
-        const errList = data?.errors && data.errors.length > 0
-          ? data.errors
-          : ["Backend booking validation failed. Please check your selections."];
-
-        setState((prev) => ({
-          ...prev,
+        const errors = data.issues || [data.detail || data.error || "Booking validation failed. Please check your selections."];
+        const priceChanged = data.issues?.some((i: string) => i.toLowerCase().includes("price") || i.toLowerCase().includes("rate"));
+        updateState({
           isValidatingBooking: false,
-          validationErrors: errList,
-          hasPriceChanged: false,
-        }));
-
-        toast.error(errList[0]);
+          validationErrors: errors,
+          hasPriceChanged: priceChanged,
+        });
         return false;
       }
-    } catch {
-      const fallbackErr = ["Network connection or server issue during booking validation. Please retry."];
-      setState((prev) => ({
-        ...prev,
+    } catch (err: any) {
+      updateState({
         isValidatingBooking: false,
-        validationErrors: fallbackErr,
-      }));
-      toast.error(fallbackErr[0]);
+        validationErrors: ["Unable to connect to validation service. Please check your connection."],
+      });
       return false;
     }
   }, [
     state.flightNumber,
     state.direction,
-    state.resolvedAirport,
     state.airportCode,
     state.selectedPackageId,
     state.selectedServiceIds,
     state.guestCount,
     state.serviceDate,
     state.serviceTime,
-    priceBreakdown.grandTotal,
   ]);
 
   const saveDraftWithBackend = useCallback(async (): Promise<boolean> => {
-    setState((prev) => ({
-      ...prev,
-      isSavingDraft: true,
-      draftFieldErrors: {},
-      validationErrors: [],
-    }));
+    const fieldErrors: Record<string, string> = {};
+    if (!state.fullName || state.fullName.trim().length < 2) {
+      fieldErrors.fullName = "Please enter full name (at least 2 characters).";
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!state.email || !emailRegex.test(state.email.trim())) {
+      fieldErrors.email = "Please enter a valid email address.";
+    }
+    const phoneClean = (state.phone || "").replace(/\D/g, "");
+    if (!state.phone || phoneClean.length < 7) {
+      fieldErrors.phone = "Please enter a valid phone/WhatsApp number (at least 7 digits).";
+    }
 
-    const payload = {
-      booking_ref: state.bookingRef || null,
-      full_name: state.fullName,
-      email: state.email,
-      phone: state.phone,
-      guest_count: state.guestCount,
-      flight_number: state.flightNumber,
-      journey_type: state.direction,
-      airport_code: state.resolvedAirport?.code || state.airportCode,
+    if (Object.keys(fieldErrors).length > 0) {
+      updateState({ draftFieldErrors: fieldErrors });
+      toast.error("Please resolve the required contact information errors.");
+      return false;
+    }
+
+    updateState({ isSavingDraft: true, draftFieldErrors: {} });
+
+    const draftPayload = {
+      booking_ref: state.bookingRef || undefined,
+      passenger_name: state.fullName.trim(),
+      passenger_email: state.email.trim(),
+      passenger_phone: state.phone.trim(),
+      passenger_count: state.guestCount,
+      flight_num: state.flightNumber,
+      journey_type: state.direction.toUpperCase(),
+      airport_code: state.airportCode,
       selected_package_id: state.selectedPackageId || null,
       selected_service_ids: state.selectedServiceIds || [],
       service_date: state.serviceDate,
       service_time: state.serviceTime,
-      special_requests: state.specialRequests,
+      special_requests: state.specialRequests || undefined,
     };
 
     try {
       const res = await ApiClient.fetchWithAuth("/api/airport/bookings/draft", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(draftPayload),
       });
 
       const data = await res.json();
 
-      if (data && data.valid) {
-        if (data.booking_reference) {
-          setBookingRef(data.booking_reference);
-        }
-        setState((prev) => ({
-          ...prev,
+      if (res.ok && data.success) {
+        updateState({
           isSavingDraft: false,
-          draftFieldErrors: {},
-          validationErrors: [],
-          authoritativeValidationResult: data,
-          catalogCurrency: data.currency || prev.catalogCurrency,
-          bookingRef: data.booking_reference || prev.bookingRef,
-        }));
-        toast.success("Passenger details saved to booking draft!");
+          bookingRef: data.draft?.booking_ref || state.bookingRef,
+        });
+        toast.success("Passenger details saved successfully.");
         return true;
       } else {
-        const fieldErrMap: Record<string, string> = {};
-        const generalErrList: string[] = [];
-
-        if (Array.isArray(data?.errors)) {
-          data.errors.forEach((e: any) => {
-            if (typeof e === "object" && e.field && e.message) {
-              fieldErrMap[e.field] = e.message;
-            } else if (typeof e === "string") {
-              generalErrList.push(e);
-            }
-          });
-        }
-
-        setState((prev) => ({
-          ...prev,
+        updateState({
           isSavingDraft: false,
-          draftFieldErrors: fieldErrMap,
-          validationErrors: generalErrList.length > 0 ? generalErrList : ["Please fix the highlighted form errors."],
-        }));
-
-        const firstMsg = Object.values(fieldErrMap)[0] || generalErrList[0] || "Draft validation failed.";
-        toast.error(firstMsg);
+          draftFieldErrors: { global: data.detail || data.error || "Failed to save passenger details." },
+        });
+        toast.error(data.detail || "Failed to save passenger details.");
         return false;
       }
-    } catch {
-      const netErr = "Network error while saving booking draft. Please retry.";
-      setState((prev) => ({
-        ...prev,
+    } catch (err: any) {
+      updateState({
         isSavingDraft: false,
-        validationErrors: [netErr],
-      }));
-      toast.error(netErr);
+        draftFieldErrors: { global: "Network connection error. Please try again." },
+      });
+      toast.error("Network connection error. Please try again.");
       return false;
     }
   }, [
-    state.bookingRef,
     state.fullName,
     state.email,
     state.phone,
     state.guestCount,
     state.flightNumber,
     state.direction,
-    state.resolvedAirport,
     state.airportCode,
     state.selectedPackageId,
     state.selectedServiceIds,
     state.serviceDate,
     state.serviceTime,
     state.specialRequests,
-    setBookingRef,
+    state.bookingRef,
   ]);
-
-  const totalPrice = priceBreakdown.grandTotal;
 
   return {
     currentStep,
@@ -764,9 +685,6 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     validateWithBackend,
     saveDraftWithBackend,
     priceBreakdown,
-    totalPrice,
-    journeyEngine,
-    retryFetchServices,
+    totalPrice: priceBreakdown.grandTotal,
   };
 }
-
