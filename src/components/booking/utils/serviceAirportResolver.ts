@@ -27,6 +27,7 @@ export interface PackageCatalogItem {
   recommendedBadge?: string | null;
   features?: string[];
   serviceIds?: string[];
+  includedServiceIds?: string[];
 }
 
 export interface ServiceCatalogItem {
@@ -47,6 +48,7 @@ export interface AirportServicesFetchResult {
   currency: string;
   services: ServiceCatalogItem[];
   packages: PackageCatalogItem[];
+  flightType?: string;
   error?: string;
 }
 
@@ -155,7 +157,8 @@ export function checkAirportCoverage(airportCode: string): { isCovered: boolean;
 export async function fetchAirportServices(
   airportCode: string,
   journeyType: "arrival" | "departure" | "transit",
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  extraParams?: { origin?: string; destination?: string; terminal?: string }
 ): Promise<AirportServicesFetchResult> {
   const cleanCode = (airportCode || "").trim().toUpperCase();
 
@@ -170,41 +173,37 @@ export async function fetchAirportServices(
     };
   }
 
-  const coverage = checkAirportCoverage(cleanCode);
-  if (!coverage.isCovered) {
-    return {
-      success: true,
-      isCovered: false,
-      currency: "INR",
-      services: [],
-      packages: [],
-    };
-  }
+  let url = `/api/airport/services?airport=${cleanCode}&journey_type=${journeyType}`;
+  if (extraParams?.origin) url += `&origin=${extraParams.origin}`;
+  if (extraParams?.destination) url += `&destination=${extraParams.destination}`;
+  if (extraParams?.terminal) url += `&terminal=${extraParams.terminal}`;
 
   try {
-    const res = await ApiClient.fetchWithAuth(`/api/airport/services?airport=${cleanCode}&journey_type=${journeyType}`, {
+    const res = await ApiClient.fetchWithAuth(url, {
       method: "GET",
       signal,
     });
 
     if (res.ok) {
       const data = await res.json();
-      if (data && data.success) {
-        if (data.is_covered === false) {
+      if (data) {
+        if (data.covered === false || data.is_covered === false) {
           return {
             success: true,
             isCovered: false,
             currency: data.currency || "INR",
             services: [],
             packages: [],
+            flightType: data.flightType || data.flight_type,
           };
         }
         return {
           success: true,
           isCovered: true,
           currency: data.currency || "INR",
-          services: data.individual_services || data.services || [],
+          services: data.individualServices || data.individual_services || data.services || [],
           packages: data.packages || [],
+          flightType: data.flightType || data.flight_type,
         };
       }
     }
@@ -214,31 +213,13 @@ export async function fetchAirportServices(
     }
   }
 
-  // Registry catalog fallback
-  const regPackages: PackageCatalogItem[] = (coverage.entry?.meetGreetPackages || []).map((p) => ({
-    id: p.id,
-    title: p.title,
-    tagline: p.tagline,
-    basePrice: parseFloat(p.price?.replace(/[^\d.]/g, "") || "4500"),
-    currency: "INR",
-    recommendedBadge: p.isRecommended ? "Recommended" : null,
-    features: p.features,
-    serviceIds: [p.id === "gold" ? "lounge" : p.id === "elite" ? "lounge" : "meet_greet"],
-  }));
-
-  const regServices: ServiceCatalogItem[] = [
-    { id: "meet_greet", title: "Meet & Greet Escort", description: "Personalized host escort.", price: 2499, currency: "INR", isAvailable: true, badge: "Flagship" },
-    { id: "lounge", title: "VIP Lounge Pass", description: "VIP lounge access with buffet & Wi-Fi.", price: 1999, currency: "INR", isAvailable: true, badge: "Sanctuary" },
-    { id: "fast_track", title: "Fast-Track Clearance", description: "Expedited immigration & security clearance.", price: 1899, currency: "INR", isAvailable: true, badge: "Express" },
-    { id: "porter", title: "Baggage Porter Service", description: "Dedicated porter for luggage.", price: 999, currency: "INR", isAvailable: true, badge: "Luggage" },
-  ];
-
   return {
-    success: true,
-    isCovered: true,
+    success: false,
+    isCovered: false,
     currency: "INR",
-    services: regServices,
-    packages: regPackages,
+    services: [],
+    packages: [],
+    error: "Unable to retrieve master catalog from server.",
   };
 }
 

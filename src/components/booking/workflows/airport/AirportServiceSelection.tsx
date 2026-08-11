@@ -12,7 +12,8 @@ import {
   Zap,
   ShieldCheck,
   AlertCircle,
-  Info,
+  RefreshCw,
+  PhoneCall,
   CheckCircle2,
 } from "lucide-react";
 import { AirportWorkflowState } from "../../hooks/useAirportWorkflow";
@@ -54,7 +55,7 @@ export function AirportServiceSelection({
 
   const availableTerminalsList = availableTerminals || [];
   const hasMultipleTerminals = availableTerminalsList.length > 1;
-  const currentTerminal = state.selectedTerminal || selectedTerminal || availableTerminalsList[0] || "";
+  const currentTerminal = state.selectedTerminal || selectedTerminal || (availableTerminalsList.length > 0 ? availableTerminalsList[0] : "");
 
   const activeMode = state.bookingMode || "package";
 
@@ -73,7 +74,9 @@ export function AirportServiceSelection({
 
   // Currently selected package object to resolve included service IDs
   const activeSelectedPackage = packagesList.find((p) => p.id === selectedPackageId) || null;
-  const packageIncludedServiceIds = new Set<string>(activeSelectedPackage?.serviceIds || []);
+  const packageIncludedServiceIds = new Set<string>(
+    activeSelectedPackage?.serviceIds || activeSelectedPackage?.includedServiceIds || []
+  );
 
   const toggleExpand = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -121,19 +124,34 @@ export function AirportServiceSelection({
     }
   };
 
-  // Rule 13: Empty State when airport is covered but no bookable services exist
-  if (packagesList.length === 0 && individualServicesList.length === 0) {
+  // ── 1. LOADING STATE ──
+  if (state.isLoadingServices || state.isResolvingAirport) {
     return (
-      <div className="p-8 sm:p-10 rounded-3xl bg-slate-50 border border-slate-200 text-center space-y-5">
-        <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mx-auto">
-          <AlertCircle className="w-6 h-6" />
+      <div className="p-12 rounded-3xl bg-slate-50 border border-slate-200 text-center space-y-4 my-6">
+        <RefreshCw className="w-8 h-8 text-amber-600 animate-spin mx-auto" />
+        <p className="text-sm font-mono font-bold text-slate-800 uppercase tracking-wider">
+          Loading available services...
+        </p>
+      </div>
+    );
+  }
+
+  // ── 2. UNCOVERED AIRPORT STATE ──
+  if (state.isAirportCovered === false) {
+    return (
+      <div className="p-8 sm:p-10 rounded-3xl bg-slate-900 text-white border border-slate-800 text-center space-y-6 shadow-xl my-6">
+        <div className="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto">
+          <AlertCircle className="w-7 h-7" />
         </div>
-        <div className="max-w-md mx-auto space-y-1.5">
-          <h3 className="text-lg font-serif font-extrabold text-slate-900">
-            No services are currently available
+        <div className="max-w-md mx-auto space-y-2">
+          <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
+            Uncovered Location
+          </span>
+          <h3 className="text-xl sm:text-2xl font-serif font-bold text-white">
+            Services unavailable at this airport
           </h3>
-          <p className="text-xs text-slate-600 font-sans leading-relaxed">
-            We currently don't have bookable services for {state.direction.toUpperCase()} journeys at {state.airportName || state.airportCode}.
+          <p className="text-xs text-slate-300 font-sans leading-relaxed">
+            We currently do not offer standard automated online packages for {state.resolvedAirport?.name || state.airportName} ({state.resolvedAirport?.code || state.airportCode}).
           </p>
         </div>
         <button
@@ -142,14 +160,15 @@ export function AirportServiceSelection({
             window.open(
               "https://wa.me/919876543210?text=" +
                 encodeURIComponent(
-                  `Inquiry for ${state.airportName} (${state.airportCode}) ${state.direction} services`
+                  `VIP Assistance Request for ${state.resolvedAirport?.name || state.airportName} (${state.resolvedAirport?.code || state.airportCode}) ${state.direction} journey`
                 ),
               "_blank"
             );
           }}
-          className="px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-lg hover:scale-105 transition cursor-pointer"
         >
-          Contact Team for VIP Assistance
+          <PhoneCall className="w-4 h-4" />
+          <span>Contact Team for VIP Assistance</span>
         </button>
       </div>
     );
@@ -157,71 +176,86 @@ export function AirportServiceSelection({
 
   return (
     <div className="space-y-8">
-      {/* ── TERMINAL SELECTION SECTION ── */}
+      {/* ── 3. DYNAMIC AIRPORT HEADER ── */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 text-white shadow-xl space-y-4 relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 inline-block">
+              Your Service Airport
+            </span>
+            <h2 className="text-xl sm:text-2xl font-serif font-bold text-white">
+              {state.resolvedAirport?.name || state.airportName || `${state.airportCode} Airport`}
+            </h2>
+            <p className="text-xs text-slate-300 font-sans">
+              {state.resolvedAirport?.city || state.airportName} ({state.resolvedAirport?.code || state.airportCode})
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 font-mono text-xs font-bold uppercase tracking-wider border border-amber-500/30">
+              {state.direction} Services
+            </span>
+            <span className="px-3.5 py-1.5 rounded-xl bg-slate-800 text-slate-300 font-mono text-xs font-bold uppercase tracking-wider border border-slate-700">
+              {state.flightType || (state.direction === "transit" ? "International" : "Domestic")}
+            </span>
+            {currentTerminal && (
+              <span className="px-3.5 py-1.5 rounded-xl bg-slate-800 text-amber-400 font-mono text-xs font-bold uppercase tracking-wider border border-slate-700">
+                {currentTerminal}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── 4. TERMINAL SELECTION DROPDOWN (IF APPLICABLE) ── */}
       {hasMultipleTerminals && (
         <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-          {state.isFlightValidated && !state.isManualMode && !isEditingTerminal ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
-                  Terminal:
-                </span>
-                <span className="text-sm font-bold text-slate-900 bg-amber-100 text-amber-900 px-3 py-1 rounded-lg border border-amber-300">
-                  {currentTerminal}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsEditingTerminal(true)}
-                className="text-xs font-bold text-amber-700 hover:text-amber-800 underline transition-all cursor-pointer"
-              >
-                Change
-              </button>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+                Terminal:
+              </span>
+              <span className="text-sm font-bold text-slate-900 bg-amber-100 text-amber-900 px-3 py-1 rounded-lg border border-amber-300 font-mono">
+                {currentTerminal}
+              </span>
             </div>
-          ) : (
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-xs font-mono font-bold text-slate-900 uppercase tracking-wider">
-                  Select Terminal
-                </label>
-                {state.isFlightValidated && !state.isManualMode && (
+            <button
+              type="button"
+              onClick={() => setIsEditingTerminal(!isEditingTerminal)}
+              className="text-xs font-bold text-amber-700 hover:text-amber-800 underline transition cursor-pointer"
+            >
+              {isEditingTerminal ? "Done" : "Change Terminal"}
+            </button>
+          </div>
+
+          {isEditingTerminal && (
+            <div className="flex flex-wrap gap-3 pt-2">
+              {availableTerminalsList.map((term) => {
+                const isSelected = currentTerminal === term;
+                return (
                   <button
+                    key={term}
                     type="button"
-                    onClick={() => setIsEditingTerminal(false)}
-                    className="text-xs font-medium text-slate-500 hover:text-slate-700 cursor-pointer"
+                    onClick={() => {
+                      onChange({ selectedTerminal: term });
+                      setIsEditingTerminal(false);
+                    }}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all ${
+                      isSelected
+                        ? "bg-slate-900 text-amber-400 border border-slate-900 shadow-sm"
+                        : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
+                    }`}
                   >
-                    Cancel
+                    {term}
                   </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-3">
-                {availableTerminalsList.map((term) => {
-                  const isSelected = currentTerminal === term;
-                  return (
-                    <button
-                      key={term}
-                      type="button"
-                      onClick={() => {
-                        onChange({ selectedTerminal: term });
-                        setIsEditingTerminal(false);
-                      }}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all ${
-                        isSelected
-                          ? "bg-slate-900 text-amber-400 border border-slate-900 shadow-sm"
-                          : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
-                      }`}
-                    >
-                      {term}
-                    </button>
-                  );
-                })}
-              </div>
+                );
+              })}
             </div>
           )}
         </div>
       )}
 
-      {/* ── MODE SWITCHER TABS (Packages vs Individual Services) ── */}
+      {/* ── 5. MODE SWITCHER TABS (Packages vs Individual Services) ── */}
       <div className="flex items-center p-1.5 rounded-2xl bg-slate-100 border border-slate-200 max-w-md">
         <button
           type="button"
@@ -247,297 +281,175 @@ export function AirportServiceSelection({
         </button>
       </div>
 
-      {/* ── PACKAGES TAB CONTENT (Rule 5) ── */}
+      {/* ── 6. PACKAGES VIEW ── */}
       {activeMode === "package" && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {packagesList.map((pkg) => {
-            const isSelected = selectedPackageId === pkg.id;
-            const price = pkg.basePrice || pkg.price || 0;
-            const features = pkg.features || [];
+        <div className="space-y-6">
+          {packagesList.length === 0 ? (
+            <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 text-center space-y-2">
+              <p className="text-sm font-serif font-bold text-slate-800">
+                No packages are currently available for this journey.
+              </p>
+              <p className="text-xs text-slate-500 font-sans">
+                Please switch to Individual Services tab to select specific services.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {packagesList.map((pkg) => {
+                const isSelected = selectedPackageId === pkg.id;
+                const priceVal = pkg.basePrice ?? pkg.price ?? 0;
+                const pkgBadge = pkg.recommendedBadge || (pkg as any).badge || null;
 
-            return (
-              <div
-                key={pkg.id}
-                onClick={() => handlePackageClick(pkg.id)}
-                className={`relative rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between cursor-pointer border ${
-                  isSelected
-                    ? "bg-slate-900 text-white border-amber-500 shadow-xl ring-2 ring-amber-500/30 scale-[1.02]"
-                    : "bg-white text-slate-900 border-slate-200/90 hover:border-amber-400 hover:shadow-md"
-                }`}
-              >
-                {/* Optional Badge from backend ONLY (Rule 5) */}
-                {pkg.recommendedBadge && (
-                  <div className="absolute -top-3 left-6">
-                    <span className="px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[10px] font-mono font-extrabold uppercase tracking-widest shadow-sm flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />
-                      <span>{pkg.recommendedBadge}</span>
-                    </span>
-                  </div>
-                )}
+                return (
+                  <div
+                    key={pkg.id}
+                    onClick={() => handlePackageClick(pkg.id)}
+                    className={`rounded-3xl p-6 border transition-all duration-300 flex flex-col justify-between cursor-pointer relative overflow-hidden ${
+                      isSelected
+                        ? "bg-slate-900 border-amber-500 text-white shadow-xl scale-[1.02]"
+                        : "bg-white border-slate-200/80 hover:border-amber-400/60 text-slate-900 hover:shadow-lg"
+                    }`}
+                  >
+                    <div className="space-y-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="space-y-1">
+                          {pkgBadge && (
+                            <span className={`text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full border inline-block ${
+                              isSelected
+                                ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                : "bg-amber-50 text-amber-800 border-amber-200"
+                            }`}>
+                              {pkgBadge}
+                            </span>
+                          )}
+                          <h3 className={`text-lg font-serif font-bold ${isSelected ? "text-white" : "text-slate-900"}`}>
+                            {pkg.title}
+                          </h3>
+                        </div>
 
-                <div className="space-y-4 pt-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h3
-                        className={`text-xl font-serif font-extrabold ${
-                          isSelected ? "text-white" : "text-slate-900"
-                        }`}
-                      >
-                        {pkg.title}
-                      </h3>
+                        <div className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                          isSelected
+                            ? "bg-amber-500 border-amber-500 text-slate-950 font-bold"
+                            : "border-slate-300 bg-slate-50"
+                        }`}>
+                          {isSelected && <Check className="w-4 h-4 stroke-[3]" />}
+                        </div>
+                      </div>
+
                       {pkg.tagline && (
-                        <p
-                          className={`text-xs font-sans mt-1 ${
-                            isSelected ? "text-slate-300" : "text-slate-500"
-                          }`}
-                        >
+                        <p className={`text-xs font-sans leading-relaxed ${isSelected ? "text-slate-300" : "text-slate-600"}`}>
                           {pkg.tagline}
                         </p>
                       )}
+
+                      {pkg.features && pkg.features.length > 0 && (
+                        <ul className="space-y-2 pt-2 border-t border-slate-100/20">
+                          {pkg.features.map((feat, idx) => (
+                            <li key={idx} className={`text-xs flex items-start gap-2 ${isSelected ? "text-slate-200" : "text-slate-700"}`}>
+                              <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${isSelected ? "text-amber-400" : "text-amber-600"}`} />
+                              <span>{feat}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center border shrink-0 transition-all ${
-                        isSelected
-                          ? "bg-amber-400 border-amber-400 text-slate-950"
-                          : "border-slate-300 bg-slate-50"
-                      }`}
-                    >
-                      {isSelected && <Check className="w-4 h-4 stroke-[3]" />}
+
+                    <div className="pt-6 mt-6 border-t border-slate-100/20 flex items-baseline justify-between font-mono">
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${isSelected ? "text-slate-400" : "text-slate-500"}`}>
+                        Base Price
+                      </span>
+                      <div className="text-xl font-extrabold text-amber-500">
+                        {currencySymbol}{priceVal.toLocaleString()}
+                      </div>
                     </div>
                   </div>
-
-                  <div className="border-t border-b py-3 my-2 font-mono">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-2xl sm:text-3xl font-extrabold text-amber-500">
-                        {currencySymbol}
-                        {price.toLocaleString()}
-                      </span>
-                      <span
-                        className={`text-[10px] uppercase font-bold ${
-                          isSelected ? "text-slate-400" : "text-slate-500"
-                        }`}
-                      >
-                        / pax
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Included Services & Features List */}
-                  {features.length > 0 && (
-                    <ul className="space-y-2 text-xs font-sans">
-                      {features.map((feat, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <CheckCircle2
-                            className={`w-4 h-4 shrink-0 mt-0.5 ${
-                              isSelected ? "text-amber-400" : "text-amber-600"
-                            }`}
-                          />
-                          <span
-                            className={
-                              isSelected ? "text-slate-200" : "text-slate-700"
-                            }
-                          >
-                            {feat}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                <div className="pt-6">
-                  <button
-                    type="button"
-                    className={`w-full py-3 rounded-2xl text-xs font-mono font-extrabold uppercase tracking-wider transition-all ${
-                      isSelected
-                        ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-md"
-                        : "bg-slate-100 hover:bg-slate-200 text-slate-900"
-                    }`}
-                  >
-                    {isSelected ? "✓ Selected Package" : "Select Package"}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
-      {/* ── INDIVIDUAL SERVICES TAB CONTENT (Rule 6 & 9) ── */}
-      {activeMode === "individual" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {individualServicesList.map((svc) => {
-            const isSelected = selectedServiceIds.includes(svc.id);
-            const isIncludedInPackage = packageIncludedServiceIds.has(svc.id);
-            const isAvailable = svc.isAvailable !== false;
-            const Icon = getIconComponent(svc.icon, svc.id);
+      {/* ── 7. INDIVIDUAL SERVICES VIEW ── */}
+      {(activeMode === "individual" || selectedPackageId) && (
+        <div className="space-y-6 pt-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 className="text-lg font-serif font-bold text-slate-900">
+              Individual Airport Services
+            </h3>
+            {selectedPackageId && (
+              <span className="text-xs font-mono text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 font-bold">
+                ✓ Overlapping package services automatically included
+              </span>
+            )}
+          </div>
 
-            return (
-              <div
-                key={svc.id}
-                onClick={() => isAvailable && handleIndividualServiceClick(svc.id)}
-                className={`p-5 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
-                  !isAvailable
-                    ? "bg-slate-100 border-slate-200 opacity-60 cursor-not-allowed"
-                    : isIncludedInPackage
-                    ? "bg-emerald-50/70 border-emerald-300 cursor-pointer shadow-xs"
-                    : isSelected
-                    ? "bg-slate-900 text-white border-amber-500 shadow-md cursor-pointer"
-                    : "bg-white text-slate-900 border-slate-200 hover:border-slate-300 cursor-pointer"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-3">
-                    <div
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                        isSelected
-                          ? "bg-amber-400 text-slate-950"
-                          : isIncludedInPackage
-                          ? "bg-emerald-600 text-white"
-                          : "bg-slate-100 text-slate-700"
-                      }`}
-                    >
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4
-                          className={`font-serif font-extrabold text-sm ${
-                            isSelected ? "text-white" : "text-slate-900"
-                          }`}
-                        >
-                          {svc.title}
-                        </h4>
-                        {svc.badge && (
-                          <span className="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-[9px] font-mono font-bold text-slate-600 uppercase">
-                            {svc.badge}
-                          </span>
-                        )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {individualServicesList.map((svc) => {
+              const isIncludedInPkg = packageIncludedServiceIds.has(svc.id);
+              const isSelected = selectedServiceIds.includes(svc.id);
+              const IconComp = getIconComponent(svc.icon, svc.id);
+
+              return (
+                <div
+                  key={svc.id}
+                  onClick={() => {
+                    if (!isIncludedInPkg) handleIndividualServiceClick(svc.id);
+                  }}
+                  className={`rounded-2xl p-5 border transition-all duration-200 flex flex-col justify-between ${
+                    isIncludedInPkg
+                      ? "bg-emerald-50/60 border-emerald-200 text-slate-800 opacity-90 cursor-default"
+                      : isSelected
+                      ? "bg-slate-900 border-amber-500 text-white shadow-md cursor-pointer"
+                      : "bg-white border-slate-200/80 hover:border-amber-300 text-slate-900 cursor-pointer"
+                  }`}
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className={`p-2.5 rounded-xl ${
+                        isIncludedInPkg
+                          ? "bg-emerald-100 text-emerald-800"
+                          : isSelected
+                          ? "bg-amber-500/20 text-amber-400"
+                          : "bg-amber-50 text-amber-700"
+                      }`}>
+                        <IconComp className="w-5 h-5" />
                       </div>
+
+                      {isIncludedInPkg ? (
+                        <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300 uppercase">
+                          Included in Package
+                        </span>
+                      ) : (
+                        <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition ${
+                          isSelected ? "bg-amber-500 border-amber-500 text-slate-950 font-bold" : "border-slate-300 bg-slate-50"
+                        }`}>
+                          {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-1">
+                      <h4 className={`font-serif font-bold text-sm ${isSelected ? "text-white" : "text-slate-900"}`}>
+                        {svc.title}
+                      </h4>
                       {svc.description && (
-                        <p
-                          className={`text-xs font-sans mt-1 leading-relaxed ${
-                            isSelected ? "text-slate-300" : "text-slate-500"
-                          }`}
-                        >
+                        <p className={`text-xs font-sans leading-relaxed ${isSelected ? "text-slate-300" : "text-slate-600"}`}>
                           {svc.description}
                         </p>
                       )}
                     </div>
                   </div>
 
-                  <div className="text-right shrink-0 font-mono">
-                    {/* Overlap Badge (Rule 9) */}
-                    {isIncludedInPackage ? (
-                      <span className="text-[10px] font-bold font-mono text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                        ✓ Included in Package
-                      </span>
-                    ) : (
-                      <div
-                        className={`text-base font-extrabold ${
-                          isSelected ? "text-amber-400" : "text-slate-900"
-                        }`}
-                      >
-                        {currencySymbol}
-                        {svc.price.toLocaleString()}
-                      </div>
-                    )}
+                  <div className="pt-4 mt-4 border-t border-slate-100/20 flex items-center justify-between font-mono">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase">Rate</span>
+                    <span className={`text-sm font-bold ${isIncludedInPkg ? "text-emerald-700 line-through" : isSelected ? "text-amber-400" : "text-slate-900"}`}>
+                      {isIncludedInPkg ? "Included" : `${currencySymbol}${svc.price.toLocaleString()}`}
+                    </span>
                   </div>
                 </div>
-
-                <div className="pt-4 flex items-center justify-between border-t border-slate-100/20 mt-3">
-                  <span
-                    className={`text-[10px] font-mono font-bold uppercase ${
-                      isSelected ? "text-slate-400" : "text-slate-500"
-                    }`}
-                  >
-                    {!isAvailable ? "Unavailable" : isIncludedInPackage ? "Included Free" : "Selectable"}
-                  </span>
-
-                  <button
-                    type="button"
-                    disabled={!isAvailable}
-                    className={`px-4 py-1.5 rounded-xl text-[11px] font-mono font-bold uppercase tracking-wider transition ${
-                      !isAvailable
-                        ? "bg-slate-200 text-slate-500"
-                        : isIncludedInPackage
-                        ? "bg-emerald-600 text-white cursor-pointer"
-                        : isSelected
-                        ? "bg-amber-400 text-slate-950 font-extrabold cursor-pointer"
-                        : "bg-slate-100 hover:bg-slate-200 text-slate-800 cursor-pointer"
-                    }`}
-                  >
-                    {!isAvailable
-                      ? "Disabled"
-                      : isIncludedInPackage
-                      ? "Included"
-                      : isSelected
-                      ? "Selected"
-                      : "+ Add Service"}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* ── LIVE BOOKING SUMMARY CARD (Rule 10) ── */}
-      {priceBreakdown && (priceBreakdown.packageItem || priceBreakdown.additionalServices.length > 0) && (
-        <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-xl space-y-4 font-mono">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-amber-400" />
-              <span>Live Booking Summary</span>
-            </span>
-            <span className="text-[10px] text-slate-400 font-bold uppercase">
-              {state.guestCount} Guest{state.guestCount > 1 ? "s" : ""}
-            </span>
-          </div>
-
-          <div className="space-y-2 text-xs">
-            {/* Selected Package */}
-            {priceBreakdown.packageItem && (
-              <div className="flex items-center justify-between">
-                <span className="text-slate-300 font-semibold">
-                  Package: {priceBreakdown.packageItem.title}
-                </span>
-                <span className="font-bold text-amber-400">
-                  {currencySymbol}{priceBreakdown.packageItem.price.toLocaleString()}
-                </span>
-              </div>
-            )}
-
-            {/* Additional Non-Overlapping Services */}
-            {priceBreakdown.additionalServices.map((svc) => (
-              <div key={svc.id} className="flex items-center justify-between pl-3 border-l-2 border-amber-500/40">
-                <span className="text-slate-300">{svc.title}</span>
-                <span className="font-bold text-white">
-                  +{currencySymbol}{svc.price.toLocaleString()}
-                </span>
-              </div>
-            ))}
-
-            {/* Overlapping Ignored Services Notice (Rule 9) */}
-            {priceBreakdown.overlappingIgnoredServiceIds.length > 0 && (
-              <div className="text-[10px] text-emerald-400 font-sans italic pt-1">
-                Note: {priceBreakdown.overlappingIgnoredServiceIds.length} service(s) already included free in selected package.
-              </div>
-            )}
-          </div>
-
-          <div className="pt-3 border-t border-slate-800 flex items-baseline justify-between">
-            <div>
-              <div className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">
-                Total Price ({state.guestCount} pax)
-              </div>
-              <div className="text-[9px] text-amber-400/80 font-sans">
-                Authoritative calculation validated by backend
-              </div>
-            </div>
-            <div className="text-2xl font-extrabold text-amber-400">
-              {currencySymbol}{priceBreakdown.grandTotal.toLocaleString()}
-            </div>
+              );
+            })}
           </div>
         </div>
       )}

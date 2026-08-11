@@ -56,6 +56,7 @@ export interface AirportWorkflowState {
   isSavingDraft?: boolean;
   draftFieldErrors?: Record<string, string>;
   bookingRef?: string;
+  flightType?: string;
 }
 
 /**
@@ -251,6 +252,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
             catalogCurrency: fetchRes.currency || "INR",
             availableServicesList: fetchRes.services,
             availablePackagesList: fetchRes.packages,
+            flightType: fetchRes.flightType || prev.flightType,
             serviceFetchError: null,
           }));
         } else {
