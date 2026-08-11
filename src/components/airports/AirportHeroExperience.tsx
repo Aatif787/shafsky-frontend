@@ -71,7 +71,7 @@ export function AirportHeroExperience({ a }: AirportHeroExperienceProps) {
             <motion.img
               key={slide}
               src={a.slideshow?.[slide] || a.cover}
-              alt={a.airport.name}
+              alt={a.airport?.name || a.city}
               initial={{ opacity: 0, scale: 1.05 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
@@ -131,7 +131,7 @@ export function AirportHeroExperience({ a }: AirportHeroExperienceProps) {
               className="text-4xl sm:text-6xl lg:text-7xl font-serif font-light text-white leading-[1.02] tracking-tight"
               style={{ fontFamily: "'Fraunces', serif" }}
             >
-              {a.airport.name || `${a.city} Airport`}
+              {a.airport?.name || `${a.city} Airport`}
             </h1>
 
             <p className="mt-4 text-lg sm:text-xl text-[#c5a059] font-serif italic max-w-2xl">

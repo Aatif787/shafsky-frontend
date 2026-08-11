@@ -29,6 +29,8 @@ import {
   Search,
   RefreshCw,
   ShieldCheck,
+  CheckCircle2,
+  AlertTriangle,
   Headphones,
   Globe2,
   Sparkles,
@@ -490,7 +492,10 @@ function BookingPanel() {
   const [departDate2, setDepartDate2] = useState("");
   const [datePopoverOpen2, setDatePopoverOpen2] = useState(false);
 
-  // Manual Flight Entry Mode state & overwrite prompt state
+  // Flight state machine & manual entry mode state
+  const [heroFlightStateMode, setHeroFlightStateMode] = useState<"IDLE" | "LOADING" | "VERIFIED" | "ERROR" | "MANUAL">("IDLE");
+  const [heroFlightError, setHeroFlightError] = useState<string | null>(null);
+  const [verifiedHeroFlight, setVerifiedHeroFlight] = useState<FlightData | null>(null);
   const [isManualMode, setIsManualMode] = useState(false);
   const [pendingVerifiedFlight, setPendingVerifiedFlight] = useState<FlightData | null>(null);
 
@@ -571,6 +576,9 @@ function BookingPanel() {
     }
 
     setValidatingFlight(true);
+    setHeroFlightStateMode("LOADING");
+    setHeroFlightError(null);
+
     try {
       const response = await ApiClient.fetchWithAuth("/api/flight/validate", {
         method: "POST",
@@ -584,8 +592,9 @@ function BookingPanel() {
       const resJson = await response.json();
 
       if (!response.ok || !resJson.success) {
-        // Non-interruptive smooth expansion of manual flight details form
-        setIsManualMode(true);
+        const errMsg = formatFlightLookupError(resJson?.error || resJson?.message || resJson, response.status);
+        setHeroFlightError(errMsg);
+        setHeroFlightStateMode("ERROR");
         setValidatingFlight(false);
         return;
       }
@@ -594,8 +603,9 @@ function BookingPanel() {
       const targetObj = rawData?.flightData || rawData?.flight_data || (Array.isArray(rawData) ? rawData[0] : rawData);
 
       if (!targetObj) {
-        // Non-interruptive smooth expansion of manual flight details form
-        setIsManualMode(true);
+        const errMsg = `Flight ${cleanFlightNum} could not be found for ${departDate}. Please check your flight number, try again, or enter flight details manually.`;
+        setHeroFlightError(errMsg);
+        setHeroFlightStateMode("ERROR");
         setValidatingFlight(false);
         return;
       }
@@ -636,17 +646,15 @@ function BookingPanel() {
         },
       };
 
-      // If user had manual mode open, prompt user before overwriting manual entries
-      if (isManualMode) {
-        setPendingVerifiedFlight(flightInfo);
-        setValidatingFlight(false);
-        return;
-      }
-
-      proceedWithFlightData(flightInfo);
+      setVerifiedHeroFlight(flightInfo);
+      setHeroFlightStateMode("VERIFIED");
+      setValidatingFlight(false);
+      toast.success(`Flight ${flightInfo.flightNum} verified successfully!`);
     } catch (err: any) {
       console.error("[Hero] Validation error:", err);
-      setIsManualMode(true);
+      const errMsg = formatFlightLookupError(err);
+      setHeroFlightError(errMsg);
+      setHeroFlightStateMode("ERROR");
       setValidatingFlight(false);
     }
   };
@@ -1320,50 +1328,139 @@ function BookingPanel() {
               </div>
             </div>
 
-            <button
-              type="button"
-              disabled={validatingFlight}
-              onClick={handleHomepageSearchFlight}
-              className={`mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[11px] font-semibold uppercase tracking-[0.24em] transition ${isFormValid && !validatingFlight
-                  ? "hover:brightness-110 shadow-lg cursor-pointer"
-                  : "opacity-45 cursor-not-allowed"
-                }`}
-              style={{
-                ...mono,
-                background: "linear-gradient(135deg, #0d5a6e 0%, #083c4b 100%)",
-                color: "#ffffff",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-                boxShadow: isFormValid
-                  ? "0 12px 28px -6px rgba(13,90,110,0.55), inset 0 1px 1px rgba(255,255,255,0.3)"
-                  : "none",
-              }}
-            >
-              {validatingFlight ? (
-                <>
-                  <RefreshCw className="h-4 w-4 animate-spin text-amber-300" />
-                  <span>Validating Flight...</span>
-                </>
-              ) : (
-                <>
-                  <Search className="h-4 w-4" />
-                  <span>Search Flights</span>
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </>
-              )}
-            </button>
+            {/* ERROR STATE BANNER */}
+            {heroFlightStateMode === "ERROR" && heroFlightError && (
+              <div className="mt-4 p-4 rounded-xl bg-red-950/80 border border-red-500/40 text-red-200 text-xs font-sans space-y-3">
+                <div className="flex items-start gap-2.5 font-semibold">
+                  <AlertTriangle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{heroFlightError}</span>
+                </div>
+                <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleHomepageSearchFlight}
+                    className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-[10px] uppercase tracking-wider font-bold transition shadow-sm cursor-pointer"
+                    style={mono}
+                  >
+                    Try Again / Fetch Flight
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setHeroFlightStateMode("MANUAL");
+                      setIsManualMode(true);
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
+                    style={mono}
+                  >
+                    Enter Flight Details Manually
+                  </button>
+                </div>
+              </div>
+            )}
 
-            {/* Secondary Option: Manual Flight Entry Toggle */}
-            <div className="mt-3.5 text-center">
-              <button
-                type="button"
-                onClick={() => setIsManualMode((prev) => !prev)}
-                className="inline-flex items-center gap-2 text-xs font-bold text-slate-800 hover:text-purple-700 transition underline underline-offset-4 cursor-pointer"
-                style={mono}
-              >
-                <Sparkles className="h-3.5 w-3.5 text-purple-600" />
-                <span>{isManualMode ? "Hide Manual Flight Form" : "Or Enter Flight Details Manually"}</span>
-              </button>
-            </div>
+            {/* VERIFIED FLIGHT RESULT CARD */}
+            {heroFlightStateMode === "VERIFIED" && verifiedHeroFlight ? (
+              <div className="mt-5 p-5 rounded-2xl bg-emerald-950/90 border border-emerald-500/40 backdrop-blur-md space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-mono uppercase font-bold tracking-wider">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>✓ Verified Flight Schedule</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-emerald-300/90 font-bold uppercase">
+                    {verifiedHeroFlight.status || "Scheduled"}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between text-white border-y border-white/10 py-3 font-mono">
+                  <div>
+                    <div className="text-xl font-extrabold text-amber-300">{verifiedHeroFlight.origin.code || "DEP"}</div>
+                    <div className="text-[10px] text-slate-300 font-sans">{verifiedHeroFlight.origin.city || verifiedHeroFlight.origin.name || "Origin"}</div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <Plane className="h-4 w-4 text-amber-400" />
+                    <div className="text-[9px] text-slate-300 mt-0.5 font-bold">{verifiedHeroFlight.carrier.name || verifiedHeroFlight.flightNum}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xl font-extrabold text-amber-300">{verifiedHeroFlight.destination.code || "ARR"}</div>
+                    <div className="text-[10px] text-slate-300 font-sans">{verifiedHeroFlight.destination.city || verifiedHeroFlight.destination.name || "Destination"}</div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => proceedWithFlightData(verifiedHeroFlight)}
+                    className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-mono text-xs font-extrabold uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    style={mono}
+                  >
+                    <span>Proceed to Book Concierge</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setHeroFlightStateMode("IDLE");
+                      setVerifiedHeroFlight(null);
+                    }}
+                    className="py-3 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
+                    style={mono}
+                  >
+                    Change Flight
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  disabled={validatingFlight}
+                  onClick={handleHomepageSearchFlight}
+                  className={`mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[11px] font-semibold uppercase tracking-[0.24em] transition ${isFormValid && !validatingFlight
+                      ? "hover:brightness-110 shadow-lg cursor-pointer"
+                      : "opacity-45 cursor-not-allowed"
+                    }`}
+                  style={{
+                    ...mono,
+                    background: "linear-gradient(135deg, #0d5a6e 0%, #083c4b 100%)",
+                    color: "#ffffff",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    boxShadow: isFormValid
+                      ? "0 12px 28px -6px rgba(13,90,110,0.55), inset 0 1px 1px rgba(255,255,255,0.3)"
+                      : "none",
+                  }}
+                >
+                  {validatingFlight ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 animate-spin text-amber-300" />
+                      <span>Fetching Flight...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Search className="h-4 w-4" />
+                      <span>Fetch Flight</span>
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </>
+                  )}
+                </button>
+
+                {/* Secondary Option: Explicit Manual Flight Entry Toggle */}
+                <div className="mt-3.5 text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setHeroFlightStateMode(isManualMode ? "IDLE" : "MANUAL");
+                      setIsManualMode((prev) => !prev);
+                    }}
+                    className="inline-flex items-center gap-2 text-xs font-bold text-slate-800 hover:text-purple-700 transition underline underline-offset-4 cursor-pointer"
+                    style={mono}
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-purple-600" />
+                    <span>{isManualMode ? "Hide Manual Flight Form" : "Or Enter Flight Details Manually"}</span>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </motion.div>
 

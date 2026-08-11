@@ -312,7 +312,7 @@ export function NearestAirportSuggestion({
               {a.city}
             </div>
             <div className="text-[10px] text-white/50 font-sans truncate mt-0.5">
-              {a.airport.name || a.country}
+              {a.airport?.name || a.country}
             </div>
           </div>
         ))}

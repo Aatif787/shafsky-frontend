@@ -95,7 +95,7 @@ export function DynamicFormField({ field, value, onChange, error }: DynamicFormF
         >
           {Object.values(AIRPORTS).map((a) => (
             <option key={a.code} value={a.code}>
-              {a.code} — {a.city} ({a.airport.name || a.country})
+              {a.code} — {a.city} ({a.airport?.name || a.country})
             </option>
           ))}
         </select>

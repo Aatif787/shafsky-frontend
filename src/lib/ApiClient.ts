@@ -68,19 +68,39 @@ export class ApiClient {
 
   /**
    * Wrapper for making authenticated fetch requests to FastAPI backend.
+   * Features automatic fallback between ports 8001 and 8003 if backend runs on alternate port.
    */
   public static async fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
     const authHeaders = await ApiClient.getAuthHeaders();
-    const url = endpoint.startsWith("http") ? endpoint : `${API_BASE_URL}${endpoint}`;
+    const primaryBase = API_BASE_URL.replace(/\/+$/, "");
+    const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+    const primaryUrl = endpoint.startsWith("http") ? endpoint : `${primaryBase}${path}`;
     
-    return fetch(url, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...authHeaders,
-        ...options.headers,
-      },
-    });
+    const headers = {
+      "Content-Type": "application/json",
+      ...authHeaders,
+      ...options.headers,
+    };
+
+    try {
+      return await fetch(primaryUrl, { ...options, headers });
+    } catch (err) {
+      if (!endpoint.startsWith("http")) {
+        const altBase = primaryBase.includes(":8001")
+          ? primaryBase.replace(":8001", ":8003")
+          : primaryBase.includes(":8003")
+          ? primaryBase.replace(":8003", ":8001")
+          : null;
+        if (altBase) {
+          try {
+            return await fetch(`${altBase}${path}`, { ...options, headers });
+          } catch {
+            // Fallthrough to throw primary error
+          }
+        }
+      }
+      throw err;
+    }
   }
 
   /**

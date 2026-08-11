@@ -114,7 +114,7 @@ export function GlobalPresenceMap() {
                   {a.city}
                 </h3>
                 <p className="text-xs text-white/50 truncate font-sans mt-0.5">
-                  {a.airport.name || a.country}
+                  {a.airport?.name || a.country}
                 </p>
 
                 <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-white/40">

@@ -5,6 +5,8 @@ import { ApiClient } from "@/lib/ApiClient";
 import { toast } from "sonner";
 import { useJourneyEngine } from "@/hooks/useJourneyEngine";
 
+export type FlightValidationMode = "IDLE" | "LOADING" | "VERIFIED" | "ERROR" | "MANUAL";
+
 export interface AirportWorkflowState {
   airportCode: string;
   airportName: string;
@@ -24,6 +26,8 @@ export interface AirportWorkflowState {
   validatedFlightData: FlightData | null;
   selectedTerminal?: string;
   isManualMode?: boolean;
+  flightStateMode?: FlightValidationMode;
+  flightErrorMessage?: string;
 }
 
 /**
@@ -110,6 +114,8 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     isFlightValidated: false,
     validatedFlightData: null,
     selectedTerminal: searchParams?.terminal || "",
+    flightStateMode: "IDLE",
+    isManualMode: false,
   });
 
   // Hydrate browser-only state after mount (sessionStorage + Date fallback)
@@ -120,42 +126,44 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       setState((prev) => (prev.serviceDate ? prev : { ...prev, serviceDate: today }));
     }
 
-    // Restore cached flight data from sessionStorage
-    if (isFromHero || Boolean(searchParams?.flight_number)) {
+    if (typeof window !== "undefined") {
       try {
-        const stored = sessionStorage.getItem("shafsky_validated_flight");
-        if (stored) {
-          const cachedFlightData: FlightData = JSON.parse(stored);
-          const cachedFlightNum = cachedFlightData?.flightNum || "";
-          const cachedDate = cachedFlightData?.departure?.scheduledTime?.split(" ")[0];
-          const rawTerm = initialDirection === "arrival" ? cachedFlightData?.arrival?.terminal : cachedFlightData?.departure?.terminal;
-          let inferredTerm: string | undefined = undefined;
-          if (rawTerm) {
-            const tStr = String(rawTerm).trim();
-            if (tStr.includes("3") || tStr.toUpperCase().includes("T3")) {
-              inferredTerm = "Terminal 3";
-            } else if (tStr.includes("1") || tStr.includes("2") || tStr.toUpperCase().includes("T1") || tStr.toUpperCase().includes("T2")) {
-              inferredTerm = "Terminal 1 & 2";
+        const cached = sessionStorage.getItem("shafsky_validated_flight");
+        if (cached) {
+          const parsed = JSON.parse(cached) as FlightData;
+          if (parsed && parsed.flightNum) {
+            const targetAirport = initialDirection === "arrival" ? parsed.destination : parsed.origin;
+            const rawTerm = initialDirection === "arrival" ? parsed.arrival?.terminal : parsed.departure?.terminal;
+            let inferredTerminal: string | undefined = undefined;
+            if (rawTerm) {
+              const tStr = String(rawTerm).trim();
+              if (tStr.includes("3") || tStr.toUpperCase().includes("T3")) {
+                inferredTerminal = "Terminal 3";
+              } else if (tStr.includes("1") || tStr.includes("2") || tStr.toUpperCase().includes("T1") || tStr.toUpperCase().includes("T2")) {
+                inferredTerminal = "Terminal 1 & 2";
+              }
+            }
+
+            setState((prev) => ({
+              ...prev,
+              isFlightValidated: true,
+              validatedFlightData: parsed,
+              flightNumber: parsed.flightNum || prev.flightNumber,
+              airportCode: targetAirport?.code || prev.airportCode,
+              airportName: targetAirport?.name || targetAirport?.city || prev.airportName,
+              selectedTerminal: inferredTerminal || prev.selectedTerminal,
+              flightStateMode: "VERIFIED",
+            }));
+
+            if (isFromHero) {
+              setCurrentStep(2);
             }
           }
-          setState((prev) => ({
-            ...prev,
-            flightNumber: prev.flightNumber || cachedFlightNum,
-            serviceDate: prev.serviceDate || cachedDate || prev.serviceDate,
-            isFlightValidated: true,
-            validatedFlightData: cachedFlightData,
-            selectedTerminal: prev.selectedTerminal || inferredTerm || prev.selectedTerminal,
-          }));
-          // Advance directly to Service Selection (Step 3) - NO DUPLICATE STEP 2 CARD!
-          setCurrentStep(3);
-        } else if (searchParams?.flight_number) {
-          // URL has flight_number but no cached data — stay at step 1 for validation
         }
       } catch {
-        // Ignore parse error
+        // ignore cache read error
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateState = (fields: Partial<AirportWorkflowState>) => {
@@ -176,7 +184,12 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       return false;
     }
 
+    updateState({
+      flightStateMode: "LOADING",
+      flightErrorMessage: undefined,
+    });
     setBusy(true);
+
     try {
       const response = await ApiClient.fetchWithAuth("/api/flight/validate", {
         method: "POST",
@@ -190,7 +203,14 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       const resJson = await response.json();
 
       if (!response.ok || !resJson.success) {
-        updateState({ isManualMode: true });
+        const errMsg = formatFlightLookupError(resJson?.error || resJson?.message || resJson, response.status);
+        updateState({
+          flightStateMode: "ERROR",
+          flightErrorMessage: errMsg,
+          isFlightValidated: false,
+          validatedFlightData: null,
+          isManualMode: false,
+        });
         setBusy(false);
         return false;
       }
@@ -199,7 +219,14 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       const targetObj = rawData?.flightData || rawData?.flight_data || (Array.isArray(rawData) ? rawData[0] : rawData);
 
       if (!targetObj) {
-        updateState({ isManualMode: true });
+        const errMsg = `Flight ${flightNum} could not be found for ${departDate}. Please check your flight number, try again, or enter flight details manually.`;
+        updateState({
+          flightStateMode: "ERROR",
+          flightErrorMessage: errMsg,
+          isFlightValidated: false,
+          validatedFlightData: null,
+          isManualMode: false,
+        });
         setBusy(false);
         return false;
       }
@@ -262,20 +289,30 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       }
 
       updateState({
+        flightStateMode: "VERIFIED",
+        flightErrorMessage: undefined,
         isFlightValidated: true,
         validatedFlightData: flightInfo,
         flightNumber: flightInfo.flightNum || flightNum,
         airportCode: targetAirport?.code || state.airportCode,
         airportName: targetAirport?.name || targetAirport?.city || state.airportName,
         selectedTerminal: inferredTerminal || state.selectedTerminal,
+        isManualMode: false,
       });
 
-      toast.success(`Flight ${flightInfo.flightNum} validated successfully!`);
+      toast.success(`Flight ${flightInfo.flightNum} verified successfully!`);
       setBusy(false);
       return true;
     } catch (err: any) {
       console.error("[useAirportWorkflow] Flight validation error:", err);
-      updateState({ isManualMode: true });
+      const errMsg = formatFlightLookupError(err);
+      updateState({
+        flightStateMode: "ERROR",
+        flightErrorMessage: errMsg,
+        isFlightValidated: false,
+        validatedFlightData: null,
+        isManualMode: false,
+      });
       setBusy(false);
       return false;
     }

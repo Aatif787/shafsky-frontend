@@ -13,7 +13,7 @@ export function AirportFAQ({ a }: AirportFAQProps) {
   const defaultFaqs: [string, string][] = [
     [
       `How early should I book Meet & Greet at ${a.code}?`,
-      `We recommend reserving at least 12–24 hours prior to flight departure or arrival to ensure host staging at ${a.airport.name || a.city}. Emergency requests within 4 hours can be accommodated via our 24/7 hotline.`
+      `We recommend reserving at least 12–24 hours prior to flight departure or arrival to ensure host staging at ${a.airport?.name || a.city}. Emergency requests within 4 hours can be accommodated via our 24/7 hotline.`
     ],
     [
       `Where will my guest relations officer meet me at ${a.city}?`,

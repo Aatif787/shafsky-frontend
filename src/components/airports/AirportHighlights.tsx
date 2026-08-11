@@ -64,7 +64,7 @@ export function AirportHighlights({ a }: AirportHighlightsProps) {
           Service Highlights & <span className="italic text-[#c5a059]">Excellence.</span>
         </h2>
         <p className="mt-2 text-xs sm:text-sm text-white/60 font-sans max-w-2xl">
-          Four signature pillars of our airside guest relations protocol at {a.airport.name || a.city}.
+          Four signature pillars of our airside guest relations protocol at {a.airport?.name || a.city}.
         </p>
       </div>
 

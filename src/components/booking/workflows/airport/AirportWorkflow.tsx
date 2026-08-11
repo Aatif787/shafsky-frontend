@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { createBooking } from "@/lib/bookings.functions";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Plane, Search, CheckCircle2, AlertCircle, Sparkles, RefreshCw, UserCheck, ShieldCheck, ShoppingBag, Edit2 } from "lucide-react";
+import { ArrowRight, Plane, Search, CheckCircle2, AlertCircle, AlertTriangle, Sparkles, RefreshCw, UserCheck, ShieldCheck, ShoppingBag, Edit2 } from "lucide-react";
 import { BookingProgressHeader } from "../../shared/BookingProgressHeader";
 import { BookingSuccessPass } from "../../shared/BookingSuccessPass";
 import { ReviewSummary } from "../../shared/ReviewSummary";
@@ -312,36 +312,116 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                     </div>
                   </div>
 
-                  {/* Submit Search Flight & Secondary Manual Option */}
-                  <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <button
-                      type="button"
-                      onClick={() => updateState({ isManualMode: !state.isManualMode })}
-                      className="inline-flex items-center gap-2 text-xs font-mono font-bold text-slate-700 hover:text-amber-800 transition underline underline-offset-4 cursor-pointer"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                      <span>{state.isManualMode ? "Hide Manual Form" : "Or Enter Flight Details Manually"}</span>
-                    </button>
+                  {/* ERROR STATE BANNER */}
+                  {state.flightErrorMessage && (
+                    <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs font-sans space-y-3">
+                      <div className="flex items-start gap-2.5 font-semibold">
+                        <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{state.flightErrorMessage}</span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3 pt-1">
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={handleSearchFlight}
+                          className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-mono text-[10px] uppercase tracking-wider font-bold transition shadow-xs cursor-pointer"
+                        >
+                          Try Again / Fetch Flight
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateState({ isManualMode: true, flightStateMode: "MANUAL" })}
+                          className="px-4 py-2 rounded-xl bg-white border border-red-300 text-red-900 hover:bg-red-100 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
+                        >
+                          Enter Flight Details Manually
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={handleSearchFlight}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-md hover:scale-105 transition-all disabled:opacity-50 cursor-pointer"
-                    >
-                      {busy ? (
-                        <>
-                          <RefreshCw className="w-4 h-4 animate-spin" />
-                          <span>Searching Journey...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Search className="w-4 h-4" />
-                          <span>Continue to Services</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  {/* VERIFIED FLIGHT RESULT CARD */}
+                  {state.isFlightValidated && state.validatedFlightData ? (
+                    <div className="p-5 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-4 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono uppercase font-bold tracking-wider">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>✓ Flight Verified</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-slate-400 font-bold uppercase">
+                          {state.validatedFlightData.status || "Scheduled"}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between border-y border-slate-800 py-3 font-mono">
+                        <div>
+                          <div className="text-xl font-extrabold text-amber-400">{state.validatedFlightData.origin.code || "DEP"}</div>
+                          <div className="text-[10px] text-slate-400 font-sans">{state.validatedFlightData.origin.city || state.validatedFlightData.origin.name || "Origin"}</div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <Plane className="w-4 h-4 text-amber-500" />
+                          <div className="text-[9px] text-slate-300 mt-0.5 font-bold">{state.validatedFlightData.carrier.name || state.validatedFlightData.flightNum}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xl font-extrabold text-amber-400">{state.validatedFlightData.destination.code || "ARR"}</div>
+                          <div className="text-[10px] text-slate-400 font-sans">{state.validatedFlightData.destination.city || state.validatedFlightData.destination.name || "Destination"}</div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentStep(2);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className="flex-1 py-3.5 px-6 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 hover:from-amber-700 hover:to-amber-900 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <span>Continue to Select Services</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateState({ flightStateMode: "IDLE", isFlightValidated: false, validatedFlightData: null })}
+                          className="py-3.5 px-5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
+                        >
+                          Search Another Flight
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Submit Search Flight & Secondary Manual Option */}
+                      <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <button
+                          type="button"
+                          onClick={() => updateState({ isManualMode: !state.isManualMode, flightStateMode: state.isManualMode ? "IDLE" : "MANUAL" })}
+                          className="inline-flex items-center gap-2 text-xs font-mono font-bold text-slate-700 hover:text-amber-800 transition underline underline-offset-4 cursor-pointer"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                          <span>{state.isManualMode ? "Hide Manual Form" : "Or Enter Flight Details Manually"}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={handleSearchFlight}
+                          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-md hover:scale-105 transition-all disabled:opacity-50 cursor-pointer"
+                        >
+                          {busy ? (
+                            <>
+                              <RefreshCw className="w-4 h-4 animate-spin" />
+                              <span>Fetching Flight...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Search className="w-4 h-4" />
+                              <span>Fetch Flight</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </>
+                  )}
 
                   {/* Expanded Manual Entry Form */}
                   <AnimatePresence>
@@ -353,7 +433,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                           depDate: state.serviceDate,
                           depAirportCode: state.airportCode,
                         }}
-                        onClose={() => updateState({ isManualMode: false })}
+                        onClose={() => updateState({ isManualMode: false, flightStateMode: "IDLE" })}
                         onSubmit={(manualData) => {
                           setManualFlightData(manualData);
                           setCurrentStep(2);
@@ -651,16 +731,16 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
         flightData={state.validatedFlightData}
         serviceDate={state.serviceDate}
         onSave={(updated) => {
-          setManualFlightData({
+          const manualFlightInfo: FlightData = {
             flightNum: updated.flightNum,
-            airlineName: updated.airlineName,
-            depAirportCode: updated.depCode,
-            arrAirportCode: updated.arrCode,
-            depDate: updated.date,
-            depTime: updated.time,
-            arrDate: updated.date,
-            arrTime: updated.time,
-          });
+            carrier: { iata: updated.flightNum.slice(0, 2).toUpperCase(), name: updated.airlineName },
+            origin: { code: updated.depCode, name: null, city: null, country: null },
+            destination: { code: updated.arrCode, name: null, city: null, country: null },
+            departure: { scheduledTime: `${updated.date} ${updated.time}` },
+            arrival: { scheduledTime: `${updated.date} ${updated.time}` },
+            isManual: true,
+          };
+          setManualFlightData(manualFlightInfo);
           toast.success("Journey details updated!");
         }}
       />

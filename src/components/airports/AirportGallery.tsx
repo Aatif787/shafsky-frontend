@@ -109,7 +109,7 @@ export function AirportGallery({ a }: AirportGalleryProps) {
                 className="max-h-[80vh] w-auto object-contain mx-auto rounded-3xl"
               />
               <div className="p-4 bg-[#0a0e17] text-center text-xs font-mono text-[#c5a059] uppercase tracking-widest">
-                {a.airport.name || a.city} — Shafsky Aviation Signature Visual
+                {a.airport?.name || a.city} — Shafsky Aviation Signature Visual
               </div>
             </motion.div>
           </motion.div>

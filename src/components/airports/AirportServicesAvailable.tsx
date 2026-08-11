@@ -67,7 +67,7 @@ export function AirportServicesAvailable({ a }: AirportServicesAvailableProps) {
             Available Concierge Services at <span className="italic text-[#c5a059]">{a.city}</span>.
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-white/60 font-sans max-w-2xl">
-            Showing only verified available services staged for {a.airport.name || a.city}. Zero unavailable listings.
+            Showing only verified available services staged for {a.airport?.name || a.city}. Zero unavailable listings.
           </p>
         </div>
 

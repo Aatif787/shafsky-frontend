@@ -51,7 +51,7 @@ const GLOBAL_AIRPORTS_DATA: Array<{
     city: a.city,
     country: a.country,
     stateCountry: `${a.city}, ${a.country}`,
-    servicesCount: reg?.availableServiceIds.length || 4,
+    servicesCount: reg?.availableServiceIds?.length || 4,
     featured: reg?.featured || ["DEL", "BOM", "DXB", "HYD", "BLR", "SIN", "LHR", "JFK"].includes(a.code),
     cover: a.cover,
   };
@@ -61,6 +61,15 @@ const ALPHABET = ["All", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")];
 
 function AirportsIndexPage() {
   const location = useLocation();
+
+  if (location.pathname !== "/airports" && location.pathname !== "/airports/") {
+    return <Outlet />;
+  }
+
+  return <AirportsListingView />;
+}
+
+function AirportsListingView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("All Countries");
   const [selectedService, setSelectedService] = useState("All Services");
@@ -103,10 +112,6 @@ function AirportsIndexPage() {
       return true;
     });
   }, [searchQuery, featuredOnly, selectedCountry, selectedLetter]);
-
-  if (location.pathname !== "/airports") {
-    return <Outlet />;
-  }
 
   // Featured list of airports
   const featuredList = useMemo(() => {

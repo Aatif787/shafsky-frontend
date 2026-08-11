@@ -31,8 +31,8 @@ export function AirportQuickFacts({ a }: AirportQuickFactsProps) {
     },
     {
       title: "Terminal Information",
-      value: a.airport.terminals || "Multi-Terminal Hub",
-      desc: `Capacity: ${a.airport.capacity || "50M+ passengers/yr"}`,
+      value: a.airport?.terminals || "Multi-Terminal Hub",
+      desc: `Capacity: ${a.airport?.capacity || "50M+ passengers/yr"}`,
       icon: Building2,
       color: "#5fb5ad",
     },
@@ -44,7 +44,7 @@ export function AirportQuickFacts({ a }: AirportQuickFactsProps) {
       color: "#c5a059",
     },
     {
-      title: "Premium Assistance Available",
+      title: "Premium Assist Available",
       value: "VVIP Airside Escort",
       desc: "Aerobridge placard welcome & tarmac limousine handoff",
       icon: ShieldCheck,
@@ -54,13 +54,13 @@ export function AirportQuickFacts({ a }: AirportQuickFactsProps) {
 
   const specs = [
     { label: "Airport Code", value: `${a.code} / ${a.icao}` },
-    { label: "Elevation", value: a.airport.elevation || "Elevated Hub" },
-    { label: "Runways", value: a.airport.runways || "Multi-Runway Operations" },
-    { label: "Operator", value: a.airport.operator || "Civil Aviation Authority" },
-    { label: "Airport Type", value: a.airport.type || "International Gateway" },
-    { label: "Annual Traffic", value: a.airport.annual || "High Capacity" },
-    { label: "Domestic Operations", value: a.airport.domestic || "Domestic Concourse & Gates" },
-    { label: "International Gateways", value: a.airport.intl || "International Concourse & Gates" },
+    { label: "Elevation", value: a.airport?.elevation || "Elevated Hub" },
+    { label: "Runways", value: a.airport?.runways || "Multi-Runway Operations" },
+    { label: "Operator", value: a.airport?.operator || "Civil Aviation Authority" },
+    { label: "Airport Type", value: a.airport?.type || "International Gateway" },
+    { label: "Annual Traffic", value: a.airport?.annual || "High Capacity" },
+    { label: "Domestic Operations", value: a.airport?.domestic || "Domestic Concourse & Gates" },
+    { label: "International Gateways", value: a.airport?.intl || "International Concourse & Gates" },
   ];
 
   return (
