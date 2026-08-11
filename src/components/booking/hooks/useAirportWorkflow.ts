@@ -49,6 +49,10 @@ export interface AirportWorkflowState {
   availableServicesList?: ServiceCatalogItem[];
   selectedPackageId?: string | null;
   selectedServiceIds?: string[];
+  isValidatingBooking?: boolean;
+  validationErrors?: string[];
+  authoritativeValidationResult?: any;
+  hasPriceChanged?: boolean;
 }
 
 /**
@@ -545,6 +549,97 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       });
   }, [state.direction, state.validatedFlightData, state.airportCode]);
 
+  const validateWithBackend = useCallback(async (): Promise<boolean> => {
+    setState((prev) => ({
+      ...prev,
+      isValidatingBooking: true,
+      validationErrors: [],
+      hasPriceChanged: false,
+    }));
+
+    const payload = {
+      flight_number: state.flightNumber,
+      journey_type: state.direction,
+      airport_code: state.resolvedAirport?.code || state.airportCode,
+      selected_package_id: state.selectedPackageId || null,
+      selected_service_ids: state.selectedServiceIds || [],
+      guest_count: state.guestCount,
+      service_date: state.serviceDate,
+      service_time: state.serviceTime,
+    };
+
+    try {
+      const res = await ApiClient.fetchWithAuth("/api/airport/bookings/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (data && data.valid) {
+        const previousEstimate = priceBreakdown.grandTotal;
+        const authoritativeTotal = data.total ?? previousEstimate;
+        const priceChanged = Boolean(
+          previousEstimate > 0 && Math.abs(authoritativeTotal - previousEstimate) > 0.01
+        );
+
+        setState((prev) => ({
+          ...prev,
+          isValidatingBooking: false,
+          validationErrors: [],
+          authoritativeValidationResult: data,
+          hasPriceChanged: priceChanged,
+          catalogCurrency: data.currency || prev.catalogCurrency,
+        }));
+
+        if (priceChanged) {
+          toast.info(
+            `Booking summary updated with backend authoritative price: ${
+              data.currency === "USD" ? "$" : "₹"
+            }${authoritativeTotal.toLocaleString()}`
+          );
+        }
+
+        return true;
+      } else {
+        const errList = data?.errors && data.errors.length > 0
+          ? data.errors
+          : ["Backend booking validation failed. Please check your selections."];
+
+        setState((prev) => ({
+          ...prev,
+          isValidatingBooking: false,
+          validationErrors: errList,
+          hasPriceChanged: false,
+        }));
+
+        toast.error(errList[0]);
+        return false;
+      }
+    } catch {
+      const fallbackErr = ["Network connection or server issue during booking validation. Please retry."];
+      setState((prev) => ({
+        ...prev,
+        isValidatingBooking: false,
+        validationErrors: fallbackErr,
+      }));
+      toast.error(fallbackErr[0]);
+      return false;
+    }
+  }, [
+    state.flightNumber,
+    state.direction,
+    state.resolvedAirport,
+    state.airportCode,
+    state.selectedPackageId,
+    state.selectedServiceIds,
+    state.guestCount,
+    state.serviceDate,
+    state.serviceTime,
+    priceBreakdown.grandTotal,
+  ]);
+
   const totalPrice = priceBreakdown.grandTotal;
 
   return {
@@ -560,6 +655,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     setManualFlightData,
     selectPackage,
     toggleIndividualService,
+    validateWithBackend,
     priceBreakdown,
     totalPrice,
     journeyEngine,

@@ -39,6 +39,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
     setManualFlightData,
     selectPackage,
     toggleIndividualService,
+    validateWithBackend,
     priceBreakdown,
     totalPrice,
     journeyEngine,
@@ -733,18 +734,31 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
 
                     <button
                       type="button"
-                      onClick={() => {
+                      disabled={state.isValidatingBooking}
+                      onClick={async () => {
                         if (!state.fullName || !state.phone || !state.email) {
                           toast.error("Please fill in Lead Guest Name, Phone, and Email.");
                           return;
                         }
-                        setCurrentStep(4);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        const isOk = await validateWithBackend();
+                        if (isOk) {
+                          setCurrentStep(4);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }
                       }}
-                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-sm hover:scale-105 transition-all"
+                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-sm hover:scale-105 transition-all disabled:opacity-40 disabled:hover:scale-100 cursor-pointer"
                     >
-                      <span>Continue to Summary & Payment</span>
-                      <ArrowRight className="w-4 h-4" />
+                      {state.isValidatingBooking ? (
+                        <span className="flex items-center gap-2">
+                          <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                          <span>Checking your booking...</span>
+                        </span>
+                      ) : (
+                        <>
+                          <span>Continue to Summary & Payment</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
@@ -755,13 +769,12 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                 <BookingSummaryReviewStep
                   state={state}
                   bookingRef={validationData?.booking_reference || bookingRef || "SHK-20260806-PEND"}
-                  priceBreakdown={validationData?.price_breakdown}
+                  priceBreakdown={priceBreakdown}
                   onEditJourney={() => setIsEditDrawerOpen(true)}
                   onEditServices={() => setCurrentStep(2)}
                   onEditPassengers={() => setCurrentStep(3)}
                   onProceedToPayment={handleSubmit}
-                  validationMessages={validationData?.validation_messages || []}
-                  isValid={validationData?.is_valid ?? true}
+                  validateWithBackend={validateWithBackend}
                 />
               )}
 
