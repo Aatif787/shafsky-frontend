@@ -14,6 +14,7 @@ import { AirportServiceSelection } from "./AirportServiceSelection";
 import { ManualFlightEntryForm } from "../../shared/ManualFlightEntryForm";
 import { EditJourneyDrawer } from "../../shared/EditJourneyDrawer";
 import { BookingSummaryReviewStep } from "./BookingSummaryReviewStep";
+import { PassengerDetailsStep } from "./PassengerDetailsStep";
 import { getAirportCurrencySymbol } from "@/data/airportRegistry";
 import { ApiClient } from "@/lib/ApiClient";
 import { FlightData } from "@/services/flight/FlightTypes";
@@ -40,6 +41,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
     selectPackage,
     toggleIndividualService,
     validateWithBackend,
+    saveDraftWithBackend,
     priceBreakdown,
     totalPrice,
     journeyEngine,
@@ -683,85 +685,23 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
 
               {/* STEP 3: PASSENGER & CONTACT INFORMATION */}
               {currentStep === 3 && (
-                <div className="space-y-6">
-                  <div className="border-b border-slate-100 pb-4">
-                    <span className="text-[10px] font-mono text-amber-800 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-50 border border-amber-200">
-                      Step 3 of 5 — Passenger Information
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
-                      Lead Guest Contact Information
-                    </h2>
-                    <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
-                      Provide lead passenger contact details for airside officer assignment.
-                    </p>
-                  </div>
-
-                  <ContactSection
-                    contactName={state.fullName}
-                    setContactName={(fullName) => updateState({ fullName })}
-                    phone={state.phone}
-                    setPhone={(phone) => updateState({ phone })}
-                    email={state.email}
-                    setEmail={(email) => updateState({ email })}
-                    nameLabel="Lead Guest Name *"
-                    namePlaceholder="e.g. Lord Henry Sterling"
-                  />
-
-                  <div>
-                    <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-                      Special Assistance Requests (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={state.specialRequests}
-                      onChange={(e) => updateState({ specialRequests: e.target.value })}
-                      placeholder="Wheelchair, electric buggy, extra luggage assistance..."
-                      className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-600 shadow-xs font-sans font-medium"
-                    />
-                  </div>
-
-                  <div className="pt-4 flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCurrentStep(2);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition-all"
-                    >
-                      Back
-                    </button>
-
-                    <button
-                      type="button"
-                      disabled={state.isValidatingBooking}
-                      onClick={async () => {
-                        if (!state.fullName || !state.phone || !state.email) {
-                          toast.error("Please fill in Lead Guest Name, Phone, and Email.");
-                          return;
-                        }
-                        const isOk = await validateWithBackend();
-                        if (isOk) {
-                          setCurrentStep(4);
-                          window.scrollTo({ top: 0, behavior: "smooth" });
-                        }
-                      }}
-                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-sm hover:scale-105 transition-all disabled:opacity-40 disabled:hover:scale-100 cursor-pointer"
-                    >
-                      {state.isValidatingBooking ? (
-                        <span className="flex items-center gap-2">
-                          <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                          <span>Checking your booking...</span>
-                        </span>
-                      ) : (
-                        <>
-                          <span>Continue to Summary & Payment</span>
-                          <ArrowRight className="w-4 h-4" />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
+                <PassengerDetailsStep
+                  state={state}
+                  onChange={updateState}
+                  onBack={() => {
+                    setCurrentStep(2);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  onSaveDraft={async () => {
+                    const isOk = await saveDraftWithBackend();
+                    if (isOk) {
+                      setCurrentStep(4);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
+                    return isOk;
+                  }}
+                  priceBreakdown={priceBreakdown}
+                />
               )}
 
               {/* STEP 4: BOOKING SUMMARY & PAYMENT */}

@@ -53,6 +53,9 @@ export interface AirportWorkflowState {
   validationErrors?: string[];
   authoritativeValidationResult?: any;
   hasPriceChanged?: boolean;
+  isSavingDraft?: boolean;
+  draftFieldErrors?: Record<string, string>;
+  bookingRef?: string;
 }
 
 /**
@@ -640,6 +643,107 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     priceBreakdown.grandTotal,
   ]);
 
+  const saveDraftWithBackend = useCallback(async (): Promise<boolean> => {
+    setState((prev) => ({
+      ...prev,
+      isSavingDraft: true,
+      draftFieldErrors: {},
+      validationErrors: [],
+    }));
+
+    const payload = {
+      booking_ref: state.bookingRef || null,
+      full_name: state.fullName,
+      email: state.email,
+      phone: state.phone,
+      guest_count: state.guestCount,
+      flight_number: state.flightNumber,
+      journey_type: state.direction,
+      airport_code: state.resolvedAirport?.code || state.airportCode,
+      selected_package_id: state.selectedPackageId || null,
+      selected_service_ids: state.selectedServiceIds || [],
+      service_date: state.serviceDate,
+      service_time: state.serviceTime,
+      special_requests: state.specialRequests,
+    };
+
+    try {
+      const res = await ApiClient.fetchWithAuth("/api/airport/bookings/draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (data && data.valid) {
+        if (data.booking_reference) {
+          setBookingRef(data.booking_reference);
+        }
+        setState((prev) => ({
+          ...prev,
+          isSavingDraft: false,
+          draftFieldErrors: {},
+          validationErrors: [],
+          authoritativeValidationResult: data,
+          catalogCurrency: data.currency || prev.catalogCurrency,
+          bookingRef: data.booking_reference || prev.bookingRef,
+        }));
+        toast.success("Passenger details saved to booking draft!");
+        return true;
+      } else {
+        const fieldErrMap: Record<string, string> = {};
+        const generalErrList: string[] = [];
+
+        if (Array.isArray(data?.errors)) {
+          data.errors.forEach((e: any) => {
+            if (typeof e === "object" && e.field && e.message) {
+              fieldErrMap[e.field] = e.message;
+            } else if (typeof e === "string") {
+              generalErrList.push(e);
+            }
+          });
+        }
+
+        setState((prev) => ({
+          ...prev,
+          isSavingDraft: false,
+          draftFieldErrors: fieldErrMap,
+          validationErrors: generalErrList.length > 0 ? generalErrList : ["Please fix the highlighted form errors."],
+        }));
+
+        const firstMsg = Object.values(fieldErrMap)[0] || generalErrList[0] || "Draft validation failed.";
+        toast.error(firstMsg);
+        return false;
+      }
+    } catch {
+      const netErr = "Network error while saving booking draft. Please retry.";
+      setState((prev) => ({
+        ...prev,
+        isSavingDraft: false,
+        validationErrors: [netErr],
+      }));
+      toast.error(netErr);
+      return false;
+    }
+  }, [
+    state.bookingRef,
+    state.fullName,
+    state.email,
+    state.phone,
+    state.guestCount,
+    state.flightNumber,
+    state.direction,
+    state.resolvedAirport,
+    state.airportCode,
+    state.selectedPackageId,
+    state.selectedServiceIds,
+    state.serviceDate,
+    state.serviceTime,
+    state.specialRequests,
+    setBookingRef,
+  ]);
+
   const totalPrice = priceBreakdown.grandTotal;
 
   return {
@@ -656,6 +760,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     selectPackage,
     toggleIndividualService,
     validateWithBackend,
+    saveDraftWithBackend,
     priceBreakdown,
     totalPrice,
     journeyEngine,
