@@ -22,6 +22,9 @@ export interface ServiceSEO {
   keywords: string[];
 }
 
+import { getRequiredBookingFields, getServiceDescriptor } from "@/components/booking/config/services.config";
+export { getRequiredBookingFields, getServiceDescriptor };
+
 export interface ServiceEntry {
   id: string;
   name: string;
@@ -36,6 +39,7 @@ export interface ServiceEntry {
   ctaText: string;
   route: string;
   requiresAirport: boolean;
+  requiresFlight: boolean;
   supportsPackages: boolean;
   relatedServiceIds: string[];
   accentColor: string;
@@ -49,7 +53,7 @@ export const SERVICE_REGISTRY: Record<string, ServiceEntry> = OFFICIAL_SHAFSKY_S
     let category: ServiceCategory = "concierge";
     let categoryHref = "/solutions/concierge";
 
-    if (item.categoryId === "air_ticketing" || item.categoryId === "travel_support") {
+    if (item.categoryId === "air_ticketing" || (item.categoryId as string) === "travel_support") {
       category = "travel";
       categoryHref = "/solutions/travel";
     } else if (item.categoryId === "private_charter") {
@@ -62,6 +66,8 @@ export const SERVICE_REGISTRY: Record<string, ServiceEntry> = OFFICIAL_SHAFSKY_S
       category = "medical";
       categoryHref = "/solutions/medical";
     }
+
+    const reqFields = getRequiredBookingFields(item.bookingServiceId || item.id);
 
     acc[item.id] = {
       id: item.id,
@@ -76,7 +82,8 @@ export const SERVICE_REGISTRY: Record<string, ServiceEntry> = OFFICIAL_SHAFSKY_S
       heroSubtitle: item.overview,
       ctaText: `Book ${item.name}`,
       route: `${categoryHref}?sub=${item.id}`,
-      requiresAirport: true,
+      requiresAirport: reqFields.requiresAirport,
+      requiresFlight: reqFields.requiresFlight,
       supportsPackages: true,
       relatedServiceIds: ["meet_greet", "fast_track", "vip_lounge", "airport_transfer"].filter((id) => id !== item.id),
       accentColor: "#7c3aed",

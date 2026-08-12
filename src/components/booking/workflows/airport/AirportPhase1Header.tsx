@@ -73,7 +73,7 @@ export function AirportPhase1Header({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-[11px] font-mono font-bold text-emerald-900 uppercase tracking-wide">
-              {bookingMode === "package" ? "VIP Package Selected" : "Individual Service Selected"}
+              VIP Package Catalog
             </span>
           </div>
           {selectedTitle && (

@@ -17,6 +17,7 @@ import { IntelligentAirportAutocomplete } from "../../shared/IntelligentAirportA
 import { BookingSummaryReviewStep } from "./BookingSummaryReviewStep";
 import { PassengerDetailsStep } from "./PassengerDetailsStep";
 import { AIRPORT_REGISTRY, getAirportCurrencySymbol } from "@/data/airportRegistry";
+import { getRequiredBookingFields } from "../../config/services.config";
 import { ApiClient } from "@/lib/ApiClient";
 import { FlightData } from "@/services/flight/FlightTypes";
 
@@ -46,6 +47,11 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
     priceBreakdown,
     totalPrice,
   } = useAirportWorkflow(searchParams);
+
+  const requiredFields = useMemo(
+    () => getRequiredBookingFields(state.selectedService),
+    [state.selectedService]
+  );
 
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [validationData, setValidationData] = useState<any>(null);
@@ -302,32 +308,34 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                     </div>
                   </div>
 
-                  {/* Flight Search Form */}
+                  {/* Service Input Form */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                    <div>
-                      <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-                        Flight Number *
-                      </label>
-                      <input
-                        type="text"
-                        value={state.flightNumber}
-                        onChange={(e) =>
-                          updateState({
-                            flightNumber: e.target.value.toUpperCase(),
-                            isFlightValidated: false,
-                            validatedFlightData: null,
-                            flightErrorMessage: undefined,
-                            routeMatchError: undefined,
-                          })
-                        }
-                        placeholder="e.g. AI2424, EK504"
-                        className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-600 shadow-xs font-mono font-bold uppercase"
-                      />
-                    </div>
+                    {requiredFields.requiresFlight && (
+                      <div>
+                        <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
+                          Flight Number *
+                        </label>
+                        <input
+                          type="text"
+                          value={state.flightNumber}
+                          onChange={(e) =>
+                            updateState({
+                              flightNumber: e.target.value.toUpperCase(),
+                              isFlightValidated: false,
+                              validatedFlightData: null,
+                              flightErrorMessage: undefined,
+                              routeMatchError: undefined,
+                            })
+                          }
+                          placeholder="e.g. AI2424, EK504"
+                          className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-600 shadow-xs font-mono font-bold uppercase"
+                        />
+                      </div>
+                    )}
 
                     <div>
                       <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-                        Travel Date *
+                        Service / Travel Date *
                       </label>
                       <input
                         type="date"
@@ -336,6 +344,20 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                         className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-600 shadow-xs font-mono font-bold"
                       />
                     </div>
+
+                    {!requiredFields.requiresFlight && (
+                      <div>
+                        <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
+                          Service / Pickup Time *
+                        </label>
+                        <input
+                          type="time"
+                          value={state.serviceTime || "12:00"}
+                          onChange={(e) => updateState({ serviceTime: e.target.value })}
+                          className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-600 shadow-xs font-mono font-bold"
+                        />
+                      </div>
+                    )}
 
                     <div>
                       <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
@@ -352,141 +374,167 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                     </div>
                   </div>
 
-                  {/* ERROR STATE & ROUTE MATCH MISMATCH BANNER */}
-                  {state.flightErrorMessage && (
-                    <div className="p-5 rounded-3xl bg-red-50 border border-red-200 text-red-900 space-y-4 shadow-sm">
-                      <div className="flex items-start gap-3">
-                        <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-                        <div className="space-y-1">
-                          <h4 className="text-xs font-mono font-extrabold uppercase tracking-wider text-red-800">
-                            Verification / Route Notice
-                          </h4>
-                          <p className="text-xs font-sans leading-relaxed font-medium">
-                            {state.flightErrorMessage}
-                          </p>
-                        </div>
-                      </div>
+                  {/* FLIGHT VERIFICATION SECTION (ONLY FOR FLIGHT-REQUIRED SERVICES) */}
+                  {requiredFields.requiresFlight && (
+                    <>
+                      {state.flightErrorMessage && (
+                        <div className="p-5 rounded-3xl bg-red-50 border border-red-200 text-red-900 space-y-4 shadow-sm">
+                          <div className="flex items-start gap-3">
+                            <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                            <div className="space-y-1">
+                              <h4 className="text-xs font-mono font-extrabold uppercase tracking-wider text-red-800">
+                                Verification / Route Notice
+                              </h4>
+                              <p className="text-xs font-sans leading-relaxed font-medium">
+                                {state.flightErrorMessage}
+                              </p>
+                            </div>
+                          </div>
 
-                      <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-red-200/60">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            updateState({ flightErrorMessage: undefined, routeMatchError: undefined });
-                            const el = document.querySelector("select");
-                            if (el) el.focus();
-                          }}
-                          className="px-4 py-2.5 rounded-xl bg-white border border-red-300 text-red-900 hover:bg-red-100 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
-                        >
-                          [ Change Airport ]
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => updateState({ flightNumber: "", flightErrorMessage: undefined, routeMatchError: undefined })}
-                          className="px-4 py-2.5 rounded-xl bg-white border border-red-300 text-red-900 hover:bg-red-100 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
-                        >
-                          [ Change Flight ]
-                        </button>
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={handleSearchFlight}
-                          className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-mono text-[10px] uppercase tracking-wider font-bold transition shadow-xs cursor-pointer"
-                        >
-                          [ Try Again ]
-                        </button>
-                      </div>
-                    </div>
+                          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-red-200/60">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                updateState({ flightErrorMessage: undefined, routeMatchError: undefined });
+                                const el = document.querySelector("select");
+                                if (el) el.focus();
+                              }}
+                              className="px-4 py-2.5 rounded-xl bg-white border border-red-300 text-red-900 hover:bg-red-100 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
+                            >
+                              [ Change Airport ]
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => updateState({ flightNumber: "", flightErrorMessage: undefined, routeMatchError: undefined })}
+                              className="px-4 py-2.5 rounded-xl bg-white border border-red-300 text-red-900 hover:bg-red-100 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
+                            >
+                              [ Change Flight ]
+                            </button>
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={handleSearchFlight}
+                              className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-mono text-[10px] uppercase tracking-wider font-bold transition shadow-xs cursor-pointer"
+                            >
+                              [ Try Again ]
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {state.isFlightValidated && state.validatedFlightData ? (
+                        <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-5 shadow-xl">
+                          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono uppercase font-bold tracking-wider">
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>✓ Flight Verified for {state.airportName}</span>
+                            </div>
+                            <span className="text-[10px] font-mono text-slate-400 font-bold uppercase">
+                              {state.validatedFlightData.status || "Scheduled"}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between border-y border-slate-800/80 py-4 font-mono">
+                            <div>
+                              <div className="text-xl sm:text-2xl font-extrabold text-amber-400">{state.validatedFlightData.origin.code || "DEP"}</div>
+                              <div className="text-xs text-slate-300 font-sans">{state.validatedFlightData.origin.city || state.validatedFlightData.origin.name || "Origin"}</div>
+                            </div>
+                            <div className="flex flex-col items-center">
+                              <span className="text-[9px] text-amber-400 font-bold tracking-widest uppercase mb-1">
+                                {state.validatedFlightData.duration || "Direct"}
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <div className="h-[2px] w-8 sm:w-16 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+                                <Plane className="w-4 h-4 text-amber-500" />
+                                <div className="h-[2px] w-8 sm:w-16 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
+                              </div>
+                              <div className="text-[9px] text-slate-400 mt-1 font-bold">{state.validatedFlightData.carrier.name || state.validatedFlightData.flightNum}</div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-xl sm:text-2xl font-extrabold text-amber-400">{state.validatedFlightData.destination.code || "ARR"}</div>
+                              <div className="text-xs text-slate-300 font-sans">{state.validatedFlightData.destination.city || state.validatedFlightData.destination.name || "Destination"}</div>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCurrentStep(2);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                              className="flex-1 py-4 px-8 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 hover:from-amber-700 hover:to-amber-900 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                              <span>Continue to Select Services</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => updateState({ flightStateMode: "IDLE", isFlightValidated: false, validatedFlightData: null })}
+                              className="py-4 px-6 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
+                            >
+                              Search Another Flight
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                          <button
+                            type="button"
+                            onClick={() => updateState({ isManualMode: !state.isManualMode, flightStateMode: state.isManualMode ? "IDLE" : "MANUAL" })}
+                            className="inline-flex items-center gap-2 text-xs font-mono font-bold text-slate-700 hover:text-amber-800 transition underline underline-offset-4 cursor-pointer"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                            <span>{state.isManualMode ? "Hide Manual Form" : "Or Enter Flight Details Manually"}</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={handleSearchFlight}
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-md hover:scale-105 transition-all disabled:opacity-50 cursor-pointer"
+                          >
+                            {busy ? (
+                              <>
+                                <RefreshCw className="w-4 h-4 animate-spin" />
+                                <span>Verifying Flight...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Search className="w-4 h-4" />
+                                <span>Verify Flight</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </>
                   )}
 
-                  {/* VERIFIED FLIGHT RESULT CARD */}
-                  {state.isFlightValidated && state.validatedFlightData ? (
-                    <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-5 shadow-xl">
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono uppercase font-bold tracking-wider">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>✓ Flight Verified for {state.airportName}</span>
-                        </div>
-                        <span className="text-[10px] font-mono text-slate-400 font-bold uppercase">
-                          {state.validatedFlightData.status || "Scheduled"}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between border-y border-slate-800/80 py-4 font-mono">
-                        <div>
-                          <div className="text-xl sm:text-2xl font-extrabold text-amber-400">{state.validatedFlightData.origin.code || "DEP"}</div>
-                          <div className="text-xs text-slate-300 font-sans">{state.validatedFlightData.origin.city || state.validatedFlightData.origin.name || "Origin"}</div>
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <span className="text-[9px] text-amber-400 font-bold tracking-widest uppercase mb-1">
-                            {state.validatedFlightData.duration || "Direct"}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <div className="h-[2px] w-8 sm:w-16 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
-                            <Plane className="w-4 h-4 text-amber-500" />
-                            <div className="h-[2px] w-8 sm:w-16 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
-                          </div>
-                          <div className="text-[9px] text-slate-400 mt-1 font-bold">{state.validatedFlightData.carrier.name || state.validatedFlightData.flightNum}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xl sm:text-2xl font-extrabold text-amber-400">{state.validatedFlightData.destination.code || "ARR"}</div>
-                          <div className="text-xs text-slate-300 font-sans">{state.validatedFlightData.destination.city || state.validatedFlightData.destination.name || "Destination"}</div>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCurrentStep(2);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                          className="flex-1 py-4 px-8 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 hover:from-amber-700 hover:to-amber-900 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                          <span>Continue to Select Services</span>
-                          <ArrowRight className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => updateState({ flightStateMode: "IDLE", isFlightValidated: false, validatedFlightData: null })}
-                          className="py-4 px-6 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] uppercase tracking-wider font-bold transition cursor-pointer"
-                        >
-                          Search Another Flight
-                        </button>
-                      </div>
+                  {/* DIRECT CONTINUE BUTTON FOR NON-FLIGHT SERVICES (e.g. Airport Transfer) */}
+                  {!requiredFields.requiresFlight && (
+                    <div className="pt-6 border-t border-slate-100 flex items-center justify-end">
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => {
+                          if (!state.airportCode) {
+                            toast.error("Please select a service airport.");
+                            return;
+                          }
+                          if (!state.serviceDate) {
+                            toast.error("Please select a travel date.");
+                            return;
+                          }
+                          setCurrentStep(2);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-md hover:scale-105 transition-all disabled:opacity-50 cursor-pointer"
+                      >
+                        <span>Continue to Select Options</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
                     </div>
-                  ) : (
-                    <>
-                      {/* Submit Search Flight & Secondary Manual Option */}
-                      <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <button
-                          type="button"
-                          onClick={() => updateState({ isManualMode: !state.isManualMode, flightStateMode: state.isManualMode ? "IDLE" : "MANUAL" })}
-                          className="inline-flex items-center gap-2 text-xs font-mono font-bold text-slate-700 hover:text-amber-800 transition underline underline-offset-4 cursor-pointer"
-                        >
-                          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                          <span>{state.isManualMode ? "Hide Manual Form" : "Or Enter Flight Details Manually"}</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={handleSearchFlight}
-                          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-extrabold uppercase tracking-widest shadow-md hover:scale-105 transition-all disabled:opacity-50 cursor-pointer"
-                        >
-                          {busy ? (
-                            <>
-                              <RefreshCw className="w-4 h-4 animate-spin" />
-                              <span>Verifying Flight...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Search className="w-4 h-4" />
-                              <span>Verify Flight</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </>
                   )}
 
                   {/* Expanded Manual Entry Form */}
@@ -608,10 +656,10 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                             Step 2 of 5 — Service Selection
                           </span>
                           <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
-                            Select Packages & Extra Services
+                            Select Airport Package
                           </h2>
                           <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
-                            Airport-filtered catalog for {state.airportName || state.airportCode}. Choose packages or customize individual options.
+                            Airport-filtered package catalog for {state.airportName || state.airportCode}. Select an available package to proceed.
                           </p>
                         </div>
                         {!state.isFlightLocked && (
@@ -654,16 +702,14 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                         </div>
                       )}
 
-                      {/* Airport Services & Package Grid */}
+                      {/* Airport Package Grid */}
                       <AirportServiceSelection
                         state={state}
                         onChange={(fields) => updateState(fields)}
                         availablePackages={state.availablePackagesList}
-                        availableServices={state.availableServicesList}
                         catalogCurrency={state.catalogCurrency}
                         priceBreakdown={priceBreakdown}
                         onSelectPackage={(id) => selectPackage(id)}
-                        onToggleIndividualService={(id) => toggleIndividualService(id)}
                         selectedTerminal={state.selectedTerminal}
                       />
 

@@ -10,6 +10,7 @@ import {
   ServiceCatalogItem,
   PriceBreakdown,
 } from "../utils/serviceAirportResolver";
+import { getRequiredBookingFields } from "../config/services.config";
 
 export type FlightValidationMode = "IDLE" | "LOADING" | "VERIFIED" | "ERROR" | "MANUAL";
 
@@ -180,7 +181,8 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
               isFlightLocked: isFromHero,
             }));
 
-            if (isFromHero) {
+            const reqFields = getRequiredBookingFields(searchParams?.service_id || searchParams?.sub);
+            if (isFromHero && reqFields.requiresFlight) {
               setCurrentStep(2);
             }
           }
@@ -271,9 +273,13 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       return false;
     }
 
-    if (!flightNum || flightNum.length < 3) {
-      toast.error("Please enter a valid flight number (e.g. AI302, EK504).");
-      return false;
+    const requiredFields = getRequiredBookingFields(state.selectedService);
+
+    if (requiredFields.requiresFlight) {
+      if (!flightNum || flightNum.length < 3) {
+        toast.error("Please enter a valid flight number (e.g. AI302, EK504).");
+        return false;
+      }
     }
 
     if (!departDate) {

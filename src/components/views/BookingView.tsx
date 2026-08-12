@@ -55,6 +55,8 @@ export default function BookingView({ searchParams }: BookingViewProps) {
   const isTransportWorkflow = initialServiceId === "transport";
   const isFastTrackWorkflow = initialServiceId === "fast_track";
   const isLoungeWorkflow = initialServiceId === "lounge";
+  const isPorterWorkflow = initialServiceId === "porter" || initialServiceId === "porter_service" || initialServiceId === "baggage" || initialServiceId === "baggage_assistance";
+  const isWheelchairWorkflow = initialServiceId === "wheelchair" || initialServiceId === "wheelchair_assistance";
   const isMeetGreetWorkflow =
     (initialServiceId === "meet_greet" || searchParams?.package_id || !searchParams?.service_id) &&
     !isCharterWorkflow &&
@@ -69,7 +71,9 @@ export default function BookingView({ searchParams }: BookingViewProps) {
     !isMealsWorkflow &&
     !isTransportWorkflow &&
     !isFastTrackWorkflow &&
-    !isLoungeWorkflow;
+    !isLoungeWorkflow &&
+    !isPorterWorkflow &&
+    !isWheelchairWorkflow;
 
   // Shared Route & Contact State
   const [pickupCity, setPickupCity] = useState<string>(searchParams?.origin || "");
@@ -216,7 +220,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
     );
   }
 
-  if (isMeetGreetWorkflow || isLoungeWorkflow || isFastTrackWorkflow || isTransportWorkflow) {
+  if (isMeetGreetWorkflow || isLoungeWorkflow || isFastTrackWorkflow || isTransportWorkflow || isPorterWorkflow || isWheelchairWorkflow) {
     return (
       <div className="min-h-screen min-h-[600px] bg-[#FAF9F5] text-slate-900 py-8 sm:py-12 px-4 sm:px-8 max-w-5xl mx-auto">
         <AirportWorkflow searchParams={searchParams} />

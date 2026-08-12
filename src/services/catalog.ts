@@ -596,9 +596,12 @@ export const OFFICIAL_SHAFSKY_SERVICES: ServiceCatalogItem[] = [
 
 
 
+import { getApiBaseUrl } from "@/lib/ApiClient";
+
 export async function fetchServiceCatalog(): Promise<ServiceCatalogItem[]> {
   try {
-    const res = await fetch("http://127.0.0.1:8001/api/services/catalog");
+    const baseUrl = getApiBaseUrl();
+    const res = await fetch(`${baseUrl}/api/services/catalog`);
     if (!res.ok) {
       return OFFICIAL_SHAFSKY_SERVICES;
     }

@@ -440,7 +440,7 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
  * Completely eliminates `if (service === 'x')` conditions!
  */
 export function getWorkflowConfig(serviceId: string): WorkflowConfig {
-  if (serviceId.includes("meet_greet") || serviceId.includes("lounge") || serviceId.includes("fast_track") || serviceId.includes("transport") || serviceId.includes("concierge")) {
+  if (serviceId.includes("meet_greet") || serviceId.includes("lounge") || serviceId.includes("fast_track") || serviceId.includes("transport") || serviceId.includes("porter") || serviceId.includes("baggage") || serviceId.includes("wheelchair")) {
     return WORKFLOW_REGISTRY.airport_concierge_workflow;
   }
   if (serviceId.includes("hotel") || serviceId.includes("visa") || serviceId.includes("travel")) {

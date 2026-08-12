@@ -19,6 +19,7 @@ import { ManualFlightEntryForm } from "@/components/booking/shared/ManualFlightE
 import { supabase } from "@/integrations/supabase/client";
 import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
 import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
+import { getRequiredBookingFields } from "@/components/booking/config/services.config";
 import {
   Plane,
   PlaneLanding,
@@ -381,16 +382,15 @@ function DoublePlaneIcon({ className }: { className?: string }) {
 }
 
 const SELECTOR_SERVICES = [
-  { t: "Meet & Greet", Icon: Users },
-  { t: "VIP Lounge", Icon: Hotel },
-  { t: "Fast Track", Icon: Ticket },
-  { t: "Airport Transfer", Icon: Car },
-  { t: "Porter Service", Icon: Package },
-  { t: "Baggage Assistance", Icon: Package },
-  { t: "Visa Assistance", Icon: Sparkles },
-  { t: "Hotel Booking", Icon: Building2 },
-  { t: "Wheelchair Assistance", Icon: HeartPulse },
-  { t: "Airport Concierge", Icon: Crown },
+  { id: "meet_greet", t: "Meet & Greet", Icon: Users },
+  { id: "lounge", t: "VIP Lounge", Icon: Hotel },
+  { id: "fast_track", t: "Fast Track", Icon: Ticket },
+  { id: "transport", t: "Airport Transfer", Icon: Car },
+  { id: "porter", t: "Porter Service", Icon: Package },
+  { id: "baggage", t: "Baggage Assistance", Icon: Package },
+  { id: "visa", t: "Visa Assistance", Icon: Sparkles },
+  { id: "hotel", t: "Hotel Booking", Icon: Building2 },
+  { id: "wheelchair", t: "Wheelchair Assistance", Icon: HeartPulse },
 ];
 
 function ServicesSelectorBar({
@@ -422,7 +422,7 @@ function ServicesSelectorBar({
       >
         {SELECTOR_SERVICES.map((s) => {
           const Icon = s.Icon;
-          const isSelected = selectedService === s.t;
+          const isSelected = selectedService === s.t || selectedService === s.id;
 
           return (
             <motion.button
@@ -477,7 +477,7 @@ function ServicesSelectorBar({
 function BookingPanel() {
   const navigate = useNavigate();
   const [validatingFlight, setValidatingFlight] = useState(false);
-  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedService, setSelectedService] = useState<string | null>("Meet & Greet");
   const [selectedAirportCode, setSelectedAirportCode] = useState<string>("DEL");
   const [tab, setTab] = useState<"arrival" | "departure" | "connection">("arrival");
   const [showPassengerModal, setShowPassengerModal] = useState(false);
@@ -502,8 +502,13 @@ function BookingPanel() {
   const [pendingVerifiedFlight, setPendingVerifiedFlight] = useState<FlightData | null>(null);
 
   const selectedServiceObj = useMemo(
-    () => SELECTOR_SERVICES.find((s) => s.t === selectedService) || null,
+    () => SELECTOR_SERVICES.find((s) => s.t === selectedService || s.id === selectedService) || SELECTOR_SERVICES[0],
     [selectedService]
+  );
+
+  const requiredFields = useMemo(
+    () => getRequiredBookingFields(selectedServiceObj?.id || selectedService),
+    [selectedServiceObj, selectedService]
   );
 
   const todayStart = useMemo(() => {
@@ -548,17 +553,38 @@ function BookingPanel() {
   const dateValue2 =
     departDate2 && isValid(new Date(departDate2)) ? parseISO(departDate2) : undefined;
 
-  const isArrivalDepartureValid = flightNumber.trim() !== "" && departDate !== "";
+  const isArrivalDepartureValid =
+    (!requiredFields.requiresFlight || flightNumber.trim() !== "") && departDate !== "";
   const isConnectionValid =
-    flightNumber.trim() !== "" &&
+    (!requiredFields.requiresFlight || (flightNumber.trim() !== "" && flightNumber2.trim() !== "")) &&
     departDate !== "" &&
-    flightNumber2.trim() !== "" &&
     departDate2 !== "";
 
-  const isFormValid = tab === "connection" ? isConnectionValid : isArrivalDepartureValid;
+  const isFormValid = !requiredFields.requiresJourneyType
+    ? true
+    : tab === "connection"
+      ? isConnectionValid
+      : isArrivalDepartureValid;
 
   const handleHomepageSearchFlight = async (e: React.MouseEvent) => {
     e.preventDefault();
+
+    if (!requiredFields.requiresFlight) {
+      navigate({
+        to: "/book",
+        search: {
+          origin: selectedAirportCode || "DEL",
+          service_id: selectedServiceObj?.id || selectedService || undefined,
+          depart_date: departDate,
+          direction: tab === "connection" ? "transit" : tab,
+          pax_adults: adults,
+          pax_children: childrenCount,
+          pax_infants: infants,
+          from_hero: "true",
+        } as any,
+      });
+      return;
+    }
 
     if (!isFormValid) {
       setTouched({
@@ -823,64 +849,68 @@ function BookingPanel() {
           {/* LEFT — Tabs + Flight Info (7 cols on desktop) */}
           <div className="md:col-span-7 flex flex-col gap-6">
             {/* Tabs (Segmented Control) */}
-            <div className="relative flex rounded-xl bg-white/10 border border-white/15 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] p-1 max-w-md">
-              {tabs.map(([k, label, Icon]) => {
-                const active = tab === k;
-                return (
-                  <button
-                    key={k}
-                    type="button"
-                    onClick={() => setTab(k)}
-                    className="relative flex-1 py-2.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] outline-none transition-colors z-10"
-                    style={{
-                      ...mono,
-                      color: active ? "#ffffff" : C.mute,
-                    }}
-                  >
-                    {active && (
-                      <motion.div
-                        layoutId="activeBookingTabPill"
-                        className="absolute inset-0 rounded-lg"
-                        style={{
-                          backgroundColor: C.teal,
-                          boxShadow:
-                            "0 4px 12px rgba(13,90,110,0.35), inset 0 1px 1px rgba(255,255,255,0.25)",
-                        }}
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                    <Icon className="h-3.5 w-3.5 relative z-20" />
-                    <span className="relative z-20">{label}</span>
-                  </button>
-                );
-              })}
-            </div>
+            {requiredFields.requiresJourneyType && (
+              <div className="relative flex rounded-xl bg-white/10 border border-white/15 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)] p-1 max-w-md">
+                {tabs.map(([k, label, Icon]) => {
+                  const active = tab === k;
+                  return (
+                    <button
+                      key={k}
+                      type="button"
+                      onClick={() => setTab(k)}
+                      className="relative flex-1 py-2.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] outline-none transition-colors z-10"
+                      style={{
+                        ...mono,
+                        color: active ? "#ffffff" : C.mute,
+                      }}
+                    >
+                      {active && (
+                        <motion.div
+                          layoutId="activeBookingTabPill"
+                          className="absolute inset-0 rounded-lg"
+                          style={{
+                            backgroundColor: C.teal,
+                            boxShadow:
+                              "0 4px 12px rgba(13,90,110,0.35), inset 0 1px 1px rgba(255,255,255,0.25)",
+                          }}
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <Icon className="h-3.5 w-3.5 relative z-20" />
+                      <span className="relative z-20">{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Intelligent Searchable Airport Autocomplete */}
-            <div className="flex flex-col gap-1.5 w-full">
-              <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
-                <span>Service Airport *</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (selectedAirportCode) {
-                      navigate({ to: "/airports/$code", params: { code: selectedAirportCode } });
-                    }
+            {requiredFields.requiresAirport && (
+              <div className="flex flex-col gap-1.5 w-full">
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
+                  <span>Service Airport *</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (selectedAirportCode) {
+                        navigate({ to: "/airports/$code", params: { code: selectedAirportCode } });
+                      }
+                    }}
+                    className="text-[9px] text-[#7c3aed] hover:underline font-semibold font-sans flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Explore {selectedAirportCode} Hub Page</span>
+                    <span>→</span>
+                  </button>
+                </label>
+                <IntelligentAirportAutocomplete
+                  value={selectedAirportCode ? `${AIRPORT_REGISTRY[selectedAirportCode]?.city || selectedAirportCode} (${selectedAirportCode})` : ""}
+                  onSelect={(ap) => {
+                    setSelectedAirportCode(ap.code);
                   }}
-                  className="text-[9px] text-[#7c3aed] hover:underline font-semibold font-sans flex items-center gap-1 cursor-pointer"
-                >
-                  <span>Explore {selectedAirportCode} Hub Page</span>
-                  <span>→</span>
-                </button>
-              </label>
-              <IntelligentAirportAutocomplete
-                value={selectedAirportCode ? `${AIRPORT_REGISTRY[selectedAirportCode]?.city || selectedAirportCode} (${selectedAirportCode})` : ""}
-                onSelect={(ap) => {
-                  setSelectedAirportCode(ap.code);
-                }}
-                placeholder="Type Airport Code (e.g. DEL, BOM), City or Name..."
-              />
-            </div>
+                  placeholder="Type Airport Code (e.g. DEL, BOM), City or Name..."
+                />
+              </div>
+            )}
 
             {/* Inputs */}
             {tab === "connection" ? (
@@ -1061,17 +1091,17 @@ function BookingPanel() {
                   <div className="relative flex flex-col gap-1 flex-1 w-full">
                     <input
                       type="text"
-                      placeholder="Enter Your Flight Number e.g. AERO77"
+                      placeholder={requiredFields.requiresFlight ? "Enter Your Flight Number e.g. AERO77" : "Flight Number (Optional)"}
                       value={flightNumber}
                       onChange={(e) => setFlightNumber(e.target.value.toUpperCase())}
                       onBlur={() => setTouched((t) => ({ ...t, flightNumber: true }))}
-                      className={`w-full h-12 rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold uppercase outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 focus:bg-white/20 focus:ring-4 focus:ring-teal/5 ${touched.flightNumber && !flightNumber.trim()
+                      className={`w-full h-12 rounded-xl border bg-white/5 backdrop-blur-md px-4 text-xs font-semibold uppercase outline-none transition-all hover:bg-white/15 hover:border-white/35 focus:border-teal/40 focus:bg-white/20 focus:ring-4 focus:ring-teal/5 ${touched.flightNumber && requiredFields.requiresFlight && !flightNumber.trim()
                         ? "border-red-400 focus:border-red-500 focus:ring-red-100"
                         : ""
                         }`}
                       style={{
                         borderColor:
-                          touched.flightNumber && !flightNumber.trim()
+                          touched.flightNumber && requiredFields.requiresFlight && !flightNumber.trim()
                             ? undefined
                             : "rgba(255,255,255,0.25)",
                         color: C.ink,
@@ -1079,7 +1109,7 @@ function BookingPanel() {
                           "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
                       }}
                     />
-                    {touched.flightNumber && !flightNumber.trim() && (
+                    {touched.flightNumber && requiredFields.requiresFlight && !flightNumber.trim() && (
                       <span className="text-[9px] text-red-500 font-medium ml-1 mt-0.5">
                         Flight number required
                       </span>
@@ -1471,11 +1501,16 @@ function BookingPanel() {
                       <RefreshCw className="h-4 w-4 animate-spin text-amber-300" />
                       <span>Fetching Flight...</span>
                     </>
-                  ) : (
+                  ) : requiredFields.requiresFlight ? (
                     <>
                       <Search className="h-4 w-4" />
                       <span>Fetch Flight</span>
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </>
+                  ) : (
+                    <>
+                      <ArrowRight className="h-4 w-4" />
+                      <span>Proceed to Booking</span>
                     </>
                   )}
                 </button>

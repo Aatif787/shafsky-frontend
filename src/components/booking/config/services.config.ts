@@ -170,3 +170,75 @@ export const SERVICES_CONFIG: Record<BookingService, ServiceDescriptor> = {
     requiresTransfer: false,
   },
 };
+
+export interface RequiredBookingFields {
+  requiresAirport: boolean;
+  requiresJourneyType: boolean;
+  requiresDate: boolean;
+  requiresFlight: boolean;
+  requiresFlightVerification: boolean;
+}
+
+export function getServiceDescriptor(serviceIdOrName?: string | null): ServiceDescriptor | null {
+  if (!serviceIdOrName) return SERVICES_CONFIG[BookingService.MEET_GREET];
+
+  const clean = serviceIdOrName.toLowerCase().trim().replace(/[\s-&]+/g, "_");
+
+  for (const key of Object.keys(SERVICES_CONFIG) as BookingService[]) {
+    const config = SERVICES_CONFIG[key];
+    if (
+      key === clean ||
+      config.id === clean ||
+      config.displayName.toLowerCase().replace(/[\s-&]+/g, "_") === clean
+    ) {
+      return config;
+    }
+  }
+
+  if (clean.includes("meet") || clean.includes("greet")) {
+    return SERVICES_CONFIG[BookingService.MEET_GREET];
+  }
+  if (clean.includes("lounge")) {
+    return SERVICES_CONFIG[BookingService.LOUNGE];
+  }
+  if (clean.includes("fast") || clean.includes("track")) {
+    return SERVICES_CONFIG[BookingService.FAST_TRACK];
+  }
+  if (clean.includes("transfer") || clean.includes("transport") || clean.includes("chauffeur")) {
+    return SERVICES_CONFIG[BookingService.TRANSFER];
+  }
+  if (clean.includes("porter") || clean.includes("baggage")) {
+    return SERVICES_CONFIG[BookingService.MEET_GREET];
+  }
+  if (clean.includes("hotel")) {
+    return SERVICES_CONFIG[BookingService.HOTEL];
+  }
+  if (clean.includes("visa")) {
+    return SERVICES_CONFIG[BookingService.VISA];
+  }
+  if (clean.includes("wheelchair")) {
+    return SERVICES_CONFIG[BookingService.MEET_GREET];
+  }
+
+  return SERVICES_CONFIG[BookingService.MEET_GREET];
+}
+
+export function getRequiredBookingFields(serviceIdOrName?: string | null): RequiredBookingFields {
+  const descriptor = getServiceDescriptor(serviceIdOrName);
+  const requiresFlight = descriptor ? descriptor.requiresFlight : true;
+  const isVisa = descriptor?.id === BookingService.VISA || descriptor?.requiresVisa || false;
+  const isHotel = descriptor?.id === BookingService.HOTEL || descriptor?.requiresHotel || false;
+  const isLounge = descriptor?.id === BookingService.LOUNGE || false;
+
+  const isAirportOptional = isVisa || isHotel;
+  const isJourneyIndependent = isVisa || isHotel || isLounge;
+
+  return {
+    requiresAirport: !isAirportOptional,
+    requiresJourneyType: !isJourneyIndependent,
+    requiresDate: true,
+    requiresFlight: requiresFlight,
+    requiresFlightVerification: requiresFlight,
+  };
+}
+
