@@ -53,6 +53,7 @@ export interface AirportWorkflowState {
   flightType?: string;
   isResolvingAirport?: boolean;
   resolvedAirport?: any;
+  isFlightLocked?: boolean;
 }
 
 /**
@@ -176,6 +177,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
               flightNumber: parsed.flightNum || prev.flightNumber,
               selectedTerminal: inferredTerminal || prev.selectedTerminal,
               flightStateMode: "VERIFIED",
+              isFlightLocked: isFromHero,
             }));
 
             if (isFromHero) {
@@ -363,8 +365,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         },
       };
 
-      // ─── ROUTE MATCH VALIDATION ───
-      const selectedCode = (state.airportCode || "").trim().toUpperCase();
+      // ─── ROUTE MATCH & SUPPORTED AIRPORT SERVICE VALIDATION ───
       const originCode = (flightInfo.origin?.code || "").trim().toUpperCase();
       const destCode = (flightInfo.destination?.code || "").trim().toUpperCase();
 
@@ -375,46 +376,62 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         ...(Array.isArray(targetObj?.segments) ? targetObj.segments.map((s: any) => s?.destination?.code || s?.arrival?.airport) : []),
       ].filter(Boolean).map((c: string) => String(c).trim().toUpperCase());
 
-      let isMatchValid = false;
-      let matchErrMsg = "";
+      // 1. Based on selected service type, pick correct airport from flight status response
+      let targetAirportCode = "";
+      let targetAirportName = "";
 
       if (state.direction === "arrival") {
-        if (selectedCode && destCode && selectedCode === destCode) {
-          isMatchValid = true;
-        } else {
-          isMatchValid = false;
-          matchErrMsg = `This flight does not arrive at ${state.airportName || selectedCode} (${selectedCode}). Flight ${flightInfo.flightNum} arrives at ${flightInfo.destination.name || destCode} (${destCode}).`;
-        }
+        targetAirportCode = destCode;
+        targetAirportName = flightInfo.destination?.name || destCode;
       } else if (state.direction === "departure") {
-        if (selectedCode && originCode && selectedCode === originCode) {
-          isMatchValid = true;
-        } else {
-          isMatchValid = false;
-          matchErrMsg = `This flight does not depart from ${state.airportName || selectedCode} (${selectedCode}). Flight ${flightInfo.flightNum} departs from ${flightInfo.origin.name || originCode} (${originCode}).`;
-        }
+        targetAirportCode = originCode;
+        targetAirportName = flightInfo.origin?.name || originCode;
       } else if (state.direction === "transit") {
-        if (transitCodes.includes(selectedCode) || selectedCode === destCode || selectedCode === originCode) {
-          isMatchValid = true;
-        } else {
-          isMatchValid = false;
-          matchErrMsg = `This flight does not have a connection at ${state.airportName || selectedCode} (${selectedCode}).`;
-        }
+        targetAirportCode = transitCodes[0] || "";
+        targetAirportName = (targetObj as any)?.transit?.name || (targetObj as any)?.connectingAirport?.name || targetAirportCode;
       }
 
-      if (!isMatchValid) {
+      if (!targetAirportCode) {
+        const noAirportMsg = `Unable to determine ${state.direction} airport from flight ${flightInfo.flightNum}.`;
         updateState({
           flightStateMode: "ERROR",
-          flightErrorMessage: matchErrMsg,
-          routeMatchError: matchErrMsg,
+          flightErrorMessage: noAirportMsg,
+          routeMatchError: noAirportMsg,
           isFlightValidated: false,
-          validatedFlightData: flightInfo, // Preserve verified flight so user sees details
+          validatedFlightData: flightInfo,
           isManualMode: false,
         });
         setBusy(false);
         return false;
       }
 
-      // MATCH IS VALID!
+      // 2. Look up (airport code + service type) in our supported airports/services table
+      const { checkAirportCoverage } = await import("../utils/serviceAirportResolver");
+      const coverage = checkAirportCoverage(targetAirportCode);
+
+      // 4. If not matched: return a clear "not available" response — do NOT fall back
+      if (!coverage.isCovered) {
+        const notAvailableMsg = `Services are currently not available at ${targetAirportName} (${targetAirportCode}) for ${state.direction}.`;
+        updateState({
+          airportCode: targetAirportCode,
+          airportName: coverage.entry?.name || targetAirportName || `${targetAirportCode} Airport`,
+          isAirportCovered: false,
+          flightStateMode: "ERROR",
+          flightErrorMessage: notAvailableMsg,
+          routeMatchError: notAvailableMsg,
+          isFlightValidated: false,
+          validatedFlightData: flightInfo,
+          isManualMode: false,
+          availableServicesList: [],
+          availablePackagesList: [],
+        });
+        setBusy(false);
+        return false;
+      }
+
+      // 3. If matched: return ONLY that matched service's locked result
+      const matchedAirportName = coverage.entry?.name || targetAirportName || `${targetAirportCode} Airport`;
+
       const rawTerm = state.direction === "arrival" ? flightInfo.arrival?.terminal : flightInfo.departure?.terminal;
       let inferredTerminal: string | undefined = undefined;
       if (rawTerm) {
@@ -435,6 +452,9 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       }
 
       updateState({
+        airportCode: targetAirportCode,
+        airportName: matchedAirportName,
+        isAirportCovered: true,
         flightStateMode: "VERIFIED",
         flightErrorMessage: undefined,
         routeMatchError: undefined,
@@ -443,9 +463,10 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         flightNumber: flightInfo.flightNum || flightNum,
         selectedTerminal: inferredTerminal || state.selectedTerminal,
         isManualMode: false,
+        isFlightLocked: true,
       });
 
-      toast.success(`Flight ${flightInfo.flightNum} verified for ${state.airportName}!`);
+      toast.success(`Flight ${flightInfo.flightNum} verified for ${matchedAirportName}!`);
       return true;
     } catch (err: any) {
       console.error("[useAirportWorkflow] Flight validation error:", err);
@@ -489,6 +510,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       flightNumber: flightInfo.flightNum,
       selectedTerminal: inferredTerminal || state.selectedTerminal,
       isManualMode: true,
+      isFlightLocked: true,
     });
   };
 

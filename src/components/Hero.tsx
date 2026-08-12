@@ -673,14 +673,21 @@ function BookingPanel() {
     toast.success(`Flight ${flightInfo.flightNum} configured!`);
     setValidatingFlight(false);
 
+    const targetCode =
+      tab === "arrival"
+        ? flightInfo.destination?.code || selectedAirportCode || "DEL"
+        : tab === "departure"
+          ? flightInfo.origin?.code || selectedAirportCode || "DEL"
+          : (flightInfo as any).transit?.code || selectedAirportCode || "DEL";
+
     navigate({
       to: "/book",
       search: {
-        origin: selectedAirportCode || "DEL",
+        origin: targetCode,
         service_id: selectedService || undefined,
         flight_number: flightInfo.flightNum,
         depart_date: departDate,
-        direction: tab,
+        direction: tab === "connection" ? "transit" : tab,
         pax_adults: adults,
         pax_children: childrenCount,
         pax_infants: infants,

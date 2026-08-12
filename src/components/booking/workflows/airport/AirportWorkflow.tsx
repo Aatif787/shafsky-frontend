@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { createBooking } from "@/lib/bookings.functions";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Plane, Search, CheckCircle2, AlertCircle, AlertTriangle, Sparkles, RefreshCw, UserCheck, ShieldCheck, ShoppingBag, Edit2 } from "lucide-react";
+import { ArrowRight, Plane, Search, CheckCircle2, AlertCircle, AlertTriangle, Sparkles, RefreshCw, UserCheck, ShieldCheck, ShoppingBag, Edit2, Lock } from "lucide-react";
 import { BookingProgressHeader } from "../../shared/BookingProgressHeader";
 import { BookingSuccessPass } from "../../shared/BookingSuccessPass";
 import { ReviewSummary } from "../../shared/ReviewSummary";
@@ -559,7 +559,10 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                           Services Unavailable at this Airport
                         </span>
                         <h3 className="text-xl sm:text-2xl font-serif font-bold text-white pt-2">
-                          We currently don't offer services at {state.airportName || state.airportCode} for {state.direction} journeys.
+                          {state.isFlightLocked
+                            ? `Sorry, we don't currently offer ${state.direction} services at ${state.airportName || state.airportCode}.`
+                            : `We currently don't offer services at ${state.airportName || state.airportCode} for ${state.direction} journeys.`
+                          }
                         </h3>
                         <p className="text-xs text-slate-400 font-sans leading-relaxed">
                           Shafsky Aviation VIP concierge services are rapidly expanding. Contact our 24/7 Command Desk for bespoke arrangement or custom airport dispatch.
@@ -583,13 +586,15 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                           Contact Team for VIP Assistance
                         </button>
 
-                        <button
-                          type="button"
-                          onClick={() => setIsEditDrawerOpen(true)}
-                          className="px-6 py-3.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
-                        >
-                          Edit Journey / Change Airport
-                        </button>
+                        {!state.isFlightLocked && (
+                          <button
+                            type="button"
+                            onClick={() => setIsEditDrawerOpen(true)}
+                            className="px-6 py-3.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                          >
+                            Edit Journey / Change Airport
+                          </button>
+                        )}
                       </div>
                     </div>
                   )}
@@ -609,15 +614,45 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                             Airport-filtered catalog for {state.airportName || state.airportCode}. Choose packages or customize individual options.
                           </p>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => setIsEditDrawerOpen(true)}
-                          className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                          <span>Edit Journey</span>
-                        </button>
+                        {!state.isFlightLocked && (
+                          <button
+                            type="button"
+                            onClick={() => setIsEditDrawerOpen(true)}
+                            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                            <span>Edit Journey</span>
+                          </button>
+                        )}
                       </div>
+
+                      {/* Locked Airport + Direction Banner (shown when flight-verified) */}
+                      {state.isFlightLocked && (
+                        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                              <Lock className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-mono font-bold text-emerald-800 uppercase tracking-wider">
+                                Locked from Flight Verification
+                              </div>
+                              <div className="text-sm font-bold text-slate-900">
+                                {state.airportName || state.airportCode} — <span className="capitalize">{state.direction}</span>
+                              </div>
+                              {state.flightNumber && (
+                                <div className="text-[10px] font-mono text-slate-500 mt-0.5">
+                                  Flight {state.flightNumber}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-mono font-bold uppercase tracking-wider">
+                            <CheckCircle2 className="w-3 h-3" />
+                            <span>Verified</span>
+                          </span>
+                        </div>
+                      )}
 
                       {/* Airport Services & Package Grid */}
                       <AirportServiceSelection
@@ -634,13 +669,17 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
 
                       {/* Action Buttons */}
                       <div className="pt-4 flex items-center justify-between">
-                        <button
-                          type="button"
-                          onClick={() => setCurrentStep(1)}
-                          className="px-6 py-3.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition cursor-pointer"
-                        >
-                          Back to Step 1
-                        </button>
+                        {!state.isFlightLocked ? (
+                          <button
+                            type="button"
+                            onClick={() => setCurrentStep(1)}
+                            className="px-6 py-3.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+                          >
+                            Back to Step 1
+                          </button>
+                        ) : (
+                          <div />
+                        )}
 
                         <button
                           type="button"

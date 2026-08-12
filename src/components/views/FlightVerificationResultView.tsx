@@ -307,13 +307,24 @@ export function FlightVerificationResultView({
         // ignore cache write error
       }
     }
+
+    // Determine the correct target airport based on direction
+    const direction = searchParams.direction || "arrival";
+    const targetAirportCode =
+      direction === "arrival"
+        ? activeFlightData?.destination?.code || ""
+        : direction === "departure"
+          ? activeFlightData?.origin?.code || ""
+          : (activeFlightData as any)?.transit?.code || "";
+
     navigate({
       to: "/book",
       search: {
+        origin: targetAirportCode,
         service_id: searchParams.service_id,
         flight_number: flightNum,
         depart_date: searchParams.depart_date,
-        direction: searchParams.direction || "arrival",
+        direction,
         pax_adults: searchParams.pax_adults || 1,
         pax_children: searchParams.pax_children || 0,
         pax_infants: searchParams.pax_infants || 0,

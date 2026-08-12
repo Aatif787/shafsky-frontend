@@ -97,12 +97,12 @@ export function resolveServiceAirport(params: {
     (fallbackAirportCode && direction === "transit" ? fallbackAirportCode : "");
 
   if (direction === "arrival") {
-    targetCode = destCode || fallbackAirportCode || "BOM";
+    targetCode = destCode || (fallbackAirportCode && fallbackAirportCode !== "BOM" ? fallbackAirportCode : destCode) || fallbackAirportCode || "";
     targetName = activeFlight?.destination?.name || destCity || "Destination Airport";
     targetCity = activeFlight?.destination?.city || targetName;
     targetCountry = activeFlight?.destination?.country || "India";
   } else if (direction === "departure") {
-    targetCode = originCode || fallbackAirportCode || "DEL";
+    targetCode = originCode || (fallbackAirportCode && fallbackAirportCode !== "DEL" ? fallbackAirportCode : originCode) || fallbackAirportCode || "";
     targetName = activeFlight?.origin?.name || originCity || "Origin Airport";
     targetCity = activeFlight?.origin?.city || targetName;
     targetCountry = activeFlight?.origin?.country || "India";
@@ -113,9 +113,9 @@ export function resolveServiceAirport(params: {
       targetCity = (activeFlight as any)?.transit?.city || (activeFlight as any)?.connectingAirport?.city || transitCode;
       targetCountry = "India";
     } else {
-      targetCode = destCode || originCode || fallbackAirportCode || "BOM";
-      targetName = activeFlight?.destination?.name || activeFlight?.origin?.name || "Transit Airport";
-      targetCity = activeFlight?.destination?.city || activeFlight?.origin?.city || targetCode;
+      targetCode = fallbackAirportCode || "";
+      targetName = "Transit Airport";
+      targetCity = targetCode;
       targetCountry = "India";
     }
   }
