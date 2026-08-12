@@ -261,8 +261,8 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
 
   // ─── FLIGHT VERIFICATION & ROUTE MATCH VALIDATION ───
   const validateAndSearchFlight = async (): Promise<boolean> => {
-    const flightNum = state.flightNumber.trim().toUpperCase().replace(/\s+/g, "");
-    const departDate = state.serviceDate.trim();
+    const flightNum = (state.flightNumber || "").trim().toUpperCase().replace(/\s+/g, "");
+    const departDate = (state.serviceDate || "").trim();
 
     if (!state.airportCode) {
       toast.error("Please select a covered airport.");
