@@ -1494,7 +1494,7 @@ export function getAirportServices(airportCode: string): AirportService[] {
     return [
       {
         id: "meet_greet",
-        title: "Meet & Greet",
+        title: "Master Airport VIP Packages",
         desc: "Personalized host greeting at aerobridge, electric buggy transfer across concourse, and expedited clearance.",
         type: "package",
         packages: [
@@ -1547,27 +1547,6 @@ export function getAirportServices(airportCode: string): AirportService[] {
           },
         ],
       },
-      {
-        id: "lounge",
-        title: "VIP Lounge",
-        desc: "Access to Marhaba and Ahlan VIP Lounges with fine dining, private quiet rooms, and shower suites.",
-        type: "direct",
-        price: 5200,
-      },
-      {
-        id: "buggy",
-        title: "Buggy Service",
-        desc: "Dedicated chauffeured electric airside buggy transport across concourses and gates.",
-        type: "direct",
-        price: 3200,
-      },
-      {
-        id: "fast_track",
-        title: "Fast Track",
-        desc: "Express fast-track immigration and security lane clearance at Dubai International.",
-        type: "direct",
-        price: 4100,
-      },
     ];
   }
 
@@ -1576,7 +1555,7 @@ export function getAirportServices(airportCode: string): AirportService[] {
     return [
       {
         id: "meet_greet",
-        title: "Meet & Greet",
+        title: "Master Airport VIP Packages",
         desc: "Dedicated host escort, baggage porter assistance, and expedited terminal arrival guidance.",
         type: "package",
         packages: [
@@ -1613,13 +1592,6 @@ export function getAirportServices(airportCode: string): AirportService[] {
           },
         ],
       },
-      {
-        id: "transfer",
-        title: "Transportation",
-        desc: "Chauffeured luxury executive vehicle pickup from Sardar Vallabhbhai Patel airport.",
-        type: "direct",
-        price: 2800,
-      },
     ];
   }
 
@@ -1628,7 +1600,7 @@ export function getAirportServices(airportCode: string): AirportService[] {
     return [
       {
         id: "meet_greet",
-        title: "Meet & Greet",
+        title: "Master Airport VIP Packages",
         desc: "Personalized host escort from aerobridge, porter assistance, and fast-track clearance.",
         type: "package",
         packages: [
@@ -1681,138 +1653,66 @@ export function getAirportServices(airportCode: string): AirportService[] {
           },
         ],
       },
-      {
-        id: "lounge",
-        title: "Lounge",
-        desc: "Access to Encalm Lounge & Lounge Suites with chef-curated dining and relaxation.",
-        type: "direct",
-        price: 4500,
-      },
-      {
-        id: "fast_track",
-        title: "Fast Track",
-        desc: "Diplomatic express queue bypass through security and immigration checkpoints.",
-        type: "direct",
-        price: 3500,
-      },
-      {
-        id: "transfer",
-        title: "Transportation",
-        desc: "Chauffeured Mercedes-Maybach & BMW 7 Series airport transfer to Delhi NCR.",
-        type: "direct",
-        price: 4200,
-      },
     ];
   }
 
   // 4. Dynamic Fallback derived from airport metadata & facilities
-  const registryEntry = getAirportRegistryEntry(code);
-  const serviceIds = registryEntry?.availableServiceIds || ["meet_greet", "lounge", "fast_track", "transport"];
-
-  const hasLounge = serviceIds.includes("lounge");
-  const isIntl = serviceIds.includes("fast_track");
-  const hasTransfer = serviceIds.includes("transport") || serviceIds.includes("transfer");
-  const hasHotel = serviceIds.includes("hotel");
-
-  const services: AirportService[] = [];
-
-  // Meet & Greet (Package-Based) — Always present
-  services.push({
-    id: "meet_greet",
-    title: "Meet & Greet",
-    desc: "Personalized host escort, express queues bypass, and baggage porter service.",
-    type: "package",
-    packages: [
-      {
-        id: `${code.toLowerCase()}_silver`,
-        title: "Silver Concierge",
-        desc: "Uniformed host greeting, baggage porter assistance, and fast-track terminal guidance.",
-        price: 5000,
-        duration: "Up to 2 Hours",
-        isRecommended: false,
-        includedServices: [
-          "Uniformed Host Greeting",
-          "Dedicated Baggage Porter",
-          "Express Terminal Escort",
-          "Curbside Chauffeur Handoff",
-        ],
-        highlights: ["Terminal Escort", "Porter Service"],
-      },
-      {
-        id: `${code.toLowerCase()}_gold`,
-        title: "Gold VIP Escort",
-        desc: "Aerobridge host welcome, baggage porter, VIP lounge sanctuary access, and fast-track clearance.",
-        price: 9500,
-        duration: "Up to 3 Hours",
-        isRecommended: true,
-        includedServices: [
-          "Aerobridge Host Welcome",
-          "Dedicated Baggage Porter",
-          "VIP Lounge Sanctuary Access",
-          "Fast-Track Passport Control",
-          "Electric Buggy Assistance",
-        ],
-        highlights: ["Most Popular Choice", "VIP Lounge Sanctuary", "Fast Track Clearance"],
-      },
-      {
-        id: `${code.toLowerCase()}_elite`,
-        title: "Elite VVIP Tarmac",
-        desc: "Personal protocol officer, unlimited porterage, private tarmac luxury transfer, and private suite access.",
-        price: 15500,
-        duration: "Until Departure",
-        isRecommended: false,
-        includedServices: [
-          "Personal Protocol Officer",
-          "Unlimited Baggage Assistance",
-          "Private Tarmac Sedan Transfer",
-          "VVIP Private Lounge Suite",
-          "Flight Delay Monitoring",
-        ],
-        highlights: ["VVIP Tarmac Transfer", "Private Suite", "Personal Protocol Officer"],
-      },
-    ],
-  });
-
-  if (hasLounge) {
-    services.push({
-      id: "lounge",
-      title: "Lounge",
-      desc: "Enjoy quiet workspaces, comfortable seating, food buffet, and high-speed Wi-Fi.",
-      type: "direct",
-      price: 4500,
-    });
-  }
-
-  if (isIntl) {
-    services.push({
-      id: "fast_track",
-      title: "Fast Track",
-      desc: "Priority desk processing and documentation clearance assistance upon landing.",
-      type: "direct",
-      price: 3200,
-    });
-  }
-
-  if (hasTransfer) {
-    services.push({
-      id: "transfer",
-      title: "Transportation",
-      desc: "Private luxury chauffeur sedan ride from the terminal curbside to your destination.",
-      type: "direct",
-      price: 3500,
-    });
-  }
-
-  if (hasHotel) {
-    services.push({
-      id: "hotel",
-      title: "Luxury Hotel Handoff",
-      desc: `Direct check-in coordination at 5-star partner hotels.`,
-      type: "direct",
-      price: 12000,
-    });
-  }
-
-  return services;
+  return [
+    {
+      id: "meet_greet",
+      title: "Master Airport VIP Packages",
+      desc: "Personalized host escort, express queues bypass, and baggage porter service.",
+      type: "package",
+      packages: [
+        {
+          id: `${code.toLowerCase()}_silver`,
+          title: "Silver Concierge",
+          desc: "Uniformed host greeting, baggage porter assistance, and fast-track terminal guidance.",
+          price: 5000,
+          duration: "Up to 2 Hours",
+          isRecommended: false,
+          includedServices: [
+            "Uniformed Host Greeting",
+            "Dedicated Baggage Porter",
+            "Express Terminal Escort",
+            "Curbside Chauffeur Handoff",
+          ],
+          highlights: ["Terminal Escort", "Porter Service"],
+        },
+        {
+          id: `${code.toLowerCase()}_gold`,
+          title: "Gold VIP Escort",
+          desc: "Aerobridge host welcome, baggage porter, VIP lounge sanctuary access, and fast-track clearance.",
+          price: 9500,
+          duration: "Up to 3 Hours",
+          isRecommended: true,
+          includedServices: [
+            "Aerobridge Host Welcome",
+            "Dedicated Baggage Porter",
+            "VIP Lounge Sanctuary Access",
+            "Fast-Track Passport Control",
+            "Electric Buggy Assistance",
+          ],
+          highlights: ["Most Popular Choice", "VIP Lounge Sanctuary", "Fast Track Clearance"],
+        },
+        {
+          id: `${code.toLowerCase()}_elite`,
+          title: "Elite VVIP Tarmac",
+          desc: "Personal protocol officer, unlimited porterage, private tarmac luxury transfer, and private suite access.",
+          price: 15500,
+          duration: "Until Departure",
+          isRecommended: false,
+          includedServices: [
+            "Personal Protocol Officer",
+            "Unlimited Baggage Assistance",
+            "Private Tarmac Sedan Transfer",
+            "VVIP Private Lounge Suite",
+            "Flight Delay Monitoring",
+          ],
+          highlights: ["VVIP Tarmac Transfer", "Private Suite", "Personal Protocol Officer"],
+        },
+      ],
+    },
+  ];
 }
 

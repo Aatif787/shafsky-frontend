@@ -345,7 +345,7 @@ function AssistanceHubPage() {
                     id="contact_name"
                     label="Full Name *"
                     value={form.name}
-                    onChange={(val) => setForm({ ...form, name: val })}
+                    onChange={(e: any) => setForm({ ...form, name: e.target ? e.target.value : e })}
                     required
                   />
 
@@ -355,7 +355,7 @@ function AssistanceHubPage() {
                       label="Email Address *"
                       type="email"
                       value={form.email}
-                      onChange={(val) => setForm({ ...form, email: val })}
+                      onChange={(e: any) => setForm({ ...form, email: e.target ? e.target.value : e })}
                       required
                     />
 
@@ -364,7 +364,7 @@ function AssistanceHubPage() {
                       label="Phone / WhatsApp Number *"
                       type="tel"
                       value={form.phone}
-                      onChange={(val) => setForm({ ...form, phone: val })}
+                      onChange={(e: any) => setForm({ ...form, phone: e.target ? e.target.value : e })}
                       required
                     />
                   </div>
@@ -373,7 +373,7 @@ function AssistanceHubPage() {
                     id="contact_subject"
                     label="Flight Number / Subject (e.g. AI 102 / Meet & Greet)"
                     value={form.subject}
-                    onChange={(val) => setForm({ ...form, subject: val })}
+                    onChange={(e: any) => setForm({ ...form, subject: e.target ? e.target.value : e })}
                   />
 
                   <div className="relative">

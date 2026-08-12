@@ -35,42 +35,33 @@ interface RelatedServicesProps {
  * CENTRALIZED SERVICE CATALOG FOR INTELLIGENT CROSS-RECOMMENDATIONS
  * ─────────────────────────────────────────────────────────────────────────── */
 const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
-  // Concierge
-  meet_greet: {
-    id: "meet_greet",
-    title: "Meet & Greet Escort",
-    link: "/solutions/concierge?sub=meet_greet",
+  // Concierge Packages
+  silver: {
+    id: "silver",
+    title: "Silver Escort Package",
+    link: "/solutions/concierge?sub=silver",
     icon: Crown,
-    desc: "Aerobridge placard greeting, dedicated porterage, and fast-track clearance.",
-    tag: "Flagship Escort",
-    serviceId: "meet_greet",
+    desc: "Aerobridge placard greeting, dedicated porterage, and terminal guidance.",
+    tag: "Standard Escort",
+    serviceId: "silver",
   },
-  lounge: {
-    id: "lounge",
-    title: "Airport Lounge",
-    link: "/solutions/concierge?sub=lounge",
+  gold: {
+    id: "gold",
+    title: "Gold VIP Sanctuary Package",
+    link: "/solutions/concierge?sub=gold",
     icon: Hotel,
-    desc: "Private VIP suites, gourmet buffets, Wi-Fi & luxury shower facilities.",
-    tag: "Sanctuary",
-    serviceId: "lounge",
+    desc: "Aerobridge host welcome, VIP lounge access, fast-track clearance & porter.",
+    tag: "Most Popular",
+    serviceId: "gold",
   },
-  fast_track: {
-    id: "fast_track",
-    title: "Fast-Track Clearance",
-    link: "/solutions/concierge?sub=fast_track",
-    icon: Sparkles,
-    desc: "Diplomatic customs & immigration priority lane bypass.",
-    tag: "Fast Track",
-    serviceId: "fast_track",
-  },
-  transport: {
-    id: "transport",
-    title: "Ground Transportation",
-    link: "/solutions/concierge?sub=transport",
-    icon: Car,
-    desc: "Chauffeured Mercedes-Maybach tarmac & executive city transfers.",
-    tag: "Executive Fleet",
-    serviceId: "transport",
+  elite: {
+    id: "elite",
+    title: "Elite Presidential Package",
+    link: "/solutions/concierge?sub=elite",
+    icon: Crown,
+    desc: "Private VIP terminal suite, tarmac Maybach transfer, and in-suite customs.",
+    tag: "VVIP Presidential",
+    serviceId: "elite",
   },
 
   // Travel

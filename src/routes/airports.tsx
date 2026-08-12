@@ -179,21 +179,7 @@ function AirportsListingView() {
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
             </div>
 
-            {/* Service Select */}
-            <div className="relative">
-              <select
-                value={selectedService}
-                onChange={(e) => setSelectedService(e.target.value)}
-                className="appearance-none pl-9 pr-8 py-2 rounded-full bg-white border border-slate-200 text-xs font-medium text-slate-700 hover:border-slate-300 outline-none cursor-pointer"
-              >
-                <option value="All Services">▦ All Services</option>
-                <option value="Meet & Greet">Meet & Greet</option>
-                <option value="Lounge Pass">Lounge Pass</option>
-                <option value="Fast Track">Fast Track</option>
-                <option value="Chauffeur Transfer">Chauffeur Transfer</option>
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-            </div>
+
 
             {/* Featured Only Toggle Switch */}
             <label className="flex items-center gap-2 px-3 py-2 rounded-full bg-white border border-slate-200 text-xs font-medium text-slate-700 cursor-pointer hover:border-slate-300">

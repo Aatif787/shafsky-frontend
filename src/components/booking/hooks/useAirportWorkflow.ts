@@ -128,8 +128,8 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     airportCode: extractedCode.toUpperCase(),
     airportName: initialAirportName,
     direction: initialDirection,
-    bookingMode: initialBookingMode,
-    selectedService: searchParams?.service_id || searchParams?.package_id || "",
+    bookingMode: "package",
+    selectedService: searchParams?.package_id || searchParams?.service_id || "",
     selectedPackage: searchParams?.package_id || searchParams?.service_id || "",
     serviceDate: searchParams?.depart_date || "",
     serviceTime: "14:30",
@@ -145,6 +145,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     flightStateMode: "IDLE",
     isManualMode: false,
     isAirportCovered: true,
+    selectedPackageId: searchParams?.package_id || searchParams?.service_id || null,
   });
 
   // Hydrate browser-only state after mount

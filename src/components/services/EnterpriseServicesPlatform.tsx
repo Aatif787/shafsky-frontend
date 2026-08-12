@@ -39,7 +39,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
   const { data: services = [], isLoading } = useServiceCatalog();
   const [activeCategory, setActiveCategory] = useState<ServiceCategoryId>(initialCategoryId);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedServiceId, setSelectedServiceId] = useState<string>("meet_greet");
+  const [selectedServiceId, setSelectedServiceId] = useState<string>("gold");
 
   // Active categories from catalog (sorted by sortOrder)
   const categories = useMemo(() => {

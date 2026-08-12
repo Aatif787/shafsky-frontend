@@ -26,40 +26,32 @@ function AirportConciergePage() {
   const navigate = useNavigate();
 
   const searchObj: any = location.search || {};
-  const activeSub = typeof searchObj === "object" && searchObj.sub ? searchObj.sub : "meet_greet";
+  const activeSub = typeof searchObj === "object" && searchObj.sub ? searchObj.sub : "gold";
 
   const subServices = [
     {
-      id: "meet_greet",
-      label: "Meet & Greet",
-      tagline: "Aerobridge Placard Greeting & Escort",
-      description: "A uniformed Guest Relations Officer meets you immediately upon aircraft exit or terminal drop-off with discrete placard identification, managing luggage and queues.",
+      id: "silver",
+      label: "Silver Escort Package",
+      tagline: "Standard Aerobridge Escort & Baggage Porter",
+      description: "Aerobridge host welcome, uniformed baggage porterage, and expedited terminal guidance to your curbside vehicle.",
       image: meetGreetImg,
-      badge: "Flagship",
+      badge: "Standard Escort",
     },
     {
-      id: "lounge",
-      label: "Airport Lounge",
-      tagline: "VIP Sanctuary & Quiet Workspaces",
-      description: "Enjoy private lounge suites, hot buffet dining, high-speed Wi-Fi, and luxury shower facilities away from commercial terminal crowds.",
+      id: "gold",
+      label: "Gold VIP Sanctuary Package",
+      tagline: "Aerobridge Escort, VIP Lounge & Fast-Track",
+      description: "Complete VIP airport experience including aerobridge greeting, baggage porter, diplomatic fast-track clearance, and lounge access.",
       image: loungeImg,
-      badge: "Sanctuary",
+      badge: "Most Popular",
     },
     {
-      id: "fast_track",
-      label: "Fast Track",
-      tagline: "Diplomatic Queue Clearance",
-      description: "Bypass main security and immigration lines via diplomatic priority desks, saving up to 90 minutes during peak transit hours.",
-      image: fastTrackImg,
-      badge: "Priority",
-    },
-    {
-      id: "transport",
-      label: "Airport Transfer",
-      tagline: "Chauffeured Airside & City Limousines",
-      description: "Private executive sedan transfers across the tarmac directly between the airport sanctuary and your hotel.",
+      id: "elite",
+      label: "Elite Presidential Package",
+      tagline: "Private VIP Terminal & Maybach Tarmac Sedan",
+      description: "VVIP handling featuring private VIP terminal suite, dedicated protocol officer, tarmac Maybach transfer, and in-suite customs processing.",
       image: vipTransport1,
-      badge: "Executive Fleet",
+      badge: "VVIP Presidential",
     },
   ];
 

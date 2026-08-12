@@ -114,65 +114,10 @@ export function DestinationBody({ a }: { a: Airport }) {
           Available services at <span className="text-[#7c3aed] italic">{a.city} ({a.code})</span>.
         </h2>
 
-        {/* Dynamic Meet & Greet Package Comparison */}
+        {/* Dynamic Master Airport Package Comparison */}
         <div className="mt-10">
           <MeetGreetPackageComparison airportCode={a.code} />
         </div>
-
-        {/* Additional Available Services */}
-        {airportServices.length > 0 && (
-          <div className="mt-14">
-            <h3 className="text-xl font-serif font-bold text-slate-900 mb-6" style={display}>
-              Individual Airport Services:
-            </h3>
-            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-              {airportServices.map((svc, i) => {
-                const svcImg = SERVICE_IMAGES[svc.id] || SERVICE_IMAGES["concierge"];
-                return (
-                  <motion.div
-                    key={`svc-${svc.id}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: i * 0.05 }}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-[#7c3aed]/40 hover:shadow-md transition-all duration-300 h-full"
-                  >
-                    <div>
-                      <div className="relative h-44 w-full overflow-hidden bg-slate-100">
-                        <img
-                          src={svcImg}
-                          alt={svc.title}
-                          loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                      <div className="p-6">
-                        <h4 className="text-xl font-serif font-bold text-slate-900" style={display}>
-                          {svc.title}
-                        </h4>
-                        <p className="mt-2 text-xs font-medium leading-relaxed text-slate-600">
-                          {svc.desc}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-6 pt-0 mt-auto">
-                      <Link
-                        to="/book"
-                        search={{ origin: a.code, service_id: svc.id, booking_mode: "individual" } as any}
-                        className="group/btn flex w-full items-center justify-center gap-2 rounded-xl bg-[#84cc16] hover:bg-[#65a30d] py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#0f172a] shadow-xs transition-all duration-300"
-                        style={mono}
-                      >
-                        <span>Reserve Service</span>
-                        <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                      </Link>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </section>
 
       {/* 4. Book Service CTA Banner */}

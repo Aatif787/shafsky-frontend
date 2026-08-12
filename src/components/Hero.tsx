@@ -763,80 +763,25 @@ function BookingPanel() {
 
         {/* Header Strip */}
         <div
-          className="px-6 py-4 md:px-10 border-b border-white/15 rounded-t-[22px] relative z-10 flex flex-col gap-4 items-center"
+          className="px-6 py-4 md:px-10 border-b border-white/15 rounded-t-[22px] relative z-10 flex flex-col gap-3 items-center text-center"
           style={{
             background:
               "linear-gradient(90deg, rgba(95, 181, 173, 0.08) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 107, 0, 0.04) 100%)",
           }}
         >
-          <ServicesSelectorBar
-            selectedService={selectedService}
-            onSelectService={setSelectedService}
-          />
-
-          {/* Dynamic Service Selection Banner */}
-          <div className="w-full max-w-xl">
-            <AnimatePresence mode="wait">
-              {selectedServiceObj ? (
-                <motion.div
-                  key={selectedServiceObj.t}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 rounded-2xl bg-white/70 border border-[#7c3aed]/30 shadow-sm backdrop-blur-md"
-                >
-                  <div className="flex items-center gap-3.5 text-left">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-[#7c3aed] to-[#9333ea] text-white shadow-md">
-                      <selectedServiceObj.Icon className="h-5 w-5" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span
-                        className="text-[9px] font-extrabold uppercase tracking-widest text-[#7c3aed]"
-                        style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      >
-                        Selected Service
-                      </span>
-                      <h3
-                        className="text-sm font-extrabold text-gray-900 tracking-tight"
-                        style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-                      >
-                        {selectedServiceObj.t}
-                      </h3>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedService(null)}
-                    className="text-[10px] font-mono uppercase font-bold text-slate-500 hover:text-purple-700 underline px-2 py-1"
-                  >
-                    Clear Choice
-                  </button>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="empty-service"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-white/40 border border-dashed border-gray-300 text-xs font-semibold text-gray-700"
-                >
-                  <Sparkles className="h-4 w-4 text-[#7c3aed]" />
-                  <span>Select travel details below, or tap an icon above for a specific service.</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7c3aed]/10 border border-[#7c3aed]/20 text-[#7c3aed] text-[10px] font-mono uppercase font-extrabold tracking-widest">
+            <Crown className="w-3.5 h-3.5" />
+            <span>Master Airport VIP Packages</span>
           </div>
-
           <h2
-            className="text-center text-[10px] font-bold uppercase tracking-[0.24em] flex items-center justify-center gap-2 mt-0.5"
-            style={{ color: C.teal, fontFamily: "'JetBrains Mono', monospace" }}
+            className="text-center text-xs sm:text-sm font-extrabold uppercase tracking-[0.2em] text-slate-900 flex items-center justify-center gap-2"
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
-            <Sparkles size={12} />
-            WELCOME ABOARD · GET AN INSTANT QUOTE FOR YOUR NEXT TRIP
-            <Sparkles size={12} />
+            Choose Your Airport & Select VIP Package
           </h2>
+          <p className="text-[11px] text-slate-600 font-sans max-w-md">
+            All-inclusive airside escort, fast-track customs clearance, VIP lounge sanctuary, and chauffeured tarmac transfers.
+          </p>
         </div>
 
         <motion.div
