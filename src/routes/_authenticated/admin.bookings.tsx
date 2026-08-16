@@ -213,11 +213,11 @@ function BookingsManagerView() {
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const getAssigneeRoleDisplay = (assignedToId: string | null) => {
+  const getAssigneeRoleDisplay = (assignedToId?: string | null) => {
     if (!assignedToId) return "Unassigned";
     const member = (staff ?? []).find((s) => s.id === assignedToId);
     if (!member) return "Admin";
-    return member.roles.includes("super_admin") ? "Super Admin" : "Admin";
+    return member.roles?.includes("super_admin") ? "Super Admin" : "Admin";
   };
 
   const handleWorkflowAction = async (bookingId: string, action: string) => {

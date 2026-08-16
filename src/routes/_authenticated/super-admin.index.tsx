@@ -51,7 +51,7 @@ function SuperAdminDashboard() {
 
   // Aggregate bookings by day for chart
   const dailyBookings = new Map<string, { date: string; count: number; revenue: number }>();
-  (kpis.recentBookings || []).forEach((b: Record<string, unknown>) => {
+  (kpis.recentBookings || []).forEach((b) => {
     const day = String(b.created_at).slice(0, 10);
     const existing = dailyBookings.get(day) || { date: day, count: 0, revenue: 0 };
     existing.count++;
@@ -90,17 +90,17 @@ function SuperAdminDashboard() {
         />
         <SAKpiCard
           label="Admin Count"
-          value={kpis.adminCount}
+          value={kpis.adminCount ?? 0}
           icon={ShieldCheck}
           trend="Admin & super admin"
         />
         <SAKpiCard
           label="Airports"
-          value={kpis.airportCount}
+          value={kpis.airportCount ?? 0}
           icon={Plane}
           trend="Active airports"
         />
-        <SAKpiCard label="Lounges" value={kpis.loungeCount} icon={Armchair} trend="All lounges" />
+        <SAKpiCard label="Lounges" value={kpis.loungeCount ?? kpis.activeLounges} icon={Armchair} trend="All lounges" />
       </div>
 
       {/* Chart + Activity */}
@@ -182,7 +182,7 @@ function SuperAdminDashboard() {
                 No recent activity
               </div>
             ) : (
-              (kpis.recentActivity || []).map((a: Record<string, unknown>, i: number) => (
+              (kpis.recentActivity || []).map((a, i) => (
                 <div
                   key={String(a.id || i)}
                   className="border-l-2 border-[#a78bfa]/20 pl-3 py-1 space-y-0.5"

@@ -26,13 +26,26 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:8001",
+        target: "http://127.0.0.1:8003",
         changeOrigin: true,
       },
     },
   },
   build: {
-    chunkSizeWarningLimit: 1500,
+    target: "es2022",
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/framer-motion")) return "vendor-motion";
+          if (id.includes("node_modules/gsap")) return "vendor-gsap";
+          if (id.includes("node_modules/lucide-react")) return "vendor-icons";
+          if (id.includes("node_modules/@supabase")) return "vendor-supabase";
+          if (id.includes("node_modules/date-fns")) return "vendor-date";
+        },
+      },
+    },
   },
   optimizeDeps: {
     include: [

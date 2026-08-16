@@ -646,7 +646,7 @@ export default function SuperAdminView({ userId }: { userId: string }) {
                           ID: {user.id}
                         </div>
                         <div className="flex gap-1 mt-2">
-                          {(user.roles || []).map((role) => (
+                          {(user.roles || []).map((role: string) => (
                             <span
                               key={role}
                               className={`text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded font-mono ${role === "super_admin"

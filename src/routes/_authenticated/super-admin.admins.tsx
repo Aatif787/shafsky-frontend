@@ -34,12 +34,12 @@ function AdminsPage() {
     staleTime: 10000,
   });
 
-  const admins = (users as Record<string, unknown>[]).filter((u) =>
-    (u.roles as string[])?.some((r) => ["admin", "super_admin"].includes(r)),
+  const admins = users.filter((u) =>
+    (u.roles || [u.role || ""]).some((r) => ["admin", "super_admin"].includes(r || "")),
   );
 
-  const nonAdmins = (users as Record<string, unknown>[]).filter(
-    (u) => !(u.roles as string[])?.some((r) => ["admin", "super_admin"].includes(r)),
+  const nonAdmins = users.filter(
+    (u) => !(u.roles || [u.role || ""]).some((r) => ["admin", "super_admin"].includes(r || "")),
   );
 
   const filtered = admins.filter((u) => {

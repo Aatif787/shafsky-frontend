@@ -175,7 +175,7 @@ export interface SATableColumn<T> {
   className?: string;
 }
 
-export function SADataTable<T extends Record<string, unknown>>({
+export function SADataTable<T extends { id?: unknown }>({
   columns,
   data,
   isLoading,
@@ -258,7 +258,7 @@ export function SADataTable<T extends Record<string, unknown>>({
                       key={col.key}
                       className={`px-4 py-3 text-xs text-white/65 ${col.className || ""}`}
                     >
-                      {col.render ? col.render(row) : String(row[col.key] ?? "—")}
+                      {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? "—")}
                     </td>
                   ))}
                 </tr>

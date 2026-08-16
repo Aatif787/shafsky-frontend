@@ -12,7 +12,7 @@ export const getApiBaseUrl = (): string => {
   if (typeof process !== "undefined" && process.env && process.env.VITE_BACKEND_API_URL) {
     return process.env.VITE_BACKEND_API_URL;
   }
-  return "http://127.0.0.1:8001";
+  return "http://127.0.0.1:8003";
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -89,32 +89,17 @@ export class ApiClient {
     if (!signal) {
       controller = new AbortController();
       signal = controller.signal;
-      timeoutId = setTimeout(() => controller?.abort(), 12000);
+      timeoutId = setTimeout(() => controller?.abort(), 15000);
     }
 
     try {
       const res = await fetch(primaryUrl, { ...options, headers, signal });
       if (timeoutId) clearTimeout(timeoutId);
       return res;
-    } catch (err) {
+    } catch (err: any) {
       if (timeoutId) clearTimeout(timeoutId);
-      if (!endpoint.startsWith("http")) {
-        const altBase = primaryBase.includes(":8001")
-          ? primaryBase.replace(":8001", ":8003")
-          : primaryBase.includes(":8003")
-          ? primaryBase.replace(":8003", ":8001")
-          : null;
-        if (altBase) {
-          try {
-            const altController = new AbortController();
-            const altTimeout = setTimeout(() => altController.abort(), 8000);
-            const resAlt = await fetch(`${altBase}${path}`, { ...options, headers, signal: altController.signal });
-            clearTimeout(altTimeout);
-            return resAlt;
-          } catch {
-            // Fallthrough to throw primary error
-          }
-        }
+      if (err?.name === "AbortError") {
+        console.warn(`[ApiClient] Request to ${primaryUrl} timed out after 15s.`);
       }
       throw err;
     }

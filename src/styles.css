@@ -510,5 +510,12 @@ select option:checked {
   color: #7c3aed !important;
 }
 
+/* Skip paint work for off-screen homepage/marketing sections */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 480px;
+}
+
+
 
 

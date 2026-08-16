@@ -61,10 +61,10 @@ export function DestinationHero({ a }: { a: Airport }) {
                 fallbackImage={a.slideshow[0]}
               />
               <div
-                className="absolute inset-0"
+                className="absolute inset-0 pointer-events-none"
                 style={{
                   background:
-                    "linear-gradient(180deg, rgba(11,26,36,0.35) 0%, rgba(250,248,245,0.6) 60%, rgba(250,248,245,1) 100%)",
+                    "linear-gradient(180deg, rgba(11,26,36,0.75) 0%, rgba(11,26,36,0.3) 45%, rgba(11,26,36,0.85) 100%)",
                 }}
               />
             </motion.div>
@@ -90,74 +90,113 @@ export function DestinationHero({ a }: { a: Airport }) {
                 }}
               />
               <div
-                className="absolute inset-0"
+                className="absolute inset-0 pointer-events-none"
                 style={{
                   background:
-                    "linear-gradient(180deg, rgba(11,26,36,0.35) 0%, rgba(250,248,245,0.6) 60%, rgba(250,248,245,1) 100%)",
+                    "linear-gradient(180deg, rgba(11,26,36,0.75) 0%, rgba(11,26,36,0.3) 45%, rgba(11,26,36,0.85) 100%)",
                 }}
               />
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
 
-      {/* fog */}
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{ background: "linear-gradient(180deg, transparent, rgba(94,211,255,0.04))" }}
-        animate={{ opacity: [0.3, 0.7, 0.3] }}
-        transition={{ duration: 8, repeat: Infinity }}
-      />
-
-      {/* content */}
-      <div className="relative z-10 flex h-full flex-col justify-end px-4 pb-20 sm:px-8 md:px-16">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.3 }}
-          className="flex min-w-0 flex-wrap items-center gap-3 text-[10px] uppercase tracking-[0.28em] text-slate-700 font-bold sm:tracking-[0.45em]"
-          style={mono}
-        >
-          <span className="text-2xl leading-none">🇮🇳</span>
-          <span>{a.country}</span>
-          <span className="h-px w-12 bg-slate-400/40" />
-          <span className="text-[#7c3aed]">
-            {a.code} · {a.icao}
-          </span>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.9 }}
-          className="mt-6 max-w-2xl text-slate-800 font-serif"
-          style={{ ...display, fontSize: "clamp(1.1rem, 1.6vw, 1.5rem)", fontStyle: "italic" }}
-        >
-          {a.tagline}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.1 }}
-          className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end"
-        >
-          <div className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-8" style={mono}>
-            <Stat label="Local Time" value={time || "—"} />
-            <Stat label="Weather" value={a.weather.temp + " · clear"} />
-          </div>
-          <div className="flex flex-wrap items-center gap-3 lg:justify-end">
-            <MagneticButton href="#book">Book Concierge</MagneticButton>
-            <a
-              href="#guide"
-              className="inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-4 text-[10px] uppercase tracking-[0.24em] font-bold text-slate-800 bg-white/80 border border-[#e5dfd5] shadow-xs backdrop-blur-md transition hover:bg-white hover:border-[#7c3aed]/40 sm:text-[11px] sm:tracking-[0.3em]"
+        {/* Content Rendered Directly OVER the Image Inside the Card */}
+        <div className="absolute inset-0 z-10 flex flex-col justify-between p-6 sm:p-10 md:p-14 text-white">
+          {/* Top Info & Airport Name */}
+          <div className="max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="flex flex-wrap items-center gap-3 text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold text-amber-300/90"
               style={mono}
             >
-              <MapPin className="h-3.5 w-3.5 text-[#7c3aed]" /> Explore
-            </a>
+              <span className="text-2xl leading-none">🇮🇳</span>
+              <span>{a.country}</span>
+              <span className="h-px w-10 bg-amber-400/40" />
+              <span>IATA: {a.code} · ICAO: {a.icao}</span>
+            </motion.div>
+
+            {/* Official Airport Name Rendered Directly on Image ONLY for Guwahati Airport (GAU) */}
+            {a.code === "GAU" && (
+              <>
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="mt-3 text-3xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight text-white drop-shadow-xl leading-tight"
+                  style={{
+                    fontFamily: "'Cinzel', 'Playfair Display', Georgia, serif",
+                    textShadow: "0 4px 20px rgba(0,0,0,0.8)",
+                  }}
+                >
+                  {a.airport?.name || `${a.city} International Airport`}
+                </motion.h1>
+
+                {/* Tagline */}
+                <motion.p
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                  className="mt-2 text-lg sm:text-xl font-serif italic text-amber-200/90 drop-shadow-md"
+                >
+                  "{a.tagline}"
+                </motion.p>
+
+                {/* Basic Key Details Badges */}
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                  className="mt-4 flex flex-wrap items-center gap-2.5 text-xs font-semibold"
+                >
+                  {a.landmark && (
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 font-mono text-[11px] tracking-wider uppercase backdrop-blur-md shadow-lg">
+                      📍 Gateway to {a.landmark}
+                    </span>
+                  )}
+                  {a.airport?.terminals && (
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/40 border border-white/20 text-slate-100 font-mono text-[11px] tracking-wider backdrop-blur-md shadow-lg">
+                      🏛️ Terminals: {a.airport.terminals}
+                    </span>
+                  )}
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-200 font-mono text-[11px] tracking-wider backdrop-blur-md shadow-lg">
+                    ✨ 24x7 VIP Concierge Active
+                  </span>
+                </motion.div>
+              </>
+            )}
           </div>
-        </motion.div>
+
+          {/* Bottom Area: Local Time, Weather & Actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1 }}
+            className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end pt-6"
+          >
+            <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6" style={mono}>
+              <div className="bg-black/50 border border-white/20 px-4 py-3 rounded-2xl backdrop-blur-md shadow-xl text-white">
+                <div className="truncate text-[9px] uppercase tracking-[0.3em] text-amber-300/80 font-bold">Local Time</div>
+                <div className="mt-1 text-lg sm:text-xl font-bold tracking-wider">{time || "—"}</div>
+              </div>
+              <div className="bg-black/50 border border-white/20 px-4 py-3 rounded-2xl backdrop-blur-md shadow-xl text-white">
+                <div className="truncate text-[9px] uppercase tracking-[0.3em] text-amber-300/80 font-bold">Weather</div>
+                <div className="mt-1 text-lg sm:text-xl font-bold tracking-wider">{a.weather.temp + " · Clear"}</div>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+              <MagneticButton href="#book">Book Concierge</MagneticButton>
+              <a
+                href="#guide"
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-3.5 text-[10px] uppercase tracking-[0.24em] font-bold text-white bg-black/50 border border-white/30 shadow-lg backdrop-blur-md transition hover:bg-black/70 hover:border-amber-400/60 sm:text-[11px] sm:tracking-[0.3em]"
+                style={mono}
+              >
+                <MapPin className="h-3.5 w-3.5 text-amber-400" /> Explore
+              </a>
+            </div>
+          </motion.div>
+        </div>
       </div>
 
       {/* slide indicator */}

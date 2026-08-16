@@ -13,6 +13,12 @@ import ixrDesktop from "../assets/airports/ixr/Dek-Ran-air.png";
 import ixrMobile from "../assets/airports/ixr/Mob-Ran-air.png";
 import jaiDesktop from "../assets/airports/jai/Dek-Jai_air.png";
 import jaiMobile from "../assets/airports/jai/Mob-Jai-air.png";
+import atqDesktop from "../assets/airports/atq/Dek-Atq-air.png";
+import atqMobile from "../assets/airports/atq/Mob-Atq-air.png";
+import gauDesktop from "../assets/airports/gau/Dek-Gau-air.jpg";
+import gauMobile from "../assets/airports/gau/Mob-Gau-air.jpg";
+import vtzDesktop from "../assets/airports/vtz/Dek-Vtz-air.jpg";
+import vtzMobile from "../assets/airports/vtz/Mob-Vtz-air.jpg";
 
 const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: string }> = {
   del: {
@@ -45,8 +51,16 @@ const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: s
     mobile: jaiMobile,
   },
   atq: {
-    desktop: jaiDesktop,
-    mobile: jaiMobile,
+    desktop: atqDesktop,
+    mobile: atqMobile,
+  },
+  gau: {
+    desktop: gauDesktop,
+    mobile: gauMobile,
+  },
+  vtz: {
+    desktop: vtzDesktop,
+    mobile: vtzMobile,
   },
 };
 

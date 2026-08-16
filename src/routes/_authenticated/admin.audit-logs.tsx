@@ -59,7 +59,7 @@ function AuditLogsView() {
       a.action.toLowerCase().includes(q) ||
       (a.admin || "").toLowerCase().includes(q) ||
       (a.entity_id || "").toLowerCase().includes(q) ||
-      a.table.toLowerCase().includes(q) ||
+      (a.table || "").toLowerCase().includes(q) ||
       (a.ip || "").toLowerCase().includes(q)
     );
   });
@@ -128,7 +128,7 @@ function AuditLogsView() {
                     </td>
                     <td className="p-4 font-mono text-white/60">{log.ip || "System"}</td>
                     <td className="p-4 text-white/50">
-                      {new Date(log.timestamp).toLocaleString()}
+                      {new Date(log.timestamp || log.created_at || Date.now()).toLocaleString()}
                     </td>
                   </tr>
                 ))}

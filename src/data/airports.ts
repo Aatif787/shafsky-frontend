@@ -33,6 +33,10 @@ import dekLkoAir from "@/assets/airports/lko/Dek-lko-air.png";
 import mobLkoAir from "@/assets/airports/lko/Mob-lko-air.png";
 import dekJaiAir from "@/assets/airports/jai/Dek-Jai_air.png";
 import mobJaiAir from "@/assets/airports/jai/Mob-Jai-air.png";
+import dekAtqAir from "@/assets/airports/atq/Dek-Atq-air.png";
+import mobAtqAir from "@/assets/airports/atq/Mob-Atq-air.png";
+import dekGauAir from "@/assets/airports/gau/Dek-Gau-air.jpg";
+import mobGauAir from "@/assets/airports/gau/Mob-Gau-air.jpg";
 
 import { AIRPORT_REGISTRY, getAirportRegistryEntry } from "./airportRegistry";
 
@@ -854,10 +858,10 @@ export const AIRPORTS: Airport[] = [
     ],
   }).map((a) => ({
     ...a,
-    cover: dekJaiAir,
-    mobCover: mobJaiAir,
-    slideshow: [dekJaiAir],
-    gallery: [dekJaiAir, a.gallery[0]],
+    cover: dekAtqAir,
+    mobCover: mobAtqAir,
+    slideshow: [dekAtqAir],
+    gallery: [dekAtqAir, a.gallery[0]],
   })),
   ...buildCity({
     code: "AMD",
@@ -1115,97 +1119,16 @@ export const AIRPORTS: Airport[] = [
       ["Dassam Falls", "Dassam Falls", "Scenic cascade where the Kanchi River plunges 44 meters."]
     ]
   }),
-  ...buildCity({
-    code: "DXB",
-    icao: "OMDB",
-    city: "Dubai",
-    landmark: "Burj Khalifa",
-    tagline: "City of Superlatives",
-    q1: "Burj Khalifa Dubai",
-    q2: "Museum of the Future",
-    q3: "Dubai Frame",
-    airportName: "Dubai International Airport",
-    terminals: "Full Airport Concourses",
-    annual: "87M",
-    attr: [
-      ["Burj Khalifa", "Burj Khalifa", "World's tallest building, 828-meter skyscraper icon."],
-      ["Museum of the Future", "Museum of the Future", "Torus-shaped architectural marvel of calligraphy."],
-      ["Dubai Mall & Fountain", "Dubai Mall", "World's largest shopping and entertainment destination."]
-    ]
-  }),
-  ...buildCity({
-    code: "SIN",
-    icao: "WSSS",
-    city: "Singapore",
-    landmark: "Jewel Changi",
-    tagline: "World's Best Airport Hub",
-    q1: "Jewel Changi Singapore",
-    q2: "Marina Bay Sands",
-    q3: "Gardens by the Bay",
-    airportName: "Singapore Changi Airport",
-    terminals: "Full Airport Concourses & Jewel",
-    annual: "68M",
-    attr: [
-      ["Jewel Changi & Rain Vortex", "Jewel Changi Rain Vortex", "7-storey indoor waterfall and lush canopy park."],
-      ["Marina Bay Sands", "Marina Bay Sands Singapore", "Iconic triple-tower resort with infinity pool."],
-      ["Gardens by the Bay", "Gardens by the Bay", "Futuristic Supertree Grove and Cloud Forest dome."]
-    ]
-  }),
-  ...buildCity({
-    code: "LHR",
-    icao: "EGLL",
-    city: "London Heathrow",
-    landmark: "Big Ben & Westminster",
-    tagline: "Europe's Busiest Gateway",
-    q1: "Big Ben London",
-    q2: "Tower Bridge London",
-    q3: "London Eye",
-    airportName: "London Heathrow Airport",
-    terminals: "Full Airport Concourses",
-    annual: "79M",
-    attr: [
-      ["Big Ben & Parliament", "Big Ben London", "Iconic Elizabeth Tower and Palace of Westminster."],
-      ["Tower Bridge", "Tower Bridge London", "Victorian suspension bridge over the River Thames."],
-      ["London Eye", "London Eye", "135-meter giant observation wheel on the South Bank."]
-    ]
-  }),
-  ...buildCity({
-    code: "JFK",
-    icao: "KJFK",
-    city: "New York JFK",
-    landmark: "Statue of Liberty",
-    tagline: "The Big Apple Gateway",
-    q1: "Statue of Liberty New York",
-    q2: "Times Square",
-    q3: "Empire State Building",
-    airportName: "John F. Kennedy International Airport",
-    terminals: "Full Airport Concourses",
-    annual: "62M",
-    attr: [
-      ["Statue of Liberty", "Statue of Liberty", "Iconic colossal neoclassical sculpture on Liberty Island."],
-      ["Times Square", "Times Square New York", "Bustling commercial intersection lit by neon billboards."],
-      ["Empire State Building", "Empire State Building", "102-story Art Deco skyscraper in Midtown Manhattan."]
-    ]
-  }),
-  ...buildCity({
-    code: "PNQ",
-    icao: "VAPO",
-    city: "Pune",
-    landmark: "Shaniwar Wada",
-    tagline: "Cultural Capital of Maharashtra",
-    q1: "Shaniwar Wada Pune",
-    q2: "Aga Khan Palace",
-    q3: "Sinhagad Fort",
-    airportName: "Pune International Airport",
-    terminals: "2",
-    annual: "9.0M",
-    attr: [
-      ["Shaniwar Wada", "Shaniwar Wada", "18th-century Maratha Peshwa fortification seat."],
-      ["Aga Khan Palace", "Aga Khan Palace Pune", "Historic Italianate palace & Mahatma Gandhi memorial."],
-      ["Sinhagad Fort", "Sinhagad Fort", "Ancient hill fortress overlooking the Western Ghats."]
-    ]
-  }),
 ];
+
+{
+  const gau = AIRPORTS.find((a) => a.code === "GAU");
+  if (gau) {
+    gau.cover = dekGauAir;
+    gau.mobCover = mobGauAir;
+    gau.slideshow = [dekGauAir, mobGauAir, ...gau.slideshow.slice(2)];
+  }
+}
 
 type CityArgs = {
   code: string;
@@ -1223,22 +1146,10 @@ type CityArgs = {
 };
 
 function buildCity(a: CityArgs): Airport[] {
-  const isSIN = a.code === "SIN";
-  const isLHR = a.code === "LHR";
-  const isJFK = a.code === "JFK";
-  const isDXB = a.code === "DXB";
-
-  const country = isSIN ? "Singapore" : isLHR ? "United Kingdom" : isJFK ? "United States" : isDXB ? "United Arab Emirates" : "India";
-  const countryCode = isSIN ? "SG" : isLHR ? "GB" : isJFK ? "US" : isDXB ? "AE" : "IN";
-  const timezone = isSIN ? "Asia/Singapore" : isLHR ? "Europe/London" : isJFK ? "America/New_York" : isDXB ? "Asia/Dubai" : "Asia/Kolkata";
+  const country = "India";
+  const countryCode = "IN";
+  const timezone = "Asia/Kolkata";
   const currency = "INR (₹)";
-
-  const sinCover = "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1920&q=80";
-  const sinSlides = [
-    "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1920&q=80",
-    "https://images.unsplash.com/photo-1565967511849-76a60a516170?auto=format&fit=crop&w=1920&q=80",
-    "https://images.unsplash.com/photo-1508964942454-1a56651d54ac?auto=format&fit=crop&w=1920&q=80",
-  ];
 
   return [
     {
@@ -1250,9 +1161,9 @@ function buildCity(a: CityArgs): Airport[] {
       landmark: a.landmark,
       tagline: a.tagline,
       timezone,
-      cover: isSIN ? sinCover : u(a.q1),
-      slideshow: isSIN ? sinSlides : [u(a.q1), u(a.q2), u(a.q3), u(a.city + " skyline")],
-      gallery: isSIN ? sinSlides : [
+      cover: u(a.q1),
+      slideshow: [u(a.q1), u(a.q2), u(a.q3), u(a.city + " skyline")],
+      gallery: [
         us(a.q1),
         us(a.q2),
         us(a.q3),
@@ -1262,29 +1173,29 @@ function buildCity(a: CityArgs): Airport[] {
       ],
       videoId: "jfKfPfyJRdk",
       about: `${a.city} blends heritage, commerce and modern aviation infrastructure — a signature stop on the Shafsky network.`,
-      bestTime: isSIN ? "Year-round" : "October – March",
-      languages: isSIN ? "English + Malay + Mandarin + Tamil" : "Regional + Hindi + English",
+      bestTime: "October – March",
+      languages: "Regional + Hindi + English",
       currency,
       business: "Trade, services, manufacturing",
       tourism: a.landmark + " and surrounding heritage",
       climate: "Tropical to subtropical",
       safety: "Safe for travellers with standard precautions.",
-      emergency: a.code === "DXB" ? "Police 999 · Ambulance 998" : "Police 100 · Ambulance 102",
+      emergency: "Police 100 · Ambulance 102",
       visa: "e-Visa available",
       airport: {
         name: a.airportName,
         elevation: "—",
-        runways: a.code === "DXB" ? "2" : "1",
-        operator: a.code === "DXB" ? "Dubai Airports" : "Airports Authority of India / Concessionaire",
+        runways: "1",
+        operator: "Airports Authority of India / Concessionaire",
         type: "International",
-        domestic: a.code === "DXB" ? "—" : "60+ daily",
-        intl: a.code === "DXB" ? "1,200+ daily" : "10+ weekly",
+        domestic: "60+ daily",
+        intl: "10+ weekly",
         terminals: a.terminals,
-        capacity: a.code === "DXB" ? "90M pax/yr" : "—",
+        capacity: "—",
         annual: a.annual,
-        cargo: a.code === "DXB" ? "2.6M MT" : "—",
-        website: a.code === "DXB" ? "dubaiairports.ae" : "aai.aero",
-        contact: a.code === "DXB" ? "+971 4 224 5555" : "+91 124 337 6000",
+        cargo: "—",
+        website: "aai.aero",
+        contact: "+91 124 337 6000",
       },
       attractions: a.attr.map(([n, q, d]) => ({
         name: n,
@@ -1299,21 +1210,16 @@ function buildCity(a: CityArgs): Airport[] {
       })),
       facilities: baseFacilities,
       weather: {
-        temp: a.code === "DXB" ? "34°C" : "29°C",
-        humidity: a.code === "DXB" ? "45%" : "60%",
-        visibility: a.code === "DXB" ? "10 km" : "8 km",
-        wind: a.code === "DXB" ? "14 km/h" : "12 km/h",
+        temp: "29°C",
+        humidity: "60%",
+        visibility: "8 km",
+        wind: "12 km/h",
         aqi: "Moderate",
-        sunrise: a.code === "DXB" ? "05:45" : "05:55",
-        sunset: a.code === "DXB" ? "19:05" : "18:40",
+        sunrise: "05:55",
+        sunset: "18:40",
         flying: "Excellent",
       },
-      transport: a.code === "DXB" ? [
-        { mode: "Dubai Metro", fare: "AED 8", time: "25 min to Downtown", availability: "05:00 – 24:00" },
-        { mode: "Airport Taxi", fare: "AED 60", time: "20 min", availability: "24×7" },
-        { mode: "Uber Black", fare: "AED 120", time: "20 min", availability: "24×7" },
-        { mode: "Chauffeur Limousine", fare: "AED 350", time: "On demand", availability: "24×7" },
-      ] : [
+      transport: [
         { mode: "Taxi", fare: "₹450", time: "30 min", availability: "24×7" },
         { mode: "Uber / Ola", fare: "₹360", time: "30 min", availability: "24×7" },
         { mode: "Car Rental", fare: "₹2,500/day", time: "On demand", availability: "24×7" },
@@ -1323,18 +1229,18 @@ function buildCity(a: CityArgs): Airport[] {
       ],
       hotels: [
         {
-          name: a.code === "DXB" ? "Burj Al Arab Jumeirah" : "Taj " + a.city,
+          name: "Taj " + a.city,
           stars: 5,
-          distance: a.code === "DXB" ? "25 km" : "10 km",
-          price: a.code === "DXB" ? "AED 4,500+" : "₹14,000+",
-          img: us(a.code === "DXB" ? "burj al arab" : "taj hotel " + a.city),
+          distance: "10 km",
+          price: "₹14,000+",
+          img: us("taj hotel " + a.city),
         },
         {
-          name: a.code === "DXB" ? "Armani Hotel Dubai" : "ITC " + a.city,
+          name: "ITC " + a.city,
           stars: 5,
-          distance: a.code === "DXB" ? "14 km" : "12 km",
-          price: a.code === "DXB" ? "AED 2,200+" : "₹13,500+",
-          img: us(a.code === "DXB" ? "armani hotel dubai" : "itc hotel"),
+          distance: "12 km",
+          price: "₹13,500+",
+          img: us("itc hotel"),
         },
       ],
       experiences: [
@@ -1461,7 +1367,7 @@ export function getAirport(code: string): Airport {
       },
     ],
     faqs: baseFAQ,
-    related: ["DEL", "BOM", "DXB"],
+    related: ["DEL", "BOM", "HYD"],
   };
 }
 
@@ -1488,67 +1394,6 @@ export interface AirportService {
 export function getAirportServices(airportCode: string): AirportService[] {
   const code = (airportCode || "DEL").toUpperCase().trim();
   const airport = getAirport(code);
-
-  // 1. Dubai (DXB) Dynamic Service Catalog
-  if (code === "DXB") {
-    return [
-      {
-        id: "meet_greet",
-        title: "Master Airport VIP Packages",
-        desc: "Personalized host greeting at aerobridge, electric buggy transfer across concourse, and expedited clearance.",
-        type: "package",
-        packages: [
-          {
-            id: "dxb_silver",
-            title: "Silver Ahlan Escort",
-            desc: "Marhaba aerobridge host greeting, dedicated baggage porter, and express passport control.",
-            price: 7500,
-            duration: "Up to 2 Hours",
-            isRecommended: false,
-            includedServices: [
-              "Marhaba Aerobridge Greeting",
-              "Dedicated Baggage Porterage",
-              "Fast-Track Passport Control",
-              "Curbside Transport Handoff",
-            ],
-            highlights: ["Airport Express Escort", "Marhaba Porterage"],
-          },
-          {
-            id: "dxb_gold",
-            title: "Gold Ahlan VIP",
-            desc: "Ahlan VIP Escort, electric airside buggy transport, Ahlan Lounge access with gourmet buffet, and priority clearance.",
-            price: 14500,
-            duration: "Up to 3 Hours",
-            isRecommended: true,
-            includedServices: [
-              "Ahlan VIP Escort Host",
-              "Electric Airside Buggy Transport",
-              "Ahlan Lounge Access & Gourmet Buffet",
-              "Priority Passport & Customs Clearance",
-              "Duty Free Shopping Escort",
-            ],
-            highlights: ["Most Popular Choice", "Airside Buggy Transport", "Ahlan VIP Lounge Suite"],
-          },
-          {
-            id: "dxb_elite",
-            title: "Elite Al Majlis VVIP",
-            desc: "Al Majlis Private VIP Terminal Suite, private tarmac limousine transfer, dedicated personal butler, and in-suite customs.",
-            price: 24500,
-            duration: "Unlimited Transit",
-            isRecommended: false,
-            includedServices: [
-              "Al Majlis Private VIP Terminal Suite",
-              "Private Limousine Tarmac Transfer",
-              "Dedicated Personal Butler & Protocol Officer",
-              "Gourmet In-Suite Dining & Shower Facilities",
-              "Full In-Suite Passport & Customs Processing",
-            ],
-            highlights: ["Al Majlis VIP Terminal", "Private Limousine Tarmac", "In-Suite Passport Clearance"],
-          },
-        ],
-      },
-    ];
-  }
 
   // 2. Ahmedabad (AMD) Dynamic Service Catalog
   if (code === "AMD") {
@@ -1654,6 +1499,11 @@ export function getAirportServices(airportCode: string): AirportService[] {
         ],
       },
     ];
+  }
+
+  // GAU production catalog is backend/database-authoritative. Do not invent frontend prices.
+  if (code === "GAU") {
+    return [];
   }
 
   // 4. Dynamic Fallback derived from airport metadata & facilities

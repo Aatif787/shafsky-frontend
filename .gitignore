@@ -11,8 +11,10 @@ dist/
 build/
 .vercel/
 
+# Scratch
+scratch/
 
-# Logs
+
 *.log
 
 # OS

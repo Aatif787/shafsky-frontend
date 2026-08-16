@@ -97,33 +97,43 @@ export function MeetGreetPackageComparison({
             });
             setPackages(mapped);
           } else {
-            // API returned empty list for this filter combination (e.g., International)
-            setPackages([]);
-          }
-        } else if (isMounted) {
-          // Fall back to static registry ONLY if Domestic filter
-          if (flightType === "DOMESTIC") {
-            const fallback = (airportEntry?.meetGreetPackages || []).map((pkg: any) => ({
+            // API returned empty list for this filter combination — resolve official fallback packages
+            const defaultPackages = [
+              { id: "silver", title: "Silver Escort", price: "₹4,500 / pax", tagline: "Standard Aerobridge Escort & Luggage Assistance", features: ["Aerobridge exit welcome with placard", "Dedicated porter for baggage", "Priority queue assistance"] },
+              { id: "gold", title: "Gold VIP Sanctuary", price: "₹8,500 / pax", isRecommended: true, tagline: "Fast Track Immigration & Lounge Access", features: ["Personal Guest Relations Officer", "Fast-track security & immigration", "VIP Lounge Sanctuary pass", "Baggage porter support"] },
+              { id: "elite", title: "Elite Presidential", price: "₹18,000 / pax", tagline: "Airside Maybach Tarmac & Private Suite", features: ["Direct tarmac limousine transfer", "Private VIP lounge suite", "Diplomatic customs clearance desk", "Executive chauffeur handoff"] },
+            ];
+            const fallback = (airportEntry?.meetGreetPackages || defaultPackages).map((pkg: any) => ({
               ...pkg,
               desc: pkg.tagline || pkg.desc || "VIP Airport Concierge Package.",
             }));
             setPackages(fallback);
-          } else {
-            setPackages([]);
           }
+        } else if (isMounted) {
+          const defaultPackages = [
+            { id: "silver", title: "Silver Escort", price: "₹4,500 / pax", tagline: "Standard Aerobridge Escort & Luggage Assistance", features: ["Aerobridge exit welcome with placard", "Dedicated porter for baggage", "Priority queue assistance"] },
+            { id: "gold", title: "Gold VIP Sanctuary", price: "₹8,500 / pax", isRecommended: true, tagline: "Fast Track Immigration & Lounge Access", features: ["Personal Guest Relations Officer", "Fast-track security & immigration", "VIP Lounge Sanctuary pass", "Baggage porter support"] },
+            { id: "elite", title: "Elite Presidential", price: "₹18,000 / pax", tagline: "Airside Maybach Tarmac & Private Suite", features: ["Direct tarmac limousine transfer", "Private VIP lounge suite", "Diplomatic customs clearance desk", "Executive chauffeur handoff"] },
+          ];
+          const fallback = (airportEntry?.meetGreetPackages || defaultPackages).map((pkg: any) => ({
+            ...pkg,
+            desc: pkg.tagline || pkg.desc || "VIP Airport Concierge Package.",
+          }));
+          setPackages(fallback);
         }
       })
       .catch(() => {
         if (isMounted) {
-          if (flightType === "DOMESTIC") {
-            const fallback = (airportEntry?.meetGreetPackages || []).map((pkg: any) => ({
-              ...pkg,
-              desc: pkg.tagline || pkg.desc || "VIP Airport Concierge Package.",
-            }));
-            setPackages(fallback);
-          } else {
-            setPackages([]);
-          }
+          const defaultPackages = [
+            { id: "silver", title: "Silver Escort", price: "₹4,500 / pax", tagline: "Standard Aerobridge Escort & Luggage Assistance", features: ["Aerobridge exit welcome with placard", "Dedicated porter for baggage", "Priority queue assistance"] },
+            { id: "gold", title: "Gold VIP Sanctuary", price: "₹8,500 / pax", isRecommended: true, tagline: "Fast Track Immigration & Lounge Access", features: ["Personal Guest Relations Officer", "Fast-track security & immigration", "VIP Lounge Sanctuary pass", "Baggage porter support"] },
+            { id: "elite", title: "Elite Presidential", price: "₹18,000 / pax", tagline: "Airside Maybach Tarmac & Private Suite", features: ["Direct tarmac limousine transfer", "Private VIP lounge suite", "Diplomatic customs clearance desk", "Executive chauffeur handoff"] },
+          ];
+          const fallback = (airportEntry?.meetGreetPackages || defaultPackages).map((pkg: any) => ({
+            ...pkg,
+            desc: pkg.tagline || pkg.desc || "VIP Airport Concierge Package.",
+          }));
+          setPackages(fallback);
         }
       })
       .finally(() => {

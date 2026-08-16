@@ -783,7 +783,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                   subtitle={`Your concierge service at ${state.airportCode} has been requested.`}
                   badge="SUCCESS"
                   bookingRef={bookingRef || "SHF-AIR-CONFIRMED"}
-                  guestSummary={`${state.fullName || "Guest"} — ${state.passengerCount} Pax`}
+                  guestSummary={`${state.fullName || "Guest"} — ${state.guestCount} Pax`}
                 />
               )}
             </motion.div>

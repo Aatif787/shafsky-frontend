@@ -16,7 +16,23 @@ const mockDb = {
 export const getCustomer360 = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({ customerId: z.string() }).parse(data))
-  .handler(async ({ data: { customerId } }) => {
+  .handler(async ({ data: { customerId } }): Promise<{
+    id: string;
+    full_name: string;
+    phone: string;
+    company: string;
+    avatar_url: string | null;
+    created_at: string;
+    passport_details: { passport_number: string; passport_expiry: string; nationality: string };
+    travel_preferences: { meal_preference: string; seat_preference: string; concierge_level: string };
+    preferred_airport: string;
+    preferred_lounge: string;
+    preferred_services: string[];
+    vip_status: boolean;
+    loyalty_tier: string;
+    gst_number: string;
+    notes: string;
+  }> => {
     const token = getTokenFromRequest();
     try {
       const profile = await apiGet<any>(`/api/admin/users`, token);

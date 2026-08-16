@@ -17,7 +17,8 @@ export type TravelPurpose =
   | "student"
   | "medical"
   | "transit"
-  | "diplomatic";
+  | "diplomatic"
+  | "other";
 
 export type UrgencyLevel =
   | "normal"

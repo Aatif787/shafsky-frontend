@@ -18,7 +18,9 @@ export interface UserProfile {
   phone?: string;
   company?: string;
   role?: string;
+  roles?: string[];
   status?: string;
+  is_active?: boolean;
   avatar_url?: string;
   notes?: string;
   created_at?: string;
@@ -59,7 +61,20 @@ export interface BookingItem {
   created_at: string;
   updated_at?: string;
   services?: BookingServiceItem[];
-  notes?: string;
+  booking_services?: BookingServiceItem[];
+  notes?: string | null;
+  user_id?: string | null;
+  verification_type?: string;
+  assigned_to?: string | null;
+  service_id?: string;
+  service_name?: string;
+  customer_profile?: {
+    id?: string;
+    full_name?: string;
+    phone?: string;
+    company?: string;
+    created_at?: string;
+  };
 }
 
 export interface BookingPassenger {
@@ -157,10 +172,13 @@ export interface LoungeItem {
   id: string;
   airport_code: string;
   lounge_name: string;
+  name?: string;
   terminal?: string;
   capacity?: number;
   status: "active" | "maintenance" | "closed";
   amenities?: string[];
+  airport?: { code?: string; name?: string };
+  current_occupancy?: number;
 }
 
 export interface StaffShiftItem {
@@ -194,6 +212,15 @@ export interface SystemSettingItem {
   updated_at?: string;
 }
 
+export interface SuperAdminActivityItem {
+  id?: string;
+  action?: string;
+  created_at?: string;
+  entity?: string;
+  entity_id?: string;
+  actor?: string;
+}
+
 export interface SuperAdminKPIs {
   totalUsers: number;
   totalBookings: number;
@@ -201,4 +228,119 @@ export interface SuperAdminKPIs {
   activeLounges: number;
   activeCoupons: number;
   pendingCases: number;
+  adminCount?: number;
+  airportCount?: number;
+  loungeCount?: number;
+  recentBookings?: Array<{ created_at?: string; quote_amount?: number }>;
+  recentActivity?: SuperAdminActivityItem[];
+}
+
+export interface ContactInquiry {
+  id?: string;
+  status?: string;
+  name?: string;
+  email?: string;
+  subject?: string;
+  message?: string;
+  created_at?: string;
+}
+
+export interface AdminDashboardMetrics {
+  bookings: BookingItem[];
+  messages: ContactInquiry[];
+  notifFailures: number;
+  recentActivity: SuperAdminActivityItem[];
+  status?: string;
+  dailyRevenueINR?: number;
+  todayBookings?: number;
+  completedToday?: number;
+}
+
+export interface ServiceConfigItem {
+  id: string;
+  title?: string;
+  description?: string;
+  price?: number;
+  currency?: string;
+  category?: string;
+  icon?: string;
+  is_active?: boolean;
+  sort_order?: number;
+  available_airports?: string[];
+}
+
+export interface FlightLogItem {
+  id: string;
+  booking_ref: string;
+  origin: string;
+  destination: string;
+  verification_type?: string;
+  notes?: string | null;
+  depart_date?: string;
+}
+
+export interface AuditLogItem {
+  id: string;
+  action: string;
+  admin?: string;
+  entity_id?: string;
+  table?: string;
+  ip?: string;
+  created_at?: string;
+  timestamp?: string;
+  actor_id?: string;
+  before?: any;
+  after?: any;
+  metadata?: {
+    ip?: string;
+    before?: any;
+    after?: any;
+  };
+}
+
+export interface NotificationLogItem {
+  id: string;
+  recipient: string;
+  booking_ref?: string;
+  booking_id?: string;
+  subject?: string;
+  template: string;
+  channel?: string;
+  status?: string;
+  created_at?: string;
+  body?: string;
+  error_message?: string;
+}
+
+export interface AssignableStaffMember {
+  id: string;
+  roles?: string[];
+  full_name?: string;
+  email?: string;
+}
+
+export interface BookingHistoryItem {
+  id: string;
+  created_at?: string;
+  actor_id?: string;
+  from_status?: string;
+  to_status?: string;
+  note?: string;
+}
+
+export interface RoleDefinition {
+  name: string;
+  description?: string;
+}
+
+export interface PermissionDefinition {
+  id: string;
+  name?: string;
+  description?: string;
+}
+
+export interface RoleMatrixPayload {
+  roles: RoleDefinition[];
+  permissions: PermissionDefinition[];
+  matrix: Record<string, string[]>;
 }

@@ -61,34 +61,86 @@ export interface AirportWorkflowState {
  * Formats flight validation errors into user-friendly messages.
  */
 export function formatFlightLookupError(error: unknown, status?: number): string {
-  const rawString =
-    typeof error === "string"
-      ? error
-      : typeof (error as any)?.message === "string"
-        ? (error as any).message
-        : typeof (error as any)?.code === "string"
-          ? (error as any).code
-          : typeof (error as any)?.error === "string"
-            ? (error as any).error
-            : JSON.stringify(error || "");
+  try {
+    const rawString =
+      typeof error === "string"
+        ? error
+        : typeof (error as any)?.message === "string"
+          ? (error as any).message
+          : typeof (error as any)?.code === "string"
+            ? (error as any).code
+            : typeof (error as any)?.error === "string"
+              ? (error as any).error
+              : JSON.stringify(error || "");
 
-  const upper = rawString.toUpperCase();
+    const upper = rawString.toUpperCase();
 
-  if (
-    upper.includes("FLIGHT_NOT_FOUND") ||
-    upper.includes("NOT_FOUND") ||
-    upper.includes("NO SCHEDULE") ||
-    upper.includes("INVALID_FLIGHT") ||
-    status === 404
-  ) {
-    return "No flight schedule was found for the selected flight number and travel date. Try another date or verify the flight number.";
+    // 1. Backend unavailable / Network connection refusal / Failed to fetch
+    if (
+      upper.includes("FAILED TO FETCH") ||
+      upper.includes("ERR_CONNECTION_REFUSED") ||
+      upper.includes("NETWORKERROR") ||
+      upper.includes("BACKEND_UNAVAILABLE") ||
+      status === 502 ||
+      status === 503 ||
+      status === 504
+    ) {
+      return "Backend service is currently unavailable. Please check backend server status or enter flight details manually.";
+    }
+
+    // 2. Advance notice / lead time restrictions
+    if (
+      upper.includes("ADVANCE_NOTICE") ||
+      upper.includes("6_HOUR") ||
+      upper.includes("MINIMUM_LEAD_TIME")
+    ) {
+      return "This flight departs too soon for online concierge booking. Please contact our 24/7 VIP Command Desk for instant manual dispatch.";
+    }
+
+    // 3. Invalid flight number or format
+    if (
+      upper.includes("INVALID_FLIGHT") ||
+      upper.includes("INVALID FORMAT") ||
+      upper.includes("INVALID_FLIGHT_NUMBER")
+    ) {
+      return "The flight number format is invalid. Please check the airline code and flight number (e.g., AI302, EK504).";
+    }
+
+    // 4. Flight schedule not found
+    if (
+      upper.includes("FLIGHT_NOT_FOUND") ||
+      upper.includes("NOT_FOUND") ||
+      upper.includes("NO SCHEDULE") ||
+      upper.includes("COULD NOT BE FOUND") ||
+      status === 404
+    ) {
+      return "No flight schedule was found for the selected flight number and travel date. Try another date or enter flight details manually.";
+    }
+
+    // 5. Provider failure
+    if (
+      upper.includes("PROVIDER_ERROR") ||
+      upper.includes("AVIATION_EDGE") ||
+      upper.includes("PROVIDER_FAILURE") ||
+      status === 500
+    ) {
+      return "Flight data provider service temporary error. Please verify your flight details or proceed with manual entry.";
+    }
+
+    // 6. Validation error
+    if (status === 400 || status === 422 || upper.includes("VALIDATION")) {
+      return rawString.length < 150 && rawString.length > 5 && !rawString.startsWith("{")
+        ? rawString
+        : "Flight validation failed. Please check your flight number and date or enter details manually.";
+    }
+
+    // 7. Unexpected error fallback
+    return rawString.length < 150 && rawString.length > 5 && !rawString.startsWith("{")
+      ? rawString
+      : "Unable to validate flight details. Please verify your flight information or enter flight details manually.";
+  } catch {
+    return "Unable to validate flight details. Please verify your flight information or enter flight details manually.";
   }
-
-  if (upper.includes("ADVANCE_NOTICE") || upper.includes("6_HOUR") || upper.includes("MINIMUM_LEAD_TIME")) {
-    return "This flight departs too soon for online concierge booking. Please contact our 24/7 VIP Command Desk for instant manual dispatch.";
-  }
-
-  return "No flight schedule was found for the selected flight number and travel date. Try another date or verify the flight number.";
 }
 
 export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg?: string) {

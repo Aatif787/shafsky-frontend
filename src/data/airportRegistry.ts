@@ -12,6 +12,12 @@ import dekLkoAir from "@/assets/airports/lko/Dek-lko-air.png";
 import mobLkoAir from "@/assets/airports/lko/Mob-lko-air.png";
 import dekJaiAir from "@/assets/airports/jai/Dek-Jai_air.png";
 import mobJaiAir from "@/assets/airports/jai/Mob-Jai-air.png";
+import dekAtqAir from "@/assets/airports/atq/Dek-Atq-air.png";
+import mobAtqAir from "@/assets/airports/atq/Mob-Atq-air.png";
+import dekGauAir from "@/assets/airports/gau/Dek-Gau-air.jpg";
+import mobGauAir from "@/assets/airports/gau/Mob-Gau-air.jpg";
+import dekVtzAir from "@/assets/airports/vtz/Dek-Vtz-air.jpg";
+import mobVtzAir from "@/assets/airports/vtz/Mob-Vtz-air.jpg";
 
 export interface MeetGreetPackage {
   id: string;
@@ -116,7 +122,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
       ["Is fast-track available for both international arrivals and departures at Delhi Airport?", "Yes, diplomatic fast-track immigration and security lane clearance is available across both arrival and departure flows at Delhi Airport."],
       ["Can I book ground chauffeur transfer directly to my New Delhi hotel?", "Absolutely. Private Mercedes-Maybach sedans and luxury SUVs are available for tarmac-to-hotel handoffs."],
     ],
-    relatedAirportCodes: ["BOM", "DXB", "AMD", "BLR"],
+    relatedAirportCodes: ["BOM", "AMD", "BLR"],
     seo: {
       title: "Delhi Airport Concierge & Meet & Greet (DEL) — Shafsky Aviation",
       description: "Book VIP Meet & Greet escort, lounge suites, fast track, and tarmac transfers at Delhi Indira Gandhi International Airport (DEL).",
@@ -202,72 +208,11 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     faqs: [
       ["Does Mumbai Airport support fast-track customs clearance?", "Yes, our Guest Relations Officers guide VIP passengers through priority diplomatic queues at Mumbai Airport (BOM)."],
     ],
-    relatedAirportCodes: ["DEL", "DXB", "BLR", "HYD"],
+    relatedAirportCodes: ["DEL", "BLR", "HYD"],
     seo: {
       title: "Mumbai Airport Concierge & Meet & Greet (BOM) — Shafsky Aviation",
       description: "Reserve VIP Meet & Greet, fast-track customs, and Maybach chauffeur transfers at Mumbai Airport (BOM).",
       keywords: ["mumbai airport meet and greet", "mumbai lounge suite", "mumbai airport fast track"],
-    },
-  },
-
-  // ── 3. DUBAI (DXB) ──
-  DXB: {
-    code: "DXB",
-    icao: "OMDB",
-    name: "Dubai International Airport",
-    city: "Dubai",
-    country: "United Arab Emirates",
-    countryCode: "AE",
-    timezone: "Asia/Dubai",
-    heroTitle: "Dubai Airport Concierge",
-    heroSubtitle: "Dubai International Airport (DXB) — Ahlan & Al Majlis VIP Services",
-    shortDescription: "The world's busier international airport. Experience Al Majlis private terminal suites, luxury buggy tarmac escort, fast-track immigration, and VIP chauffeur service.",
-    coverImage: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
-    ],
-    coordinates: { lat: 25.2532, lng: 55.3657 },
-    airportType: "International Hub",
-    terminals: "All Passenger Hubs & Al Majlis VIP Gateway",
-    operator: "Dubai Airports Company",
-    status: "Active",
-    featured: true,
-    availableServiceIds: ["meet_greet", "lounge", "fast_track", "transport"],
-    meetGreetPackages: [
-      {
-        id: "silver",
-        title: "Ahlan Standard Escort",
-        tagline: "Gate Greeting & Buggy Transit",
-        price: "₹15,000 / pax",
-        duration: "2 Hours",
-        features: ["Gate arrival greeting", "Electric buggy transfer to immigration", "Priority passport control desk"],
-      },
-      {
-        id: "gold",
-        title: "Ahlan Premium Lounge",
-        tagline: "VIP Lounge Access & Priority Customs",
-        price: "₹26,800 / pax",
-        isRecommended: true,
-        duration: "4 Hours",
-        features: ["Personal concierge officer", "Electric buggy transit", "Ahlan VIP lounge buffet access", "Dedicated luggage porter"],
-      },
-      {
-        id: "majlis",
-        title: "Al Majlis Private VIP Terminal",
-        tagline: "Separate VIP Terminal & Private Limousine Tarmac",
-        price: "₹62,500 / pax",
-        duration: "Full Transit",
-        features: ["Private Al Majlis VIP terminal building", "BMW 7-Series tarmac transfer to aircraft", "In-house private customs & immigration", "Gourmet dining & luxury private suite"],
-      },
-    ],
-    faqs: [
-      ["What is the difference between Ahlan and Al Majlis at DXB?", "Ahlan operates across all passenger concourses, whereas Al Majlis is a dedicated private VIP complex with separate tarmac access."],
-    ],
-    relatedAirportCodes: ["DEL", "BOM", "LHR", "SIN"],
-    seo: {
-      title: "Dubai Airport Concierge & Al Majlis VIP Terminal (DXB) — Shafsky Aviation",
-      description: "Book Ahlan Meet & Greet, Al Majlis private VIP terminal, and buggy transfers at Dubai International Airport (DXB).",
-      keywords: ["dubai airport meet and greet", "al majlis dxb", "dubai airport fast track"],
     },
   },
 
@@ -455,234 +400,6 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     },
   },
 
-  // ── 8. SINGAPORE (SIN) ──
-  SIN: {
-    code: "SIN",
-    icao: "WSSS",
-    name: "Singapore Changi Airport",
-    city: "Singapore",
-    country: "Singapore",
-    countryCode: "SG",
-    timezone: "Asia/Singapore",
-    heroTitle: "Singapore Airport Concierge",
-    heroSubtitle: "Singapore Changi Airport (SIN) — JetQuay VIP Gateway & Airside Escort",
-    shortDescription: "Consistently rated the world's best airport. Experience JetQuay VIP CIP Terminal, canopy buggy transit, fast-track immigration, and private luxury chauffeur transfers.",
-    coverImage: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1200&q=80",
-    ],
-    coordinates: { lat: 1.3644, lng: 103.9915 },
-    airportType: "International Hub",
-    terminals: "All Passenger Hubs & JetQuay VIP Gateway",
-    operator: "Changi Airport Group",
-    status: "Active",
-    featured: true,
-    availableServiceIds: ["meet_greet", "lounge", "fast_track", "transport"],
-    meetGreetPackages: [
-      {
-        id: "silver",
-        title: "Changi Standard Escort",
-        tagline: "Gate Greeting & Buggy Transit",
-        price: "₹15,800 / pax",
-        duration: "2 Hours",
-        features: ["Gate arrival greeting with placard", "Electric buggy transit across concourse", "Express baggage belt guidance"],
-      },
-      {
-        id: "gold",
-        title: "Changi VIP Sanctuary",
-        tagline: "Fast Track & Blossom VIP Lounge Access",
-        price: "₹28,500 / pax",
-        isRecommended: true,
-        duration: "4 Hours",
-        features: ["Personal Guest Relations Officer", "Electric buggy transfer", "Blossom VIP Lounge access & gourmet dining", "Dedicated porter support"],
-      },
-      {
-        id: "jetquay",
-        title: "JetQuay CIP VVIP Terminal",
-        tagline: "Private Terminal Suite & Tarmac Buggy",
-        price: "₹68,500 / pax",
-        duration: "Full Transit",
-        features: ["Private JetQuay CIP Terminal suite", "Tarmac luxury buggy / limousine transfer", "In-suite immigration & customs clearance", "Personal protocol officer & butler"],
-      },
-    ],
-    faqs: [
-      ["Where does the Guest Relations Officer meet me at Singapore Changi?", "Your escort officer greets you directly at the aircraft aerobridge exit with a discrete name placard."],
-      ["Does Singapore Changi support private CIP terminal clearance?", "Yes, our JetQuay CIP Terminal package provides full private terminal check-in, customs, and private lounge suites."],
-    ],
-    relatedAirportCodes: ["DXB", "DEL", "BOM", "LHR"],
-    seo: {
-      title: "Singapore Changi Airport Concierge & VIP Escort (SIN) — Shafsky Aviation",
-      description: "Book VIP Meet & Greet, JetQuay CIP terminal suites, fast-track customs, and chauffeur transfers at Singapore Changi (SIN).",
-      keywords: ["singapore changi airport meet and greet", "jetquay cip terminal changi", "changi vip lounge booking"],
-    },
-  },
-
-  // ── 9. LONDON HEATHROW (LHR) ──
-  LHR: {
-    code: "LHR",
-    icao: "EGLL",
-    name: "London Heathrow Airport",
-    city: "London",
-    country: "United Kingdom",
-    countryCode: "GB",
-    timezone: "Europe/London",
-    heroTitle: "London Heathrow Airport Concierge",
-    heroSubtitle: "London Heathrow Airport (LHR) — VIP Windsor Suite & Airside Escort",
-    shortDescription: "Europe's premier international hub. Experience Heathrow VIP Windsor Suite access, airside buggy escort, fast-track passport clearance, and private chauffeur sedan transfers.",
-    coverImage: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80",
-    ],
-    coordinates: { lat: 51.4700, lng: -0.4543 },
-    airportType: "International Hub",
-    terminals: "All Passenger Hubs & Airside Gates",
-    operator: "Heathrow Airport Holdings",
-    status: "Active",
-    featured: true,
-    availableServiceIds: ["meet_greet", "lounge", "fast_track", "transport"],
-    meetGreetPackages: [
-      {
-        id: "silver",
-        title: "Heathrow Standard Escort",
-        tagline: "Aerobridge Greeting & Fast Track",
-        price: "₹19,500 / pax",
-        duration: "2 Hours",
-        features: ["Aerobridge exit welcome", "Fast-track passport control queue bypass", "Porter assistance"],
-      },
-      {
-        id: "gold",
-        title: "Heathrow VIP Sanctuary",
-        tagline: "Fast Track & Executive Lounge Access",
-        price: "₹34,500 / pax",
-        isRecommended: true,
-        duration: "4 Hours",
-        features: ["Personal Guest Relations Officer", "Fast-track security & border control", "Plaza Premium VIP Lounge access", "Unlimited baggage porterage"],
-      },
-      {
-        id: "windsor",
-        title: "Heathrow Windsor Suite VVIP",
-        tagline: "Private Royal Suite & BMW Tarmac Transfer",
-        price: "₹135,000 / pax",
-        duration: "Full Transit",
-        features: ["Private Heathrow Windsor Suite reservation", "Direct tarmac BMW 7-Series transfer", "Private security & customs clearance", "Personal protocol officer"],
-      },
-    ],
-    faqs: [
-      ["Where does the escort officer meet me at Heathrow?", "Your escort meets you at the aerobridge gate exit for arrivals or curbside for departures."],
-    ],
-    relatedAirportCodes: ["DXB", "JFK", "DEL", "SIN"],
-    seo: {
-      title: "London Heathrow Airport Concierge & VIP Escort (LHR) — Shafsky Aviation",
-      description: "Reserve VIP Meet & Greet, Windsor Suite private terminal access, fast-track border control, and chauffeur rides at London Heathrow (LHR).",
-      keywords: ["heathrow airport meet and greet", "heathrow windsor suite", "london heathrow fast track"],
-    },
-  },
-
-  // ── 10. NEW YORK JFK (JFK) ──
-  JFK: {
-    code: "JFK",
-    icao: "KJFK",
-    name: "John F. Kennedy International Airport",
-    city: "New York",
-    country: "United States",
-    countryCode: "US",
-    timezone: "America/New_York",
-    heroTitle: "New York JFK Airport Concierge",
-    heroSubtitle: "John F. Kennedy International Airport (JFK) — Airside Escort & VIP Lounge",
-    shortDescription: "North America's premier international gateway. Experience expedited TSA PreCheck & customs escort, VIP lounge sanctuaries, and private Manhattan SUV transfers.",
-    coverImage: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1200&q=80",
-    ],
-    coordinates: { lat: 40.6413, lng: -73.7781 },
-    airportType: "International Hub",
-    terminals: "All Passenger Hubs & Airside Gates",
-    operator: "Port Authority of NY & NJ",
-    status: "Active",
-    featured: true,
-    availableServiceIds: ["meet_greet", "lounge", "fast_track", "transport"],
-    meetGreetPackages: [
-      {
-        id: "silver",
-        title: "JFK Standard Escort",
-        tagline: "Gate Greeting & Baggage Porter",
-        price: "₹17,500 / pax",
-        duration: "2 Hours",
-        features: ["Gate arrival welcome with placard", "Baggage claim porter assistance", "Curbside vehicle handoff"],
-      },
-      {
-        id: "gold",
-        title: "JFK VIP Sanctuary",
-        tagline: "Fast Track TSA & Prime Lounge Access",
-        price: "₹31,800 / pax",
-        isRecommended: true,
-        duration: "4 Hours",
-        features: ["Personal Guest Relations Officer", "Expedited TSA security & customs escort", "Virgin Atlantic / Prime Lounge pass", "Unlimited porterage"],
-      },
-      {
-        id: "presidential",
-        title: "JFK Presidential VVIP",
-        tagline: "Private Tarmac SUV & Helipad Handoff",
-        price: "₹79,500 / pax",
-        duration: "Full Transit",
-        features: ["Direct tarmac Cadillac Escalade transfer", "Private VIP lounge suite access", "Personal protocol officer", "BLADE Manhattan helipad coordination"],
-      },
-    ],
-    faqs: [
-      ["Does JFK support fast-track customs escort?", "Yes, our officers escort VIP passengers through priority processing lanes across all airport concourses."],
-    ],
-    relatedAirportCodes: ["LHR", "DXB", "DEL", "SIN"],
-    seo: {
-      title: "New York JFK Airport Concierge & VIP Escort — Shafsky Aviation",
-      description: "Book VIP Meet & Greet, fast-track TSA clearance, lounge passes, and luxury SUV transfers at New York JFK Airport.",
-      keywords: ["jfk airport meet and greet", "jfk fast track customs", "jfk vip lounge booking"],
-    },
-  },
-
-  // ── 11. PUNE (PNQ) ──
-  PNQ: {
-    code: "PNQ",
-    icao: "VAPO",
-    name: "Pune International Airport",
-    city: "Pune",
-    country: "India",
-    countryCode: "IN",
-    timezone: "Asia/Kolkata",
-    heroTitle: "Pune Airport Concierge",
-    heroSubtitle: "Pune International Airport (PNQ) — VIP Airside Escort & Lounge",
-    shortDescription: "IT and automotive hub gateway. Experience aerobridge escorts, Earth Lounge access, express security, and private executive chauffeur handoffs.",
-    coverImage: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=1200&q=80",
-    ],
-    coordinates: { lat: 18.5822, lng: 73.9197 },
-    airportType: "International Hub",
-    terminals: "All Passenger Hubs & Airside Gates",
-    operator: "Airports Authority of India (AAI)",
-    status: "Active",
-    featured: false,
-    availableServiceIds: ["meet_greet", "lounge", "fast_track", "transport"],
-    meetGreetPackages: [
-      {
-        id: "gold",
-        title: "Pune Executive Gold",
-        tagline: "Aerobridge Escort & Earth Lounge",
-        price: "₹6,000 / pax",
-        isRecommended: true,
-        duration: "Up to 3 Hours",
-        features: ["Aerobridge exit welcome with placard", "Earth Lounge access with hot dining", "Dedicated baggage porter", "Curbside chauffeur handoff"],
-      },
-    ],
-    faqs: [
-      ["Where does the officer meet me at Pune Airport?", "Your dedicated officer greets you at the aerobridge gate holding a discrete name placard."],
-    ],
-    relatedAirportCodes: ["BOM", "DEL", "BLR", "AMD"],
-    seo: {
-      title: "Pune Airport Concierge & Meet & Greet (PNQ) — Shafsky Aviation",
-      description: "Book VIP Meet & Greet, Earth Lounge passes, and chauffeur transfers at Pune Airport (PNQ).",
-      keywords: ["pune airport meet and greet", "pune lounge booking", "pune airport fast track"],
-    },
-  },
 
   // ── 12. KOLKATA (CCU) ──
   CCU: {
@@ -901,10 +618,10 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     heroTitle: "Amritsar Airport Concierge",
     heroSubtitle: "Sri Guru Ram Dass Jee International Airport (ATQ) — Airport Concierge & Meet & Assist",
     shortDescription: "Gateway to the Golden Temple city. Enjoy dedicated airside escort, luggage assistance, and executive transfers.",
-    coverImage: dekJaiAir,
-    mobCoverImage: mobJaiAir,
+    coverImage: dekAtqAir,
+    mobCoverImage: mobAtqAir,
     galleryImages: [
-      dekJaiAir,
+      dekAtqAir,
     ],
     coordinates: { lat: 31.7096, lng: 74.7973 },
     airportType: "International Hub",
@@ -1073,8 +790,9 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     heroTitle: "Guwahati Airport Concierge",
     heroSubtitle: "Lokpriya Gopinath Bordoloi International Airport (GAU) — VIP Escort",
     shortDescription: "Gateway to North East India. Personal escort, luggage assistance, and executive car transfers.",
-    coverImage: dekDelAir,
-    galleryImages: [dekDelAir],
+    coverImage: dekGauAir,
+    mobCoverImage: mobGauAir,
+    galleryImages: [dekGauAir, mobGauAir],
     coordinates: { lat: 26.1061, lng: 91.5859 },
     airportType: "International Hub",
     terminals: "Terminal 1",
@@ -1193,8 +911,9 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     heroTitle: "Visakhapatnam Airport Concierge",
     heroSubtitle: "Visakhapatnam International Airport (VTZ) — VIP Escort & Executive Transfers",
     shortDescription: "Coastal Andhra Pradesh hub. Aerobridge welcome, baggage assistance, and executive chauffeur handoffs.",
-    coverImage: dekDelAir,
-    galleryImages: [dekDelAir],
+    coverImage: dekVtzAir,
+    mobCoverImage: mobVtzAir,
+    galleryImages: [dekVtzAir, mobVtzAir],
     coordinates: { lat: 17.7211, lng: 83.2245 },
     airportType: "International Hub",
     terminals: "Integrated Terminal",

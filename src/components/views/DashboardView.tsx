@@ -43,85 +43,24 @@ import {
   Share2,
 } from "lucide-react";
 import { toast } from "sonner";
-
-// Page styles matching shafsky aviation pure luxury theme
-const display = { fontFamily: "'Fraunces', serif", fontWeight: 300 };
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
-
-interface Booking {
-  id: string;
-  booking_ref: string;
-  contact_name: string;
-  contact_email: string;
-  contact_phone: string;
-  trip_type: string;
-  origin: string;
-  destination: string;
-  depart_date: string;
-  return_date?: string | null;
-  pax_adults: number;
-  pax_children: number;
-  pax_infants: number;
-  aircraft_preference?: string | null;
-  service_type?: string | null;
-  notes?: string | null;
-  status: string;
-  quote_amount?: number | null;
-  quote_currency?: string | null;
-  created_at: string;
-}
-
-interface SavedPassenger {
-  id: string;
-  fullName: string;
-  nationality: string;
-  passportNumber: string;
-  passportExpiry: string;
-  type: "adult" | "child" | "infant";
-}
-
-interface SupportTicket {
-  id: string;
-  subject: string;
-  priority: "low" | "medium" | "high";
-  message: string;
-  status: "open" | "resolved";
-  created_at: string;
-}
-
-interface DocumentLocker {
-  id: string;
-  name: string;
-  type: "passport" | "visa" | "id_proof";
-  uploaded_at: string;
-}
+import { display, mono } from "@/components/dashboard/theme";
+import type {
+  Booking,
+  SavedPassenger,
+  SupportTicket,
+  DocumentLocker,
+  DashboardTab,
+  NotesData,
+} from "@/components/dashboard/types";
 
 export default function DashboardView({ userId }: { userId: string }) {
   const queryClient = useQueryClient();
   const submitBookingFn = useServerFn(createBooking);
   const { updatePassword, profile: authProfile, signOut } = useAuth();
-  const [activeTab, setActiveTab] = useState<
-    | "home"
-    | "bookings"
-    | "new-booking"
-    | "passengers"
-    | "documents"
-    | "billing"
-    | "support"
-    | "settings"
-    | "notifications"
-  >("home");
+  const [activeTab, setActiveTab] = useState<DashboardTab>("home");
 
   // Profile data & notes fallback state
-  const [notesData, setNotesData] = useState<{
-    passengers?: SavedPassenger[];
-    tickets?: SupportTicket[];
-    documents?: DocumentLocker[];
-    addresses?: Array<{ id: string; name: string; address: string }>;
-    paymentMethods?: Array<{ id: string; type: string; last4: string }>;
-    dark_mode?: boolean;
-    currency?: string;
-  }>({});
+  const [notesData, setNotesData] = useState<NotesData>({});
 
   // Form states
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
@@ -192,7 +131,7 @@ export default function DashboardView({ userId }: { userId: string }) {
   });
 
   // TanStack Query: Bookings
-  const { data: bookings = [], isLoading: loadingBookings } = useQuery({
+  const { data: bookings = [], isLoading: loadingBookings } = useQuery<Booking[]>({
     queryKey: ["client-bookings", userId],
     queryFn: async () => {
       if (!userId || userId === "guest_user") return [];
@@ -410,9 +349,20 @@ export default function DashboardView({ userId }: { userId: string }) {
     }
     setBookingSubmitting(true);
     try {
-      const contactEmail = bkEmail.trim() || (profile as any)?.contact_email || (authProfile as any)?.email || "guest@shafsky.com";
+      const contactEmail = bkEmail.trim() || (profile as any)?.contact_email || (authProfile as any)?.email || "";
       const contactName = bkName.trim() || fullName.trim() || (authProfile as any)?.user_metadata?.full_name || "Valued Guest";
-      const contactPhone = bkPhone.trim() || phone.trim() || "9999999999";
+      const contactPhone = bkPhone.trim() || phone.trim() || "";
+
+      if (!contactEmail) {
+        toast.error("Please enter a valid contact email.");
+        setBookingSubmitting(false);
+        return;
+      }
+      if (contactPhone.length < 6) {
+        toast.error("Please enter a valid contact phone number.");
+        setBookingSubmitting(false);
+        return;
+      }
 
       const res = await submitBookingFn({
         data: {
@@ -434,8 +384,6 @@ export default function DashboardView({ userId }: { userId: string }) {
           pax_children: bkChildren,
           pax_infants: 0,
           service_type: bkService,
-          total_amount: 18000 * (bkAdults + bkChildren),
-          currency: "INR",
           notes: bkNotes,
           services: [
             {
@@ -443,7 +391,6 @@ export default function DashboardView({ userId }: { userId: string }) {
               service_name: bkService,
               category: "concierge",
               quantity: bkAdults + bkChildren,
-              unit_price: 18000,
               currency: "INR",
             },
           ],
@@ -615,11 +562,11 @@ export default function DashboardView({ userId }: { userId: string }) {
   const handleCancelBooking = async (bId: string) => {
     if (!window.confirm("Are you sure you want to cancel this booking request?")) return;
     try {
-      const { updateBookingDetailsServer } = await import("@/lib/bookings.functions");
-      await updateBookingDetailsServer({
+      const { cancelMyBookingServer } = await import("@/lib/bookings.functions");
+      await cancelMyBookingServer({
         data: {
           bookingId: bId,
-          updateData: { notes: "cancelled" },
+          reason: "Cancelled by customer from dashboard",
         },
       });
       toast.success("Booking request cancelled.");

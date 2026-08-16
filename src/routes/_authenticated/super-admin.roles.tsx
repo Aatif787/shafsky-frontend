@@ -38,8 +38,8 @@ function RolesPage() {
     }
   };
 
-  const roleNames = (data?.roles || []).map((r: Record<string, unknown>) => String(r.name));
-  const permissionIds = (data?.permissions || []).map((p: Record<string, unknown>) => String(p.id));
+  const roleNames = (data?.roles || []).map((r) => r.name);
+  const permissionIds = (data?.permissions || []).map((p) => p.id);
 
   return (
     <div className="space-y-6">
@@ -52,7 +52,7 @@ function RolesPage() {
       {/* Role Summary */}
       {!isLoading && data && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {(data.roles || []).map((role: Record<string, unknown>) => {
+          {(data.roles || []).map((role) => {
             const permCount = data.matrix[String(role.name)]?.length || 0;
             return (
               <div
@@ -89,7 +89,7 @@ function RolesPage() {
         <SAPermissionMatrix
           roles={roleNames}
           permissions={permissionIds}
-          matrix={data?.matrix || {}}
+          matrix={data?.matrix ?? {}}
           onToggle={handleToggle}
           isLoading={isLoading}
         />

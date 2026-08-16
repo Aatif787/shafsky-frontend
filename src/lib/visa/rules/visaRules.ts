@@ -23,6 +23,7 @@ export function deriveVisaCategory(travelPurpose: TravelPurpose): string {
       return "student";
     case "transit":
       return "transit";
+    case "other":
     default:
       return "tourist";
   }

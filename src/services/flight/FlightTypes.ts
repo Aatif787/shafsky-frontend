@@ -9,12 +9,14 @@ export interface FlightAirport {
   name?: string | null; // Full airport name
   city?: string | null; // City name
   country?: string | null;
+  timezone?: string | null;
 }
 
 export interface FlightSchedule {
   scheduledTime?: string | null; // ISO or local HH:MM format
   terminal?: string | null; // Terminal details (if known)
   gate?: string | null;
+  timezone?: string | null;
 }
 
 export interface FlightData {

@@ -43,8 +43,8 @@ export const WHY_CHOOSE_US: WhyItem[] = [
   },
   {
     icon: Globe2,
-    title: "Pan-India + Global",
-    desc: "Delhi, Mumbai, Bengaluru, Hyderabad to Dubai, London, Singapore and beyond.",
+    title: "Pan-India Network",
+    desc: "Delhi, Mumbai, Bengaluru, Hyderabad, Goa, Kochi, Jaipur and more Indian airports.",
   },
   {
     icon: Sparkles,
@@ -165,7 +165,7 @@ export const FAQ_ITEMS: [string, string][] = [
   ],
   [
     "Which airports do you cover?",
-    "We operate at 20+ Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi, Jaipur and Srinagar — plus 12+ global hubs.",
+    "We operate at 20 Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi and Jaipur.",
   ],
   [
     "How do I book?",
@@ -216,10 +216,10 @@ export const SOCIAL_LINKS = [
 /* ─────────────────── COVERAGE STATS ─────────────────── */
 
 export const COVERAGE_STATS = [
-  ["20+", "Indian Airports"],
-  ["12+", "Global Hubs"],
+  ["20", "Indian Airports"],
   ["24/7", "Live Dispatch"],
   ["< 12m", "Avg. Response"],
+  ["Domestic + Intl", "At every hub"],
 ] as const;
 
 /* ─────────────────── JOURNEY STEPS ─────────────────── */

@@ -28,9 +28,9 @@ function PermissionsPage() {
   const permissions = data?.permissions || [];
 
   // Group permissions by module (e.g., "bookings:read" -> "bookings")
-  const grouped = new Map<string, Record<string, unknown>[]>();
-  (permissions as Record<string, unknown>[]).forEach((p) => {
-    const id = String(p.id);
+  const grouped = new Map<string, typeof permissions>();
+  permissions.forEach((p) => {
+    const id = p.id;
     const module = id.includes(":") ? id.split(":")[0] : "general";
     const existing = grouped.get(module) || [];
     existing.push(p);

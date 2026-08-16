@@ -8,6 +8,9 @@ import type {
   LoungeItem,
   CouponItem,
   SystemSettingItem,
+  RoleMatrixPayload,
+  RoleDefinition,
+  PermissionDefinition,
 } from "@/types/fastapi";
 
 export const checkSuperAdminAccess = createServerFn({ method: "GET" })
@@ -105,16 +108,58 @@ export const updateUserRoleAndStatus = createServerFn({ method: "POST" })
   });
 
 // ─── Roles & Permissions ───
+function normalizeRoleMatrix(raw: unknown): RoleMatrixPayload {
+  const empty: RoleMatrixPayload = { roles: [], permissions: [], matrix: {} };
+  if (!raw || typeof raw !== "object") return empty;
+  const payload = raw as Record<string, unknown>;
+
+  if (Array.isArray(payload.roles) && payload.matrix && typeof payload.matrix === "object") {
+    const roles: RoleDefinition[] = payload.roles.map((r) =>
+      typeof r === "string"
+        ? { name: r }
+        : { name: String((r as RoleDefinition).name || ""), description: (r as RoleDefinition).description },
+    );
+    const permissions: PermissionDefinition[] = (Array.isArray(payload.permissions) ? payload.permissions : []).map(
+      (p) =>
+        typeof p === "string"
+          ? { id: p }
+          : {
+              id: String((p as PermissionDefinition).id || ""),
+              name: (p as PermissionDefinition).name,
+              description: (p as PermissionDefinition).description,
+            },
+    );
+    return { roles, permissions, matrix: payload.matrix as Record<string, string[]> };
+  }
+
+  const matrix = (payload.matrix && typeof payload.matrix === "object"
+    ? payload.matrix
+    : payload) as Record<string, string[]>;
+  const roles = Object.keys(matrix)
+    .filter((key) => key !== "roles" && key !== "permissions" && Array.isArray(matrix[key]))
+    .map((name) => ({ name }));
+  const permSet = new Set<string>();
+  roles.forEach((role) => {
+    (matrix[role.name] || []).forEach((perm) => permSet.add(perm));
+  });
+  return {
+    roles,
+    permissions: [...permSet].map((id) => ({ id })),
+    matrix,
+  };
+}
+
 export const listRoleMatrix = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async (): Promise<Record<string, string[]>> => {
+  .handler(async (): Promise<RoleMatrixPayload> => {
     try {
       const token = getTokenFromRequest();
-      const res = await apiGet<any>("/api/admin/roles", token);
-      return res?.data || res || {};
+      const res = await apiGet<unknown>("/api/admin/roles", token);
+      const payload = (res as { data?: unknown })?.data ?? res;
+      return normalizeRoleMatrix(payload);
     } catch (error) {
       console.warn("[listRoleMatrix] Warning:", error);
-      return {};
+      return { roles: [], permissions: [], matrix: {} };
     }
   });
 
@@ -409,11 +454,11 @@ export const removeAdminRole = updateUserRole;
 export const createUserBySuperAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) => data as Record<string, unknown>)
-  .handler(async ({ data }): Promise<{ success: boolean; error?: string }> => {
+  .handler(async ({ data }): Promise<{ success: boolean; error?: string; email?: string }> => {
     try {
       const token = getTokenFromRequest();
       await apiPost("/api/admin/users", data, token);
-      return { success: true };
+      return { success: true, email: typeof data.email === "string" ? data.email : undefined };
     } catch (error) {
       console.error("[createUserBySuperAdmin] Error:", error);
       return { success: false, error: error instanceof Error ? error.message : "Failed to create user" };
@@ -423,11 +468,11 @@ export const createUserBySuperAdmin = createServerFn({ method: "POST" })
 export const requestUserPasswordResetBySuperAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) => data as { email?: string; userId?: string })
-  .handler(async ({ data }): Promise<{ success: boolean; error?: string }> => {
+  .handler(async ({ data }): Promise<{ success: boolean; error?: string; message?: string }> => {
     try {
       const token = getTokenFromRequest();
       await apiPost("/api/admin/users/password-reset", data, token);
-      return { success: true };
+      return { success: true, message: "Password reset email dispatched." };
     } catch (error) {
       console.error("[requestUserPasswordResetBySuperAdmin] Error:", error);
       return { success: false, error: error instanceof Error ? error.message : "Failed to trigger password reset" };

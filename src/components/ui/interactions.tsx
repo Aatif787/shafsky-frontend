@@ -4,10 +4,11 @@ import React, {
   useEffect,
   type ReactNode,
   type MouseEvent,
-  type ElementType,
 } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
+
+const MotionSpan = motion.span as React.ComponentType<any>;
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * 1. MAGNETIC WRAPPER
@@ -198,7 +199,7 @@ export function RippleButton({
 interface AnimatedHeadingProps {
   text: string;
   className?: string;
-  as?: ElementType;
+  as?: "h1" | "h2" | "h3" | "h4" | "h5" | "p" | "div" | "span";
   delay?: number;
 }
 
@@ -236,7 +237,7 @@ export function AnimatedHeading({
 
   return (
     <Component className={className}>
-      <motion.span
+      <MotionSpan
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-50px" }}
@@ -244,11 +245,11 @@ export function AnimatedHeading({
         className="inline-flex flex-wrap gap-[0.25em]"
       >
         {words.map((word, idx) => (
-          <motion.span key={idx} variants={wordVariants} className="inline-block">
+          <MotionSpan key={idx} variants={wordVariants} className="inline-block">
             {word}
-          </motion.span>
+          </MotionSpan>
         ))}
-      </motion.span>
+      </MotionSpan>
     </Component>
   );
 }

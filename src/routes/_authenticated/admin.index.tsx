@@ -198,11 +198,11 @@ function DashboardView() {
             Recent Activity
           </h3>
           <div className="space-y-3.5 max-h-[280px] overflow-y-auto pr-1 text-xs">
-            {metrics.recentActivity.map((a) => (
+            {(metrics.recentActivity || []).map((a) => (
               <div key={a.id} className="border-l border-white/10 pl-3.5 space-y-1 py-0.5">
                 <div className="flex justify-between text-[10px] text-white/30" style={pageMono}>
                   <span>{a.action}</span>
-                  <span>{new Date(a.created_at).toLocaleTimeString()}</span>
+                  <span>{new Date(a.created_at || Date.now()).toLocaleTimeString()}</span>
                 </div>
                 <div className="text-white/80 truncate">
                   Entity ID:{" "}
@@ -212,7 +212,7 @@ function DashboardView() {
                 </div>
               </div>
             ))}
-            {metrics.recentActivity.length === 0 && (
+            {(metrics.recentActivity || []).length === 0 && (
               <div className="text-center text-white/30 py-10">No recent actions logged.</div>
             )}
           </div>
@@ -226,14 +226,14 @@ function DashboardView() {
         </h2>
         <div className="grid md:grid-cols-2 gap-4">
           {activeInquiries.slice(0, 4).map((inq) => (
-            <Panel key={inq.id} tone="dark" className="p-5 flex flex-col justify-between">
+            <Panel key={String(inq.id)} tone="dark" className="p-5 flex flex-col justify-between">
               <div>
                 <div
                   className="flex justify-between items-center text-[10px] text-white/40 uppercase tracking-wider"
                   style={pageMono}
                 >
                   <span>{inq.name}</span>
-                  <span>{new Date(inq.created_at).toLocaleDateString()}</span>
+                  <span>{new Date(inq.created_at || Date.now()).toLocaleDateString()}</span>
                 </div>
                 <div className="text-sm font-semibold text-white/90 mt-2">
                   {inq.subject || "No Subject"}

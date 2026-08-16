@@ -234,7 +234,7 @@ function NotificationsLogView() {
                       </div>
                     )}
                   </td>
-                  <td className="p-4 text-white/55">{new Date(log.created_at).toLocaleString()}</td>
+                  <td className="p-4 text-white/55">{new Date(log.created_at || Date.now()).toLocaleString()}</td>
                   <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
                       {log.booking_id && (

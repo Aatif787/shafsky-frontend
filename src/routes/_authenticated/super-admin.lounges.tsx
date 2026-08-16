@@ -44,7 +44,7 @@ function LoungesPage() {
     staleTime: 30000,
   });
 
-  const filtered = (lounges as Record<string, unknown>[]).filter((l) => {
+  const filtered = lounges.filter((l) => {
     const q = search.toLowerCase();
     return (
       String(l.name || "")
@@ -228,10 +228,10 @@ function LoungesPage() {
             key: "airport",
             label: "Airport",
             render: (row) => {
-              const airport = row.airport as Record<string, unknown> | null;
+              const airport = row.airport;
               return (
                 <span className="text-[#a78bfa]" style={saMono}>
-                  {airport ? String(airport.code) : "—"}
+                  {airport ? String(airport.code || "—") : "—"}
                 </span>
               );
             },

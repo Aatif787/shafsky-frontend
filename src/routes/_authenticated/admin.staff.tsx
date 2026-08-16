@@ -118,7 +118,7 @@ function EnterpriseUserManagementView() {
           role: addRole,
         },
       });
-      toast.success(`User ${res.email} successfully created!`);
+      toast.success(`User ${res.email || addEmail.trim()} successfully created!`);
       qc.invalidateQueries({ queryKey: ["enterprise-user-management"] });
 
       // Reset form
@@ -210,7 +210,7 @@ function EnterpriseUserManagementView() {
           email,
         },
       });
-      toast.success(res.message);
+      toast.success(res.message || "Password reset email dispatched.");
     } catch (err: any) {
       toast.error(err?.message || "Failed to request password reset.");
     }

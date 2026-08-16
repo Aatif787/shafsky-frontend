@@ -28,8 +28,8 @@ export interface OperationsQueueItem {
   booking_reference: string;
   airport_code: string;
   journey_type: string;
-  service_date: str;
-  service_time: str;
+  service_date: string;
+  service_time: string;
   status: string;
   assigned_staff_id?: string | null;
   assigned_staff_name?: string | null;

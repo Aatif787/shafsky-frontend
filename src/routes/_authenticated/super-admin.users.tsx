@@ -30,7 +30,7 @@ function UsersPage() {
     staleTime: 10000,
   });
 
-  const filtered = users.filter((u: Record<string, unknown>) => {
+  const filtered = users.filter((u) => {
     const q = search.toLowerCase();
     return (
       String(u.full_name || "")
@@ -173,7 +173,7 @@ function UsersPage() {
             ),
           },
         ]}
-        data={filtered as Record<string, unknown>[]}
+        data={filtered}
         isLoading={isLoading}
         emptyIcon={Users}
         emptyMessage="No users found"

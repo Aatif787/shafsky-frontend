@@ -42,14 +42,14 @@ export function ResponsiveAirportHero({
       {/* Tablet source (only active between 640px and 1023px) */}
       <source
         media="(min-width: 640px) and (max-width: 1023px)"
-        srcSet={webpTablet || fallbackImage}
+        srcSet={webpTablet || webpDesktop || fallbackImage}
       />
       {/* Desktop source (only active above 1024px) */}
       <source media="(min-width: 1024px)" srcSet={webpDesktop || fallbackImage} />
 
       {/* Default fallback img */}
       <img
-        src={fallbackImage}
+        src={webpDesktop || fallbackImage}
         alt={alt}
         className={className}
         loading={lazy ? "lazy" : "eager"}

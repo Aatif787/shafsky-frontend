@@ -6,15 +6,14 @@ import { AIRPORTS, getAirport } from "@/data/airports";
 import { TiltCard, FadeInView, StaggerContainer, StaggerItem } from "@/components/ui/interactions";
 
 export function GlobalPresenceMap() {
-  const [activeRegion, setActiveRegion] = useState<"all" | "north" | "west" | "south" | "east" | "intl">("all");
+  const [activeRegion, setActiveRegion] = useState<"all" | "north" | "west" | "south" | "east">("all");
   const [selectedHub, setSelectedHub] = useState<string>("DEL");
 
   const regionalHubs = {
-    north: ["DEL", "ATQ", "IXC", "JAI"],
-    west: ["BOM", "AMD", "GOI", "PNQ"],
-    south: ["BLR", "HYD", "MAA", "COK"],
-    east: ["CCU", "GAU", "BBI"],
-    intl: ["DXB", "LHR", "SIN"],
+    north: ["DEL", "ATQ", "IXC", "JAI", "LKO"],
+    west: ["BOM", "AMD", "GOI", "GOX"],
+    south: ["BLR", "HYD", "MAA", "COK", "TRV", "IXE", "VTZ"],
+    east: ["CCU", "GAU", "BBI", "IXR"],
   };
 
   const filteredAirports = AIRPORTS.filter((a) => {
@@ -37,12 +36,12 @@ export function GlobalPresenceMap() {
               className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-serif font-light text-white"
               style={{ fontFamily: "'Fraunces', serif" }}
             >
-              19+ Flagship Airport Hubs Covered
+              20 Flagship Airport Hubs Covered
             </h2>
           </div>
 
           <p className="text-xs sm:text-sm text-white/60 font-sans max-w-xl">
-            Round-the-clock airside host staging across all tier-1 international airports in India and strategic global aviation hubs.
+            Round-the-clock airside host staging across our Indian airport network.
           </p>
         </div>
       </FadeInView>
@@ -51,12 +50,11 @@ export function GlobalPresenceMap() {
       <FadeInView>
         <div className="flex flex-wrap items-center gap-2 mb-8 p-1.5 rounded-2xl bg-white/5 border border-white/10 w-fit">
           {[
-            { id: "all", label: "All Hubs (19+)" },
+            { id: "all", label: "All Hubs" },
             { id: "north", label: "North India" },
             { id: "west", label: "West India" },
             { id: "south", label: "South India" },
             { id: "east", label: "East India" },
-            { id: "intl", label: "Global Gateways" },
           ].map((tab) => (
             <button
               key={tab.id}

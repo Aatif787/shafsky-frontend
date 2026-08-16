@@ -31,11 +31,11 @@ export function TrustStats({
       highlight: "Established 2014",
     },
     {
-      number: "19+",
+      number: "20",
       label: "Flagship Hubs",
-      description: "24/7 dedicated airside host staging across major Indian international airports and global gateways.",
+      description: "24/7 dedicated airside host staging across major Indian airports.",
       icon: Building2,
-      highlight: "Global Network",
+      highlight: "India Network",
     },
     {
       number: "45,000+",

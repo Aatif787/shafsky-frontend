@@ -255,7 +255,7 @@ export function NoPackagesState({ onSelectDirectService }: { onSelectDirectServi
 /* ─────────────────────────────────────────────────────────────────────────────
  * 5. NEAREST AIRPORT SUGGESTION (FOR UNMATCHED LOOKUPS)
  * ─────────────────────────────────────────────────────────────────────────── */
-const MAJOR_HUB_CODES = ["DEL", "BOM", "BLR", "HYD", "MAA", "CCU", "DXB", "LHR"];
+const MAJOR_HUB_CODES = ["DEL", "BOM", "BLR", "HYD", "MAA", "CCU"];
 
 interface NearestAirportSuggestionProps {
   searchQuery: string;

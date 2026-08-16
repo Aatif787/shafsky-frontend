@@ -223,7 +223,13 @@ export function AirportShowcase() {
               >
                 <Link to="/airports/$code" params={{ code: airport.code }} className="block">
                   <div className="relative h-32 w-full rounded-xl overflow-hidden bg-slate-100">
-                    <img src={cardImage} alt={airport.city} className="h-full w-full object-cover" />
+                    <img
+                      src={cardImage}
+                      alt={airport.city}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                    />
                     <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-[#7c3aed] text-white font-mono text-[10px] font-bold">
                       {airport.code}
                     </span>

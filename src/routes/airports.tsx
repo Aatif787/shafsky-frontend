@@ -52,7 +52,7 @@ const GLOBAL_AIRPORTS_DATA: Array<{
     country: a.country,
     stateCountry: `${a.city}, ${a.country}`,
     servicesCount: reg?.availableServiceIds?.length || 4,
-    featured: reg?.featured || ["DEL", "BOM", "DXB", "HYD", "BLR", "SIN", "LHR", "JFK"].includes(a.code),
+    featured: reg?.featured || ["DEL", "BOM", "HYD", "BLR", "AMD", "MAA"].includes(a.code),
     cover: a.cover,
   };
 });

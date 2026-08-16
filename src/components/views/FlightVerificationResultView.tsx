@@ -276,7 +276,6 @@ export function FlightVerificationResultView({
     const cleanNum = editFlightNum.trim().toUpperCase();
     const carrier = cleanNum.slice(0, 2).toUpperCase();
     const updated: FlightData = {
-      ...activeFlightData,
       flightNum: cleanNum,
       carrier: {
         iata: carrier,
@@ -293,6 +292,12 @@ export function FlightVerificationResultView({
         name: `${editArrCode} Airport`,
         city: editArrCode,
       },
+      departure: activeFlightData?.departure ?? {},
+      arrival: activeFlightData?.arrival ?? {},
+      duration: activeFlightData?.duration,
+      status: activeFlightData?.status,
+      aircraft: activeFlightData?.aircraft,
+      eligibility: activeFlightData?.eligibility,
       isManual: true,
     };
     setActiveFlightData(updated);

@@ -280,12 +280,12 @@ function BookingDetailsView() {
     },
   });
 
-  const { data: history } = useQuery({
+  const { data: history = [] } = useQuery({
     queryKey: ["booking-history", id],
     queryFn: () => fetchHistory({ data: { id } }),
   });
 
-  const { data: audits } = useQuery({
+  const { data: audits = [] } = useQuery({
     queryKey: ["booking-audit", id],
     queryFn: () => fetchAudit({ data: { id } }),
   });
@@ -493,7 +493,7 @@ function BookingDetailsView() {
     }
   };
 
-  const parsedFlights = parseFlightSnapshots(booking.notes);
+  const parsedFlights = parseFlightSnapshots(booking.notes ?? null);
   const cleanNotes = booking?.notes
     ? booking.notes
         .replace(
@@ -1040,7 +1040,7 @@ function BookingDetailsView() {
                           className="flex justify-between items-center text-[10px] text-white/40"
                           style={pageMono}
                         >
-                          <span>{new Date(h.created_at).toLocaleString()}</span>
+                          <span>{new Date(h.created_at || Date.now()).toLocaleString()}</span>
                           <span>By: {h.actor_id || "System"}</span>
                         </div>
                         <div className="mt-1 text-white/80">
@@ -1077,7 +1077,7 @@ function BookingDetailsView() {
                         className="flex justify-between items-center text-[10px] text-white/40"
                         style={pageMono}
                       >
-                        <span>{new Date(n.created_at).toLocaleString()}</span>
+                        <span>{new Date(n.created_at || Date.now()).toLocaleString()}</span>
                         <span
                           className={`uppercase font-semibold tracking-wider ${
                             n.status === "failed"
@@ -1147,7 +1147,7 @@ function BookingDetailsView() {
                         className="flex justify-between items-center text-[10px] text-white/40"
                         style={pageMono}
                       >
-                        <span>{new Date(a.created_at).toLocaleString()}</span>
+                        <span>{new Date(a.created_at || Date.now()).toLocaleString()}</span>
                         <span>IP: {a.metadata?.ip || "System"}</span>
                       </div>
                       <div className="text-white/80">
@@ -1332,7 +1332,7 @@ function BookingDetailsView() {
                   if (!assignedToId) return "Unassigned";
                   const member = (staff ?? []).find((s) => s.id === assignedToId);
                   if (!member) return "Admin";
-                  return member.roles.includes("super_admin") ? "Super Admin" : "Admin";
+                  return member.roles?.includes("super_admin") ? "Super Admin" : "Admin";
                 })()}
               </div>
             </div>

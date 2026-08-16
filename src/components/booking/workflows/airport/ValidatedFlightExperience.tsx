@@ -416,7 +416,7 @@ export function ValidatedFlightExperience({
             destinationCode={destCode}
             departureMeta={[formattedDepTime, formattedDepDate].filter(Boolean).join(" • ") || null}
             arrivalMeta={[formattedArrTime, formattedArrDate].filter(Boolean).join(" • ") || null}
-            shouldReduceMotion={shouldReduceMotion}
+            shouldReduceMotion={Boolean(shouldReduceMotion)}
           />
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
