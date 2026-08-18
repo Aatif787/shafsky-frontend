@@ -19,11 +19,13 @@ export interface ApiSuccessPayload<T> {
 export type ApiResponse<T> = ApiSuccessPayload<T> | ApiErrorPayload;
 
 const getBaseUrl = (): string => {
-  if (typeof window !== "undefined") {
-    const envUrl = (import.meta as any).env?.VITE_FASTAPI_URL;
+  if (typeof import.meta !== "undefined" && (import.meta as any).env) {
+    const envUrl = (import.meta as any).env.VITE_BACKEND_API_URL || (import.meta as any).env.VITE_FASTAPI_URL;
     if (envUrl) return envUrl;
-    // Fallback to local dev API port if running locally
-    return "http://127.0.0.1:8003";
+  }
+  if (typeof process !== "undefined" && process.env) {
+    const envUrl = process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL || process.env.VITE_FASTAPI_URL;
+    if (envUrl) return envUrl;
   }
   return "http://127.0.0.1:8003";
 };
@@ -38,7 +40,9 @@ export async function apiFetch<T = unknown>(
   options: RequestInit & { timeoutMs?: number; token?: string } = {}
 ): Promise<ApiResponse<T>> {
   const { timeoutMs = 15000, token, headers = {}, ...fetchOptions } = options;
-  const url = path.startsWith("http") ? path : `${API_BASE_URL}${path.startsWith("/") ? "" : "/"}${path}`;
+  const primaryBase = getBaseUrl().replace(/\/+$/, "");
+  const relPath = path.startsWith("/") ? path : `/${path}`;
+  const url = path.startsWith("http") ? path : `${primaryBase}${relPath}`;
 
   const defaultHeaders: Record<string, string> = {
     "Content-Type": "application/json",

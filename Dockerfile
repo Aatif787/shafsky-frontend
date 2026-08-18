@@ -16,7 +16,11 @@ RUN pnpm build
 # Serve Stage
 FROM nginx:1.25-alpine AS runner
 
+# Copy built static assets
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom nginx config with security headers
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

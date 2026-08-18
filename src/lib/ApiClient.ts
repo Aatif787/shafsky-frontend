@@ -15,8 +15,6 @@ export const getApiBaseUrl = (): string => {
   return "http://127.0.0.1:8003";
 };
 
-const API_BASE_URL = getApiBaseUrl();
-
 export interface FlightDurationApiRequest {
   duration?: string;
   scheduledDuration?: string;
@@ -68,11 +66,10 @@ export class ApiClient {
 
   /**
    * Wrapper for making authenticated fetch requests to FastAPI backend.
-   * Features automatic fallback between ports 8001 and 8003 if backend runs on alternate port.
    */
   public static async fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
     const authHeaders = await ApiClient.getAuthHeaders();
-    const primaryBase = API_BASE_URL.replace(/\/+$/, "");
+    const primaryBase = getApiBaseUrl().replace(/\/+$/, "");
     const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
     const primaryUrl = endpoint.startsWith("http") ? endpoint : `${primaryBase}${path}`;
     
@@ -89,7 +86,7 @@ export class ApiClient {
     if (!signal) {
       controller = new AbortController();
       signal = controller.signal;
-      timeoutId = setTimeout(() => controller?.abort(), 15000);
+      timeoutId = setTimeout(() => controller?.abort(), 35000);
     }
 
     try {
@@ -98,8 +95,13 @@ export class ApiClient {
       return res;
     } catch (err: any) {
       if (timeoutId) clearTimeout(timeoutId);
+
       if (err?.name === "AbortError") {
-        console.warn(`[ApiClient] Request to ${primaryUrl} timed out after 15s.`);
+        console.warn(`[ApiClient] Request to ${primaryUrl} timed out after 35s.`);
+        const timeoutErr: any = new Error("REQUEST_TIMEOUT: The server took too long to respond. Please try again.");
+        timeoutErr.name = "TimeoutError";
+        timeoutErr.code = "REQUEST_TIMEOUT";
+        throw timeoutErr;
       }
       throw err;
     }

@@ -130,13 +130,14 @@ const FlightPathHero = React.memo(function FlightPathHero({
   arrivalMeta: string | null;
   shouldReduceMotion: boolean;
 }) {
+  const reactId = React.useId();
   const ids = useMemo(() => {
-    const base = Math.random().toString(36).slice(2);
+    const cleanId = reactId.replace(/:/g, "");
     return {
-      gradient: `flight-path-gradient-${base}`,
-      glow: `flight-path-glow-${base}`,
+      gradient: `flight-path-gradient-${cleanId}`,
+      glow: `flight-path-glow-${cleanId}`,
     };
-  }, []);
+  }, [reactId]);
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const pathRef = useRef<SVGPathElement | null>(null);

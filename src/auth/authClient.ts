@@ -21,7 +21,15 @@ const getBackendUrl = (): string => {
   return "http://127.0.0.1:8003";
 };
 
-const BACKEND_URL = getBackendUrl();
+async function authFetch(
+  path: string,
+  init: RequestInit
+): Promise<Response> {
+  const primaryBase = getBackendUrl().replace(/\/+$/, "");
+  const relPath = path.startsWith("/") ? path : `/${path}`;
+  const primaryUrl = `${primaryBase}${relPath}`;
+  return fetch(primaryUrl, init);
+}
 
 export interface AuthUser {
   id: string;
@@ -59,7 +67,7 @@ export async function apiAuthLogin(
   password: string,
 ): Promise<{ data?: AuthResponseData; error?: Error }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
+    const res = await authFetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -96,7 +104,7 @@ export async function apiAuthLogin(
  */
 export async function apiAuthRefresh(): Promise<{ data?: AuthResponseData; error?: Error }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/auth/refresh`, {
+    const res = await authFetch("/api/auth/refresh", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include", // Sends HttpOnly refreshToken cookie automatically
@@ -127,7 +135,7 @@ export async function apiAuthLogout(token?: string): Promise<{ success: boolean;
       headers.Authorization = `Bearer ${token}`;
     }
 
-    const res = await fetch(`${BACKEND_URL}/api/auth/logout`, {
+    const res = await authFetch("/api/auth/logout", {
       method: "POST",
       headers,
       credentials: "include",
@@ -150,7 +158,7 @@ export async function apiAuthMe(
   token: string,
 ): Promise<{ user?: AuthUser; profile?: any; error?: Error }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/auth/me`, {
+    const res = await authFetch("/api/auth/me", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -184,7 +192,7 @@ export async function apiAuthChangePassword(
   currentPassword?: string,
 ): Promise<{ success: boolean; message?: string; error?: Error }> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/auth/change-password`, {
+    const res = await authFetch("/api/auth/change-password", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

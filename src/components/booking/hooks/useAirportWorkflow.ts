@@ -59,87 +59,154 @@ export interface AirportWorkflowState {
 
 /**
  * Formats flight validation errors into user-friendly messages.
+ * Properly exposes actual backend error messages instead of masking them as generic "Backend unavailable".
  */
 export function formatFlightLookupError(error: unknown, status?: number): string {
   try {
-    const rawString =
-      typeof error === "string"
-        ? error
-        : typeof (error as any)?.message === "string"
-          ? (error as any).message
-          : typeof (error as any)?.code === "string"
-            ? (error as any).code
-            : typeof (error as any)?.error === "string"
-              ? (error as any).error
-              : JSON.stringify(error || "");
+    // Extract the best available error message from various possible formats
+    let rawString: string = "";
+    let errorCode: string = "";
+
+    if (typeof error === "string") {
+      rawString = error;
+    } else if (typeof (error as any)?.error === "string") {
+      rawString = (error as any).error;
+      if (typeof (error as any)?.code === "string") {
+        errorCode = (error as any).code;
+      }
+    } else if (typeof (error as any)?.message === "string") {
+      rawString = (error as any).message;
+      if (typeof (error as any)?.code === "string") {
+        errorCode = (error as any).code;
+      }
+    } else if (typeof (error as any)?.code === "string") {
+      errorCode = (error as any).code;
+      rawString = (error as any).code;
+    } else if (error && typeof error === "object") {
+      if ((error as any)?.code) {
+        errorCode = (error as any).code;
+      }
+      if (typeof (error as any)?.error?.message === "string") {
+        rawString = (error as any).error.message;
+      } else if (typeof (error as any)?.error?.error === "string") {
+        rawString = (error as any).error.error;
+      } else {
+        rawString = JSON.stringify(error || "");
+      }
+    }
 
     const upper = rawString.toUpperCase();
 
-    // 1. Backend unavailable / Network connection refusal / Failed to fetch
+    // ===== TIMEOUT ERRORS =====
     if (
-      upper.includes("FAILED TO FETCH") ||
-      upper.includes("ERR_CONNECTION_REFUSED") ||
-      upper.includes("NETWORKERROR") ||
-      upper.includes("BACKEND_UNAVAILABLE") ||
-      status === 502 ||
-      status === 503 ||
-      status === 504
+      upper.includes("TIMEOUT") ||
+      upper.includes("TIMED OUT") ||
+      upper.includes("REQUEST_TIMEOUT") ||
+      upper.includes("ABORT") ||
+      status === 408
     ) {
-      return "Backend service is currently unavailable. Please check backend server status or enter flight details manually.";
+      return `Flight validation request timed out. The server took too long to respond. Please try again or enter flight details manually.`;
     }
 
-    // 2. Advance notice / lead time restrictions
+    // ===== FLIGHT NOT FOUND / INVALID DATE (404) =====
     if (
-      upper.includes("ADVANCE_NOTICE") ||
-      upper.includes("6_HOUR") ||
-      upper.includes("MINIMUM_LEAD_TIME")
+      status === 404 ||
+      errorCode === "FLIGHT_NOT_FOUND" ||
+      upper.includes("FLIGHT_NOT_FOUND") ||
+      upper.includes("NO SCHEDULE") ||
+      upper.includes("COULD NOT BE FOUND") ||
+      upper.includes("NOT FOUND")
     ) {
-      return "This flight departs too soon for online concierge booking. Please contact our 24/7 VIP Command Desk for instant manual dispatch.";
+      if (rawString.length < 200 && rawString.length > 5 && !rawString.startsWith("{") && !rawString.includes("FLIGHT_NOT_FOUND")) {
+        return rawString;
+      }
+      return `No flight schedule found for this flight number on the selected date. Please check the flight number and travel date, or enter flight details manually.`;
     }
 
-    // 3. Invalid flight number or format
+    // ===== INVALID FLIGHT NUMBER / FORMAT (400 / 422) =====
     if (
       upper.includes("INVALID_FLIGHT") ||
       upper.includes("INVALID FORMAT") ||
-      upper.includes("INVALID_FLIGHT_NUMBER")
+      upper.includes("INVALID_FLIGHT_NUMBER") ||
+      upper.includes("MALFORMED") ||
+      errorCode === "INVALID_FORMAT" ||
+      errorCode === "INVALID_DATE"
     ) {
-      return "The flight number format is invalid. Please check the airline code and flight number (e.g., AI302, EK504).";
+      if (rawString.length < 200 && rawString.length > 5 && !rawString.startsWith("{")) {
+        return rawString;
+      }
+      return `The flight number format is invalid. Please check the airline code and flight number format (e.g., AI302, EK504, BA127).`;
     }
 
-    // 4. Flight schedule not found
+    // ===== RATE LIMITING =====
     if (
-      upper.includes("FLIGHT_NOT_FOUND") ||
-      upper.includes("NOT_FOUND") ||
-      upper.includes("NO SCHEDULE") ||
-      upper.includes("COULD NOT BE FOUND") ||
-      status === 404
+      upper.includes("RATE_LIMIT") ||
+      upper.includes("RATE LIMIT") ||
+      upper.includes("TOO_MANY_REQUESTS") ||
+      status === 429
     ) {
-      return "No flight schedule was found for the selected flight number and travel date. Try another date or enter flight details manually.";
+      return `Too many requests. Please wait a moment and try again, or enter flight details manually.`;
     }
 
-    // 5. Provider failure
+    // ===== ADVANCE NOTICE / BOOKING WINDOW RESTRICTIONS =====
+    if (
+      upper.includes("ADVANCE_NOTICE") ||
+      upper.includes("6_HOUR") ||
+      upper.includes("MINIMUM_LEAD_TIME") ||
+      upper.includes("BOOKING_WINDOW")
+    ) {
+      return `This flight departs too soon for online service booking. Please contact our 24/7 VIP Command Desk at +1-800-VIP-DESK for instant manual dispatch.`;
+    }
+
+    // ===== FLIGHT DATA PROVIDER ERRORS (External API failures) =====
     if (
       upper.includes("PROVIDER_ERROR") ||
       upper.includes("AVIATION_EDGE") ||
       upper.includes("PROVIDER_FAILURE") ||
-      status === 500
+      upper.includes("AERODATABOX") ||
+      errorCode === "SERVICE_ERROR" ||
+      errorCode === "PROVIDER_ERROR"
     ) {
-      return "Flight data provider service temporary error. Please verify your flight details or proceed with manual entry.";
+      return `Flight data provider temporarily unavailable. Our data service is experiencing issues. Please try again or enter flight details manually.`;
     }
 
-    // 6. Validation error
-    if (status === 400 || status === 422 || upper.includes("VALIDATION")) {
-      return rawString.length < 150 && rawString.length > 5 && !rawString.startsWith("{")
-        ? rawString
-        : "Flight validation failed. Please check your flight number and date or enter details manually.";
+    // ===== VALIDATION ERRORS (400 / 422) =====
+    if (status === 400 || status === 422) {
+      if (rawString.length < 200 && rawString.length > 5 && !rawString.startsWith("{")) {
+        return rawString;
+      }
+      return `Flight validation failed. Please check your flight number, date, and airport selection or enter flight details manually.`;
     }
 
-    // 7. Unexpected error fallback
-    return rawString.length < 150 && rawString.length > 5 && !rawString.startsWith("{")
-      ? rawString
-      : "Unable to validate flight details. Please verify your flight information or enter flight details manually.";
+    // ===== NETWORK-LEVEL ERRORS (Actual connection failures) =====
+    if (
+      upper.includes("FAILED TO FETCH") ||
+      upper.includes("ERR_CONNECTION_REFUSED") ||
+      upper.includes("NETWORKERROR") ||
+      upper.includes("ECONNREFUSED") ||
+      status === 502 ||
+      status === 503 ||
+      status === 504
+    ) {
+      return `Backend service is currently unavailable. The flight validation server cannot be reached. Please check backend server status or enter flight details manually.`;
+    }
+
+    // ===== SERVER ERRORS (500) =====
+    if (status === 500) {
+      if (rawString.length < 200 && rawString.length > 5 && !rawString.startsWith("{")) {
+        return rawString;
+      }
+      return `Server error during flight validation. Please try again in a moment or enter flight details manually.`;
+    }
+
+    // ===== UNEXPECTED / FALLBACK =====
+    if (rawString.length < 200 && rawString.length > 5 && !rawString.startsWith("{")) {
+      return rawString;
+    }
+
+    return `Unable to validate flight details. Please verify your flight information or enter flight details manually.`;
   } catch {
-    return "Unable to validate flight details. Please verify your flight information or enter flight details manually.";
+    return `Unable to process flight validation response. Please enter flight details manually.`;
   }
 }
 

@@ -18,12 +18,20 @@ const getBackendUrl = (): string => {
   return "http://127.0.0.1:8003";
 };
 
-const BACKEND_URL = getBackendUrl();
-
 export interface FastApiResponse<T = any> {
   success: boolean;
   data?: T;
   error?: string;
+}
+
+async function fetchBackend(
+  path: string,
+  init: RequestInit
+): Promise<Response> {
+  const primaryBase = getBackendUrl().replace(/\/+$/, "");
+  const relPath = path.startsWith("/") ? path : `/${path}`;
+  const primaryUrl = path.startsWith("http") ? path : `${primaryBase}${relPath}`;
+  return fetch(primaryUrl, init);
 }
 
 /**
@@ -34,8 +42,7 @@ export async function apiGet<T = any>(path: string, token?: string): Promise<T> 
   const bearer = token || getAccessToken();
   if (bearer) headers.Authorization = `Bearer ${bearer}`;
 
-  const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
-  const res = await fetch(url, { method: "GET", headers, credentials: "include" });
+  const res = await fetchBackend(path, { method: "GET", headers, credentials: "include" });
 
   if (!res.ok) {
     const body = await res.text();
@@ -61,8 +68,7 @@ export async function apiPost<T = any>(
   const bearer = token || getAccessToken();
   if (bearer) headers.Authorization = `Bearer ${bearer}`;
 
-  const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
-  const res = await fetch(url, {
+  const res = await fetchBackend(path, {
     method: "POST",
     headers,
     credentials: "include",
@@ -93,8 +99,7 @@ export async function apiPatch<T = any>(
   const bearer = token || getAccessToken();
   if (bearer) headers.Authorization = `Bearer ${bearer}`;
 
-  const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
-  const res = await fetch(url, {
+  const res = await fetchBackend(path, {
     method: "PATCH",
     headers,
     credentials: "include",
@@ -125,8 +130,7 @@ export async function apiDelete<T = any>(
   const bearer = token || getAccessToken();
   if (bearer) headers.Authorization = `Bearer ${bearer}`;
 
-  const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
-  const res = await fetch(url, {
+  const res = await fetchBackend(path, {
     method: "DELETE",
     headers,
     credentials: "include",

@@ -6,12 +6,24 @@
  * forwards the Supabase JWT from the incoming request to FastAPI.
  */
 
-const BACKEND_URL = process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL || "http://127.0.0.1:8003";
+const getBackendUrl = (): string => {
+  return process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL || "http://127.0.0.1:8003";
+};
 
 export interface FastApiResponse<T = any> {
   success: boolean;
   data?: T;
   error?: string;
+}
+
+async function serverFetch(
+  path: string,
+  init: RequestInit
+): Promise<Response> {
+  const primaryBase = getBackendUrl().replace(/\/+$/, "");
+  const relPath = path.startsWith("/") ? path : `/${path}`;
+  const primaryUrl = path.startsWith("http") ? path : `${primaryBase}${relPath}`;
+  return fetch(primaryUrl, init);
 }
 
 /**
@@ -24,8 +36,7 @@ export async function apiGet<T = any>(
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
-  const res = await fetch(url, { method: "GET", headers });
+  const res = await serverFetch(path, { method: "GET", headers });
 
   if (!res.ok) {
     const body = await res.text();
@@ -50,8 +61,7 @@ export async function apiPost<T = any>(
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
-  const res = await fetch(url, {
+  const res = await serverFetch(path, {
     method: "POST",
     headers,
     body: JSON.stringify(body),
@@ -80,8 +90,7 @@ export async function apiPatch<T = any>(
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
-  const res = await fetch(url, {
+  const res = await serverFetch(path, {
     method: "PATCH",
     headers,
     body: JSON.stringify(body),
@@ -110,8 +119,7 @@ export async function apiDelete<T = any>(
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const url = path.startsWith("http") ? path : `${BACKEND_URL}${path}`;
-  const res = await fetch(url, {
+  const res = await serverFetch(path, {
     method: "DELETE",
     headers,
     body: body ? JSON.stringify(body) : undefined,

@@ -7,6 +7,7 @@ import { nitro } from "nitro/vite";
 import fs from "node:fs";
 import path from "node:path";
 
+import { reticle } from '@reticlehq/vite-plugin';
 function fontVerificationPlugin() {
   return {
     name: "font-verification-plugin",
@@ -57,7 +58,7 @@ export default defineConfig({
       "tailwind-merge",
     ],
   },
-  plugins: [
+  plugins: [reticle(),
     fontVerificationPlugin(),
     tsconfigPaths(),
     tailwindcss(),
