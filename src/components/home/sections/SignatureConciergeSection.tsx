@@ -8,7 +8,7 @@ export function SignatureConciergeSection() {
   const highlights = [
     {
       title: "Arrival Concierge",
-      desc: "Aerobridge greeting with personalized placard, priority passport clearance & luggage retrieval.",
+      desc: "Aerobridge greeting with placard, priority passport clearance & luggage retrieval.",
       icon: PlaneLanding,
       tag: "Arrival",
     },

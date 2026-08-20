@@ -42,7 +42,7 @@ const ROUTE_FLOW: NavigationStep[] = [
     description: "Air Cargo & Live Animal AVI",
   },
   {
-    title: "Medical Assistance",
+    title: "Medical Assist",
     category: "Emergency Medevac",
     href: "/solutions/medical",
     description: "24/7 ICU Air & Train Ambulance",

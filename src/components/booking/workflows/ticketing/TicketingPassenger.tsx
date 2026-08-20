@@ -609,19 +609,19 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
         })}
       </div>
 
-      {/* 3. VIP Assistance & Special Needs Grid Cards */}
+      {/* 3. VIP Assist & Special Needs Grid Cards */}
       <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4">
         <span className="text-xs font-mono font-bold text-slate-800 uppercase tracking-wider block">
-          Special Assistance & Accessibility Cards
+          Special Assist & Accessibility Cards
         </span>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {[
-            { id: "wheelchair", label: "Wheelchair Assistance" },
+            { id: "wheelchair", label: "Wheelchair Assist" },
             { id: "medical", label: "Medical / Oxygen" },
             { id: "pregnant", label: "Pregnant Traveller" },
-            { id: "visual", label: "Visual Assistance" },
-            { id: "hearing", label: "Hearing Assistance" },
+            { id: "visual", label: "Visual Assist" },
+            { id: "hearing", label: "Hearing Assist" },
             { id: "minor", label: "Unaccompanied Minor" },
           ].map((card) => {
             const currentCards = data.specialAssistanceCards || {};

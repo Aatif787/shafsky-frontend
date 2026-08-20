@@ -33,7 +33,7 @@ const SERVICE_IMAGES: Record<string, string> = {
   concierge: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1920&q=95",
 };
 
-export function DestinationBody({ a }: { a: Airport }) {
+export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearch?: Record<string, unknown> }) {
   const airportServices = getAirportServices(a.code);
 
   const quickInfoChips = [
@@ -44,7 +44,7 @@ export function DestinationBody({ a }: { a: Airport }) {
       ? { label: "Available Services", value: `${airportServices.length} Services`, Icon: ConciergeBell }
       : null,
     { label: "24/7 Support", value: "24/7 Operations", Icon: Clock },
-    { label: "VIP Assistance", value: "Airside Escort", Icon: ShieldCheck },
+    { label: "VIP Assist", value: "Airside Escort", Icon: ShieldCheck },
   ].filter(Boolean) as Array<{ label: string; value: string; Icon: any }>;
 
   return (
@@ -116,7 +116,7 @@ export function DestinationBody({ a }: { a: Airport }) {
 
         {/* Dynamic Master Airport Package Comparison */}
         <div className="mt-10">
-          <MeetGreetPackageComparison airportCode={a.code} />
+          <MeetGreetPackageComparison airportCode={a.code} bookingSearch={bookingSearch} />
         </div>
       </section>
 

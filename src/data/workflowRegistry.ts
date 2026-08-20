@@ -79,7 +79,7 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
       {
         id: "step_package_select",
         name: "Tier Packages",
-        title: "Select Concierge Assistance Tier",
+        title: "Select Concierge Assist Tier",
         subtitle: "Dynamic tier availability resolved for your route",
         stepType: "package_selection",
         fields: [],

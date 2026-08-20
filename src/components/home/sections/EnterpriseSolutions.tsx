@@ -254,7 +254,7 @@ export function EnterpriseSolutions() {
       services: [
         { name: "Air Ticketing", icon: Ticket },
         { name: "Hotel Booking", icon: Building2 },
-        { name: "Visa Assistance", icon: Sparkles },
+        { name: "Visa Assist", icon: Sparkles },
         { name: "On-board Meals", icon: Award },
       ],
     },
@@ -269,13 +269,13 @@ export function EnterpriseSolutions() {
       iconColor: "#7c3aed",
       ctaLink: "/solutions/cargo",
       services: [
-        { name: "Cargo Assistance", icon: Package },
+        { name: "Cargo Assist", icon: Package },
         { name: "AVI (Pet Transport)", icon: HeartPulse },
       ],
     },
     {
       id: "medical",
-      title: "Medical Assistance",
+      title: "Medical Assist",
       subtitle: "24/7 ICU-equipped air ambulance medevac, specialized rail ambulance & dignified repatriation.",
       badge: "24/7 Critical",
       Icon: HeartPulse,

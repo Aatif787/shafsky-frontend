@@ -22,7 +22,7 @@ export function AirportHighlights({ a }: AirportHighlightsProps) {
     {
       step: "01",
       title: "Aerobridge / Curbside Placard Welcome",
-      desc: "A uniformed Guest Relations Officer meets you immediately upon aircraft exit or terminal drop-off holding a discrete personalized placard.",
+      desc: "A uniformed Guest Relations Officer meets you immediately upon aircraft exit or terminal drop-off holding a discrete placard.",
       icon: Crown,
       badge: "Flagship Escort",
     },

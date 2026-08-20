@@ -18,6 +18,8 @@ import dekGauAir from "@/assets/airports/gau/Dek-Gau-air.jpg";
 import mobGauAir from "@/assets/airports/gau/Mob-Gau-air.jpg";
 import dekVtzAir from "@/assets/airports/vtz/Dek-Vtz-air.jpg";
 import mobVtzAir from "@/assets/airports/vtz/Mob-Vtz-air.jpg";
+import dekIxeAir from "@/assets/airports/ixe/Dek-Ixe-air.jpg";
+import mobIxeAir from "@/assets/airports/ixe/Mob-Ixe-air.jpg";
 
 export interface MeetGreetPackage {
   id: string;
@@ -90,33 +92,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: true,
     availableServiceIds: ["meet_greet", "lounge", "fast_track", "transport"],
-    meetGreetPackages: [
-      {
-        id: "silver",
-        title: "Silver Escort",
-        tagline: "Standard Aerobridge Escort & Buggy Transit",
-        price: "₹4,500 / pax",
-        duration: "Up to 2 Hours",
-        features: ["Aerobridge exit welcome with placard", "Dedicated porter for up to 3 bags", "Priority queue assistance"],
-      },
-      {
-        id: "gold",
-        title: "Gold VIP Sanctuary",
-        tagline: "Fast Track Immigration & Lounge Access",
-        price: "₹8,500 / pax",
-        isRecommended: true,
-        duration: "Up to 4 Hours",
-        features: ["Personal Guest Relations Officer", "Fast-track security & immigration bypass", "3-Hour VIP Lounge Sanctuary pass", "Unlimited baggage porter support"],
-      },
-      {
-        id: "elite",
-        title: "Elite Presidential",
-        tagline: "Airside Maybach Tarmac & Diplomatic Gate",
-        price: "₹18,000 / pax",
-        duration: "Full Transit",
-        features: ["Direct tarmac limousine transfer", "Private VIP lounge suite suite reservation", "Diplomatic customs clearance desk", "Curbside executive chauffeur handoff"],
-      },
-    ],
+    meetGreetPackages: [],
     faqs: [
       ["Where does the Guest Relations Officer meet me at Delhi Airport?", "Your dedicated escort officer meets you immediately upon aircraft exit at the aerobridge entrance holding a discrete name placard."],
       ["Is fast-track available for both international arrivals and departures at Delhi Airport?", "Yes, diplomatic fast-track immigration and security lane clearance is available across both arrival and departure flows at Delhi Airport."],
@@ -162,10 +138,10 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
         duration: "Full Escort",
         features: [
           "Welcome at the Curbside Area / End of Aerobridge",
-          "Dedicated Staff with Personalized Placard",
+          "Dedicated Staff with Placard",
           "Dedicated Porter Service",
-          "Wheelchair Assistance (through the airline)",
-          "Assistance through Separate Entry Gate / Baggage Belt",
+          "Wheelchair Assist (through the airline)",
+          "Assist through Separate Entry Gate / Baggage Belt",
           "Buggy Service (Sharing Basis, subject to availability)",
           "Escort to Boarding Gate / Car Parking Area",
         ],
@@ -178,10 +154,10 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
         duration: "Full Escort",
         features: [
           "Welcome at the Curbside Area / End of Aerobridge",
-          "Dedicated Staff with Personalized Placard",
+          "Dedicated Staff with Placard",
           "Dedicated Porter Service",
-          "Wheelchair Assistance (through the airline)",
-          "Assistance through Separate Entry Gate / Baggage Belt",
+          "Wheelchair Assist (through the airline)",
+          "Assist through Separate Entry Gate / Baggage Belt",
           "Lounge Service Facility",
           "Buggy Service to Boarding Gate (subject to availability)",
           "Escort to Boarding Gate / Car Parking Area",
@@ -195,10 +171,10 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
         duration: "Full Escort",
         features: [
           "Welcome at the Curbside Area / End of Aerobridge",
-          "Dedicated Staff with Personalized Placard",
+          "Dedicated Staff with Placard",
           "Dedicated Porter Service",
-          "Wheelchair Assistance (through the airline)",
-          "Assistance through Separate Entry Gate / Baggage Belt",
+          "Wheelchair Assist (through the airline)",
+          "Assist through Separate Entry Gate / Baggage Belt",
           "Lounge Service Facility",
           "Buggy Service to Boarding Gate (subject to availability)",
           "Escort to Boarding Gate / Car Parking Area",
@@ -244,15 +220,15 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
       {
         id: "platinum",
         title: "Platinum Service",
-        tagline: "Premium airport arrival assistance with baggage support and personalized meet & greet.",
+        tagline: "Premium airport arrival assist with baggage support and meet & greet.",
         price: "₹2,420 / pax",
         isRecommended: false,
         duration: "Arrival Escort",
         features: [
           "Welcome at the Aerobridge",
-          "Dedicated Staff with Personalized Placard",
-          "Baggage Assistance (Up to 3 Pieces)",
-          "Assistance at the Baggage Belt Area",
+          "Dedicated Staff with Placard",
+          "Baggage Assist (Up to 3 Pieces)",
+          "Assist at the Baggage Belt Area",
           "Coordination with the Receiving Party",
           "Escort to the Car Parking Area",
         ],
@@ -260,15 +236,15 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
       {
         id: "elite",
         title: "Elite Service",
-        tagline: "Premium personalized airport arrival assistance with dedicated baggage support and complete arrival coordination.",
+        tagline: "Premium airport arrival assist with dedicated baggage support and complete arrival coordination.",
         price: "₹4,400 / pax",
         isRecommended: true,
         duration: "Full Arrival Escort",
         features: [
           "Welcome at the Aerobridge",
-          "Dedicated Staff with Personalized Placard",
-          "Baggage Assistance",
-          "Assistance at the Baggage Belt Area",
+          "Dedicated Staff with Placard",
+          "Baggage Assist",
+          "Assist at the Baggage Belt Area",
           "Coordination with the Receiving Party",
           "Escort to the Car Parking Area",
         ],
@@ -390,7 +366,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     featured: false,
     availableServiceIds: ["meet_greet", "transport"],
     faqs: [
-      ["Is Meet & Greet available at Lucknow Airport?", "Yes, personalized aerobridge escort is active at Lucknow Airport."],
+      ["Is Meet & Greet available at Lucknow Airport?", "Yes, dedicated aerobridge escort is active at Lucknow Airport."],
     ],
     relatedAirportCodes: ["DEL", "BOM"],
     seo: {
@@ -460,7 +436,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     featured: false,
     availableServiceIds: ["meet_greet", "transport"],
     faqs: [
-      ["Where does the officer meet me at Chennai Airport?", "Your escort officer greets you at the aerobridge gate exit with a personalized name placard."],
+      ["Where does the officer meet me at Chennai Airport?", "Your escort officer greets you at the aerobridge gate exit with a name placard."],
     ],
     relatedAirportCodes: ["BLR", "HYD", "DEL", "BOM"],
     seo: {
@@ -503,9 +479,9 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
         features: [
           "Welcome at Departure Curbside / Aerobridge",
           "Dedicated Porter Service",
-          "Wheelchair Assistance (through the airline)",
-          "Assistance at Departure Area / Baggage Belt",
-          "Assistance with Baggage Check-in",
+          "Wheelchair Assist (through the airline)",
+          "Assist at Departure Area / Baggage Belt",
+          "Assist with Baggage Check-in",
           "Escort to Boarding Gate / Car Parking Area",
         ],
       },
@@ -518,10 +494,10 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
         features: [
           "Welcome at Departure Curbside",
           "Dedicated Porter Service",
-          "Wheelchair Assistance (through the airline)",
-          "Assistance at Departure Area",
-          "Assistance with Baggage Check-in",
-          "Assistance inside Security Hold Area (SHA)",
+          "Wheelchair Assist (through the airline)",
+          "Assist at Departure Area",
+          "Assist with Baggage Check-in",
+          "Assist inside Security Hold Area (SHA)",
           "Lounge Service Facility",
           "Escort to Boarding Gate",
         ],
@@ -572,9 +548,9 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
         features: [
           "Welcome at Curbside / Aerobridge",
           "Dedicated Porter Service",
-          "Wheelchair Assistance (through the airline)",
-          "Assistance at Departure Area / Baggage Belt",
-          "Assistance with Baggage Check-in",
+          "Wheelchair Assist (through the airline)",
+          "Assist at Departure Area / Baggage Belt",
+          "Assist with Baggage Check-in",
           "Escort to Boarding Gate / Car Parking Area",
         ],
       },
@@ -587,9 +563,9 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
         features: [
           "Welcome at Curbside / Aerobridge",
           "Dedicated Porter Service",
-          "Wheelchair Assistance (through the airline)",
-          "Assistance through Separate Entry Gate",
-          "Assistance at Baggage Belt Area",
+          "Wheelchair Assist (through the airline)",
+          "Assist through Separate Entry Gate",
+          "Assist at Baggage Belt Area",
           "Lounge Service Facility (Departure)",
           "Escort to Boarding Gate / Car Parking Area",
         ],
@@ -640,9 +616,9 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
         features: [
           "Welcome Guest from Curbside / Aerobridge Area",
           "Dedicated Porter Service",
-          "Wheelchair Assistance (Through Airlines)",
-          "Assistance at Separate Entry Gate / Immigration",
-          "Assistance in Security Hold / Baggage Area",
+          "Wheelchair Assist (Through Airlines)",
+          "Assist at Separate Entry Gate / Immigration",
+          "Assist in Security Hold / Baggage Area",
           "Escort to Boarding Gate / Parking Area",
         ],
       },
@@ -769,7 +745,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: false,
     availableServiceIds: ["meet_greet", "transport"],
-    faqs: [["Where does the officer meet me at Chandigarh Airport?", "Your officer greets you at the arrival exit or departure curbside with a personalized placard."]],
+    faqs: [["Where does the officer meet me at Chandigarh Airport?", "Your officer greets you at the arrival exit or departure curbside with a placard."]],
     relatedAirportCodes: ["DEL", "ATQ"],
     seo: {
       title: "Chandigarh Airport Concierge (IXC) — Shafsky Aviation",
@@ -820,9 +796,10 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     timezone: "Asia/Kolkata",
     heroTitle: "Mangaluru Airport Concierge",
     heroSubtitle: "Mangaluru International Airport (IXE) — VIP Escort",
-    shortDescription: "Coastal Karnataka hub. Personalized aerobridge welcome, baggage assistance, and executive car handoff.",
-    coverImage: dekDelAir,
-    galleryImages: [dekDelAir],
+    shortDescription: "Coastal Karnataka hub. Aerobridge welcome, baggage assist, and executive car handoff.",
+    coverImage: dekIxeAir,
+    mobCoverImage: mobIxeAir,
+    galleryImages: [dekIxeAir, mobIxeAir],
     coordinates: { lat: 12.9613, lng: 74.8901 },
     airportType: "International Hub",
     terminals: "Integrated Terminal",
@@ -830,7 +807,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: false,
     availableServiceIds: ["meet_greet", "transport"],
-    faqs: [["Is Meet & Greet available at Mangaluru Airport?", "Yes, personalized VIP escort is active at Mangaluru Airport (IXE)."]],
+    faqs: [["Is Meet & Greet available at Mangaluru Airport?", "Yes, dedicated VIP escort is active at Mangaluru Airport (IXE)."]],
     relatedAirportCodes: ["BLR", "BOM"],
     seo: {
       title: "Mangaluru Airport Concierge (IXE) — Shafsky Aviation",
@@ -1012,11 +989,7 @@ export function getAirportBusinessPrice(
 
   if (mode === "package") {
     const pkgId = (serviceOrPackageId || "").toLowerCase();
-    const pkgs = registryEntry?.meetGreetPackages || [
-      { id: "silver", title: "Silver Concierge", price: "₹4,500 / pax", tagline: "", duration: "", features: [] },
-      { id: "gold", title: "Gold VIP Sanctuary", price: "₹8,500 / pax", tagline: "", duration: "", features: [] },
-      { id: "elite", title: "Elite Presidential", price: "₹18,000 / pax", tagline: "", duration: "", features: [] },
-    ];
+    const pkgs = registryEntry?.meetGreetPackages || [];
 
     const match = pkgs.find(
       (p) =>

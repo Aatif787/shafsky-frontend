@@ -10,6 +10,20 @@ interface MeetGreetPackageComparisonProps {
   selectedPackageId?: string;
   onSelectPackage?: (pkg: any) => void;
   showBookButton?: boolean;
+  bookingSearch?: Record<string, unknown>;
+}
+
+function journeyFromSearch(search?: Record<string, unknown>): "ARRIVAL" | "DEPARTURE" | "TRANSIT" {
+  const raw = String(search?.direction || search?.journey_type || "").toUpperCase();
+  if (raw === "DEPARTURE" || raw === "DEP") return "DEPARTURE";
+  if (raw === "TRANSIT" || raw === "CONNECTION") return "TRANSIT";
+  return "ARRIVAL";
+}
+
+function flightFromSearch(search?: Record<string, unknown>): "DOMESTIC" | "INTERNATIONAL" {
+  const raw = String(search?.travel_type || search?.flight_type || "").toUpperCase();
+  if (raw === "INTERNATIONAL" || raw === "INTL" || raw === "INT") return "INTERNATIONAL";
+  return "DOMESTIC";
 }
 
 export function MeetGreetPackageComparison({
@@ -17,20 +31,32 @@ export function MeetGreetPackageComparison({
   selectedPackageId,
   onSelectPackage,
   showBookButton = true,
+  bookingSearch,
 }: MeetGreetPackageComparisonProps) {
   const airportEntry = getAirportRegistryEntry(airportCode);
   const cityName = airportEntry?.city || airportCode;
 
-  // Hierarchy filter state: Flight Type, Journey Type, Transit Type & Terminal (DEL only)
-  const [flightType, setFlightType] = useState<"DOMESTIC" | "INTERNATIONAL">("DOMESTIC");
-  const [journeyType, setJourneyType] = useState<"ARRIVAL" | "DEPARTURE" | "TRANSIT">("ARRIVAL");
+  const [flightType, setFlightType] = useState<"DOMESTIC" | "INTERNATIONAL">(
+    () => flightFromSearch(bookingSearch)
+  );
+  const [journeyType, setJourneyType] = useState<"ARRIVAL" | "DEPARTURE" | "TRANSIT">(
+    () => journeyFromSearch(bookingSearch)
+  );
   const [transitType, setTransitType] = useState<string>("DOMESTIC_DOMESTIC");
   const [terminal, setTerminal] = useState<string>("Terminal 1 & 2");
+
+  useEffect(() => {
+    if (!bookingSearch?.from_hero && !bookingSearch?.direction) return;
+    setJourneyType(journeyFromSearch(bookingSearch));
+    setFlightType(flightFromSearch(bookingSearch));
+  }, [bookingSearch?.from_hero, bookingSearch?.direction, bookingSearch?.travel_type, bookingSearch?.flight_type]);
 
   // Dynamic packages loaded from backend DB API
   const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [expandedPackages, setExpandedPackages] = useState<Record<string, boolean>>({});
+
+
 
   useEffect(() => {
     let isMounted = true;
@@ -61,18 +87,18 @@ export function MeetGreetPackageComparison({
                 if (slug === "platinum") {
                   itemFeatures = [
                     "Welcome at the Aerobridge",
-                    "Dedicated Staff with Personalized Placard",
-                    "Baggage Assistance (Up to 3 Pieces)",
-                    "Assistance at the Baggage Belt Area",
+                    "Dedicated Staff with Placard",
+                    "Baggage Assist (Up to 3 Pieces)",
+                    "Assist at the Baggage Belt Area",
                     "Coordination with the Receiving Party",
                     "Escort to the Car Parking Area",
                   ];
                 } else if (slug === "elite") {
                   itemFeatures = [
                     "Welcome at the Aerobridge",
-                    "Dedicated Staff with Personalized Placard",
-                    "Baggage Assistance",
-                    "Assistance at the Baggage Belt Area",
+                    "Dedicated Staff with Placard",
+                    "Baggage Assist",
+                    "Assist at the Baggage Belt Area",
                     "Coordination with the Receiving Party",
                     "Escort to the Car Parking Area",
                   ];
@@ -84,54 +110,91 @@ export function MeetGreetPackageComparison({
                 title = titleMap[item.flight_type];
               }
 
+              const cleanPackageText = (txt: string) =>
+                typeof txt === "string"
+                  ? txt
+                      .replace(/\bAssistance\b/g, "Assist")
+                      .replace(/\bassistance\b/g, "assist")
+                      .replace(/\bPersonalized Placard\b/gi, "Placard")
+                      .replace(/\bPersonalized Name Badge\b/gi, "Name Badge")
+                      .replace(/\bPersonalized Name Placard\b/gi, "Name Placard")
+                      .replace(/\bPersonalized\s+/gi, "")
+                      .replace(/\s+personalized\b/gi, "")
+                      .replace(/\bpersonalized\b/gi, "")
+                  : txt;
+
               return {
                 id: slug,
-                title: title,
-                desc: item.short_description || item.service?.description || "VIP Airport Service Package.",
+                title: cleanPackageText(title),
+                desc: cleanPackageText(item.short_description || item.service?.description || "VIP Airport Service Package."),
                 price: `${item.currency === "USD" ? "$" : "₹"}${item.price?.toLocaleString()}`,
                 rawPrice: item.price,
-                features: itemFeatures,
-                additionalBenefits: item.additional_benefits || [],
+                features: itemFeatures.map(cleanPackageText),
+                additionalBenefits: (item.additional_benefits || []).map(cleanPackageText),
                 isRecommended: !!item.is_recommended,
               };
             });
             setPackages(mapped);
           } else {
             // API returned empty list for this filter combination — resolve official fallback packages
-            const defaultPackages = [
-              { id: "silver", title: "Silver Escort", price: "₹4,500 / pax", tagline: "Standard Aerobridge Escort & Luggage Assistance", features: ["Aerobridge exit welcome with placard", "Dedicated porter for baggage", "Priority queue assistance"] },
-              { id: "gold", title: "Gold VIP Sanctuary", price: "₹8,500 / pax", isRecommended: true, tagline: "Fast Track Immigration & Lounge Access", features: ["Personal Guest Relations Officer", "Fast-track security & immigration", "VIP Lounge Sanctuary pass", "Baggage porter support"] },
-              { id: "elite", title: "Elite Presidential", price: "₹18,000 / pax", tagline: "Airside Maybach Tarmac & Private Suite", features: ["Direct tarmac limousine transfer", "Private VIP lounge suite", "Diplomatic customs clearance desk", "Executive chauffeur handoff"] },
-            ];
+            const cleanPackageText = (txt: string) =>
+              typeof txt === "string"
+                ? txt
+                    .replace(/\bAssistance\b/g, "Assist")
+                    .replace(/\bassistance\b/g, "assist")
+                    .replace(/\bPersonalized Placard\b/gi, "Placard")
+                    .replace(/\bPersonalized\s+/gi, "")
+                    .replace(/\s+personalized\b/gi, "")
+                    .replace(/\bpersonalized\b/gi, "")
+                : txt;
+            const defaultPackages: any[] = [];
             const fallback = (airportEntry?.meetGreetPackages || defaultPackages).map((pkg: any) => ({
               ...pkg,
-              desc: pkg.tagline || pkg.desc || "VIP Airport Concierge Package.",
+              title: cleanPackageText(pkg.title || ""),
+              desc: cleanPackageText(pkg.tagline || pkg.desc || "VIP Airport Concierge Package."),
+              features: (pkg.features || []).map(cleanPackageText),
             }));
             setPackages(fallback);
           }
         } else if (isMounted) {
-          const defaultPackages = [
-            { id: "silver", title: "Silver Escort", price: "₹4,500 / pax", tagline: "Standard Aerobridge Escort & Luggage Assistance", features: ["Aerobridge exit welcome with placard", "Dedicated porter for baggage", "Priority queue assistance"] },
-            { id: "gold", title: "Gold VIP Sanctuary", price: "₹8,500 / pax", isRecommended: true, tagline: "Fast Track Immigration & Lounge Access", features: ["Personal Guest Relations Officer", "Fast-track security & immigration", "VIP Lounge Sanctuary pass", "Baggage porter support"] },
-            { id: "elite", title: "Elite Presidential", price: "₹18,000 / pax", tagline: "Airside Maybach Tarmac & Private Suite", features: ["Direct tarmac limousine transfer", "Private VIP lounge suite", "Diplomatic customs clearance desk", "Executive chauffeur handoff"] },
-          ];
+          const cleanPackageText = (txt: string) =>
+            typeof txt === "string"
+              ? txt
+                  .replace(/\bAssistance\b/g, "Assist")
+                  .replace(/\bassistance\b/g, "assist")
+                  .replace(/\bPersonalized Placard\b/gi, "Placard")
+                  .replace(/\bPersonalized\s+/gi, "")
+                  .replace(/\s+personalized\b/gi, "")
+                  .replace(/\bpersonalized\b/gi, "")
+              : txt;
+          const defaultPackages: any[] = [];
           const fallback = (airportEntry?.meetGreetPackages || defaultPackages).map((pkg: any) => ({
             ...pkg,
-            desc: pkg.tagline || pkg.desc || "VIP Airport Concierge Package.",
+            title: cleanPackageText(pkg.title || ""),
+            desc: cleanPackageText(pkg.tagline || pkg.desc || "VIP Airport Concierge Package."),
+            features: (pkg.features || []).map(cleanPackageText),
           }));
           setPackages(fallback);
         }
       })
       .catch(() => {
         if (isMounted) {
-          const defaultPackages = [
-            { id: "silver", title: "Silver Escort", price: "₹4,500 / pax", tagline: "Standard Aerobridge Escort & Luggage Assistance", features: ["Aerobridge exit welcome with placard", "Dedicated porter for baggage", "Priority queue assistance"] },
-            { id: "gold", title: "Gold VIP Sanctuary", price: "₹8,500 / pax", isRecommended: true, tagline: "Fast Track Immigration & Lounge Access", features: ["Personal Guest Relations Officer", "Fast-track security & immigration", "VIP Lounge Sanctuary pass", "Baggage porter support"] },
-            { id: "elite", title: "Elite Presidential", price: "₹18,000 / pax", tagline: "Airside Maybach Tarmac & Private Suite", features: ["Direct tarmac limousine transfer", "Private VIP lounge suite", "Diplomatic customs clearance desk", "Executive chauffeur handoff"] },
-          ];
+          const cleanPackageText = (txt: string) =>
+            typeof txt === "string"
+              ? txt
+                  .replace(/\bAssistance\b/g, "Assist")
+                  .replace(/\bassistance\b/g, "assist")
+                  .replace(/\bPersonalized Placard\b/gi, "Placard")
+                  .replace(/\bPersonalized\s+/gi, "")
+                  .replace(/\s+personalized\b/gi, "")
+                  .replace(/\bpersonalized\b/gi, "")
+              : txt;
+          const defaultPackages: any[] = [];
           const fallback = (airportEntry?.meetGreetPackages || defaultPackages).map((pkg: any) => ({
             ...pkg,
-            desc: pkg.tagline || pkg.desc || "VIP Airport Concierge Package.",
+            title: cleanPackageText(pkg.title || ""),
+            desc: cleanPackageText(pkg.tagline || pkg.desc || "VIP Airport Concierge Package."),
+            features: (pkg.features || []).map(cleanPackageText),
           }));
           setPackages(fallback);
         }
@@ -166,11 +229,10 @@ export function MeetGreetPackageComparison({
               <button
                 type="button"
                 onClick={() => setFlightType("DOMESTIC")}
-                className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${
-                  flightType === "DOMESTIC"
+                className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${flightType === "DOMESTIC"
                     ? "bg-slate-900 text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 Domestic
               </button>
@@ -193,33 +255,30 @@ export function MeetGreetPackageComparison({
             <button
               type="button"
               onClick={() => setJourneyType("ARRIVAL")}
-              className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${
-                journeyType === "ARRIVAL"
+              className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${journeyType === "ARRIVAL"
                   ? "bg-[#7c3aed] text-white shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
-              }`}
+                }`}
             >
               Arrival
             </button>
             <button
               type="button"
               onClick={() => setJourneyType("DEPARTURE")}
-              className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${
-                journeyType === "DEPARTURE"
+              className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${journeyType === "DEPARTURE"
                   ? "bg-[#7c3aed] text-white shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
-              }`}
+                }`}
             >
               Departure
             </button>
             <button
               type="button"
               onClick={() => setJourneyType("TRANSIT")}
-              className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${
-                journeyType === "TRANSIT"
+              className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${journeyType === "TRANSIT"
                   ? "bg-[#7c3aed] text-white shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
-              }`}
+                }`}
             >
               Transit
             </button>
@@ -231,22 +290,20 @@ export function MeetGreetPackageComparison({
               <button
                 type="button"
                 onClick={() => setTerminal("Terminal 1 & 2")}
-                className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${
-                  terminal === "Terminal 1 & 2"
+                className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${terminal === "Terminal 1 & 2"
                     ? "bg-amber-600 text-white shadow-xs"
                     : "text-amber-900 hover:bg-amber-100/60"
-                }`}
+                  }`}
               >
                 Terminal 1 & 2
               </button>
               <button
                 type="button"
                 onClick={() => setTerminal("Terminal 3")}
-                className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${
-                  terminal === "Terminal 3"
+                className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${terminal === "Terminal 3"
                     ? "bg-amber-600 text-white shadow-xs"
                     : "text-amber-900 hover:bg-amber-100/60"
-                }`}
+                  }`}
               >
                 Terminal 3
               </button>
@@ -259,44 +316,40 @@ export function MeetGreetPackageComparison({
               <button
                 type="button"
                 onClick={() => setTransitType("DOMESTIC_DOMESTIC")}
-                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                  transitType === "DOMESTIC_DOMESTIC"
+                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${transitType === "DOMESTIC_DOMESTIC"
                     ? "bg-[#7c3aed] text-white shadow-xs"
                     : "text-purple-900 hover:bg-purple-100"
-                }`}
+                  }`}
               >
                 Domestic → Domestic
               </button>
               <button
                 type="button"
                 onClick={() => setTransitType("DOMESTIC_INTERNATIONAL")}
-                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                  transitType === "DOMESTIC_INTERNATIONAL"
+                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${transitType === "DOMESTIC_INTERNATIONAL"
                     ? "bg-[#7c3aed] text-white shadow-xs"
                     : "text-purple-900 hover:bg-purple-100"
-                }`}
+                  }`}
               >
                 Domestic → International
               </button>
               <button
                 type="button"
                 onClick={() => setTransitType("INTERNATIONAL_DOMESTIC")}
-                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                  transitType === "INTERNATIONAL_DOMESTIC"
+                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${transitType === "INTERNATIONAL_DOMESTIC"
                     ? "bg-[#7c3aed] text-white shadow-xs"
                     : "text-purple-900 hover:bg-purple-100"
-                }`}
+                  }`}
               >
                 International → Domestic
               </button>
               <button
                 type="button"
                 onClick={() => setTransitType("INTERNATIONAL_INTERNATIONAL")}
-                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                  transitType === "INTERNATIONAL_INTERNATIONAL"
+                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${transitType === "INTERNATIONAL_INTERNATIONAL"
                     ? "bg-[#7c3aed] text-white shadow-xs"
                     : "text-purple-900 hover:bg-purple-100"
-                }`}
+                  }`}
               >
                 International → International
               </button>
@@ -322,13 +375,12 @@ export function MeetGreetPackageComparison({
         </div>
       ) : (
         <div
-          className={`grid grid-cols-1 ${
-            packages.length === 1
+          className={`grid grid-cols-1 ${packages.length === 1
               ? "max-w-md mx-auto"
               : packages.length === 2
-              ? "md:grid-cols-2 max-w-4xl mx-auto"
-              : "md:grid-cols-3"
-          } gap-6 lg:gap-8`}
+                ? "md:grid-cols-2 max-w-4xl mx-auto"
+                : "md:grid-cols-3"
+            } gap-6 lg:gap-8`}
         >
           {packages.map((pkg: any, index: number) => {
             const isRec = !!pkg.isRecommended;
@@ -346,13 +398,12 @@ export function MeetGreetPackageComparison({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className={`relative flex flex-col justify-between rounded-3xl p-6 sm:p-8 transition-all duration-300 overflow-hidden ${
-                  isRec
+                className={`relative flex flex-col justify-between rounded-3xl p-6 sm:p-8 transition-all duration-300 overflow-hidden ${isRec
                     ? "bg-white border-2 border-[#7c3aed] shadow-lg shadow-[#7c3aed]/10 z-10"
                     : isSelected
-                    ? "bg-white border-2 border-[#7c3aed]"
-                    : "bg-white border border-slate-200 shadow-sm hover:border-slate-300"
-                }`}
+                      ? "bg-white border-2 border-[#7c3aed]"
+                      : "bg-white border border-slate-200 shadow-sm hover:border-slate-300"
+                  }`}
               >
                 {/* RECOMMENDED BADGE */}
                 {isRec && (
@@ -430,18 +481,32 @@ export function MeetGreetPackageComparison({
                       to="/book"
                       search={
                         {
-                          origin: airportCode,
+                          ...(bookingSearch || {}),
+                          airport: airportCode,
+                          origin: (bookingSearch?.origin as string) || airportCode,
+                          destination: (bookingSearch?.destination as string) || airportCode,
+                          pax_adults: Number(bookingSearch?.pax_adults) || 1,
+                          pax_children: Number(bookingSearch?.pax_children) || 0,
+                          pax_infants: Number(bookingSearch?.pax_infants) || 0,
+                          direction:
+                            journeyType === "TRANSIT"
+                              ? "transit"
+                              : journeyType === "DEPARTURE"
+                                ? "departure"
+                                : "arrival",
+                          travel_type: flightType.toLowerCase(),
+                          flight_type: flightType.toLowerCase(),
                           service_id: pkg.id,
                           booking_mode: "package",
                           package_id: pkg.id,
+                          from_hero: "true",
                         } as any
                       }
                       onClick={() => onSelectPackage && onSelectPackage(pkg)}
-                      className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl text-xs font-mono font-bold uppercase tracking-widest transition-all cursor-pointer ${
-                        isRec
+                      className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl text-xs font-mono font-bold uppercase tracking-widest transition-all cursor-pointer ${isRec
                           ? "bg-[#84cc16] text-[#0f172a] hover:bg-[#65a30d] shadow-sm"
                           : "bg-slate-900 text-white hover:bg-slate-800"
-                      }`}
+                        }`}
                     >
                       <span>Continue with this Package</span>
                       <ArrowRight className="w-4 h-4" />

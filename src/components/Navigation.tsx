@@ -86,7 +86,7 @@ const NAV_STRUCTURE: NavCategory[] = [
           tag: "White-Glove Freight",
         },
         {
-          title: "Medical Assistance",
+          title: "Medical Assist",
           href: "/solutions/medical",
           icon: HeartPulse,
           desc: "24/7 Airborne ICU medevac flights, mobile rail ICU ambulance & dignified repatriation.",

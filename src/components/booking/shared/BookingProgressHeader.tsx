@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Clock, Save } from "lucide-react";
+import { ArrowLeft, Clock, Save } from "lucide-react";
 
 interface BookingProgressHeaderProps {
   currentStep: number;
@@ -9,6 +9,7 @@ interface BookingProgressHeaderProps {
   title: string;
   estTime: string;
   onSaveDraft: () => void;
+  onBack?: () => void;
 }
 
 export function BookingProgressHeader({
@@ -18,11 +19,22 @@ export function BookingProgressHeader({
   title,
   estTime,
   onSaveDraft,
+  onBack,
 }: BookingProgressHeaderProps) {
   return (
     <div className="mb-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-mono text-xs font-bold uppercase tracking-wider shadow-xs cursor-pointer shrink-0"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back</span>
+            </button>
+          )}
           <span className="w-10 h-10 rounded-2xl bg-emerald-100 border border-emerald-200 flex items-center justify-center font-serif text-emerald-800 font-bold text-lg">
             0{currentStep}
           </span>

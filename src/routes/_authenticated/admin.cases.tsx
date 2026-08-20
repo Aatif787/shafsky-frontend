@@ -275,7 +275,7 @@ function AdminCasesView() {
             <option value="Flight Change">Flight Change</option>
             <option value="Refund Request">Refund Request</option>
             <option value="Payment Issue">Payment Issue</option>
-            <option value="VIP Assistance">VIP Assistance</option>
+            <option value="VIP Assist">VIP Assist</option>
           </select>
         </div>
 

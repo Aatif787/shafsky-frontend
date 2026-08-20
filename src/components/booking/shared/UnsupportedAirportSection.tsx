@@ -26,7 +26,7 @@ export function UnsupportedAirportSection({
         </div>
 
         <h3 className="text-2xl sm:text-3xl font-serif font-bold text-white leading-tight">
-          Custom Assistance for {airportName || airportCode}
+          Custom Assist for {airportName || airportCode}
         </h3>
 
         <p className="text-sm text-slate-300 font-sans max-w-2xl leading-relaxed">

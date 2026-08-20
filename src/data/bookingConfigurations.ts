@@ -81,7 +81,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
     icon: Crown,
     tagline: "Aerobridge Placard Greeting & Priority Clearance",
     description: "Dedicated Guest Relations Officer welcomes you upon aircraft exit with discrete placard identification, luggage management, and fast-track clearance.",
-    ctaText: "Book Airport Assistance",
+    ctaText: "Book Airport Assist",
     steps: [
       {
         id: "service_selection",
@@ -106,7 +106,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
       },
       {
         id: "packages",
-        title: "Select Assistance Tier",
+        title: "Select Assist Tier",
         subtitle: "Dynamic tier availability resolved for your airport route",
         fields: [],
         customComponent: "meet_greet_packages",
@@ -326,12 +326,12 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
   // ── 6. TRAVEL SERVICES: VISA ASSISTANCE ──
   visa: {
     id: "visa",
-    serviceName: "Visa Assistance",
+    serviceName: "Visa Assist",
     category: "travel",
     icon: Building2,
-    tagline: "Fast-Track Visa Assistance & Processing",
+    tagline: "Fast-Track Visa Assist & Processing",
     description: "Expedited diplomatic visa processing, VIP doorstep biometrics, and business travel visas.",
-    ctaText: "Request Visa Assistance",
+    ctaText: "Request Visa Assist",
     steps: [
       {
         id: "visa_details",

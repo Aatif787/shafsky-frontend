@@ -9,6 +9,9 @@ const BookingView = React.lazy(() => import("@/components/views/BookingView"));
 const bookSearchSchema = z.object({
   origin: z.string().optional().catch(""),
   destination: z.string().optional().catch(""),
+  transit: z.string().optional().catch(""),
+  airport: z.string().optional().catch(""),
+  airport_name: z.string().optional().catch(""),
   depart_date: z.string().optional().catch(""),
   pax_adults: z.number().optional().catch(1),
   pax_children: z.number().optional().catch(0),
@@ -21,6 +24,10 @@ const bookSearchSchema = z.object({
   sub: z.string().optional().catch(""),
   flight_number: z.string().optional().catch(""),
   direction: z.string().optional().catch(""),
+  travel_type: z.string().optional().catch(""),
+  flight_type: z.string().optional().catch(""),
+  from_hero: z.string().optional().catch(""),
+  validated: z.string().optional().catch(""),
 });
 
 export const Route = createFileRoute("/book")({

@@ -35,34 +35,7 @@ interface RelatedServicesProps {
  * CENTRALIZED SERVICE CATALOG FOR INTELLIGENT CROSS-RECOMMENDATIONS
  * ─────────────────────────────────────────────────────────────────────────── */
 const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
-  // Concierge Packages
-  silver: {
-    id: "silver",
-    title: "Silver Escort Package",
-    link: "/solutions/concierge?sub=silver",
-    icon: Crown,
-    desc: "Aerobridge placard greeting, dedicated porterage, and terminal guidance.",
-    tag: "Standard Escort",
-    serviceId: "silver",
-  },
-  gold: {
-    id: "gold",
-    title: "Gold VIP Sanctuary Package",
-    link: "/solutions/concierge?sub=gold",
-    icon: Hotel,
-    desc: "Aerobridge host welcome, VIP lounge access, fast-track clearance & porter.",
-    tag: "Most Popular",
-    serviceId: "gold",
-  },
-  elite: {
-    id: "elite",
-    title: "Elite Presidential Package",
-    link: "/solutions/concierge?sub=elite",
-    icon: Crown,
-    desc: "Private VIP terminal suite, tarmac Maybach transfer, and in-suite customs.",
-    tag: "VVIP Presidential",
-    serviceId: "elite",
-  },
+  // Demo concierge package entries removed
 
   // Travel
   air_ticketing: {
@@ -162,6 +135,8 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
     serviceId: "jet_charter",
   },
 };
+
+const subServices = [];
 
 function resolveIntelligentSuggestions(pathname: string, searchLocation: any): RelatedServiceItem[] {
   let sub = "";

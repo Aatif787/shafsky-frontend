@@ -49,6 +49,7 @@ export interface AirportServicesFetchResult {
   services: ServiceCatalogItem[];
   packages: PackageCatalogItem[];
   flightType?: string;
+  airport?: { code?: string; name?: string; city?: string; country?: string };
   error?: string;
 }
 
@@ -158,7 +159,7 @@ export async function fetchAirportServices(
   airportCode: string,
   journeyType: "arrival" | "departure" | "transit",
   signal?: AbortSignal,
-  extraParams?: { origin?: string; destination?: string; terminal?: string }
+  extraParams?: { origin?: string; destination?: string; terminal?: string; flightType?: string; transit?: string }
 ): Promise<AirportServicesFetchResult> {
   const cleanCode = (airportCode || "").trim().toUpperCase();
 
@@ -177,6 +178,8 @@ export async function fetchAirportServices(
   if (extraParams?.origin) url += `&origin=${extraParams.origin}`;
   if (extraParams?.destination) url += `&destination=${extraParams.destination}`;
   if (extraParams?.terminal) url += `&terminal=${extraParams.terminal}`;
+  if (extraParams?.flightType) url += `&flight_type=${extraParams.flightType}`;
+  if (extraParams?.transit) url += `&transit=${extraParams.transit}`;
 
   try {
     const res = await ApiClient.fetchWithAuth(url, {
@@ -194,15 +197,38 @@ export async function fetchAirportServices(
             currency: data.currency || "INR",
             services: [],
             packages: [],
+            airport: data.airport,
             flightType: data.flightType || data.flight_type,
           };
         }
+
+        const addonIds = ["meet_greet", "fast_track", "lounge", "porter", "buggy", "wheelchair", "transport", "chauffeur"];
+        const packages = (data.packages || [])
+          .map((pkg: any) => {
+            const id = String(pkg?.id || pkg?.slug || "").toLowerCase();
+            if (!id || addonIds.includes(id)) return null;
+            return {
+              id,
+              title: pkg.title || pkg.name || id.replace(/_/g, " "),
+              tagline: pkg.tagline || pkg.short_description || pkg.description || "",
+              basePrice: Number(pkg.basePrice ?? pkg.base_price ?? pkg.price ?? 0),
+              price: Number(pkg.price ?? pkg.basePrice ?? pkg.base_price ?? 0),
+              currency: pkg.currency,
+              recommendedBadge: pkg.recommendedBadge || pkg.recommended_badge || null,
+              features: Array.isArray(pkg.features) ? pkg.features : [],
+              serviceIds: pkg.serviceIds || pkg.includedServiceIds || [],
+              includedServiceIds: pkg.includedServiceIds || pkg.serviceIds || [],
+            } as PackageCatalogItem;
+          })
+          .filter(Boolean) as PackageCatalogItem[];
+
         return {
           success: true,
           isCovered: true,
           currency: data.currency || "INR",
-          services: data.individualServices || data.individual_services || data.services || [],
-          packages: data.packages || [],
+          services: [],
+          packages,
+          airport: data.airport,
           flightType: data.flightType || data.flight_type,
         };
       }

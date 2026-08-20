@@ -7,7 +7,7 @@
  */
 
 const getBackendUrl = (): string => {
-  return process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL || "http://127.0.0.1:8003";
+  return process.env.VITE_BACKEND_API_URL || "http://127.0.0.1:8003";
 };
 
 export interface FastApiResponse<T = any> {

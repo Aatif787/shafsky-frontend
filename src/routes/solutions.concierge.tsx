@@ -28,32 +28,7 @@ function AirportConciergePage() {
   const searchObj: any = location.search || {};
   const activeSub = typeof searchObj === "object" && searchObj.sub ? searchObj.sub : "gold";
 
-  const subServices = [
-    {
-      id: "silver",
-      label: "Silver Escort Package",
-      tagline: "Standard Aerobridge Escort & Baggage Porter",
-      description: "Aerobridge host welcome, uniformed baggage porterage, and expedited terminal guidance to your curbside vehicle.",
-      image: meetGreetImg,
-      badge: "Standard Escort",
-    },
-    {
-      id: "gold",
-      label: "Gold VIP Sanctuary Package",
-      tagline: "Aerobridge Escort, VIP Lounge & Fast-Track",
-      description: "Complete VIP airport experience including aerobridge greeting, baggage porter, diplomatic fast-track clearance, and lounge access.",
-      image: loungeImg,
-      badge: "Most Popular",
-    },
-    {
-      id: "elite",
-      label: "Elite Presidential Package",
-      tagline: "Private VIP Terminal & Maybach Tarmac Sedan",
-      description: "VVIP handling featuring private VIP terminal suite, dedicated protocol officer, tarmac Maybach transfer, and in-suite customs processing.",
-      image: vipTransport1,
-      badge: "VVIP Presidential",
-    },
-  ];
+  const subServices: any[] = [];
 
   const handleSelectSubService = (subId: string) => {
     navigate({ to: "/solutions/concierge", search: { sub: subId } as any });
@@ -110,7 +85,7 @@ function AirportConciergePage() {
         {
           number: "02",
           title: "Aerobridge / Curbside Welcome",
-          description: "Upon arrival or terminal drop-off, your officer greets you with a discrete personalized placard.",
+          description: "Upon arrival or terminal drop-off, your officer greets you with a discrete placard.",
           badge: "Step 2: Greeting",
         },
         {

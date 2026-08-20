@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getAirportBusinessPrice, getAirportRegistryEntry } from "@/data/airportRegistry";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { ApiClient } from "@/lib/ApiClient";
+import { airportApi } from "@/lib/api/airportApi";
 import { toast } from "sonner";
 import {
   fetchAirportServices,
@@ -10,7 +11,6 @@ import {
   ServiceCatalogItem,
   PriceBreakdown,
 } from "../utils/serviceAirportResolver";
-import { getRequiredBookingFields } from "../config/services.config";
 
 export type FlightValidationMode = "IDLE" | "LOADING" | "VERIFIED" | "ERROR" | "MANUAL";
 
@@ -51,6 +51,10 @@ export interface AirportWorkflowState {
   isSavingDraft?: boolean;
   draftFieldErrors?: Record<string, string>;
   bookingRef?: string;
+  originCode?: string;
+  destCode?: string;
+  transitCode?: string;
+  travelType?: "domestic" | "international";
   flightType?: string;
   isResolvingAirport?: boolean;
   resolvedAirport?: any;
@@ -210,6 +214,51 @@ export function formatFlightLookupError(error: unknown, status?: number): string
   }
 }
 
+/** Wall-clock HH:MM from an ISO/local scheduled string (not a hardcoded default). */
+export function hhmmFromScheduled(value?: string | null): string {
+  if (!value) return "";
+  const cleaned = String(value).trim();
+  const iso = cleaned.match(/T(\d{2}):(\d{2})/);
+  if (iso) return `${iso[1]}:${iso[2]}`;
+  const hm = cleaned.match(/^(\d{1,2}):(\d{2})/);
+  if (hm) return `${String(hm[1]).padStart(2, "0")}:${hm[2]}`;
+  return "";
+}
+
+/** Arrival bookings use flight arrival; departure uses flight departure. Empty until a real time exists. */
+export function resolveBookingServiceTime(state: {
+  direction: AirportWorkflowState["direction"];
+  serviceTime?: string;
+  validatedFlightData?: AirportWorkflowState["validatedFlightData"];
+}): string {
+  const flight = state.validatedFlightData;
+  if (flight) {
+    const raw =
+      state.direction === "departure"
+        ? flight.departure?.scheduledTime
+        : flight.arrival?.scheduledTime;
+    const clock = hhmmFromScheduled(raw);
+    if (clock) return clock;
+  }
+  const stored = (state.serviceTime || "").trim();
+  if (stored && stored !== "14:30" && stored !== "12:00") return stored;
+  return "";
+}
+
+export function formatBookingServiceDateTime(state: {
+  direction: AirportWorkflowState["direction"];
+  serviceDate?: string;
+  serviceTime?: string;
+  validatedFlightData?: AirportWorkflowState["validatedFlightData"];
+}): string {
+  const date = (state.serviceDate || "").trim();
+  const time = resolveBookingServiceTime(state);
+  if (date && time) return `${date} @ ${time}`;
+  if (date) return date;
+  if (time) return time;
+  return "—";
+}
+
 export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg?: string) {
   let searchParams: any = {};
   if (typeof searchParamsOrService === "object" && searchParamsOrService !== null) {
@@ -221,19 +270,37 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     };
   }
 
-  const rawOrigin = searchParams?.origin || searchParams?.airport || "";
-  const extractedCode = rawOrigin.match(/\(([A-Z]{3})\)/)?.[1] || (rawOrigin.length === 3 ? rawOrigin.toUpperCase() : searchParams?.airport || "DEL");
+  const extractIata = (raw?: string) => {
+    if (!raw) return "";
+    const match = String(raw).match(/\(([A-Z]{3})\)/);
+    if (match) return match[1];
+    const cleaned = String(raw).trim().toUpperCase();
+    return cleaned.length === 3 ? cleaned : "";
+  };
 
-  const initialBookingMode: "individual" | "package" =
-    searchParams?.booking_mode === "package" || searchParams?.package_id || searchParams?.mode === "package"
-      ? "package"
-      : "individual";
+  const initialDirection: "arrival" | "departure" | "transit" =
+    (searchParams?.direction as any) || "arrival";
+
+  const initialOrigin = extractIata(searchParams?.origin);
+  const initialDest = extractIata(searchParams?.destination);
+  const initialTransit = extractIata(searchParams?.transit);
+  const initialServiceAirport =
+    extractIata(searchParams?.airport) ||
+    (initialDirection === "arrival"
+      ? initialDest
+      : initialDirection === "departure"
+        ? initialOrigin
+        : initialTransit);
+
+  const extractedCode = initialServiceAirport;
+
+  const initialTravelType: "domestic" | "international" =
+    String(searchParams?.travel_type || searchParams?.flight_type || "international").toLowerCase() === "domestic"
+      ? "domestic"
+      : "international";
 
   const isFromHero = Boolean(searchParams?.from_hero || searchParams?.validated);
   const initialFlightNumber = searchParams?.flight_number || "";
-  const initialDirection: "arrival" | "departure" | "transit" =
-    (searchParams?.direction as any) ||
-    (searchParams?.origin ? "departure" : searchParams?.destination ? "arrival" : "arrival");
 
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [busy, setBusy] = useState<boolean>(false);
@@ -241,18 +308,25 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
 
   // Look up initial airport name from airportRegistry
   const initialRegistryEntry = getAirportRegistryEntry(extractedCode);
-  const initialAirportName = initialRegistryEntry?.name || rawOrigin || `${extractedCode.toUpperCase()} Airport`;
+  const initialAirportName =
+    searchParams?.airport_name ||
+    initialRegistryEntry?.name ||
+    (extractedCode ? `${extractedCode} Airport` : "Select airport");
 
   const [state, setState] = useState<AirportWorkflowState>({
-    airportCode: extractedCode.toUpperCase(),
+    airportCode: extractedCode,
     airportName: initialAirportName,
     direction: initialDirection,
+    originCode: initialOrigin,
+    destCode: initialDest,
+    transitCode: initialTransit,
+    travelType: initialTravelType,
     bookingMode: "package",
-    selectedService: searchParams?.package_id || searchParams?.service_id || "",
-    selectedPackage: searchParams?.package_id || searchParams?.service_id || "",
+    selectedService: searchParams?.package_id || "",
+    selectedPackage: searchParams?.package_id || "",
     serviceDate: searchParams?.depart_date || "",
-    serviceTime: "14:30",
-    guestCount: searchParams?.pax_adults || 1,
+    serviceTime: searchParams?.service_time || "",
+    guestCount: Math.max(1, Number(searchParams?.pax_adults) || 1),
     fullName: "",
     phone: "",
     email: "",
@@ -264,7 +338,15 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     flightStateMode: "IDLE",
     isManualMode: false,
     isAirportCovered: true,
-    selectedPackageId: searchParams?.package_id || searchParams?.service_id || null,
+    selectedPackageId: searchParams?.package_id || null,
+    resolvedAirport: extractedCode
+      ? {
+          code: extractedCode,
+          name: initialAirportName,
+          city: initialRegistryEntry?.city || "",
+          country: initialRegistryEntry?.country || "",
+        }
+      : undefined,
   });
 
   // Hydrate browser-only state after mount
@@ -276,7 +358,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
 
     if (typeof window !== "undefined") {
       try {
-        const cached = sessionStorage.getItem("shafsky_validated_flight");
+        const cached = isFromHero ? null : sessionStorage.getItem("shafsky_validated_flight");
         if (cached) {
           const parsed = JSON.parse(cached) as FlightData;
           if (parsed && parsed.flightNum) {
@@ -298,18 +380,17 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
               flightNumber: parsed.flightNum || prev.flightNumber,
               selectedTerminal: inferredTerminal || prev.selectedTerminal,
               flightStateMode: "VERIFIED",
-              isFlightLocked: isFromHero,
+              isFlightLocked: false,
             }));
-
-            const reqFields = getRequiredBookingFields(searchParams?.service_id || searchParams?.sub);
-            if (isFromHero && reqFields.requiresFlight) {
-              setCurrentStep(2);
-            }
           }
         }
       } catch {
         // ignore cache error
       }
+    }
+
+    if (isFromHero && extractedCode) {
+      setCurrentStep(searchParams?.package_id ? 3 : 2);
     }
   }, []);
 
@@ -337,9 +418,11 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
           state.direction,
           controller.signal,
           {
-            origin: state.validatedFlightData?.origin?.code || undefined,
-            destination: state.validatedFlightData?.destination?.code || undefined,
+            origin: state.originCode || state.validatedFlightData?.origin?.code || undefined,
+            destination: state.destCode || state.validatedFlightData?.destination?.code || undefined,
             terminal: state.selectedTerminal,
+            flightType: state.travelType,
+            transit: state.transitCode,
           }
         );
 
@@ -354,6 +437,15 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
             availableServicesList: fetchRes.services,
             availablePackagesList: fetchRes.packages,
             flightType: fetchRes.flightType,
+            airportName: fetchRes.airport?.name || prev.airportName,
+            resolvedAirport: fetchRes.airport
+              ? {
+                  code: fetchRes.airport.code || prev.airportCode,
+                  name: fetchRes.airport.name || prev.airportName,
+                  city: fetchRes.airport.city || "",
+                  country: fetchRes.airport.country || "",
+                }
+              : prev.resolvedAirport,
             serviceFetchError: null,
           }));
         } else {
@@ -381,7 +473,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     return () => {
       controller.abort();
     };
-  }, [state.airportCode, state.direction, state.validatedFlightData, state.selectedTerminal]);
+  }, [state.airportCode, state.direction, state.validatedFlightData, state.selectedTerminal, state.travelType, state.originCode, state.destCode, state.transitCode]);
 
   // ─── FLIGHT VERIFICATION & ROUTE MATCH VALIDATION ───
   const validateAndSearchFlight = async (): Promise<boolean> => {
@@ -389,17 +481,13 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     const departDate = (state.serviceDate || "").trim();
 
     if (!state.airportCode) {
-      toast.error("Please select a covered airport.");
+      toast.error("Please complete origin and destination selection.");
       return false;
     }
 
-    const requiredFields = getRequiredBookingFields(state.selectedService);
-
-    if (requiredFields.requiresFlight) {
-      if (!flightNum || flightNum.length < 3) {
-        toast.error("Please enter a valid flight number (e.g. AI302, EK504).");
-        return false;
-      }
+    if (!flightNum || flightNum.length < 3) {
+      toast.error("Please enter a valid flight number (e.g. AI302, EK504).");
+      return false;
     }
 
     if (!departDate) {
@@ -420,7 +508,10 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         body: JSON.stringify({
           flightNum,
           departDate,
-          tripType: state.direction === "arrival" ? "one_way" : "round_trip",
+          tripType: state.direction === "transit" ? "multi_city" : "one_way",
+          originCode: state.originCode || undefined,
+          destCode: state.destCode || undefined,
+          direction: state.direction,
         }),
       });
 
@@ -433,7 +524,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
           flightErrorMessage: errMsg,
           isFlightValidated: false,
           validatedFlightData: null,
-          isManualMode: false,
+          isManualMode: true,
         });
         setBusy(false);
         return false;
@@ -443,13 +534,13 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       const targetObj = rawData?.flightData || rawData?.flight_data || (Array.isArray(rawData) ? rawData[0] : rawData);
 
       if (!targetObj) {
-        const errMsg = `Flight ${flightNum} could not be found for ${departDate}. Please check your flight number, try again, or enter flight details manually.`;
+        const errMsg = `Flight ${flightNum} could not be found for ${departDate}. Enter times and airports below to continue.`;
         updateState({
           flightStateMode: "ERROR",
           flightErrorMessage: errMsg,
           isFlightValidated: false,
           validatedFlightData: null,
-          isManualMode: false,
+          isManualMode: true,
         });
         setBusy(false);
         return false;
@@ -467,24 +558,39 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
           name: targetObj?.departure?.airport_name || targetObj?.origin?.name || targetObj?.origin_name || null,
           city: targetObj?.departure?.city || targetObj?.origin?.city || targetObj?.origin_city || null,
           country: targetObj?.departure?.country || targetObj?.origin?.country || null,
+          timezone: targetObj?.departure?.timezone || targetObj?.origin?.timezone || null,
         },
         destination: {
           code: targetObj?.arrival?.airport || targetObj?.destination?.code || targetObj?.destination_code || null,
           name: targetObj?.arrival?.airport_name || targetObj?.destination?.name || targetObj?.destination_name || null,
           city: targetObj?.arrival?.city || targetObj?.destination?.city || targetObj?.destination_city || null,
           country: targetObj?.arrival?.country || targetObj?.destination?.country || null,
+          timezone: targetObj?.arrival?.timezone || targetObj?.destination?.timezone || null,
         },
         departure: {
           scheduledTime: targetObj?.departure?.scheduled || targetObj?.departure?.scheduledTime || targetObj?.scheduled_departure || null,
           terminal: targetObj?.departure?.terminal || null,
           gate: targetObj?.departure?.gate || null,
+          timezone: targetObj?.departure?.timezone || targetObj?.origin?.timezone || null,
         },
         arrival: {
           scheduledTime: targetObj?.arrival?.scheduled || targetObj?.arrival?.scheduledTime || targetObj?.scheduled_arrival || null,
           terminal: targetObj?.arrival?.terminal || null,
           gate: targetObj?.arrival?.gate || null,
+          timezone: targetObj?.arrival?.timezone || targetObj?.destination?.timezone || null,
         },
-        duration: targetObj?.duration?.formatted || targetObj?.duration_text || targetObj?.duration || targetObj?.flight_duration || null,
+        duration:
+          targetObj?.duration?.formatted ||
+          targetObj?.duration_text ||
+          (typeof targetObj?.duration?.minutes === "number" && targetObj.duration.minutes > 0
+            ? `${Math.floor(targetObj.duration.minutes / 60)}h ${targetObj.duration.minutes % 60}m`
+            : null) ||
+          (typeof targetObj?.duration_minutes === "number" && targetObj.duration_minutes > 0
+            ? `${Math.floor(targetObj.duration_minutes / 60)}h ${targetObj.duration_minutes % 60}m`
+            : null) ||
+          (typeof targetObj?.duration === "string" ? targetObj.duration : null) ||
+          targetObj?.flight_duration ||
+          null,
         status: targetObj?.status || "Scheduled",
         aircraft: {
           model: targetObj?.aircraft?.model || null,
@@ -506,15 +612,58 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       let targetAirportCode = "";
       let targetAirportName = "";
 
+      // Never silently change the selected service airport.
+      const selectedServiceAirport = (state.airportCode || "").trim().toUpperCase();
       if (state.direction === "arrival") {
-        targetAirportCode = destCode;
+        if (destCode && selectedServiceAirport && destCode !== selectedServiceAirport) {
+          const mismatch = `This flight arrives at ${destCode}, but arrival services were selected for ${selectedServiceAirport}. Please verify the flight number or enter the correct itinerary manually.`;
+          updateState({
+            flightStateMode: "ERROR",
+            flightErrorMessage: mismatch,
+            routeMatchError: mismatch,
+            isFlightValidated: false,
+            validatedFlightData: flightInfo,
+            isManualMode: true,
+          });
+          setBusy(false);
+          return false;
+        }
+        targetAirportCode = selectedServiceAirport || destCode;
         targetAirportName = flightInfo.destination?.name || destCode;
       } else if (state.direction === "departure") {
-        targetAirportCode = originCode;
+        if (originCode && selectedServiceAirport && originCode !== selectedServiceAirport) {
+          const mismatch = `This flight departs from ${originCode}, but departure services were selected for ${selectedServiceAirport}. Please verify the flight number or enter the correct itinerary manually.`;
+          updateState({
+            flightStateMode: "ERROR",
+            flightErrorMessage: mismatch,
+            routeMatchError: mismatch,
+            isFlightValidated: false,
+            validatedFlightData: flightInfo,
+            isManualMode: true,
+          });
+          setBusy(false);
+          return false;
+        }
+        targetAirportCode = selectedServiceAirport || originCode;
         targetAirportName = flightInfo.origin?.name || originCode;
       } else if (state.direction === "transit") {
-        targetAirportCode = transitCodes[0] || "";
-        targetAirportName = (targetObj as any)?.transit?.name || (targetObj as any)?.connectingAirport?.name || targetAirportCode;
+        const selectedTransit = (state.transitCode || selectedServiceAirport).toUpperCase();
+        const via = transitCodes[0] || "";
+        if (via && selectedTransit && via !== selectedTransit) {
+          const mismatch = `This itinerary connects via ${via}, but transit services were selected for ${selectedTransit}. Please verify the flight number or enter the correct itinerary manually.`;
+          updateState({
+            flightStateMode: "ERROR",
+            flightErrorMessage: mismatch,
+            routeMatchError: mismatch,
+            isFlightValidated: false,
+            validatedFlightData: flightInfo,
+            isManualMode: true,
+          });
+          setBusy(false);
+          return false;
+        }
+        targetAirportCode = selectedTransit;
+        targetAirportName = (targetObj as any)?.transit?.name || targetAirportCode;
       }
 
       if (!targetAirportCode) {
@@ -531,16 +680,19 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         return false;
       }
 
-      // 2. Look up (airport code + service type) in our supported airports/services table
-      const { checkAirportCoverage } = await import("../utils/serviceAirportResolver");
-      const coverage = checkAirportCoverage(targetAirportCode);
+      const resolution = await airportApi.resolveServiceAirport({
+        journey_type: state.direction,
+        origin: state.originCode || originCode,
+        destination: state.destCode || destCode,
+        transit: state.transitCode || (state.direction === "transit" ? targetAirportCode : undefined),
+        flight_type: state.travelType,
+      });
 
-      // 4. If not matched: return a clear "not available" response — do NOT fall back
-      if (!coverage.isCovered) {
-        const notAvailableMsg = `Services are currently not available at ${targetAirportName} (${targetAirportCode}) for ${state.direction}.`;
+      if (!resolution.valid || !resolution.is_supported) {
+        const notAvailableMsg =
+          resolution.error ||
+          `Services are currently not available at ${targetAirportName} (${targetAirportCode}) for ${state.direction}.`;
         updateState({
-          airportCode: targetAirportCode,
-          airportName: coverage.entry?.name || targetAirportName || `${targetAirportCode} Airport`,
           isAirportCovered: false,
           flightStateMode: "ERROR",
           flightErrorMessage: notAvailableMsg,
@@ -555,8 +707,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         return false;
       }
 
-      // 3. If matched: return ONLY that matched service's locked result
-      const matchedAirportName = coverage.entry?.name || targetAirportName || `${targetAirportCode} Airport`;
+      const matchedAirportName = resolution.airport?.name || targetAirportName || `${targetAirportCode} Airport`;
 
       const rawTerm = state.direction === "arrival" ? flightInfo.arrival?.terminal : flightInfo.departure?.terminal;
       let inferredTerminal: string | undefined = undefined;
@@ -578,7 +729,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       }
 
       updateState({
-        airportCode: targetAirportCode,
+        airportCode: resolution.service_airport || selectedServiceAirport,
         airportName: matchedAirportName,
         isAirportCovered: true,
         flightStateMode: "VERIFIED",
@@ -590,6 +741,10 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         selectedTerminal: inferredTerminal || state.selectedTerminal,
         isManualMode: false,
         isFlightLocked: true,
+        serviceTime: resolveBookingServiceTime({
+          direction: state.direction,
+          validatedFlightData: flightInfo,
+        }),
       });
 
       toast.success(`Flight ${flightInfo.flightNum} verified for ${matchedAirportName}!`);
@@ -597,13 +752,13 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     } catch (err: any) {
       console.error("[useAirportWorkflow] Flight validation error:", err);
       const errMsg = formatFlightLookupError(err);
-      updateState({
-        flightStateMode: "ERROR",
-        flightErrorMessage: errMsg,
-        isFlightValidated: false,
-        validatedFlightData: null,
-        isManualMode: false,
-      });
+        updateState({
+          flightStateMode: "ERROR",
+          flightErrorMessage: errMsg,
+          isFlightValidated: false,
+          validatedFlightData: null,
+          isManualMode: true,
+        });
       return false;
     } finally {
       setBusy(false);
@@ -611,6 +766,26 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
   };
 
   const setManualFlightData = (flightInfo: FlightData) => {
+    const selectedServiceAirport = (state.airportCode || "").trim().toUpperCase();
+    const originCode = (flightInfo.origin?.code || "").trim().toUpperCase();
+    const destCode = (flightInfo.destination?.code || "").trim().toUpperCase();
+
+    if (state.direction === "arrival" && destCode && selectedServiceAirport && destCode !== selectedServiceAirport) {
+      toast.error(`Arrival services are booked for ${selectedServiceAirport}. The itinerary must arrive there (currently ${destCode}).`);
+      return;
+    }
+    if (state.direction === "departure" && originCode && selectedServiceAirport && originCode !== selectedServiceAirport) {
+      toast.error(`Departure services are booked for ${selectedServiceAirport}. The itinerary must depart from there (currently ${originCode}).`);
+      return;
+    }
+    if (state.direction === "transit") {
+      const selectedTransit = (state.transitCode || selectedServiceAirport).toUpperCase();
+      if (selectedTransit && originCode !== selectedTransit && destCode !== selectedTransit) {
+        toast.error(`Transit services are booked for ${selectedTransit}. Origin or destination must include that airport.`);
+        return;
+      }
+    }
+
     if (typeof window !== "undefined") {
       try {
         sessionStorage.setItem("shafsky_validated_flight", JSON.stringify(flightInfo));
@@ -635,8 +810,15 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       validatedFlightData: flightInfo,
       flightNumber: flightInfo.flightNum,
       selectedTerminal: inferredTerminal || state.selectedTerminal,
-      isManualMode: true,
+      isManualMode: false,
       isFlightLocked: true,
+      flightStateMode: "MANUAL",
+      flightErrorMessage: undefined,
+      routeMatchError: undefined,
+      serviceTime: resolveBookingServiceTime({
+        direction: state.direction,
+        validatedFlightData: flightInfo,
+      }),
     });
   };
 
@@ -746,9 +928,13 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       fieldErrors.phone = "Please enter a valid phone/WhatsApp number (at least 7 digits).";
     }
 
+    if (!state.isFlightValidated || !(state.flightNumber || "").trim()) {
+      fieldErrors.flight_number = "Enter a flight number and verify it, or complete manual flight details.";
+    }
+
     if (Object.keys(fieldErrors).length > 0) {
       updateState({ draftFieldErrors: fieldErrors });
-      toast.error("Please resolve the required contact information errors.");
+      toast.error("Please resolve the required contact and flight details before continuing.");
       return false;
     }
 
@@ -815,6 +1001,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     state.serviceTime,
     state.specialRequests,
     state.bookingRef,
+    state.isFlightValidated,
   ]);
 
   return {

@@ -520,7 +520,7 @@ export function PassengerInformationExperience({
                 Section 3 of 3
               </div>
               <h3 className="text-xl font-serif text-slate-900 font-medium group-hover:text-[#7c3aed] transition-colors">
-                Special Protocols & Assistance Requests
+                Special Protocols & Assist Requests
               </h3>
             </div>
           </div>
@@ -549,7 +549,7 @@ export function PassengerInformationExperience({
               {/* SPECIAL ASSISTANCE SELECTION CARDS */}
               <div>
                 <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-3 font-bold">
-                  Select Airside Assistance Requirements:
+                  Select Airside Assist Requirements:
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {SPECIAL_ASSISTANCE_OPTIONS.map((opt) => {

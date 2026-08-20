@@ -27,7 +27,7 @@ const getBaseUrl = (): string => {
     const envUrl = process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL || process.env.VITE_FASTAPI_URL;
     if (envUrl) return envUrl;
   }
-  return "http://127.0.0.1:8003";
+  return process.env.VITE_BACKEND_API_URL || "http://127.0.0.1:8003";
 };
 
 export const API_BASE_URL = getBaseUrl();

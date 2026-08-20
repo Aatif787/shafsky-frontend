@@ -25,6 +25,7 @@ interface ManualFlightEntryFormProps {
   onSubmit: (flightData: FlightData) => void;
   onClose?: () => void;
   direction?: "arrival" | "departure" | "transit";
+  submitLabel?: string;
 }
 
 const monoFont = { fontFamily: "'JetBrains Mono', monospace" };
@@ -34,19 +35,20 @@ export function ManualFlightEntryForm({
   initialValues,
   onSubmit,
   onClose,
-  direction = "arrival",
+  direction: _direction = "arrival",
+  submitLabel = "Save flight details",
 }: ManualFlightEntryFormProps) {
   const [details, setDetails] = React.useState<ManualFlightDetails>({
     airlineName: initialValues?.airlineName || "",
     flightNum: initialValues?.flightNum || "",
-    depAirportCode: initialValues?.depAirportCode || (direction === "arrival" ? "DEL" : ""),
+    depAirportCode: initialValues?.depAirportCode || "",
     depAirportName: initialValues?.depAirportName || "",
-    arrAirportCode: initialValues?.arrAirportCode || (direction === "departure" ? "DEL" : ""),
+    arrAirportCode: initialValues?.arrAirportCode || "",
     arrAirportName: initialValues?.arrAirportName || "",
     depDate: initialValues?.depDate || new Date().toISOString().split("T")[0],
-    depTime: initialValues?.depTime || "12:00",
+    depTime: initialValues?.depTime || "",
     arrDate: initialValues?.arrDate || initialValues?.depDate || new Date().toISOString().split("T")[0],
-    arrTime: initialValues?.arrTime || "14:30",
+    arrTime: initialValues?.arrTime || "",
     terminal: initialValues?.terminal || "",
   });
 
@@ -80,8 +82,15 @@ export function ManualFlightEntryForm({
       newErrors.depTime = "Departure time is required.";
     }
 
-    const cleanDepCode = (details.depAirportCode || "DEL").trim().toUpperCase();
-    const cleanArrCode = (details.arrAirportCode || "BOM").trim().toUpperCase();
+    const cleanDepCode = (details.depAirportCode || "").trim().toUpperCase();
+    const cleanArrCode = (details.arrAirportCode || "").trim().toUpperCase();
+
+    if (!cleanDepCode || cleanDepCode.length < 3) {
+      newErrors.depAirportCode = "Departure airport is required.";
+    }
+    if (!cleanArrCode || cleanArrCode.length < 3) {
+      newErrors.arrAirportCode = "Arrival airport is required.";
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -104,12 +113,12 @@ export function ManualFlightEntryForm({
       origin: {
         code: cleanDepCode,
         name: details.depAirportName || `${cleanDepCode} Airport`,
-        city: cleanDepCode === "DEL" ? "Delhi" : cleanDepCode === "BOM" ? "Mumbai" : cleanDepCode,
+        city: details.depAirportName || cleanDepCode,
       },
       destination: {
         code: cleanArrCode,
         name: details.arrAirportName || `${cleanArrCode} Airport`,
-        city: cleanArrCode === "DEL" ? "Delhi" : cleanArrCode === "BOM" ? "Mumbai" : cleanArrCode,
+        city: details.arrAirportName || cleanArrCode,
       },
       departure: {
         scheduledTime: depIso,
@@ -336,7 +345,7 @@ export function ManualFlightEntryForm({
         {/* Submit Actions */}
         <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-gray-200/60 mt-4">
           <p className="text-[10px] text-slate-500 font-mono" style={monoFont}>
-            * Custom flight details will be assigned to your VIP concierge order immediately.
+            * Saved itinerary is used for this booking. Live lookup is not required after this.
           </p>
           <button
             type="submit"
@@ -344,7 +353,7 @@ export function ManualFlightEntryForm({
             style={monoFont}
           >
             <CheckCircle2 className="h-4 w-4 text-amber-400" />
-            <span>Confirm & Continue</span>
+            <span>{submitLabel}</span>
           </button>
         </div>
       </form>

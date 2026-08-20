@@ -19,7 +19,7 @@ export function ServiceFeatures({ serviceName, features }: ServiceFeaturesProps)
   const defaultFeatures: FeatureItem[] = [
     {
       title: "Aerobridge Placard Welcome",
-      desc: "Uniformed officer greets you at the jet-bridge door holding a discrete personalized name badge.",
+      desc: "Uniformed officer greets you at the jet-bridge door holding a discrete name badge.",
       icon: Crown,
       tag: "Signature",
     },

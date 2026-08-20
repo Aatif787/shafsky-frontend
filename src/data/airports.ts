@@ -1429,9 +1429,9 @@ export function getAirportServices(airportCode: string): AirportService[] {
             includedServices: [
               "VIP Escort Host",
               "Plaza Premium Lounge Access & Dining",
-              "Dedicated Butler Assistance",
+              "Dedicated Butler Assist",
               "Executive Tarmac Vehicle Transfer",
-              "Unlimited Baggage Assistance",
+              "Unlimited Baggage Assist",
             ],
             highlights: ["Most Popular Choice", "VIP Lounge Sanctuary", "Executive Tarmac Transfer"],
           },
@@ -1446,7 +1446,7 @@ export function getAirportServices(airportCode: string): AirportService[] {
       {
         id: "meet_greet",
         title: "Master Airport VIP Packages",
-        desc: "Personalized host escort from aerobridge, porter assistance, and fast-track clearance.",
+        desc: "Dedicated host escort from aerobridge, porter assist, and fast-track clearance.",
         type: "package",
         packages: [
           {
@@ -1511,7 +1511,7 @@ export function getAirportServices(airportCode: string): AirportService[] {
     {
       id: "meet_greet",
       title: "Master Airport VIP Packages",
-      desc: "Personalized host escort, express queues bypass, and baggage porter service.",
+      desc: "Dedicated host escort, express queues bypass, and baggage porter service.",
       type: "package",
       packages: [
         {
@@ -1541,7 +1541,7 @@ export function getAirportServices(airportCode: string): AirportService[] {
             "Dedicated Baggage Porter",
             "VIP Lounge Sanctuary Access",
             "Fast-Track Passport Control",
-            "Electric Buggy Assistance",
+            "Electric Buggy Assist",
           ],
           highlights: ["Most Popular Choice", "VIP Lounge Sanctuary", "Fast Track Clearance"],
         },
@@ -1554,7 +1554,7 @@ export function getAirportServices(airportCode: string): AirportService[] {
           isRecommended: false,
           includedServices: [
             "Personal Protocol Officer",
-            "Unlimited Baggage Assistance",
+            "Unlimited Baggage Assist",
             "Private Tarmac Sedan Transfer",
             "VVIP Private Lounge Suite",
             "Flight Delay Monitoring",

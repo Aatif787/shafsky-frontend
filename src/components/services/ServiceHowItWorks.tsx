@@ -26,7 +26,7 @@ export function ServiceHowItWorks({ serviceName, steps }: ServiceHowItWorksProps
     {
       number: "02",
       title: "Host Greeting & Aerobridge Placard Welcome",
-      description: "Upon arrival or terminal curbside drop-off, your dedicated Guest Relations Officer welcomes you with personalized placard identification.",
+      description: "Upon arrival or terminal curbside drop-off, your dedicated Guest Relations Officer welcomes you with placard identification.",
       badge: "Step 2: Welcome",
     },
     {

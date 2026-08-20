@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MapPin, Search, Loader2 } from "lucide-react";
-import { AIRPORT_REGISTRY, AirportRegistryEntry } from "@/data/airportRegistry";
+import { MapPin, Loader2 } from "lucide-react";
+import { airportApi, formatAirportOption } from "@/lib/api/airportApi";
 
 export interface SelectedAirportDetails {
+  id?: string;
   code: string;
   name: string;
   city: string;
   country: string;
   timezone?: string;
+  is_supported?: boolean;
 }
 
 interface IntelligentAirportAutocompleteProps {
@@ -16,65 +18,44 @@ interface IntelligentAirportAutocompleteProps {
   onChangeText?: (text: string) => void;
   placeholder?: string;
   className?: string;
+  /** supported = Neon supported_airports; global = airports.csv */
+  mode?: "global" | "supported";
+  journeyType?: "ARRIVAL" | "DEPARTURE" | "TRANSIT";
 }
 
+const UNSUPPORTED_MESSAGE = "This airport is currently not supported for online booking.";
 const monoFont = { fontFamily: "'JetBrains Mono', monospace" };
 const sansFont = { fontFamily: "'Plus Jakarta Sans', sans-serif" };
 
-export function searchAirports(query: string): SelectedAirportDetails[] {
-  if (!query || !query.trim()) {
-    return Object.values(AIRPORT_REGISTRY).slice(0, 10).map((entry) => ({
-      code: entry.code,
-      name: entry.name,
-      city: entry.city,
-      country: entry.country,
-      timezone: entry.timezone,
-    }));
-  }
+function extractIata(value: string): string {
+  const match = String(value || "").match(/\(([A-Z]{3})\)/i);
+  if (match) return match[1].toUpperCase();
+  const cleaned = String(value || "").trim().toUpperCase();
+  return /^[A-Z]{3}$/.test(cleaned) ? cleaned : "";
+}
 
-  const q = query.trim().toUpperCase();
+export async function searchAirports(
+  query: string,
+  mode: "global" | "supported" = "global",
+  journeyType?: "ARRIVAL" | "DEPARTURE" | "TRANSIT"
+): Promise<SelectedAirportDetails[]> {
+  const q = (query || "").trim();
+  const iata = extractIata(q);
+  const searchTerm = iata && q.length <= 5 ? iata : q;
 
-  // Search in AIRPORT_REGISTRY
-  const matchesFromRegistry = Object.values(AIRPORT_REGISTRY).filter((entry) => {
-    const codeMatch = entry.code.toUpperCase() === q || entry.code.toUpperCase().startsWith(q);
-    const nameMatch = entry.name.toUpperCase().includes(q);
-    const cityMatch = entry.city.toUpperCase().includes(q);
-    const countryMatch = entry.country.toUpperCase().includes(q);
-    return codeMatch || nameMatch || cityMatch || countryMatch;
-  }).map((entry) => ({
-    code: entry.code,
-    name: entry.name,
-    city: entry.city,
-    country: entry.country,
-    timezone: entry.timezone,
-  }));
-
-  if (matchesFromRegistry.length > 0) {
-    return matchesFromRegistry.slice(0, 15);
-  }
-
-  // Fallback: If 3-letter IATA code is typed directly
-  if (/^[A-Z]{3}$/.test(q)) {
-    return [
-      {
-        code: q,
-        name: `${q} International Airport`,
-        city: q,
-        country: "International",
-        timezone: "UTC",
-      },
-    ];
-  }
-
-  return [];
+  const res = await airportApi.search(searchTerm, mode, journeyType);
+  const rows = (res as any)?.data || [];
+  return Array.isArray(rows) ? rows : [];
 }
 
 export function IntelligentAirportAutocomplete({
   value,
   onSelect,
   onChangeText,
-  placeholder = "Search by Code, Airport Name, City, or Country",
+  placeholder = "Search airport",
   className = "",
+  mode = "global",
+  journeyType,
 }: IntelligentAirportAutocompleteProps) {
   const [inputValue, setInputValue] = useState(value || "");
   const [isOpen, setIsOpen] = useState(false);
@@ -83,11 +64,20 @@ export function IntelligentAirportAutocomplete({
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    setInputValue(value || "");
-  }, [value]);
+    const raw = value || "";
+    const code = extractIata(raw) || (/^[A-Z]{3}$/i.test(raw.trim()) ? raw.trim().toUpperCase() : "");
+    if (mode === "supported" && code && !raw.includes("—")) {
+      airportApi.listSupported().then((res) => {
+        const match = ((res as any).data || []).find((a: SelectedAirportDetails) => a.code === code);
+        setInputValue(match ? formatAirportOption(match) : raw);
+      });
+      return;
+    }
+    setInputValue(raw);
+  }, [value, mode]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -99,30 +89,37 @@ export function IntelligentAirportAutocomplete({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const runSearch = (text: string) => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    setLoading(true);
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const matches = await searchAirports(text, mode, journeyType);
+        setResults(matches);
+        setSelectedIndex(-1);
+      } catch {
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 200);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
     setInputValue(text);
     if (onChangeText) onChangeText(text);
-
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    setLoading(true);
     setIsOpen(true);
-
-    searchTimeoutRef.current = setTimeout(() => {
-      const matches = searchAirports(text);
-      setResults(matches);
-      setLoading(false);
-      setSelectedIndex(-1);
-    }, 300);
+    runSearch(text);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!isOpen) {
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         setIsOpen(true);
+        runSearch(inputValue);
       }
       return;
     }
@@ -144,14 +141,14 @@ export function IntelligentAirportAutocomplete({
   };
 
   const handleSelection = (airport: SelectedAirportDetails) => {
-    setInputValue(`${airport.city} (${airport.code})`);
+    setInputValue(formatAirportOption(airport));
     onSelect(airport);
     setIsOpen(false);
   };
 
   const highlightMatch = (text: string, query: string) => {
-    if (!query || !query.trim()) return text;
-    const q = query.trim();
+    const q = extractIata(query) || query.trim();
+    if (!q) return text;
     const parts = text.split(new RegExp(`(${q})`, "gi"));
     return (
       <span>
@@ -168,6 +165,15 @@ export function IntelligentAirportAutocomplete({
     );
   };
 
+  const emptyMessage =
+    mode === "supported"
+      ? (inputValue || "").trim()
+        ? UNSUPPORTED_MESSAGE
+        : "No configured airports found."
+      : (inputValue || "").trim()
+        ? "No matching airports found"
+        : "Loading global airports...";
+
   return (
     <div ref={containerRef} className={`relative w-full ${className}`}>
       <div className="relative">
@@ -178,10 +184,11 @@ export function IntelligentAirportAutocomplete({
           onChange={handleInputChange}
           onFocus={() => {
             setIsOpen(true);
-            setResults(searchAirports(inputValue));
+            runSearch(inputValue);
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
+          autoComplete="off"
           className="w-full rounded-xl border border-gray-300 bg-white/90 pl-9 pr-3.5 py-2.5 text-xs font-semibold text-slate-900 placeholder-gray-400 focus:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
           style={sansFont}
         />
@@ -189,20 +196,21 @@ export function IntelligentAirportAutocomplete({
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-2xl backdrop-blur-xl">
+        <div className="absolute z-[300] mt-1 max-h-72 w-full overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-2xl">
           {loading ? (
             <div className="flex items-center justify-center gap-2 p-4 text-xs text-slate-500 font-mono" style={monoFont}>
               <Loader2 className="h-4 w-4 animate-spin text-purple-600" />
-              <span>Searching Airports...</span>
+              <span>Loading airports...</span>
             </div>
           ) : results.length === 0 ? (
-            <div className="p-4 text-center text-xs text-slate-500 font-mono" style={monoFont}>
-              No matching airports found
+            <div className="p-4 text-center text-xs text-slate-600 font-sans">
+              {emptyMessage}
             </div>
           ) : (
             <ul className="py-1">
               {results.map((airport, idx) => {
                 const isSelected = idx === selectedIndex;
+                const label = formatAirportOption(airport);
                 return (
                   <li
                     key={`${airport.code}-${idx}`}
@@ -212,27 +220,25 @@ export function IntelligentAirportAutocomplete({
                       isSelected ? "bg-purple-50 text-purple-900 font-bold" : "hover:bg-gray-50 text-slate-800"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2.5 min-w-0">
                       <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 border border-amber-200 shrink-0">
                         <MapPin className="h-3.5 w-3.5 text-amber-700" />
                       </div>
-                      <div className="flex flex-col">
-                        <span className="font-bold text-slate-900" style={sansFont}>
-                          {highlightMatch(airport.name, inputValue)}
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-bold text-slate-900 truncate" style={sansFont}>
+                          {highlightMatch(label, inputValue)}
                         </span>
                         <span className="text-[10px] text-slate-500 font-mono" style={monoFont}>
                           {highlightMatch(`${airport.city}, ${airport.country}`, inputValue)}
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <span
-                        className="rounded-lg bg-slate-900 px-2 py-1 text-[10px] font-extrabold text-amber-400 shadow-xs"
-                        style={monoFont}
-                      >
-                        {airport.code}
-                      </span>
-                    </div>
+                    <span
+                      className="rounded-lg bg-slate-900 px-2 py-1 text-[10px] font-extrabold text-amber-400 shadow-xs shrink-0 ml-2"
+                      style={monoFont}
+                    >
+                      {airport.code}
+                    </span>
                   </li>
                 );
               })}

@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   ArrowRight,
+  ArrowLeft,
   Plane,
   User,
   Phone,
@@ -15,7 +16,8 @@ import {
   RefreshCw,
   Info,
 } from "lucide-react";
-import { AirportWorkflowState } from "../../hooks/useAirportWorkflow";
+import { AirportWorkflowState, formatBookingServiceDateTime } from "../../hooks/useAirportWorkflow";
+import { FlightItineraryStrip } from "./FlightItineraryStrip";
 
 interface BookingSummaryReviewStepProps {
   state: AirportWorkflowState;
@@ -24,6 +26,7 @@ interface BookingSummaryReviewStepProps {
   onEditJourney: () => void;
   onEditServices: () => void;
   onEditPassengers: () => void;
+  onBack: () => void;
   onProceedToPayment: () => void;
   validateWithBackend?: () => Promise<boolean>;
 }
@@ -35,6 +38,7 @@ export function BookingSummaryReviewStep({
   onEditJourney,
   onEditServices,
   onEditPassengers,
+  onBack,
   onProceedToPayment,
   validateWithBackend,
 }: BookingSummaryReviewStepProps) {
@@ -80,15 +84,15 @@ export function BookingSummaryReviewStep({
         <div className="space-y-2 relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[11px] font-mono font-bold uppercase tracking-widest border border-emerald-500/30">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Step 3 of 5 — Dynamic Booking Summary</span>
+            <span>Step 4 of 5 — Review</span>
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white">
             Review & Authorize Booking
           </h2>
 
-          <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed">
-            Dynamic airport-resolved summary for {state.resolvedAirport?.name || state.airportName} ({state.resolvedAirport?.code || state.airportCode}).
+          <p className="text-xs text-slate-300">
+            {state.resolvedAirport?.name || state.airportName} ({state.resolvedAirport?.code || state.airportCode})
           </p>
         </div>
 
@@ -133,6 +137,8 @@ export function BookingSummaryReviewStep({
         </div>
       )}
 
+      <FlightItineraryStrip flight={state.validatedFlightData} />
+
       {/* ── 4. SUMMARY SECTIONS GRID ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Card A: Flight & Airport Journey Details */}
@@ -155,12 +161,6 @@ export function BookingSummaryReviewStep({
 
             <div className="space-y-2 text-xs font-sans text-slate-700">
               <div className="flex items-center justify-between">
-                <span className="text-slate-400 font-mono">Flight Number:</span>
-                <span className="font-mono font-bold text-slate-900">
-                  {state.flightNumber || "Manual Entry"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
                 <span className="text-slate-400 font-mono">Journey Type:</span>
                 <span className="font-bold font-mono text-amber-700 uppercase px-2 py-0.5 bg-amber-50 border border-amber-200 rounded-md">
                   {state.direction} Services
@@ -175,7 +175,7 @@ export function BookingSummaryReviewStep({
               <div className="flex items-center justify-between">
                 <span className="text-slate-400 font-mono">Travel Date & Time:</span>
                 <span className="font-bold text-slate-900">
-                  {state.serviceDate} at {state.serviceTime}
+                  {formatBookingServiceDateTime(state)}
                 </span>
               </div>
             </div>
@@ -375,11 +375,20 @@ export function BookingSummaryReviewStep({
           </span>
         </label>
 
-        <button
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="sm:w-auto px-6 py-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-widest inline-flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back</span>
+          </button>
+          <button
           type="button"
           disabled={!agreedToTerms || isValidating || state.isValidatingBooking}
           onClick={handleAction}
-          className={`w-full py-4 rounded-2xl font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
+          className={`flex-1 py-4 rounded-2xl font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
             agreedToTerms && !isValidating && !state.isValidatingBooking
               ? "bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white shadow-lg cursor-pointer hover:scale-[1.01]"
               : "bg-slate-200 text-slate-400 cursor-not-allowed"
@@ -398,6 +407,7 @@ export function BookingSummaryReviewStep({
             </>
           )}
         </button>
+        </div>
       </div>
     </div>
   );

@@ -116,7 +116,7 @@ function TravelServicesPage() {
           a: "We maintain direct partnerships with premier hotel chains including Taj Hotels, Oberoi, Four Seasons, Marriott, and boutique heritage properties across 20+ cities.",
         },
         {
-          q: "How does Visa Assistance work upon landing?",
+          q: "How does Visa Assist work upon landing?",
           a: "For eligible destinations offering visa-on-arrival or e-visas, our host meets you at the aerobridge and guides you through dedicated diplomatic visa desks for expedited processing.",
         },
         {

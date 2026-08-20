@@ -1,15 +1,6 @@
 import React, { useState } from "react";
 import {
   Check,
-  Crown,
-  Users,
-  Hotel,
-  Ticket,
-  Package,
-  Car,
-  HeartPulse,
-  Sparkles,
-  Zap,
   AlertCircle,
   RefreshCw,
   PhoneCall,
@@ -120,7 +111,7 @@ export function AirportServiceSelection({
           className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-lg hover:scale-105 transition cursor-pointer"
         >
           <PhoneCall className="w-4 h-4" />
-          <span>Contact Team for VIP Assistance</span>
+          <span>Contact Team for VIP Assist</span>
         </button>
       </div>
     );
@@ -129,36 +120,25 @@ export function AirportServiceSelection({
   return (
     <div className="space-y-8">
       {/* ── 3. DYNAMIC AIRPORT HEADER ── */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 text-white shadow-xl space-y-4 relative overflow-hidden">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div className="space-y-1">
+      <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 text-white shadow-xl relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-2">
             <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 inline-block">
               Your Service Airport
             </span>
             <h2 className="text-xl sm:text-2xl font-serif font-bold text-white">
-              {state.resolvedAirport?.name ||
-                state.airportName ||
-                `${state.airportCode} Airport`}
+              {state.resolvedAirport?.name || state.airportName || `${state.airportCode} Airport`}
+              {state.airportCode ? ` (${state.resolvedAirport?.code || state.airportCode})` : ""}
             </h2>
-            <p className="text-xs text-slate-300 font-sans">
-              {state.resolvedAirport?.city || state.airportName} (
-              {state.resolvedAirport?.code || state.airportCode})
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 font-mono text-xs font-bold uppercase tracking-wider border border-amber-500/30">
               {state.direction} Packages
             </span>
-            <span className="px-3.5 py-1.5 rounded-xl bg-slate-800 text-slate-300 font-mono text-xs font-bold uppercase tracking-wider border border-slate-700">
-              {state.flightType ||
-                (state.direction === "transit" ? "International" : "Domestic")}
+            <span className="px-3.5 py-1.5 rounded-xl bg-slate-800 text-slate-200 font-mono text-xs font-bold uppercase tracking-wider border border-slate-700">
+              {state.travelType || state.flightType || "Domestic"}
             </span>
-            {currentTerminal && (
-              <span className="px-3.5 py-1.5 rounded-xl bg-slate-800 text-amber-400 font-mono text-xs font-bold uppercase tracking-wider border border-slate-700">
-                {currentTerminal}
-              </span>
-            )}
           </div>
         </div>
       </div>

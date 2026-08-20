@@ -116,7 +116,7 @@ const FAQ_DATASET: FAQItem[] = [
   {
     id: "medical-1",
     category: "medical",
-    categoryLabel: "Medical Assistance",
+    categoryLabel: "Medical Assist",
     q: "How quickly can an airborne ICU medevac air ambulance be dispatched?",
     a: "Our 24/7 command center dispatches critical care air ambulance aircraft within 90–120 minutes of flight confirmation, complete with specialized flight physicians and life support equipment.",
     highlight: "Dispatch < 120m",
