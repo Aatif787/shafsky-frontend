@@ -5,6 +5,7 @@ import { FlightData } from "@/services/flight/FlightTypes";
 import { IntelligentAirlineAutocomplete } from "./IntelligentAirlineAutocomplete";
 import { IntelligentAirportAutocomplete } from "./IntelligentAirportAutocomplete";
 import { IntelligentFlightNumberAutocomplete } from "./IntelligentFlightNumberAutocomplete";
+import { airlineLogoUrl } from "@/data/airlineRegistry";
 
 export interface ManualFlightDetails {
   airlineName: string;
@@ -108,7 +109,7 @@ export function ManualFlightEntryForm({
       carrier: {
         iata: carrierIata,
         name: carrierName,
-        logo: `https://images.aviation-edge.com/airline-logos/${carrierIata}.png`,
+        logo: airlineLogoUrl(carrierIata),
       },
       origin: {
         code: cleanDepCode,

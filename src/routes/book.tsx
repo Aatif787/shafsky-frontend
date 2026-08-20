@@ -28,6 +28,7 @@ const bookSearchSchema = z.object({
   flight_type: z.string().optional().catch(""),
   from_hero: z.string().optional().catch(""),
   validated: z.string().optional().catch(""),
+  source: z.string().optional().catch(""),
 });
 
 export const Route = createFileRoute("/book")({

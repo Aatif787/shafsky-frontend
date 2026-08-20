@@ -3,13 +3,11 @@ import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { C, mono } from "./theme";
 import lounge from "@/assets/lounge.png";
 import interior from "@/assets/interior.jpg";
-import slide0 from "@/assets/image.png";
-import slide1 from "@/assets/image1.png";
 import slide2 from "@/assets/image2.png";
 import slide3 from "@/assets/image3.png";
 import world from "@/assets/world.png";
 
-const SLIDESHOW_IMAGES = [world, slide0, slide1, slide2, slide3, lounge, interior];
+const SLIDESHOW_IMAGES = [world, slide2, slide3, lounge, interior];
 
 export function HeroSection({ visible }: { visible: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -149,4 +147,3 @@ export function HeroSection({ visible }: { visible: boolean }) {
     </section>
   );
 }
-

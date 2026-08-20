@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Plane, Search, Check, Loader2 } from "lucide-react";
-import { AIRLINE_REGISTRY, AirlineEntry, searchAirlines } from "@/data/airlineRegistry";
+import { Loader2 } from "lucide-react";
+import { AirlineEntry, searchAirlines } from "@/data/airlineRegistry";
+import { AirlineLogo } from "./AirlineLogo";
 
 interface IntelligentAirlineAutocompleteProps {
   value: string;
@@ -156,12 +157,8 @@ export function IntelligentAirlineAutocomplete({
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-6 w-6 items-center justify-center rounded bg-slate-100 p-0.5 border border-gray-200 shrink-0">
-                        {airline.logo ? (
-                          <img src={airline.logo} alt={airline.name} className="h-4 w-4 object-contain" />
-                        ) : (
-                          <Plane className="h-3 w-3 text-slate-600" />
-                        )}
+                      <div className="flex h-7 w-7 items-center justify-center rounded bg-white p-0.5 border border-gray-200 shrink-0 overflow-hidden">
+                        <AirlineLogo iata={airline.iata} />
                       </div>
                       <div className="flex flex-col">
                         <span className="font-semibold" style={sansFont}>

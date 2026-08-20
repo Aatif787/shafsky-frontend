@@ -1,6 +1,45 @@
 import React from "react";
 import { Plane } from "lucide-react";
-import { FlightData } from "@/services/flight/FlightTypes";
+import { FlightData, FlightAirport } from "@/services/flight/FlightTypes";
+import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
+
+function looksLikeCode(value?: string | null): boolean {
+  return !!value && /^[A-Z0-9]{3,4}$/i.test(value.trim());
+}
+
+function prettyCity(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return trimmed;
+  if (trimmed === trimmed.toUpperCase() && trimmed.length > 3) {
+    return trimmed.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+  return trimmed;
+}
+
+function resolvePlace(ap?: FlightAirport | null): { city: string; airport: string | null; code: string } {
+  const code = (ap?.code || "").trim().toUpperCase() || "—";
+  const known = AIRPORT_REGISTRY[code];
+
+  let city = (ap?.city || "").trim();
+  let airport = (ap?.name || "").trim();
+
+  if (!city || looksLikeCode(city)) {
+    city = (known?.city || "").trim();
+  }
+  if (!airport || looksLikeCode(airport)) {
+    airport = (known?.name || "").trim();
+  }
+
+  city = prettyCity(city);
+  if (!city) city = prettyCity(airport) || code;
+
+  const airportLooksDistinct =
+    Boolean(airport) &&
+    prettyCity(airport).toLowerCase() !== city.toLowerCase() &&
+    !looksLikeCode(airport);
+
+  return { city, airport: airportLooksDistinct ? airport : null, code };
+}
 
 function fmtTime(value?: string | null): string {
   if (!value) return "—";
@@ -151,8 +190,8 @@ function displayDuration(flight: FlightData): string | null {
 export function FlightItineraryStrip({ flight }: { flight: FlightData | null }) {
   if (!flight?.flightNum) return null;
 
-  const origin = flight.origin?.code || "—";
-  const dest = flight.destination?.code || "—";
+  const origin = resolvePlace(flight.origin);
+  const dest = resolvePlace(flight.destination);
   const depTerm = flight.departure?.terminal ? `T${String(flight.departure.terminal).replace(/^T/i, "")}` : null;
   const arrTerm = flight.arrival?.terminal ? `T${String(flight.arrival.terminal).replace(/^T/i, "")}` : null;
   const durationText = displayDuration(flight);
@@ -184,25 +223,55 @@ export function FlightItineraryStrip({ flight }: { flight: FlightData | null }) 
         )}
       </div>
 
-      <div className="mt-3 flex items-center gap-3">
-        <div className="min-w-0">
-          <div className="text-lg font-extrabold text-slate-900 font-mono">{origin}</div>
-          <div className="text-[10px] text-slate-500 font-mono">
-            {fmtTime(flight.departure?.scheduledTime)}
-            {depTerm ? ` · ${depTerm}` : ""}
+      <div className="mt-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500">
+            Departure
+          </div>
+          <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500 text-right">
+            Arrival
           </div>
         </div>
-        <div className="relative flex-1 h-6 overflow-hidden">
-          <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-slate-200 via-amber-400 to-slate-200" />
-          <div className="shafsky-flight-icon absolute top-1/2 text-amber-600">
-            <Plane className="h-3.5 w-3.5 rotate-45" />
+
+        <div className="mt-0.5 flex items-center gap-3">
+          <div className="min-w-0 max-w-[38%] shrink-0 text-base sm:text-lg font-serif font-bold text-slate-900 leading-tight">
+            {origin.city}
+          </div>
+          <div className="relative min-h-6 flex-1 overflow-hidden">
+            <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-slate-200 via-amber-400 to-slate-200" />
+            <div className="shafsky-flight-icon absolute top-1/2 text-amber-600">
+              <Plane className="h-3.5 w-3.5 rotate-45" />
+            </div>
+          </div>
+          <div className="min-w-0 max-w-[38%] shrink-0 text-right text-base sm:text-lg font-serif font-bold text-slate-900 leading-tight">
+            {dest.city}
           </div>
         </div>
-        <div className="min-w-0 text-right">
-          <div className="text-lg font-extrabold text-slate-900 font-mono">{dest}</div>
-          <div className="text-[10px] text-slate-500 font-mono">
-            {fmtTime(flight.arrival?.scheduledTime)}
-            {arrTerm ? ` · ${arrTerm}` : ""}
+
+        <div className="mt-0.5 flex items-start justify-between gap-3">
+          <div className="min-w-0 max-w-[46%]">
+            {origin.airport && (
+              <div className="text-[11px] text-slate-600 font-sans leading-snug line-clamp-2">
+                {origin.airport}
+              </div>
+            )}
+            <div className="mt-1 text-[10px] text-slate-500 font-mono">
+              {origin.code}
+              {` · ${fmtTime(flight.departure?.scheduledTime)}`}
+              {depTerm ? ` · ${depTerm}` : ""}
+            </div>
+          </div>
+          <div className="min-w-0 max-w-[46%] text-right">
+            {dest.airport && (
+              <div className="text-[11px] text-slate-600 font-sans leading-snug line-clamp-2">
+                {dest.airport}
+              </div>
+            )}
+            <div className="mt-1 text-[10px] text-slate-500 font-mono">
+              {dest.code}
+              {` · ${fmtTime(flight.arrival?.scheduledTime)}`}
+              {arrTerm ? ` · ${arrTerm}` : ""}
+            </div>
           </div>
         </div>
       </div>

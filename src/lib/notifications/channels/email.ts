@@ -1,11 +1,12 @@
 /**
  * Resend Email Channel Connector - Server Only
  */
-console.log("===== ENV DEBUG =====");
-console.log("RESEND_API_KEY:", process.env.RESEND_API_KEY);
-console.log("EMAIL_FROM:", process.env.EMAIL_FROM);
-console.log("EMAIL_REPLY_TO:", process.env.EMAIL_REPLY_TO);
-console.log("=====================");
+console.log(
+  "[Email Channel] Resend config present:",
+  Boolean(process.env.RESEND_API_KEY),
+  "from present:",
+  Boolean(process.env.EMAIL_FROM || process.env.RESEND_FROM_EMAIL),
+);
 export interface EmailParams {
   recipient: string;
   subject: string;

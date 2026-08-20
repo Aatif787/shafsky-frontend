@@ -59,6 +59,7 @@ export interface AirportWorkflowState {
   isResolvingAirport?: boolean;
   resolvedAirport?: any;
   isFlightLocked?: boolean;
+  bookingSource?: "airport_page" | "generic";
 }
 
 /**
@@ -278,14 +279,20 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     return cleaned.length === 3 ? cleaned : "";
   };
 
+  const isAirportPageBooking =
+    String(searchParams?.source || searchParams?.booking_source || "").toLowerCase() === "airport_page";
+
   const initialDirection: "arrival" | "departure" | "transit" =
     (searchParams?.direction as any) || "arrival";
 
   const initialOrigin = extractIata(searchParams?.origin);
   const initialDest = extractIata(searchParams?.destination);
   const initialTransit = extractIata(searchParams?.transit);
-  const initialServiceAirport =
+  const pageAirport =
     extractIata(searchParams?.airport) ||
+    extractIata(searchParams?.airport_id);
+  const initialServiceAirport =
+    pageAirport ||
     (initialDirection === "arrival"
       ? initialDest
       : initialDirection === "departure"
@@ -316,10 +323,11 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
   const [state, setState] = useState<AirportWorkflowState>({
     airportCode: extractedCode,
     airportName: initialAirportName,
+    bookingSource: isAirportPageBooking ? "airport_page" : "generic",
     direction: initialDirection,
-    originCode: initialOrigin,
-    destCode: initialDest,
-    transitCode: initialTransit,
+    originCode: isAirportPageBooking && initialDirection === "departure" ? extractedCode : initialOrigin,
+    destCode: isAirportPageBooking && initialDirection === "arrival" ? extractedCode : initialDest,
+    transitCode: isAirportPageBooking && initialDirection === "transit" ? extractedCode : initialTransit,
     travelType: initialTravelType,
     bookingMode: "package",
     selectedService: searchParams?.package_id || "",
@@ -511,6 +519,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
           tripType: state.direction === "transit" ? "multi_city" : "one_way",
           originCode: state.originCode || undefined,
           destCode: state.destCode || undefined,
+          airportCode: state.airportCode || undefined,
           direction: state.direction,
         }),
       });
@@ -729,8 +738,14 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       }
 
       updateState({
-        airportCode: resolution.service_airport || selectedServiceAirport,
-        airportName: matchedAirportName,
+        airportCode: state.bookingSource === "airport_page"
+          ? selectedServiceAirport
+          : (resolution.service_airport || selectedServiceAirport),
+        airportName: state.bookingSource === "airport_page"
+          ? (state.airportName || matchedAirportName)
+          : matchedAirportName,
+        originCode: state.bookingSource === "airport_page" ? (originCode || state.originCode) : state.originCode,
+        destCode: state.bookingSource === "airport_page" ? (destCode || state.destCode) : state.destCode,
         isAirportCovered: true,
         flightStateMode: "VERIFIED",
         flightErrorMessage: undefined,

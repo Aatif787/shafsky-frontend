@@ -482,7 +482,9 @@ export function MeetGreetPackageComparison({
                       search={
                         {
                           ...(bookingSearch || {}),
+                          source: "airport_page",
                           airport: airportCode,
+                          airport_name: cityName,
                           origin: (bookingSearch?.origin as string) || airportCode,
                           destination: (bookingSearch?.destination as string) || airportCode,
                           pax_adults: Number(bookingSearch?.pax_adults) || 1,

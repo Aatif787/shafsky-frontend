@@ -199,7 +199,9 @@ export function AirportServiceSelection({
               <AlertCircle className="w-6 h-6" />
             </div>
             <p className="text-base font-serif font-bold text-slate-900">
-              No packages are currently available for this airport and journey.
+              {state.bookingSource === "airport_page"
+                ? "No services are currently available for this airport/service type."
+                : "No packages are currently available for this airport and journey."}
             </p>
             <p className="text-xs text-slate-600 font-sans max-w-md mx-auto leading-relaxed">
               We are expanding operations at{" "}

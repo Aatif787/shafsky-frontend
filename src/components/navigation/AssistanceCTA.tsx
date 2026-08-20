@@ -7,13 +7,25 @@ interface AssistanceCTAProps {
   heading?: string;
   subheading?: string;
   className?: string;
+  airportCode?: string;
+  airportName?: string;
 }
 
 export function AssistanceCTA({
   heading = "Need VIP Concierge Assistance?",
   subheading = "Reserve custom airside escort, lounge, or private transport.",
   className = "",
+  airportCode,
+  airportName,
 }: AssistanceCTAProps) {
+  const lockedCode = (airportCode || "").trim().toUpperCase();
+  const reservationSearch = lockedCode
+    ? {
+        source: "airport_page",
+        airport: lockedCode,
+        airport_name: airportName || "",
+      }
+    : undefined;
   return (
     <FadeInView>
       <section className={`relative my-16 rounded-3xl bg-white p-8 sm:p-12 border border-slate-200/80 shadow-md ${className}`}>
@@ -52,6 +64,7 @@ export function AssistanceCTA({
             <Magnetic strength={0.25}>
               <Link
                 to="/book"
+                {...(reservationSearch ? { search: reservationSearch as any } : {})}
                 className="group relative inline-flex items-center justify-center gap-3 px-7 py-3.5 rounded-2xl bg-[#84cc16] hover:bg-[#65a30d] text-[#0f172a] font-mono text-xs font-bold uppercase tracking-widest shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 w-full"
               >
                 <span>Proceed to Reservation</span>

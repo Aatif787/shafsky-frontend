@@ -1,10 +1,8 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
-import { createBooking } from "@/lib/bookings.functions";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, AlertCircle, AlertTriangle, RefreshCw, Edit2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, AlertCircle, AlertTriangle, RefreshCw, Edit2, MapPin } from "lucide-react";
 import { BookingProgressHeader } from "../../shared/BookingProgressHeader";
 import { BookingSuccessPass } from "../../shared/BookingSuccessPass";
 import { useAirportWorkflow, resolveBookingServiceTime } from "../../hooks/useAirportWorkflow";
@@ -21,7 +19,6 @@ interface AirportWorkflowProps {
 
 export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
   const navigate = useNavigate();
-  const submitBookingFn = useServerFn(createBooking);
 
   const {
     currentStep,
@@ -40,6 +37,36 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
     priceBreakdown,
     totalPrice,
   } = useAirportWorkflow(searchParams);
+
+  const isAirportPageBooking = state.bookingSource === "airport_page";
+
+  const applyServiceDirection = useCallback(
+    (dir: "arrival" | "departure" | "transit") => {
+      const locked = (state.airportCode || "").trim().toUpperCase();
+      const next: Parameters<typeof updateState>[0] = {
+        direction: dir,
+        isFlightValidated: false,
+        validatedFlightData: null,
+        flightErrorMessage: undefined,
+        routeMatchError: undefined,
+      };
+      if (isAirportPageBooking && locked) {
+        next.airportCode = locked;
+        next.airportName = state.airportName;
+        if (dir === "arrival") {
+          next.destCode = locked;
+          next.transitCode = "";
+        } else if (dir === "departure") {
+          next.originCode = locked;
+          next.transitCode = "";
+        } else {
+          next.transitCode = locked;
+        }
+      }
+      updateState(next);
+    },
+    [isAirportPageBooking, state.airportCode, state.airportName, updateState]
+  );
 
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
 
@@ -136,9 +163,9 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
     const ref = bookingRef || `${getRefPrefix()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
     try {
-      const result = await submitBookingFn({
-        data: {
-          bookingRef: ref,
+      const res = await ApiClient.fetchWithAuth("/api/bookings", {
+        method: "POST",
+        body: JSON.stringify({
           passengerName: state.fullName,
           passengerEmail: state.email,
           passengerPhone: state.phone,
@@ -157,13 +184,13 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
           departureTime: state.serviceDate && serviceClock ? new Date(`${state.serviceDate}T${serviceClock}:00`) : new Date(),
           totalAmount: totalPrice,
           currency: state.catalogCurrency || "INR",
-          status: "PENDING",
           notes: state.specialRequests || `Airport: ${state.airportCode}, Direction: ${state.direction}`,
-        },
+        }),
       });
+      const result = await res.json().catch(() => null);
 
-      if (result && result.success) {
-        setBookingRef(ref);
+      if (res.ok && result && result.success) {
+        setBookingRef(result.data?.bookingRef || result.data?.booking_ref || ref);
         setCurrentStep(5);
         toast.success("Booking request submitted successfully!");
       } else {
@@ -171,13 +198,11 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       }
     } catch (err) {
       console.error("Booking error:", err);
-      toast.error("Failed to submit booking. Using offline fallback reference.");
-      setBookingRef(ref);
-      setCurrentStep(5);
+      toast.error("Failed to submit booking. Please try again.");
     } finally {
       setBusy(false);
     }
-  }, [state, totalPrice, getRefPrefix, submitBookingFn, setCurrentStep, setBusy, setBookingRef, bookingRef]);
+  }, [state, totalPrice, getRefPrefix, setCurrentStep, setBusy, setBookingRef, bookingRef]);
 
   const handleGoBack = useCallback(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -229,11 +254,15 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                       Step 1 of 5 — Journey Details
                     </span>
                     <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
-                      Select Airport & Enter Travel Details
+                      {isAirportPageBooking
+                        ? `${state.airportName || state.airportCode} Reservation`
+                        : "Select Airport & Enter Travel Details"}
                     </h2>
                     <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
-                    Choose service type, travel type, then origin and destination. The existing {state.airportCode || "airport"} service catalogue opens after validation.
-                  </p>
+                      {isAirportPageBooking
+                        ? "Choose arrival, departure, or transit. This airport is already selected as the service location."
+                        : `Choose service type, travel type, then origin and destination. The existing ${state.airportCode || "airport"} service catalogue opens after validation.`}
+                    </p>
                   </div>
 
                   {/* Direction Selector */}
@@ -250,15 +279,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                         <button
                           key={dir.id}
                           type="button"
-                          onClick={() =>
-                            updateState({
-                              direction: dir.id as any,
-                              isFlightValidated: false,
-                              validatedFlightData: null,
-                              flightErrorMessage: undefined,
-                              routeMatchError: undefined,
-                            })
-                          }
+                          onClick={() => applyServiceDirection(dir.id as "arrival" | "departure" | "transit")}
                           className={`flex-1 py-3 px-3 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                             state.direction === dir.id
                               ? "bg-white text-amber-900 shadow-sm border border-slate-200/80"
@@ -299,6 +320,29 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                     </div>
                   </div>
 
+                  {isAirportPageBooking && state.airportCode && (
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                      <div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">
+                        Booking Airport
+                      </div>
+                      <div className="mt-1 flex items-center gap-2 text-slate-900">
+                        <MapPin className="w-4 h-4 text-[#7c3aed] shrink-0" />
+                        <span className="font-serif font-bold text-lg">
+                          {state.airportName || state.airportCode}
+                          {state.airportCode ? ` (${state.airportCode})` : ""}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-xs text-slate-600 font-sans">
+                        {state.direction === "arrival"
+                          ? "Arrival services use this airport as the destination. Origin comes from the flight after verification."
+                          : state.direction === "departure"
+                            ? "Departure services use this airport as the origin. Destination comes from the flight after verification."
+                            : "Transit services are provided at this airport. Connecting origin and destination come from the flight after verification."}
+                      </p>
+                    </div>
+                  )}
+
+                  {!isAirportPageBooking && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-2">
@@ -371,8 +415,9 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                       />
                     </div>
                   </div>
+                  )}
 
-                  {state.airportCode && (
+                  {!isAirportPageBooking && state.airportCode && (
                     <p className="text-[11px] font-mono text-slate-600">
                       Selected airport:{" "}
                       <span className="font-bold text-slate-900">
@@ -430,7 +475,11 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                       type="button"
                       onClick={() => {
                         if (!state.airportCode) {
-                          toast.error("Please complete origin and destination.");
+                          toast.error(
+                            isAirportPageBooking
+                              ? "Booking airport is missing. Please return to the airport page and try again."
+                              : "Please complete origin and destination."
+                          );
                           return;
                         }
                         if (!state.serviceDate) {
@@ -530,7 +579,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                           Contact Team for VIP Assist
                         </button>
 
-                        {!state.isFlightLocked && (
+                        {!state.isFlightLocked && !isAirportPageBooking && (
                           <button
                             type="button"
                             onClick={() => setIsEditDrawerOpen(true)}

@@ -124,6 +124,8 @@ export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearc
       <AssistanceCTA
         heading={`Ready for VIP Arrival at ${a.city}?`}
         subheading={`Reserve custom airside escort, lounge access, and chauffeured transit at ${a.code}.`}
+        airportCode={a.code}
+        airportName={a.airport?.name || `${a.city} (${a.code})`}
       />
 
       {/* 5. Airport FAQ Section */}

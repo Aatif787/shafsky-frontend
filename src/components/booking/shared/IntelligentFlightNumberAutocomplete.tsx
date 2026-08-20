@@ -86,8 +86,8 @@ export function IntelligentFlightNumberAutocomplete({
         const rawItems = Array.isArray(resJson?.data) ? resJson.data : Array.isArray(resJson) ? resJson : [];
         const suggestions: FlightSuggestion[] = rawItems.map((item: any) => ({
           flightNum: item?.flight?.iata || item?.flightNum || cleanQuery,
-          origin: item?.departure?.airport || item?.origin?.code || "DEL",
-          destination: item?.arrival?.airport || item?.destination?.code || "BOM",
+          origin: item?.departure?.airport || item?.origin?.code || undefined,
+          destination: item?.arrival?.airport || item?.destination?.code || undefined,
           airlineName: item?.airline?.name || item?.carrier?.name,
         }));
 

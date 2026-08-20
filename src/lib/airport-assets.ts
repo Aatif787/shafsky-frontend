@@ -19,6 +19,8 @@ import gauDesktop from "../assets/airports/gau/Dek-Gau-air.jpg";
 import gauMobile from "../assets/airports/gau/Mob-Gau-air.jpg";
 import vtzDesktop from "../assets/airports/vtz/Dek-Vtz-air.jpg";
 import vtzMobile from "../assets/airports/vtz/Mob-Vtz-air.jpg";
+import ccuDesktop from "../assets/airports/ccu/Dek-Ccu-air.jpg";
+import ccuMobile from "../assets/airports/ccu/Mob-Ccu-air.jpg";
 
 const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: string }> = {
   del: {
@@ -62,6 +64,11 @@ const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: s
     desktop: vtzDesktop,
     mobile: vtzMobile,
   },
+  ccu: {
+    desktop: ccuDesktop,
+    mobile: ccuMobile,
+    tablet: ccuDesktop,
+  },
 };
 
 /**
@@ -88,7 +95,7 @@ export function getAirportAsset(airportCode: string, filename: string): string |
     return airportAssets.mobile;
   }
   if (normalizedFile.includes("tablet")) {
-    return airportAssets.tablet;
+    return airportAssets.tablet || airportAssets.desktop;
   }
 
   return undefined;
