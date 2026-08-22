@@ -549,47 +549,47 @@ export function renderTemplate(
         case "booking_created":
           return {
             subject: "WhatsApp",
-            body: `Hello ${name}, your booking request has been logged under code ${ref} (${route}). We will issue a quote shortly. Thank you.`,
+            body: `✨ *Shafsky Aviation VIP Desk*\n\nDear ${name},\n\nYour bespoke journey request has been logged.\n\n*Reference:* ${ref}\n*Route:* ${route}\n\nOur operations team is currently drafting your concierge route sequence. A formal quote will follow shortly.\n\nThank you for choosing Shafsky Aviation.`,
           };
         case "booking_confirmed":
           return {
             subject: "WhatsApp",
-            body: `Hello ${name}, good news! Your booking ${ref} is CONFIRMED for ${payload.departDate}. Access your lounge credentials on the Shafsky portal.`,
+            body: `✈️ *Shafsky Aviation Confirmation*\n\nDear ${name},\n\nWe are delighted to confirm your upcoming journey on *${payload.departDate || "your requested date"}*.\n\n*Reference:* ${ref}\n\nYour lounge credentials and service itinerary are now available. Please access the Shafsky portal to review your bespoke arrangements.`,
           };
         case "booking_rejected":
           return {
             subject: "WhatsApp",
-            body: `Hello ${name}, we regret to inform you that your booking request ${ref} has been rejected due to slot limitations.`,
+            body: `🛎️ *Shafsky Aviation Update*\n\nDear ${name},\n\nWe regret that we are currently unable to accommodate your request (*${ref}*) due to operational slot limitations.\n\nOur concierge team remains at your disposal to assist with alternative dates or arrangements.`,
           };
         case "booking_cancelled":
           return {
             subject: "WhatsApp",
-            body: `Hello ${name}, your booking ${ref} has been successfully cancelled. Refunds will post shortly if applicable.`,
+            body: `🛎️ *Shafsky Aviation Update*\n\nDear ${name},\n\nYour booking (*${ref}*) has been successfully cancelled per your instructions.\n\nAny applicable refunds will be processed to your original payment method promptly.`,
           };
         case "booking_rescheduled":
           return {
             subject: "WhatsApp",
-            body: `Hello ${name}, your booking ${ref} has been rescheduled to a new date: ${payload.departDate}.`,
+            body: `📅 *Shafsky Aviation Schedule Update*\n\nDear ${name},\n\nYour itinerary (*${ref}*) has been updated.\n\n*New Departure Date:* ${payload.departDate || "TBA"}\n\nOur concierge team will ensure your seamless transit on the new date.`,
           };
         case "payment_successful":
           return {
             subject: "WhatsApp",
-            body: `Payment Successful! ₹${payload.amount?.toLocaleString()} received for booking ${ref}. Receipt is now in your locker.`,
+            body: `💎 *Shafsky Aviation Billing*\n\nDear ${name},\n\nPayment of *₹${payload.amount?.toLocaleString() || "0"}* for your booking (*${ref}*) has been successfully processed.\n\nYour detailed invoice is now available in your secure locker.`,
           };
         case "payment_failed":
           return {
             subject: "WhatsApp",
-            body: `Alert: Payment of ₹${payload.amount?.toLocaleString()} failed for booking ${ref}. Update details to prevent cancellation.`,
+            body: `⚠️ *Shafsky Aviation Billing Alert*\n\nDear ${name},\n\nWe were unable to process the payment of *₹${payload.amount?.toLocaleString() || "0"}* for your booking (*${ref}*).\n\nPlease kindly update your payment credentials via the portal to secure your reservation.`,
           };
         case "refund_processed":
           return {
             subject: "WhatsApp",
-            body: `Refund of ₹${payload.amount?.toLocaleString()} has been processed for booking ${ref}.`,
+            body: `💳 *Shafsky Aviation Billing*\n\nDear ${name},\n\nA refund of *₹${payload.amount?.toLocaleString() || "0"}* has been successfully initiated for booking *${ref}*.\n\nPlease allow standard banking times for the credit to reflect.`,
           };
         default:
           return {
             subject: "WhatsApp",
-            body: `Shafsky Aviation: Booking update for ${ref}. Status: ${eventType}.`,
+            body: `✨ *Shafsky Aviation Update*\n\nDear Client,\n\nThere is an operational update concerning your booking (*${ref}*).\n\nStatus: *${eventType}*`,
           };
       }
     }
