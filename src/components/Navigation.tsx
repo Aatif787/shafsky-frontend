@@ -173,11 +173,10 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
           ? "bg-[#faf9f5]/95 backdrop-blur-xl border-b border-slate-200/80 shadow-md py-3.5"
           : "bg-gradient-to-b from-[#faf9f5] via-[#faf9f5]/90 to-transparent py-4.5"
-      } ${!visible ? "-translate-y-full" : "translate-y-0"}`}
+        } ${!visible ? "-translate-y-full" : "translate-y-0"}`}
     >
       <div className="relative max-w-[1440px] mx-auto w-full px-4 sm:px-6 md:px-8 flex items-center justify-between min-h-[52px]">
         {/* ── 1. LOGO SECTION (Left - Prominent, Adaptive & Balanced) ── */}
@@ -234,33 +233,29 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                 >
                   <Link
                     to={item.href}
-                    className={`text-[12px] font-bold uppercase tracking-[0.18em] transition-colors duration-200 flex items-center gap-1.5 py-1 ${
-                      isActive ? "text-emerald-700 font-extrabold" : "text-slate-700 hover:text-slate-900"
-                    }`}
+                    className={`text-[12px] font-bold uppercase tracking-[0.18em] transition-colors duration-200 flex items-center gap-1.5 py-1 ${isActive ? "text-emerald-700 font-extrabold" : "text-slate-700 hover:text-slate-900"
+                      }`}
                   >
                     <span>{item.label}</span>
                     {hasMegaMenu && (
                       <ChevronDown
-                        className={`w-3.5 h-3.5 text-emerald-700 transition-transform duration-300 ${
-                          hoveredCategory === item.label ? "rotate-180 text-emerald-700" : "opacity-70"
-                        }`}
+                        className={`w-3.5 h-3.5 text-emerald-700 transition-transform duration-300 ${hoveredCategory === item.label ? "rotate-180 text-emerald-700" : "opacity-70"
+                          }`}
                       />
                     )}
                   </Link>
                   <span
-                    className={`absolute bottom-0 left-0 w-full h-[2.5px] bg-emerald-600 rounded-full transition-transform duration-300 ${
-                      isActive || hoveredCategory === item.label ? "scale-x-100" : "scale-x-0"
-                    }`}
+                    className={`absolute bottom-0 left-0 w-full h-[2.5px] bg-emerald-600 rounded-full transition-transform duration-300 ${isActive || hoveredCategory === item.label ? "scale-x-100" : "scale-x-0"
+                      }`}
                   />
 
                   {/* UNIFIED 5-SERVICES MEGA MENU DROPDOWN */}
                   {hasMegaMenu && item.megaMenu && (
                     <div
-                      className={`absolute top-full left-1/2 -translate-x-1/2 pt-4 w-[680px] transition-all duration-250 pointer-events-none ${
-                        hoveredCategory === item.label
+                      className={`absolute top-full left-1/2 -translate-x-1/2 pt-4 w-[680px] transition-all duration-250 pointer-events-none ${hoveredCategory === item.label
                           ? "opacity-100 translate-y-0 pointer-events-auto"
                           : "opacity-0 -translate-y-2 pointer-events-none"
-                      }`}
+                        }`}
                     >
                       <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-xl overflow-hidden relative">
                         {/* Mega Header */}
@@ -362,9 +357,8 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
       {/* MOBILE MENU DRAWER */}
       <div
-        className={`fixed inset-0 w-full h-[100dvh] bg-[#faf9f5]/98 backdrop-blur-2xl px-5 sm:px-8 pt-24 pb-8 flex flex-col justify-between transition-all duration-300 ease-in-out lg:hidden z-20 overflow-y-auto ${
-          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 w-full h-[100dvh] bg-[#faf9f5]/98 backdrop-blur-2xl px-5 sm:px-8 pt-24 pb-8 flex flex-col justify-between transition-all duration-300 ease-in-out lg:hidden z-20 overflow-y-auto ${mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
       >
         <div className="flex flex-col gap-4">
           <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-emerald-700 font-bold mb-1">
