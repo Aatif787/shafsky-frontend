@@ -4,6 +4,7 @@ import { C } from "./theme";
 import { ScrollSection } from "./ScrollSection";
 import { HeroSection } from "./HeroSection";
 import { BookingPanel } from "./booking/BookingPanel";
+import { ViewportMount } from "./ViewportMount";
 
 const SignatureConciergeSection = lazy(() =>
   import("./sections/SignatureConciergeSection").then((m) => ({ default: m.SignatureConciergeSection })),
@@ -27,76 +28,87 @@ const FinalCTA = lazy(() => import("./sections/FinalCTA").then((m) => ({ default
 const Footer = lazy(() => import("./sections/Footer").then((m) => ({ default: m.Footer })));
 
 function SectionFallback({ height = 360 }: { height?: number }) {
-  return <div className="w-full animate-pulse bg-[#faf9f5]" style={{ minHeight: height }} aria-hidden />;
+  return <div className="w-full bg-[#faf9f5]" style={{ minHeight: height }} aria-hidden />;
+}
+
+function Deferred({
+  children,
+  height,
+}: {
+  children: React.ReactNode;
+  height?: number;
+}) {
+  return (
+    <ViewportMount minHeight={height} fallback={<SectionFallback height={height} />}>
+      <Suspense fallback={<SectionFallback height={height} />}>{children}</Suspense>
+    </ViewportMount>
+  );
 }
 
 export function Hero({ visible = true }: { visible?: boolean }) {
   return (
-    // `sticky-safe` enforces overflow-x: clip + overflow-y: visible so descendant
-    // `position: sticky` sections (e.g. Services scroll-pinned stage) keep working.
-    // Do NOT change to `overflow-hidden` — it silently breaks all sticky children.
     <div
       className="sticky-safe relative min-h-screen"
-      style={{ background: C.bg, color: C.ink, fontFamily: "'Inter', sans-serif" }}
+      style={{ background: C.bg, color: C.ink, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
     >
       <Navigation visible={visible} />
       <HeroSection visible={visible} />
       <BookingPanel />
-      <Suspense fallback={<SectionFallback height={520} />}>
+      <Deferred height={520}>
         <SignatureConciergeSection />
-      </Suspense>
+      </Deferred>
       <ScrollSection id="why">
-        <Suspense fallback={<SectionFallback />}>
+        <Deferred>
           <WhyChooseUs />
-        </Suspense>
+        </Deferred>
       </ScrollSection>
       <ScrollSection>
-        <Suspense fallback={<SectionFallback height={220} />}>
+        <Deferred height={220}>
           <TrustBar />
-        </Suspense>
+        </Deferred>
       </ScrollSection>
       <ScrollSection id="services">
-        <Suspense fallback={<SectionFallback height={640} />}>
+        <Deferred height={640}>
           <EnterpriseServicesPlatform />
-        </Suspense>
+        </Deferred>
       </ScrollSection>
-      <Suspense fallback={<SectionFallback height={720} />}>
+      <Deferred height={720}>
         <EnterpriseSolutions />
-      </Suspense>
+      </Deferred>
       <ScrollSection id="coverage">
-        <Suspense fallback={<SectionFallback height={480} />}>
+        <Deferred height={480}>
           <Coverage />
-        </Suspense>
+        </Deferred>
       </ScrollSection>
       <ScrollSection>
-        <Suspense fallback={<SectionFallback />}>
+        <Deferred>
           <Fleet />
-        </Suspense>
+        </Deferred>
       </ScrollSection>
       <ScrollSection>
-        <Suspense fallback={<SectionFallback />}>
+        <Deferred>
           <Journey />
-        </Suspense>
+        </Deferred>
       </ScrollSection>
       <ScrollSection>
-        <Suspense fallback={<SectionFallback height={520} />}>
+        <Deferred height={520}>
           <Testimonials />
-        </Suspense>
+        </Deferred>
       </ScrollSection>
       <ScrollSection>
-        <Suspense fallback={<SectionFallback />}>
+        <Deferred>
           <FAQ />
-        </Suspense>
+        </Deferred>
       </ScrollSection>
       <ScrollSection>
-        <Suspense fallback={<SectionFallback />}>
+        <Deferred>
           <FinalCTA />
-        </Suspense>
+        </Deferred>
       </ScrollSection>
       <ScrollSection isLast>
-        <Suspense fallback={<SectionFallback height={280} />}>
+        <Deferred height={280}>
           <Footer />
-        </Suspense>
+        </Deferred>
       </ScrollSection>
     </div>
   );

@@ -44,12 +44,12 @@ export function Fleet() {
   ];
   const ref = useRef<HTMLDivElement>(null);
   return (
-    <section className="relative overflow-hidden py-28 md:py-36" style={{ background: C.bg }}>
-      <div className="mx-auto max-w-[1480px] px-8 md:px-14">
+    <section className="relative overflow-hidden py-16 sm:py-24 md:py-36" style={{ background: C.bg }}>
+      <div className="mx-auto max-w-[1480px] px-4 sm:px-8 md:px-14">
         <div className="flex items-end justify-between gap-8">
           <div>
             <SectionLabel index="06" label="Flagship Airports" />
-            <h2 className="mt-8 text-[clamp(2rem,5vw,4.4rem)] leading-[1.02]" style={display}>
+            <h2 className="mt-5 sm:mt-8 text-[clamp(2.1rem,5vw,4.4rem)] leading-[1.02]" style={display}>
               Our{" "}
               <span className="italic" style={{ color: C.teal }}>
                 signature
@@ -61,7 +61,7 @@ export function Fleet() {
             <button
               aria-label="Previous"
               onClick={() => ref.current?.scrollBy({ left: -480, behavior: "smooth" })}
-              className="h-12 w-12 transition"
+              className="h-12 w-12 transition cursor-pointer"
               style={{ border: `1px solid ${C.line}`, color: C.ink }}
             >
               ←
@@ -69,7 +69,7 @@ export function Fleet() {
             <button
               aria-label="Next"
               onClick={() => ref.current?.scrollBy({ left: 480, behavior: "smooth" })}
-              className="h-12 w-12 transition"
+              className="h-12 w-12 transition cursor-pointer"
               style={{ border: `1px solid ${C.line}`, color: C.ink }}
             >
               →
@@ -80,7 +80,7 @@ export function Fleet() {
 
       <div
         ref={ref}
-        className="mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-6 md:px-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="mt-8 sm:mt-10 flex snap-x snap-mandatory gap-4 sm:gap-5 overflow-x-auto px-4 pb-6 sm:px-8 md:px-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-0"
       >
         {fleet.map((f, i) => (
           <motion.article
@@ -89,9 +89,10 @@ export function Fleet() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: i * 0.08 }}
-            className="group relative w-[85vw] shrink-0 snap-start overflow-hidden sm:w-[480px] rounded-2xl"
+            className="group relative w-[85vw] max-w-[340px] sm:max-w-none sm:w-[460px] shrink-0 snap-start overflow-hidden rounded-2xl"
             style={{ background: C.paper, border: `1px solid ${C.line}` }}
           >
+
             <div className="relative aspect-[4/3] overflow-hidden">
               <img
                 src={f.img}

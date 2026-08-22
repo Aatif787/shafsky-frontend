@@ -18,19 +18,10 @@ export interface ApiSuccessPayload<T> {
 
 export type ApiResponse<T> = ApiSuccessPayload<T> | ApiErrorPayload;
 
-const getBaseUrl = (): string => {
-  if (typeof import.meta !== "undefined" && (import.meta as any).env) {
-    const envUrl = (import.meta as any).env.VITE_BACKEND_API_URL || (import.meta as any).env.VITE_FASTAPI_URL;
-    if (envUrl) return envUrl;
-  }
-  if (typeof process !== "undefined" && process.env) {
-    const envUrl = process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL || process.env.VITE_FASTAPI_URL;
-    if (envUrl) return envUrl;
-  }
-  return process.env.VITE_BACKEND_API_URL || "http://127.0.0.1:8003";
-};
+import { getBackendBaseUrl, resolveApiUrl, normalizeBackendUrl } from "./config";
 
-export const API_BASE_URL = getBaseUrl();
+export { getBackendBaseUrl, resolveApiUrl, normalizeBackendUrl };
+export const API_BASE_URL = getBackendBaseUrl();
 
 /**
  * Universal Fetch Client with centralized timeout, headers, and error normalization.
@@ -40,13 +31,12 @@ export async function apiFetch<T = unknown>(
   options: RequestInit & { timeoutMs?: number; token?: string } = {}
 ): Promise<ApiResponse<T>> {
   const { timeoutMs = 15000, token, headers = {}, ...fetchOptions } = options;
-  const primaryBase = getBaseUrl().replace(/\/+$/, "");
-  const relPath = path.startsWith("/") ? path : `/${path}`;
-  const url = path.startsWith("http") ? path : `${primaryBase}${relPath}`;
+  const url = resolveApiUrl(path);
 
   const defaultHeaders: Record<string, string> = {
     "Content-Type": "application/json",
     Accept: "application/json",
+    "ngrok-skip-browser-warning": "true",
     ...(headers as Record<string, string>),
   };
 
@@ -107,3 +97,4 @@ export async function apiFetch<T = unknown>(
     };
   }
 }
+

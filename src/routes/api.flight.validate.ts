@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { resolveApiUrl } from "@/lib/api/config";
 
 /**
  * Flight Validation API Proxy Route
@@ -6,13 +7,9 @@ import { createFileRoute } from "@tanstack/react-router";
  * This route proxies flight validation requests to the backend FastAPI service.
  * The backend is the authoritative source for flight data and validation logic.
  * 
- * Request forwarding: POST /api/flight/validate → POST http://127.0.0.1:8003/api/flight/validate
+ * Request forwarding: POST /api/flight/validate → Backend FastAPI /api/flight/validate
  * Response passthrough: Backend response is returned as-is to the client.
  */
-
-function getBackendUrl(): string {
-  return process.env.VITE_BACKEND_API_URL || "http://127.0.0.1:8003";
-}
 
 export const Route = createFileRoute("/api/flight/validate")({
   server: {
@@ -32,8 +29,7 @@ export const Route = createFileRoute("/api/flight/validate")({
           );
 
           // 2. Forward request to backend
-          const backendUrl = getBackendUrl();
-          const primaryEndpoint = `${backendUrl}/api/flight/validate`;
+          const primaryEndpoint = resolveApiUrl("/api/flight/validate");
 
           console.log(
             `[Flight Validation] Forwarding to backend: POST ${primaryEndpoint}`,
@@ -49,6 +45,7 @@ export const Route = createFileRoute("/api/flight/validate")({
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "X-Forwarded-For": ip,
+                "ngrok-skip-browser-warning": "true",
                 ...(request.headers.get("authorization")
                   ? { "Authorization": request.headers.get("authorization")! }
                   : {}),
@@ -146,3 +143,4 @@ export const Route = createFileRoute("/api/flight/validate")({
     },
   },
 });
+

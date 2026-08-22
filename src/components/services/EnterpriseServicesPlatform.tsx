@@ -100,7 +100,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
   return (
     <section
       id="services"
-      className={`relative px-4 py-16 sm:px-6 md:px-14 md:py-28 bg-[#faf9f5] text-slate-900 overflow-hidden ${className}`}
+      className={`relative px-3.5 py-12 sm:px-6 md:px-14 md:py-28 bg-[#faf9f5] text-slate-900 overflow-hidden ${className}`}
     >
       {/* Soft Ambient Glows */}
       <div className="pointer-events-none absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-amber-100/60 blur-[140px]" />
@@ -108,18 +108,18 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
 
       <div className="relative z-10 mx-auto max-w-[1480px]">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 sm:gap-6 mb-8 sm:mb-10">
           <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-100/70 border border-amber-300/60 text-amber-900 text-[10px] font-mono uppercase tracking-[0.35em] font-bold mb-3">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1 rounded-full bg-amber-100/70 border border-amber-300/60 text-amber-900 text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.25em] sm:tracking-[0.35em] font-bold mb-2.5 sm:mb-3">
               <Sparkles className="w-3.5 h-3.5 text-amber-700" />
               <span>OFFICIAL SHAFSKY AVIATION SERVICES</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-heading font-bold text-slate-900 tracking-tight">
               Signature Airport & <span className="text-amber-700">Flight Services.</span>
             </h2>
 
-            <p className="mt-3 text-xs sm:text-sm text-slate-600 font-sans max-w-xl font-medium leading-relaxed">
+            <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-slate-600 font-sans max-w-xl font-medium leading-relaxed">
               Explore official Shafsky Aviation services across 6 business areas — understandable in 1 second, pre-configured, and bookable instantly.
             </p>
           </div>
@@ -133,7 +133,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
                 placeholder="Search services (e.g. Lounge, Ticket, Transfer)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-12 rounded-2xl border border-[#e7e0d3] bg-white/90 backdrop-blur-md pl-11 pr-4 text-xs font-semibold placeholder:text-slate-400 outline-none transition focus:border-amber-600 focus:ring-4 focus:ring-amber-100 shadow-xs"
+                className="w-full h-11 sm:h-12 rounded-2xl border border-[#e7e0d3] bg-white/90 backdrop-blur-md pl-11 pr-4 text-xs font-semibold placeholder:text-slate-400 outline-none transition focus:border-amber-600 focus:ring-4 focus:ring-amber-100 shadow-xs"
               />
               {searchQuery && (
                 <button
@@ -149,9 +149,9 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
         </div>
 
         {/* ── 1. UNIFIED HORIZONTAL SELECTOR (Scrollable/Swipeable) ── */}
-        <div className="space-y-4 mb-12">
+        <div className="space-y-3 sm:space-y-4 mb-8 sm:mb-12">
           {/* Category Bar */}
-          <div className="w-full overflow-x-auto no-scrollbar py-1">
+          <div className="w-full overflow-x-auto no-scrollbar py-1 -mx-3.5 px-3.5 sm:mx-0 sm:px-0">
             <div className="flex items-center gap-2 min-w-max px-1 justify-start md:justify-center">
               {categories.map((cat) => {
                 const isActive = activeCategory === cat.id;
@@ -168,7 +168,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
                         setSelectedServiceId(catServices[0].id);
                       }
                     }}
-                    className={`relative inline-flex items-center gap-2.5 rounded-2xl px-4 py-2.5 text-xs font-bold transition-all outline-none cursor-pointer ${
+                    className={`relative inline-flex items-center gap-2 rounded-2xl px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold transition-all outline-none cursor-pointer touch-manipulation ${
                       isActive
                         ? "text-white shadow-md shadow-amber-700/20"
                         : "text-slate-700 bg-white/80 hover:bg-white border border-[#e7e0d3] hover:text-slate-900"
@@ -191,7 +191,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
           </div>
 
           {/* Sub-Services Pill Selector */}
-          <div className="w-full overflow-x-auto no-scrollbar py-1 border-t border-amber-200/50 pt-4">
+          <div className="w-full overflow-x-auto no-scrollbar py-1 border-t border-amber-200/50 pt-3 sm:pt-4 -mx-3.5 px-3.5 sm:mx-0 sm:px-0">
             <div className="flex items-center gap-2 min-w-max px-1 justify-start md:justify-center">
               {filteredServices.map((service) => {
                 const isSelected = activeService.id === service.id;
@@ -202,7 +202,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
                     key={service.id}
                     type="button"
                     onClick={() => setSelectedServiceId(service.id)}
-                    className={`relative inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all outline-none cursor-pointer ${
+                    className={`relative inline-flex items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold transition-all outline-none cursor-pointer touch-manipulation ${
                       isSelected
                         ? "text-amber-950 bg-amber-100 border border-amber-300 font-bold shadow-xs"
                         : "text-slate-600 bg-white/60 hover:bg-white border border-slate-200 hover:text-slate-900"
@@ -220,7 +220,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
                     <span className="relative z-10">{service.name}</span>
 
                     {service.badge && (
-                      <span className="relative z-10 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-600/15 text-amber-900">
+                      <span className="relative z-10 text-[8.5px] sm:text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-600/15 text-amber-900">
                         {service.badge}
                       </span>
                     )}
@@ -239,15 +239,16 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="relative rounded-[36px] border border-white/90 bg-gradient-to-br from-white/95 via-white/70 to-amber-50/40 shadow-[inset_0_1px_3px_0_rgba(255,255,255,1),0_25px_60px_-15px_rgba(217,119,6,0.12)] p-6 sm:p-10 lg:p-12 backdrop-blur-2xl overflow-hidden"
+            className="relative rounded-[28px] sm:rounded-[36px] border border-white/90 bg-gradient-to-br from-white/95 via-white/70 to-amber-50/40 shadow-[inset_0_1px_3px_0_rgba(255,255,255,1),0_25px_60px_-15px_rgba(217,119,6,0.12)] p-4 sm:p-8 lg:p-12 backdrop-blur-2xl overflow-hidden"
           >
             {/* Specular Ambient Glow */}
             <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-gradient-to-br from-white/90 via-white/40 to-transparent blur-2xl pointer-events-none opacity-80" />
             <div className="absolute -bottom-32 -right-32 w-80 h-80 rounded-full bg-gradient-to-tl from-amber-300/30 via-white/20 to-transparent blur-2xl pointer-events-none opacity-60" />
 
-            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 items-center">
               {/* Media Showcase */}
-              <div className="lg:col-span-5 relative h-72 sm:h-96 rounded-3xl overflow-hidden group shadow-xl border border-white/90 bg-slate-900">
+              <div className="lg:col-span-5 relative h-64 sm:h-80 lg:h-96 rounded-2xl sm:rounded-3xl overflow-hidden group shadow-xl border border-white/90 bg-slate-900">
+
                 {activeService.videoUrl ? (
                   <video
                     src={activeService.videoUrl}

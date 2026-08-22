@@ -75,14 +75,18 @@ export const airportApi = {
     }
 
     const params = new URLSearchParams({ q: query || "" });
-    const res = await apiFetch(`/api/global-airports?${params.toString()}`, {
+    let res = await apiFetch(`/api/global-airports?${params.toString()}`, {
       method: "GET",
-      timeoutMs: 60000,
+      timeoutMs: 15000,
     });
-    if (!res || res.success === false) {
-      return { success: false, error: (res as any)?.error || "Global airport search failed.", data: [] } as any;
+    let rows = extractList(res).map(normalizeAirport).filter(Boolean) as AirportInfo[];
+    if (!rows.length) {
+      const fallback = await apiFetch(`/api/airports/search?scope=global&${params.toString()}`, {
+        method: "GET",
+        timeoutMs: 15000,
+      });
+      rows = extractList(fallback).map(normalizeAirport).filter(Boolean) as AirportInfo[];
     }
-    const rows = extractList(res).map(normalizeAirport).filter(Boolean) as AirportInfo[];
     return { success: true, data: rows };
   },
 
@@ -99,11 +103,24 @@ export const airportApi = {
       const qs = params.toString();
       const path = qs ? `/api/journey/airports?${qs}` : `/api/journey/airports`;
       const res = await apiFetch(path, { method: "GET", timeoutMs: 60000 });
-      if (!res || (res.success === false && !extractList(res).length)) {
+      allRows = extractList(res).map(normalizeAirport).filter(Boolean) as AirportInfo[];
+
+      if (!allRows.length) {
+        const fallbackParams = new URLSearchParams({ scope: "supported", q: "" });
+        if (journeyType) fallbackParams.set("journey_type", journeyType);
+        const fallback = await apiFetch(`/api/airports/search?${fallbackParams.toString()}`, {
+          method: "GET",
+          timeoutMs: 60000,
+        });
+        allRows = extractList(fallback).map(normalizeAirport).filter(Boolean) as AirportInfo[];
+      }
+
+      if (!allRows.length && (!res || (res.success === false && !extractList(res).length))) {
         return { success: false, error: res?.error || "Unable to load supported airports.", data: [] } as any;
       }
-      allRows = extractList(res).map(normalizeAirport).filter(Boolean) as AirportInfo[];
-      supportedAirportCache = { key: cacheKey, rows: allRows, at: now };
+      if (allRows.length) {
+        supportedAirportCache = { key: cacheKey, rows: allRows, at: now };
+      }
     }
 
     const q = (query || "").trim().toUpperCase();

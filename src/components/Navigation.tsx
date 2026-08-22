@@ -180,14 +180,8 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
       } ${!visible ? "-translate-y-full" : "translate-y-0"}`}
     >
       <div className="relative max-w-[1440px] mx-auto w-full px-4 sm:px-6 md:px-8 flex items-center justify-between min-h-[52px]">
-        {/* ── 1. LOGO SECTION (Left - Prominent & Balanced) ── */}
-        <div
-          className="relative shrink-0 z-20 overflow-visible transition-transform duration-300"
-          style={{
-            transform: `translate(${LOGO_CONFIG.offsetX}, ${LOGO_CONFIG.offsetY}) scale(${LOGO_CONFIG.scale || 1})`,
-            transformOrigin: "left center",
-          }}
-        >
+        {/* ── 1. LOGO SECTION (Left - Prominent, Adaptive & Balanced) ── */}
+        <div className="relative shrink-0 z-20 overflow-visible transition-transform duration-300 origin-left scale-[1.25] sm:scale-[1.55] md:scale-[1.9] lg:scale-[2.3]">
           <Link to="/" className="inline-flex items-center gap-3 group">
             {branding.logo_url ? (
               <img
@@ -196,22 +190,22 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                 style={{
                   height: LOGO_CONFIG.height,
                   width: LOGO_CONFIG.width,
-                  maxWidth: LOGO_CONFIG.maxWidth,
+                  maxWidth: "min(320px, 45vw)",
                   objectFit: "contain",
                   display: "block",
                 }}
                 className="transition-all duration-300 transform-gpu hover:scale-105"
               />
             ) : (
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#84cc16] flex items-center justify-center text-[#0f172a] shadow-md group-hover:scale-105 transition-transform duration-300">
-                  <Plane className="w-5 h-5 transform -rotate-45" />
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#84cc16] flex items-center justify-center text-[#0f172a] shadow-md group-hover:scale-105 transition-transform duration-300">
+                  <Plane className="w-4 h-4 sm:w-5 sm:h-5 transform -rotate-45" />
                 </div>
                 <div>
-                  <div className="text-base font-extrabold uppercase tracking-[0.25em] text-slate-900 leading-none">
+                  <div className="text-sm sm:text-base font-extrabold uppercase tracking-[0.25em] text-slate-900 leading-none">
                     {branding.company_name.split(" ")[0]?.toUpperCase() || "SHAFSKY"}
                   </div>
-                  <div className="text-[9px] tracking-[0.45em] text-slate-600 uppercase mt-1 leading-none font-bold">
+                  <div className="text-[8px] sm:text-[9px] tracking-[0.45em] text-slate-600 uppercase mt-1 leading-none font-bold">
                     {(branding.company_name.split(" ").slice(1).join(" ") || "AVIATION").toUpperCase()}
                   </div>
                 </div>
@@ -359,7 +353,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
         {/* MOBILE MENU TOGGLE BUTTON */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="lg:hidden text-slate-800 hover:text-slate-900 p-2 rounded-xl bg-slate-100 border border-slate-200 ml-auto z-30"
+          className="lg:hidden text-slate-800 hover:text-slate-900 p-2.5 rounded-xl bg-slate-100/90 active:bg-slate-200 border border-slate-200/80 ml-auto z-30 touch-manipulation min-w-[42px] min-h-[42px] flex items-center justify-center"
           aria-label="Toggle navigation menu"
         >
           {mobileOpen ? <X size={22} className="text-emerald-700" /> : <Menu size={22} />}
@@ -368,16 +362,16 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
       {/* MOBILE MENU DRAWER */}
       <div
-        className={`fixed inset-0 w-full h-screen bg-[#faf9f5]/98 backdrop-blur-2xl px-6 pt-24 pb-10 flex flex-col justify-between transition-all duration-300 ease-in-out lg:hidden z-20 overflow-y-auto ${
+        className={`fixed inset-0 w-full h-[100dvh] bg-[#faf9f5]/98 backdrop-blur-2xl px-5 sm:px-8 pt-24 pb-8 flex flex-col justify-between transition-all duration-300 ease-in-out lg:hidden z-20 overflow-y-auto ${
           mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       >
         <div className="flex flex-col gap-4">
-          <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-emerald-700 font-bold mb-2">
+          <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-emerald-700 font-bold mb-1">
             Navigation Menu
           </div>
 
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-1.5">
             {NAV_STRUCTURE.map((item) => {
               const hasMega = Boolean(item.megaMenu);
               const isExpanded = expandedMobileCategory === item.label;
@@ -388,7 +382,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                     <Link
                       to={item.href}
                       onClick={() => setMobileOpen(false)}
-                      className="text-base font-bold uppercase tracking-[0.15em] text-slate-800 hover:text-emerald-700 py-1"
+                      className="text-base sm:text-lg font-bold uppercase tracking-[0.12em] text-slate-800 hover:text-emerald-700 py-1.5 touch-manipulation"
                     >
                       {item.label}
                     </Link>
@@ -396,7 +390,8 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                     {hasMega && (
                       <button
                         onClick={() => setExpandedMobileCategory(isExpanded ? null : item.label)}
-                        className="p-2 text-slate-500 hover:text-emerald-700"
+                        className="p-2.5 text-slate-500 hover:text-emerald-700 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                        aria-label={`Expand ${item.label} submenu`}
                       >
                         <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-180 text-emerald-700" : ""}`} />
                       </button>
@@ -413,7 +408,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                             key={sIdx}
                             to={sub.href}
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-slate-200 text-slate-800 hover:text-slate-900"
+                            className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200/80 text-slate-800 hover:text-slate-900 active:bg-emerald-50/50"
                           >
                             <SubIcon className="w-4 h-4 text-emerald-700 shrink-0" />
                             <div className="text-xs min-w-0">
@@ -432,17 +427,40 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
         </div>
 
         {/* Mobile Action Bar */}
-        <div className="pt-6 border-t border-slate-200 flex flex-col gap-3">
+        <div className="pt-6 border-t border-slate-200/80 flex flex-col gap-3 pb-safe">
+          {roles.length > 0 ? (
+            <Link
+              to={getDashboardPath() as any}
+              onClick={() => setMobileOpen(false)}
+              className="w-full text-center py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 font-mono text-xs font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2"
+              style={mono}
+            >
+              <User className="w-4 h-4 text-emerald-700" />
+              <span>{getDashboardLabel()}</span>
+            </Link>
+          ) : (
+            <Link
+              to="/auth"
+              onClick={() => setMobileOpen(false)}
+              className="w-full text-center py-3 rounded-2xl bg-white border border-slate-200 text-slate-800 font-mono text-xs font-bold uppercase tracking-[0.15em]"
+              style={mono}
+            >
+              Sign In
+            </Link>
+          )}
+
           <Link
             to="/book"
             onClick={() => setMobileOpen(false)}
-            className="w-full text-center py-3.5 rounded-full bg-[#84cc16] hover:bg-[#65a30d] text-[#0f172a] font-mono text-xs font-extrabold uppercase tracking-[0.2em] shadow-sm"
+            className="w-full text-center py-3.5 rounded-full bg-[#84cc16] hover:bg-[#65a30d] text-[#0f172a] font-mono text-xs font-extrabold uppercase tracking-[0.2em] shadow-sm flex items-center justify-center gap-2"
             style={mono}
           >
-            BOOK NOW
+            <span>BOOK NOW</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </div>
     </header>
   );
 }
+

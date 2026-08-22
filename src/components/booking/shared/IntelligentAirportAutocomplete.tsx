@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { MapPin, Loader2 } from "lucide-react";
 import { airportApi, formatAirportOption } from "@/lib/api/airportApi";
 
@@ -18,6 +19,7 @@ interface IntelligentAirportAutocompleteProps {
   onChangeText?: (text: string) => void;
   placeholder?: string;
   className?: string;
+  inputClassName?: string;
   /** supported = Neon supported_airports; global = airports.csv */
   mode?: "global" | "supported";
   journeyType?: "ARRIVAL" | "DEPARTURE" | "TRANSIT";
@@ -26,6 +28,10 @@ interface IntelligentAirportAutocompleteProps {
 const UNSUPPORTED_MESSAGE = "This airport is currently not supported for online booking.";
 const monoFont = { fontFamily: "'JetBrains Mono', monospace" };
 const sansFont = { fontFamily: "'Plus Jakarta Sans', sans-serif" };
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 function extractIata(value: string): string {
   const match = String(value || "").match(/\(([A-Z]{3})\)/i);
@@ -54,6 +60,7 @@ export function IntelligentAirportAutocomplete({
   onChangeText,
   placeholder = "Search airport",
   className = "",
+  inputClassName,
   mode = "global",
   journeyType,
 }: IntelligentAirportAutocompleteProps) {
@@ -64,7 +71,16 @@ export function IntelligentAirportAutocomplete({
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 0 });
+
+  const updateMenuPos = () => {
+    const el = containerRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    setMenuPos({ top: r.bottom + 4, left: r.left, width: r.width });
+  };
 
   useEffect(() => {
     const raw = value || "";
@@ -81,13 +97,25 @@ export function IntelligentAirportAutocomplete({
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
+      const target = e.target as Node;
+      if (containerRef.current?.contains(target) || dropdownRef.current?.contains(target)) return;
+      setIsOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    updateMenuPos();
+    const onWin = () => updateMenuPos();
+    window.addEventListener("scroll", onWin, true);
+    window.addEventListener("resize", onWin);
+    return () => {
+      window.removeEventListener("scroll", onWin, true);
+      window.removeEventListener("resize", onWin);
+    };
+  }, [isOpen]);
 
   const runSearch = (text: string) => {
     if (searchTimeoutRef.current) {
@@ -149,7 +177,7 @@ export function IntelligentAirportAutocomplete({
   const highlightMatch = (text: string, query: string) => {
     const q = extractIata(query) || query.trim();
     if (!q) return text;
-    const parts = text.split(new RegExp(`(${q})`, "gi"));
+    const parts = text.split(new RegExp(`(${escapeRegExp(q)})`, "gi"));
     return (
       <span>
         {parts.map((part, i) =>
@@ -177,75 +205,93 @@ export function IntelligentAirportAutocomplete({
   return (
     <div ref={containerRef} className={`relative w-full ${className}`}>
       <div className="relative">
-        <MapPin className="absolute left-3 top-3 h-3.5 w-3.5 text-slate-400" />
+        <MapPin className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
         <input
           type="text"
           value={inputValue}
           onChange={handleInputChange}
           onFocus={() => {
             setIsOpen(true);
+            updateMenuPos();
             runSearch(inputValue);
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoComplete="off"
-          className="w-full rounded-xl border border-gray-300 bg-white/90 pl-9 pr-3.5 py-2.5 text-xs font-semibold text-slate-900 placeholder-gray-400 focus:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+          className={
+            inputClassName ||
+            "w-full rounded-xl border border-gray-300 bg-white/90 pl-9 pr-3.5 py-2.5 text-xs font-semibold text-slate-900 placeholder-gray-400 focus:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+          }
           style={sansFont}
         />
-        {loading && <Loader2 className="absolute right-3 top-3 h-3.5 w-3.5 animate-spin text-purple-600" />}
+        {loading && <Loader2 className="absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin text-purple-600" />}
       </div>
 
-      {isOpen && (
-        <div className="absolute z-[300] mt-1 max-h-72 w-full overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-2xl">
-          {loading ? (
-            <div className="flex items-center justify-center gap-2 p-4 text-xs text-slate-500 font-mono" style={monoFont}>
-              <Loader2 className="h-4 w-4 animate-spin text-purple-600" />
-              <span>Loading airports...</span>
-            </div>
-          ) : results.length === 0 ? (
-            <div className="p-4 text-center text-xs text-slate-600 font-sans">
-              {emptyMessage}
-            </div>
-          ) : (
-            <ul className="py-1">
-              {results.map((airport, idx) => {
-                const isSelected = idx === selectedIndex;
-                const label = formatAirportOption(airport);
-                return (
-                  <li
-                    key={`${airport.code}-${idx}`}
-                    onClick={() => handleSelection(airport)}
-                    onMouseEnter={() => setSelectedIndex(idx)}
-                    className={`flex items-center justify-between px-3.5 py-2.5 cursor-pointer text-xs transition-colors ${
-                      isSelected ? "bg-purple-50 text-purple-900 font-bold" : "hover:bg-gray-50 text-slate-800"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 border border-amber-200 shrink-0">
-                        <MapPin className="h-3.5 w-3.5 text-amber-700" />
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-bold text-slate-900 truncate" style={sansFont}>
-                          {highlightMatch(label, inputValue)}
-                        </span>
-                        <span className="text-[10px] text-slate-500 font-mono" style={monoFont}>
-                          {highlightMatch(`${airport.city}, ${airport.country}`, inputValue)}
-                        </span>
-                      </div>
-                    </div>
-                    <span
-                      className="rounded-lg bg-slate-900 px-2 py-1 text-[10px] font-extrabold text-amber-400 shadow-xs shrink-0 ml-2"
-                      style={monoFont}
+      {isOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            ref={dropdownRef}
+            className="max-h-72 overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-2xl"
+            style={{
+              position: "fixed",
+              top: menuPos.top,
+              left: menuPos.left,
+              width: Math.max(menuPos.width, 240),
+              zIndex: 9999,
+            }}
+          >
+            {loading ? (
+              <div className="flex items-center justify-center gap-2 p-4 text-xs text-slate-500 font-mono" style={monoFont}>
+                <Loader2 className="h-4 w-4 animate-spin text-purple-600" />
+                <span>Loading airports...</span>
+              </div>
+            ) : results.length === 0 ? (
+              <div className="p-4 text-center text-xs text-slate-600 font-sans">
+                {emptyMessage}
+              </div>
+            ) : (
+              <ul className="py-1">
+                {results.map((airport, idx) => {
+                  const isSelected = idx === selectedIndex;
+                  const label = formatAirportOption(airport);
+                  return (
+                    <li
+                      key={`${airport.code}-${idx}`}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => handleSelection(airport)}
+                      onMouseEnter={() => setSelectedIndex(idx)}
+                      className={`flex items-center justify-between px-3.5 py-2.5 cursor-pointer text-xs transition-colors ${
+                        isSelected ? "bg-purple-50 text-purple-900 font-bold" : "hover:bg-gray-50 text-slate-800"
+                      }`}
                     >
-                      {airport.code}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      )}
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 border border-amber-200 shrink-0">
+                          <MapPin className="h-3.5 w-3.5 text-amber-700" />
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-bold text-slate-900 truncate" style={sansFont}>
+                            {highlightMatch(label, inputValue)}
+                          </span>
+                          <span className="text-[10px] text-slate-500 font-mono" style={monoFont}>
+                            {highlightMatch(`${airport.city}, ${airport.country}`, inputValue)}
+                          </span>
+                        </div>
+                      </div>
+                      <span
+                        className="rounded-lg bg-slate-900 px-2 py-1 text-[10px] font-extrabold text-amber-400 shadow-xs shrink-0 ml-2"
+                        style={monoFont}
+                      >
+                        {airport.code}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

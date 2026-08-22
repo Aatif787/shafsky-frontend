@@ -18,15 +18,7 @@ export interface SystemEventPayload {
 
 type EventListener = (payload: any) => void | Promise<void>;
 
-const getBackendUrl = () => {
-  if (typeof import.meta !== "undefined" && import.meta.env?.VITE_BACKEND_API_URL) {
-    return import.meta.env.VITE_BACKEND_API_URL;
-  }
-  if (typeof process !== "undefined" && process.env?.VITE_BACKEND_API_URL) {
-    return process.env.VITE_BACKEND_API_URL;
-  }
-  return process.env.VITE_BACKEND_API_URL;
-};
+import { resolveApiUrl } from "@/lib/api/config";
 
 export class EventBus {
   private static listeners: Map<SystemEventType, Set<EventListener>> = new Map();
@@ -76,10 +68,13 @@ export class EventBus {
 
     // 2. Log event to FastAPI backend system_events table asynchronously
     try {
-      const url = `${getBackendUrl()}/api/system-events`;
+      const url = resolveApiUrl("/api/system-events");
       await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
         body: JSON.stringify({
           event_type: type,
           payload,

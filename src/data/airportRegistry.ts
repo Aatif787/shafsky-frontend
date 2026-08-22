@@ -20,6 +20,16 @@ import dekVtzAir from "@/assets/airports/vtz/Dek-Vtz-air.jpg";
 import mobVtzAir from "@/assets/airports/vtz/Mob-Vtz-air.jpg";
 import dekIxeAir from "@/assets/airports/ixe/Dek-Ixe-air.jpg";
 import mobIxeAir from "@/assets/airports/ixe/Mob-Ixe-air.jpg";
+import dekCokAir from "@/assets/airports/cok/Dek-Cok-air.jpg";
+import mobCokAir from "@/assets/airports/cok/Mob-Cok-air.jpg";
+import dekMaaAir from "@/assets/airports/maa/Dek-Maa-air.jpg";
+import mobMaaAir from "@/assets/airports/maa/Mob-Maa-air.jpg";
+import dekGoiAir from "@/assets/airports/goi/Dek-Goi-air.jpg";
+import mobGoiAir from "@/assets/airports/goi/Mob-Goi-air.jpg";
+import dekGoxAir from "@/assets/airports/gox/Dek-Gox-air.jpg";
+import mobGoxAir from "@/assets/airports/gox/Mob-Gox-air.jpg";
+import dekBbiAir from "@/assets/airports/bbi/Dek-Bbi-air.jpg";
+import mobBbiAir from "@/assets/airports/bbi/Mob-Bbi-air.jpg";
 
 export interface MeetGreetPackage {
   id: string;
@@ -424,10 +434,9 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     heroTitle: "Chennai Airport Concierge",
     heroSubtitle: "Chennai International Airport (MAA) — Airside Escort & Airport Services",
     shortDescription: "Gateway of South India. Enjoy aerobridge placard greeting, luggage assistance, lounge access, and executive car transfers.",
-    coverImage: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
-    ],
+    coverImage: dekMaaAir,
+    mobCoverImage: mobMaaAir,
+    galleryImages: [dekMaaAir],
     coordinates: { lat: 12.9941, lng: 80.1709 },
     airportType: "International Hub",
     terminals: "Terminals 1, 2, 3 & 4",
@@ -435,6 +444,23 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: false,
     availableServiceIds: ["meet_greet", "transport"],
+    meetGreetPackages: [
+      {
+        id: "silver",
+        title: "Silver Service",
+        tagline: "Dedicated domestic & international airport escort from curbside/aerobridge to gate.",
+        price: "From ₹2,500 / pax",
+        duration: "Full Escort",
+        features: [
+          "Welcome Guest from Curbside / Aerobridge Area",
+          "Dedicated Porter Service with Staff",
+          "Wheelchair Assist Available (Through Airlines)",
+          "Assist through Entry Gate & Check-in",
+          "Assist in Security Hold Area (SHA)",
+          "Escort to Boarding Gate / Car Parking Area",
+        ],
+      },
+    ],
     faqs: [
       ["Where does the officer meet me at Chennai Airport?", "Your escort officer greets you at the aerobridge gate exit with a name placard."],
     ],
@@ -458,10 +484,8 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     heroTitle: "Goa Airport Concierge",
     heroSubtitle: "Dabolim International Airport (GOI) — VIP Escort & Chauffeur",
     shortDescription: "Premier coastal destination gateway. Dedicated arrival greeting, luggage porterage, and luxury resort transfers.",
-    coverImage: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
-    ],
+    coverImage: dekGoiAir,
+    galleryImages: [dekGoiAir, mobGoiAir],
     coordinates: { lat: 15.3808, lng: 73.8314 },
     airportType: "International Hub",
     terminals: "Terminal 1",
@@ -646,8 +670,9 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     heroTitle: "Bhubaneswar Airport Concierge",
     heroSubtitle: "Biju Patnaik International Airport (BBI) — VIP Escort & Concierge",
     shortDescription: "Gateway to Odisha. Aerobridge greeting, porter assistance, and private chauffeur handoffs.",
-    coverImage: dekDelAir,
-    galleryImages: [dekDelAir],
+    coverImage: dekBbiAir,
+    mobCoverImage: mobBbiAir,
+    galleryImages: [dekBbiAir],
     coordinates: { lat: 20.2444, lng: 85.8178 },
     airportType: "International Hub",
     terminals: "Terminal 1 & 2",
@@ -676,8 +701,9 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     heroTitle: "Cochin Airport Concierge",
     heroSubtitle: "Cochin International Airport (COK) — VIP Escort & Lounge Access",
     shortDescription: "World's first solar-powered airport. Premium airside greeting, Earth lounge pass, and chauffeured transfers.",
-    coverImage: dekDelAir,
-    galleryImages: [dekDelAir],
+    coverImage: dekCokAir,
+    mobCoverImage: mobCokAir,
+    galleryImages: [dekCokAir],
     coordinates: { lat: 10.1520, lng: 76.4019 },
     airportType: "International Hub",
     terminals: "Terminals 1 & 3",
@@ -685,6 +711,42 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: true,
     availableServiceIds: ["meet_greet", "lounge", "transport"],
+    meetGreetPackages: [
+      {
+        id: "silver",
+        title: "Silver Service",
+        tagline: "Domestic departure & arrival VIP escort with dedicated staff and lounge access.",
+        price: "₹3,500 / pax",
+        duration: "Full Escort",
+        features: [
+          "WELCOME GUEST FROM CURBSIDE / AEROBRIDGE AREA",
+          "PORTER SERVICE WITH DEDICATED STAFF",
+          "BAGGAGE ASSISTANCE AT BAGGAGE (3 PCS)",
+          "ASSIST IN SEPARATE ENTRY GATE",
+          "ASSIST IN AIRLINE CHECK IN BAGGAGE",
+          "ASSIST IN S.H.A (SECURITY HOLD AREA)",
+          "LOUNGE ACCESS FOR 2 HOURS",
+          "DROP OFF TILL BOARDING GATE / CAR PARKING",
+        ],
+      },
+      {
+        id: "elite",
+        title: "Elite Service",
+        tagline: "Premium domestic VIP escort with dedicated concierge, baggage assist, and lounge sanctuary.",
+        price: "₹5,500 / pax",
+        duration: "Full Escort",
+        features: [
+          "WELCOME GUEST FROM CURBSIDE / AEROBRIDGE AREA",
+          "PORTER SERVICE WITH DEDICATED STAFF",
+          "BAGGAGE ASSISTANCE AT BAGGAGE (3 PCS)",
+          "ASSIST IN SEPARATE ENTRY GATE",
+          "ASSIST IN AIRLINE CHECK IN BAGGAGE",
+          "ASSIST IN S.H.A (SECURITY HOLD AREA)",
+          "LOUNGE ACCESS FOR 2 HOURS",
+          "DROP OFF TILL BOARDING GATE / CAR PARKING",
+        ],
+      },
+    ],
     faqs: [["Is lounge access available at Cochin Airport?", "Yes, VIP Meet & Greet with lounge access is available at Cochin Airport (COK)."]],
     relatedAirportCodes: ["BLR", "MAA", "TRV"],
     seo: {
@@ -706,8 +768,8 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     heroTitle: "Goa Mopa Airport Concierge",
     heroSubtitle: "Manohar International Airport (GOX) — Premium VIP Escort",
     shortDescription: "North Goa's new international hub. Aerobridge greeting, priority baggage handling, and North Goa resort transfers.",
-    coverImage: dekDelAir,
-    galleryImages: [dekDelAir],
+    coverImage: dekGoxAir,
+    galleryImages: [dekGoxAir, mobGoxAir],
     coordinates: { lat: 15.7711, lng: 73.8644 },
     airportType: "International Hub",
     terminals: "Integrated Terminal",

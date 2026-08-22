@@ -434,12 +434,17 @@ export const OFFICIAL_SHAFSKY_SERVICES: ServiceCatalogItem[] = [
 
 
 
-import { getApiBaseUrl } from "@/lib/ApiClient";
+import { resolveApiUrl } from "@/lib/api/config";
 
 export async function fetchServiceCatalog(): Promise<ServiceCatalogItem[]> {
   try {
-    const baseUrl = getApiBaseUrl();
-    const res = await fetch(`${baseUrl}/api/services/catalog`);
+    const url = resolveApiUrl("/api/services/catalog");
+    const res = await fetch(url, {
+      headers: {
+        "Accept": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
     if (!res.ok) {
       return OFFICIAL_SHAFSKY_SERVICES;
     }

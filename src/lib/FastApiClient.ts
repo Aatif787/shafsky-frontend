@@ -7,16 +7,9 @@
  */
 
 import { getAccessToken } from "@/auth/tokenStore";
+import { resolveApiUrl, getBackendBaseUrl } from "@/lib/api/config";
 
-const getBackendUrl = (): string => {
-  if (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_BACKEND_API_URL) {
-    return import.meta.env.VITE_BACKEND_API_URL;
-  }
-  if (typeof process !== "undefined" && process.env && (process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL)) {
-    return process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL || "http://127.0.0.1:8003";
-  }
-  return "http://127.0.0.1:8003";
-};
+export { getBackendBaseUrl };
 
 export interface FastApiResponse<T = any> {
   success: boolean;
@@ -28,10 +21,10 @@ async function fetchBackend(
   path: string,
   init: RequestInit
 ): Promise<Response> {
-  const primaryBase = getBackendUrl().replace(/\/+$/, "");
-  const relPath = path.startsWith("/") ? path : `/${path}`;
-  const primaryUrl = path.startsWith("http") ? path : `${primaryBase}${relPath}`;
-  return fetch(primaryUrl, init);
+  const primaryUrl = resolveApiUrl(path);
+  const headers = new Headers(init.headers || {});
+  headers.set("ngrok-skip-browser-warning", "true");
+  return fetch(primaryUrl, { ...init, headers });
 }
 
 /**
@@ -172,3 +165,4 @@ export function getTokenFromRequest(): string | undefined {
     return getAccessToken() || undefined;
   }
 }
+

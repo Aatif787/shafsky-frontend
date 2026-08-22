@@ -4,16 +4,10 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import { getBackendBaseUrl, resolveApiUrl, normalizeBackendUrl } from "@/lib/api/config";
 
-export const getApiBaseUrl = (): string => {
-  if (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_BACKEND_API_URL) {
-    return import.meta.env.VITE_BACKEND_API_URL;
-  }
-  if (typeof process !== "undefined" && process.env && process.env.VITE_BACKEND_API_URL) {
-    return process.env.VITE_BACKEND_API_URL;
-  }
-  return process.env.VITE_BACKEND_API_URL || "http://127.0.0.1:8003";
-};
+export const getApiBaseUrl = getBackendBaseUrl;
+export { getBackendBaseUrl, resolveApiUrl, normalizeBackendUrl };
 
 export interface FlightDurationApiRequest {
   duration?: string;
@@ -69,12 +63,11 @@ export class ApiClient {
    */
   public static async fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
     const authHeaders = await ApiClient.getAuthHeaders();
-    const primaryBase = getApiBaseUrl().replace(/\/+$/, "");
-    const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
-    const primaryUrl = endpoint.startsWith("http") ? endpoint : `${primaryBase}${path}`;
+    const primaryUrl = resolveApiUrl(endpoint);
     
     const headers = {
       "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
       ...authHeaders,
       ...options.headers,
     };
@@ -157,3 +150,4 @@ export class ApiClient {
     return { isBookable: false, remainingTimeHours: 0, blockingMessage: "Backend validation unavailable." };
   }
 }
+

@@ -16,7 +16,6 @@ import { BrandingHead } from "../lib/branding/BrandingHead";
 import { Toaster } from "../components/ui/sonner";
 import { AuthProvider } from "../auth-system/AuthProvider";
 import { AppErrorBoundary } from "../components/ui/AppErrorBoundary";
-import { CustomCursor } from "../components/ui/interactions";
 
 const WhatsAppWidget = lazy(() =>
   import("../components/ui/WhatsAppWidget").then((m) => ({ default: m.WhatsAppWidget })),
@@ -142,7 +141,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,700&family=Inter:wght@400;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,700&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap",
       },
     ],
   }),
@@ -179,7 +178,6 @@ function RootComponent() {
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
               <Outlet />
             </div>
-            <CustomCursor />
             <DeferredWhatsApp />
             <Toaster position="top-right" richColors closeButton />
           </BrandingProvider>

@@ -33,7 +33,7 @@ export function SignatureConciergeSection() {
   ];
 
   return (
-    <section id="airport-concierge" className="relative px-6 py-20 md:px-14 md:py-28 bg-[#faf8f5] text-slate-900 overflow-hidden border-y border-amber-200/50">
+    <section id="airport-concierge" className="relative px-4 py-14 sm:px-8 sm:py-20 md:px-14 md:py-28 bg-[#faf8f5] text-slate-900 overflow-hidden border-y border-amber-200/50">
       {/* Soft Ambient Radial Glows - Pure Cream & Warm Ivory Theme */}
       <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-amber-100/60 blur-[120px] pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-stone-200/50 blur-[120px] pointer-events-none" />
@@ -43,33 +43,34 @@ export function SignatureConciergeSection() {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto">
           <div
-            className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.45em]"
+            className="inline-flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] uppercase tracking-[0.35em] sm:tracking-[0.45em]"
             style={{ ...mono, color: "#92400e" }}
           >
-            <span className="h-px w-10 bg-amber-400/60" />
-            FLAGSHIP AIRPORT OFFERING
-            <span className="h-px w-10 bg-amber-400/60" />
+            <span className="h-px w-6 sm:w-10 bg-amber-400/60" />
+            <span>FLAGSHIP AIRPORT OFFERING</span>
+            <span className="h-px w-6 sm:w-10 bg-amber-400/60" />
           </div>
           <h2
-            className="mt-5 text-[clamp(2.2rem,5vw,4.2rem)] leading-[1.05] font-serif text-slate-900 tracking-tight"
+            className="mt-4 sm:mt-5 text-[clamp(2.1rem,5vw,4.2rem)] leading-[1.05] font-serif text-slate-900 tracking-tight"
             style={display}
           >
             Signature Airport <span className="italic bg-gradient-to-r from-amber-700 via-amber-600 to-amber-800 bg-clip-text text-transparent">Concierge Experience.</span>
           </h2>
-          <p className="mt-4 text-sm md:text-base text-slate-600 font-body-luxury max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-3.5 sm:mt-4 text-xs sm:text-sm md:text-base text-slate-600 font-body-luxury max-w-2xl mx-auto leading-relaxed">
             Meet & Greet is our company's flagship airport experience — engineered to eliminate every queue, counter, and uncertainty across 20+ international airport hubs.
           </p>
         </div>
 
         {/* Flagship Hero Card Layout */}
-        <div className="mt-14 relative rounded-[36px] border border-white/90 bg-gradient-to-br from-white/80 via-white/50 to-amber-50/30 shadow-[inset_0_1px_3px_0_rgba(255,255,255,1),0_25px_60px_-15px_rgba(217,119,6,0.12)] p-6 sm:p-10 lg:p-12 backdrop-blur-2xl backdrop-saturate-150 overflow-hidden">
+        <div className="mt-10 sm:mt-14 relative rounded-[28px] sm:rounded-[36px] border border-white/90 bg-gradient-to-br from-white/80 via-white/50 to-amber-50/30 shadow-[inset_0_1px_3px_0_rgba(255,255,255,1),0_25px_60px_-15px_rgba(217,119,6,0.12)] p-4 sm:p-8 lg:p-12 backdrop-blur-2xl backdrop-saturate-150 overflow-hidden">
           {/* Specular Liquid Light Rays */}
           <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-gradient-to-br from-white/90 via-white/40 to-transparent blur-2xl pointer-events-none opacity-80" />
           <div className="absolute -bottom-32 -right-32 w-80 h-80 rounded-full bg-gradient-to-tl from-amber-300/30 via-white/20 to-transparent blur-2xl pointer-events-none opacity-60" />
 
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 items-center">
             {/* Visual Media Showcase */}
-            <div className="lg:col-span-5 relative h-72 sm:h-96 rounded-2xl overflow-hidden group shadow-xl border border-white/90">
+            <div className="lg:col-span-5 relative h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden group shadow-xl border border-white/90">
+
               <img
                 src={meetGreetImg}
                 alt="Signature Airport Concierge Escort"

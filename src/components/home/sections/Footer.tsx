@@ -13,12 +13,12 @@ export function Footer() {
 
   return (
     <footer
-      className="relative px-6 pb-12 pt-16 md:px-14"
+      className="relative px-4 sm:px-8 pb-12 pt-14 sm:pt-16 md:px-14"
       style={{ background: C.tealDeep, color: "#fff" }}
     >
       <div className="relative mx-auto max-w-[1480px]">
         <div
-          className="grid gap-10 md:gap-16 pb-12 md:grid-cols-12"
+          className="grid gap-8 sm:gap-10 md:gap-16 pb-10 sm:pb-12 md:grid-cols-12"
           style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
         >
           <div className="md:col-span-5">
@@ -27,41 +27,42 @@ export function Footer() {
                 <img
                   src={branding.logo_light_url || branding.logo_url}
                   alt={branding.company_name}
-                  className="h-11 sm:h-13 md:h-16 lg:h-18 max-h-[70px] w-auto object-contain scale-[2.2] sm:scale-[2.5] md:scale-[2.8] origin-left transition-all duration-300 transform-gpu hover:scale-[2.95]"
+                  className="h-10 sm:h-12 md:h-15 max-h-[64px] w-auto max-w-[min(280px,50vw)] object-contain scale-[1.5] sm:scale-[2.0] md:scale-[2.6] origin-left transition-all duration-300 transform-gpu hover:scale-[2.75]"
                 />
               ) : (
                 <>
                   <div
-                    className="grid h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14 place-items-center rounded-2xl shadow-md"
+                    className="grid h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 place-items-center rounded-2xl shadow-md"
                     style={{ background: C.mint }}
                   >
                     <Plane className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 -rotate-45" style={{ color: C.tealDeep }} />
                   </div>
                   <div style={mono}>
-                    <div className="text-lg sm:text-xl md:text-2xl font-bold tracking-[0.28em]">{firstPart}</div>
-                    <div className="mt-0.5 text-[9px] sm:text-[10px] tracking-[0.45em] text-white/60">
+                    <div className="text-base sm:text-xl md:text-2xl font-bold tracking-[0.28em]">{firstPart}</div>
+                    <div className="mt-0.5 text-[8.5px] sm:text-[10px] tracking-[0.45em] text-white/60">
                       {restPart} · SUSWAGATAM
                     </div>
                   </div>
                 </>
               )}
             </div>
-            <h3 className="mt-8 text-[clamp(1.8rem,3vw,2.6rem)] leading-[1.05]" style={display}>
+            <h3 className="mt-6 sm:mt-8 text-[clamp(1.65rem,3vw,2.6rem)] leading-[1.08]" style={display}>
               {branding.company_tagline || "Welcome Begins Before You Land."}
             </h3>
-            <p className="mt-5 max-w-md text-[14px] leading-relaxed text-white/70">
+            <p className="mt-4 sm:mt-5 max-w-md text-xs sm:text-[14px] leading-relaxed text-white/70">
               {branding.business_address}, {branding.city}, {branding.state}, {branding.country} -{" "}
               {branding.postal_code}
             </p>
-            <p className="mt-3 text-[14px] text-white/70" style={mono}>
+            <p className="mt-2.5 sm:mt-3 text-xs sm:text-[14px] text-white/70" style={mono}>
               {branding.support_phone}
             </p>
           </div>
-          <div className="grid gap-10 md:col-span-7 md:grid-cols-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-10 md:col-span-7">
             <div>
-              <div className="text-[10px] uppercase tracking-[0.35em] text-white/50" style={mono}>
+              <div className="text-[9.5px] sm:text-[10px] uppercase tracking-[0.35em] text-white/50" style={mono}>
                 Services
               </div>
+
               <ul className="mt-5 space-y-3 text-[14px] text-white/80">
                 <li>
                   <Link to="/services/guide" className="transition hover:text-white">

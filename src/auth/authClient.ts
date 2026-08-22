@@ -11,24 +11,18 @@
  * cookies are automatically sent & set by the browser.
  */
 
-const getBackendUrl = (): string => {
-  if (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_BACKEND_API_URL) {
-    return import.meta.env.VITE_BACKEND_API_URL;
-  }
-  if (typeof process !== "undefined" && process.env && (process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL)) {
-    return process.env.VITE_BACKEND_API_URL || process.env.BACKEND_API_URL!;
-  }
-  return "http://127.0.0.1:8003";
-};
+import { resolveApiUrl, getBackendBaseUrl } from "@/lib/api/config";
+
+export { getBackendBaseUrl };
 
 async function authFetch(
   path: string,
   init: RequestInit
 ): Promise<Response> {
-  const primaryBase = getBackendUrl().replace(/\/+$/, "");
-  const relPath = path.startsWith("/") ? path : `/${path}`;
-  const primaryUrl = `${primaryBase}${relPath}`;
-  return fetch(primaryUrl, init);
+  const primaryUrl = resolveApiUrl(path);
+  const headers = new Headers(init.headers || {});
+  headers.set("ngrok-skip-browser-warning", "true");
+  return fetch(primaryUrl, { ...init, headers });
 }
 
 export interface AuthUser {
@@ -216,3 +210,4 @@ export async function apiAuthChangePassword(
     return { success: false, error: err as Error };
   }
 }
+

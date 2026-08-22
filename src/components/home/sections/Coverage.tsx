@@ -7,26 +7,27 @@ export function Coverage() {
   return (
     <section
       id="coverage"
-      className="relative overflow-hidden py-16 md:py-32"
+      className="relative overflow-hidden py-14 sm:py-20 md:py-32"
       style={{ background: C.paper }}
     >
       <div className="mx-auto max-w-[1480px]">
-        <div className="px-8 md:px-14 grid gap-12 md:grid-cols-12 items-start">
+        <div className="px-4 sm:px-8 md:px-14 grid gap-8 sm:gap-12 md:grid-cols-12 items-start">
           <div className="md:col-span-6">
             <SectionLabel index="05" label="Global Coverage" />
-            <h2 className="mt-8 text-[clamp(2rem,4.5vw,4rem)] leading-[1.02]" style={display}>
+            <h2 className="mt-5 sm:mt-8 text-[clamp(2.1rem,4.5vw,4rem)] leading-[1.02]" style={display}>
               We cover lots of{" "}
               <span className="italic" style={{ color: C.teal }}>
                 airports.
               </span>
             </h2>
-            <p className="mt-8 text-[15px] leading-relaxed max-w-xl" style={{ color: C.mute }}>
+            <p className="mt-4 sm:mt-8 text-xs sm:text-sm md:text-[15px] leading-relaxed max-w-xl" style={{ color: C.mute }}>
               Live operations at <strong style={{ color: C.ink }}>20 Indian airports</strong> —
               from Delhi, Mumbai and Bengaluru to Goa, Kochi, Jaipur and Trivandrum.
               Wherever you fly in this network, Suswagatam is already there.
             </p>
           </div>
-          <div className="md:col-span-6 grid grid-cols-2 gap-6 md:mt-20">
+          <div className="md:col-span-6 grid grid-cols-2 gap-4 sm:gap-6 md:mt-20">
+
             {[
               ["20", "Indian Airports"],
               ["24/7", "Live Dispatch"],

@@ -42,8 +42,8 @@ export function DestinationHero({ a }: { a: Airport }) {
     !!getAirportAsset(a.code, "hero-tablet.webp");
 
   return (
-    <section className="relative h-[100svh] w-full overflow-hidden p-2 sm:p-4 md:p-6" style={{ background: DARK.bg }}>
-      <div className="relative h-full w-full rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10">
+    <section className="relative h-[100svh] min-h-[560px] w-full overflow-hidden p-2 sm:p-4 md:p-6" style={{ background: DARK.bg }}>
+      <div className="relative h-full w-full rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10">
         <AnimatePresence mode="sync">
           {hasDynamicHero ? (
             <motion.div
@@ -101,21 +101,22 @@ export function DestinationHero({ a }: { a: Airport }) {
         </AnimatePresence>
 
         {/* Content Rendered Directly OVER the Image Inside the Card */}
-        <div className="absolute inset-0 z-10 flex flex-col justify-between p-6 sm:p-10 md:p-14 text-white">
+        <div className="absolute inset-0 z-10 flex flex-col justify-between p-4 sm:p-10 md:p-14 text-white">
           {/* Top Info & Airport Name */}
-          <div className="max-w-4xl">
+          <div className="max-w-4xl pt-safe">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex flex-wrap items-center gap-3 text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold text-amber-300/90"
+              className="flex flex-wrap items-center gap-2 sm:gap-3 text-[9.5px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] font-bold text-amber-300/90"
               style={mono}
             >
-              <span className="text-2xl leading-none">🇮🇳</span>
+              <span className="text-xl sm:text-2xl leading-none">🇮🇳</span>
               <span>{a.country}</span>
-              <span className="h-px w-10 bg-amber-400/40" />
+              <span className="h-px w-6 sm:w-10 bg-amber-400/40" />
               <span>IATA: {a.code} · ICAO: {a.icao}</span>
             </motion.div>
+
 
             {/* Official Airport Name Rendered Directly on Image ONLY for Guwahati Airport (GAU) */}
             {a.code === "GAU" && (

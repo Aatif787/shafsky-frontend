@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { BrandingSettings } from "./branding.types";
 import { FALLBACK_BRANDING } from "./branding.constants";
@@ -17,10 +17,29 @@ const BrandingContext = createContext<BrandingContextType>({
 });
 
 export function BrandingProvider({ children }: { children: React.ReactNode }) {
+  const [allowFetch, setAllowFetch] = useState(false);
+
+  useEffect(() => {
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (typeof win.requestIdleCallback === "function") {
+      const id = win.requestIdleCallback(() => setAllowFetch(true), { timeout: 2000 });
+      return () => win.cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(() => setAllowFetch(true), 400);
+    return () => window.clearTimeout(t);
+  }, []);
+
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["branding-settings"],
     queryFn: () => getActiveBranding(),
-    staleTime: Infinity, // Cache globally, load once
+    enabled: allowFetch,
+    placeholderData: FALLBACK_BRANDING,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    retry: 0,
   });
 
   const branding: BrandingSettings = data ? { ...FALLBACK_BRANDING, ...(data as any) } : FALLBACK_BRANDING;

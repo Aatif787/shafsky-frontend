@@ -163,7 +163,7 @@ export function HeroAircraft() {
         onMouseEnter={handleMouseEnter}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative w-full h-full pointer-events-auto cursor-pointer group"
+        className="relative w-full h-full pointer-events-none cursor-pointer group"
       >
         {/* Glow Aura activated on plane hover */}
         <div

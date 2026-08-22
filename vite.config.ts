@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
@@ -22,16 +22,28 @@ function fontVerificationPlugin() {
   };
 }
 
-export default defineConfig({
-  server: {
-    port: 5174,
-    proxy: {
-      "/api": {
-        target: process.env.VITE_BACKEND_API_URL || "http://127.0.0.1:8003",
-        changeOrigin: true,
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  const rawBackend = env.VITE_BACKEND_API_URL || process.env.VITE_BACKEND_API_URL || "http://127.0.0.1:8003";
+  const backendTarget = rawBackend
+    .replace(/^(VITE_BACKEND_API_URL|BACKEND_API_URL|VITE_FASTAPI_URL)\s*=\s*/i, "")
+    .replace(/^["']|["']$/g, "")
+    .replace(/\/+$/, "")
+    .replace(/\/api$/i, "") || "http://127.0.0.1:8003";
+
+  return {
+    server: {
+      port: 5174,
+      proxy: {
+        "/api": {
+          target: backendTarget,
+          changeOrigin: true,
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        },
       },
     },
-  },
   build: {
     target: "es2022",
     cssCodeSplit: true,
@@ -66,8 +78,8 @@ export default defineConfig({
       server: {
         entry: "server",
         prerender: {
-          routes: ["/", "/airports", "/services/guide", "/contact"],
-          crawlLinks: true,
+          routes: ["/", "/airports", "/contact"],
+          crawlLinks: false,
         },
       },
     } as any),
@@ -76,4 +88,5 @@ export default defineConfig({
     }),
     viteReact(),
   ],
+  };
 });

@@ -37,6 +37,16 @@ import dekAtqAir from "@/assets/airports/atq/Dek-Atq-air.png";
 import mobAtqAir from "@/assets/airports/atq/Mob-Atq-air.png";
 import dekGauAir from "@/assets/airports/gau/Dek-Gau-air.jpg";
 import mobGauAir from "@/assets/airports/gau/Mob-Gau-air.jpg";
+import dekCokAir from "@/assets/airports/cok/Dek-Cok-air.jpg";
+import mobCokAir from "@/assets/airports/cok/Mob-Cok-air.jpg";
+import dekMaaAir from "@/assets/airports/maa/Dek-Maa-air.jpg";
+import mobMaaAir from "@/assets/airports/maa/Mob-Maa-air.jpg";
+import dekGoiAir from "@/assets/airports/goi/Dek-Goi-air.jpg";
+import mobGoiAir from "@/assets/airports/goi/Mob-Goi-air.jpg";
+import dekGoxAir from "@/assets/airports/gox/Dek-Gox-air.jpg";
+import mobGoxAir from "@/assets/airports/gox/Mob-Gox-air.jpg";
+import dekBbiAir from "@/assets/airports/bbi/Dek-Bbi-air.jpg";
+import mobBbiAir from "@/assets/airports/bbi/Mob-Bbi-air.jpg";
 
 import { AIRPORT_REGISTRY, getAirportRegistryEntry } from "./airportRegistry";
 
@@ -902,7 +912,13 @@ export const AIRPORTS: Airport[] = [
       ["Basilica of Bom Jesus", "Basilica Bom Jesus", "UNESCO baroque church, 1605."],
       ["Dudhsagar Falls", "Dudhsagar Falls", "310-m four-tier cascade."],
     ],
-  }),
+  }).map((a) => ({
+    ...a,
+    cover: dekGoiAir,
+    mobCover: mobGoiAir,
+    slideshow: [dekGoiAir],
+    gallery: [dekGoiAir, a.gallery[0]],
+  })),
   ...buildCity({
     code: "CCU",
     icao: "VECC",
@@ -938,7 +954,13 @@ export const AIRPORTS: Airport[] = [
       ["Kapaleeshwarar Temple", "Kapaleeshwarar Temple", "Dravidian Shiva temple, Mylapore."],
       ["Fort St. George", "Fort St George Chennai", "First English fortress in India, 1644."],
     ],
-  }),
+  }).map((a) => ({
+    ...a,
+    cover: dekMaaAir,
+    mobCover: mobMaaAir,
+    slideshow: [dekMaaAir],
+    gallery: [dekMaaAir, a.gallery[0]],
+  })),
   ...buildCity({
     code: "BLR",
     icao: "VOBL",
@@ -974,7 +996,13 @@ export const AIRPORTS: Airport[] = [
       ["Mattancherry Palace", "Mattancherry Palace", "Kerala-Portuguese mural museum."],
       ["Backwaters Cruise", "Kerala backwaters houseboat", "Kettuvallam through canals."],
     ],
-  }),
+  }).map((a) => ({
+    ...a,
+    cover: dekCokAir,
+    mobCover: mobCokAir,
+    slideshow: [dekCokAir],
+    gallery: [dekCokAir, a.gallery[0]],
+  })),
   ...buildCity({
     code: "TRV",
     icao: "VOTV",
@@ -1028,7 +1056,13 @@ export const AIRPORTS: Airport[] = [
       ["Udayagiri Caves", "Udayagiri & Khandagiri Caves", "Ancient rock-cut caves with historical inscriptions."],
       ["Dhauli Shanti Stupa", "Dhauli Stupa", "Peace pagoda marking the Kalinga war transformation."]
     ]
-  }),
+  }).map((a) => ({
+    ...a,
+    cover: dekBbiAir,
+    mobCover: mobBbiAir,
+    slideshow: [dekBbiAir],
+    gallery: [dekBbiAir, a.gallery[0]],
+  })),
   ...buildCity({
     code: "IXC",
     icao: "VICG",
@@ -1064,7 +1098,13 @@ export const AIRPORTS: Airport[] = [
       ["Chapora Fort", "Chapora Fort", "Historic hilltop fortification with panoramic coast views."],
       ["Arambol Beach", "Arambol Beach", "Bohemian beach haven known for its freshwater lake."]
     ]
-  }),
+  }).map((a) => ({
+    ...a,
+    cover: dekGoxAir,
+    mobCover: mobGoxAir,
+    slideshow: [dekGoxAir],
+    gallery: [dekGoxAir, a.gallery[0]],
+  })),
   ...buildCity({
     code: "GAU",
     icao: "VEGT",

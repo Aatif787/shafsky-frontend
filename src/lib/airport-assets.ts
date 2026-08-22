@@ -21,6 +21,18 @@ import vtzDesktop from "../assets/airports/vtz/Dek-Vtz-air.jpg";
 import vtzMobile from "../assets/airports/vtz/Mob-Vtz-air.jpg";
 import ccuDesktop from "../assets/airports/ccu/Dek-Ccu-air.jpg";
 import ccuMobile from "../assets/airports/ccu/Mob-Ccu-air.jpg";
+import cokDesktop from "../assets/airports/cok/Dek-Cok-air.jpg";
+import cokMobile from "../assets/airports/cok/Mob-Cok-air.jpg";
+import maaDesktop from "../assets/airports/maa/Dek-Maa-air.jpg";
+import maaMobile from "../assets/airports/maa/Mob-Maa-air.jpg";
+import ixeDesktop from "../assets/airports/ixe/Dek-Ixe-air.jpg";
+import ixeMobile from "../assets/airports/ixe/Mob-Ixe-air.jpg";
+import goiDesktop from "../assets/airports/goi/Dek-Goi-air.jpg";
+import goiMobile from "../assets/airports/goi/Mob-Goi-air.jpg";
+import goxDesktop from "../assets/airports/gox/Dek-Gox-air.jpg";
+import goxMobile from "../assets/airports/gox/Mob-Gox-air.jpg";
+import bbiDesktop from "../assets/airports/bbi/Dek-Bbi-air.jpg";
+import bbiMobile from "../assets/airports/bbi/Mob-Bbi-air.jpg";
 
 const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: string }> = {
   del: {
@@ -68,6 +80,36 @@ const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: s
     desktop: ccuDesktop,
     mobile: ccuMobile,
     tablet: ccuDesktop,
+  },
+  cok: {
+    desktop: cokDesktop,
+    mobile: cokMobile,
+    tablet: cokDesktop,
+  },
+  maa: {
+    desktop: maaDesktop,
+    mobile: maaMobile,
+    tablet: maaDesktop,
+  },
+  ixe: {
+    desktop: ixeDesktop,
+    mobile: ixeMobile,
+    tablet: ixeDesktop,
+  },
+  goi: {
+    desktop: goiDesktop,
+    mobile: goiMobile,
+    tablet: goiDesktop,
+  },
+  gox: {
+    desktop: goxDesktop,
+    mobile: goxMobile,
+    tablet: goxDesktop,
+  },
+  bbi: {
+    desktop: bbiDesktop,
+    mobile: bbiMobile,
+    tablet: bbiDesktop,
   },
 };
 
