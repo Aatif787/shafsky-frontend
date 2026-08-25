@@ -12,8 +12,8 @@ import dekLkoAir from "@/assets/airports/lko/Dek-lko-air.png";
 import mobLkoAir from "@/assets/airports/lko/Mob-lko-air.png";
 import dekJaiAir from "@/assets/airports/jai/Dek-Jai_air.png";
 import mobJaiAir from "@/assets/airports/jai/Mob-Jai-air.png";
-import dekAtqAir from "@/assets/airports/atq/Dek-Atq-air.png";
-import mobAtqAir from "@/assets/airports/atq/Mob-Atq-air.png";
+import dekAtqAir from "@/assets/airports/atq/Dek-Atq-air.jpg";
+import mobAtqAir from "@/assets/airports/atq/Mob-Atq-air.jpg";
 import dekGauAir from "@/assets/airports/gau/Dek-Gau-air.jpg";
 import mobGauAir from "@/assets/airports/gau/Mob-Gau-air.jpg";
 import dekVtzAir from "@/assets/airports/vtz/Dek-Vtz-air.jpg";
@@ -139,58 +139,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: true,
     availableServiceIds: ["meet_greet", "lounge", "fast_track", "transport"],
-    meetGreetPackages: [
-      {
-        id: "platinum",
-        title: "Platinum Service",
-        tagline: "Premium domestic arrival & departure assistance from curbside/aerobridge to gate/parking area.",
-        price: "₹3,850 / pax",
-        duration: "Full Escort",
-        features: [
-          "Welcome at the Curbside Area / End of Aerobridge",
-          "Dedicated Staff with Placard",
-          "Dedicated Porter Service",
-          "Wheelchair Assist (through the airline)",
-          "Assist through Separate Entry Gate / Baggage Belt",
-          "Buggy Service (Sharing Basis, subject to availability)",
-          "Escort to Boarding Gate / Car Parking Area",
-        ],
-      },
-      {
-        id: "elite",
-        title: "Elite Service",
-        tagline: "Enhanced domestic arrival & departure assistance with dedicated airport support.",
-        price: "₹4,950 / pax",
-        duration: "Full Escort",
-        features: [
-          "Welcome at the Curbside Area / End of Aerobridge",
-          "Dedicated Staff with Placard",
-          "Dedicated Porter Service",
-          "Wheelchair Assist (through the airline)",
-          "Assist through Separate Entry Gate / Baggage Belt",
-          "Lounge Service Facility",
-          "Buggy Service to Boarding Gate (subject to availability)",
-          "Escort to Boarding Gate / Car Parking Area",
-        ],
-      },
-      {
-        id: "elite_plus",
-        title: "Elite Plus Service",
-        tagline: "Complete premium domestic departure & arrival assistance with flexible booking benefits.",
-        price: "₹7,040 / pax",
-        duration: "Full Escort",
-        features: [
-          "Welcome at the Curbside Area / End of Aerobridge",
-          "Dedicated Staff with Placard",
-          "Dedicated Porter Service",
-          "Wheelchair Assist (through the airline)",
-          "Assist through Separate Entry Gate / Baggage Belt",
-          "Lounge Service Facility",
-          "Buggy Service to Boarding Gate (subject to availability)",
-          "Escort to Boarding Gate / Car Parking Area",
-        ],
-      },
-    ],
+    meetGreetPackages: [],
     faqs: [
       ["Does Mumbai Airport support fast-track customs clearance?", "Yes, our Guest Relations Officers guide VIP passengers through priority diplomatic queues at Mumbai Airport (BOM)."],
     ],
@@ -226,40 +175,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: true,
     availableServiceIds: ["meet_greet", "transport"],
-    meetGreetPackages: [
-      {
-        id: "platinum",
-        title: "Platinum Service",
-        tagline: "Premium airport arrival assist with baggage support and meet & greet.",
-        price: "₹2,420 / pax",
-        isRecommended: false,
-        duration: "Arrival Escort",
-        features: [
-          "Welcome at the Aerobridge",
-          "Dedicated Staff with Placard",
-          "Baggage Assist (Up to 3 Pieces)",
-          "Assist at the Baggage Belt Area",
-          "Coordination with the Receiving Party",
-          "Escort to the Car Parking Area",
-        ],
-      },
-      {
-        id: "elite",
-        title: "Elite Service",
-        tagline: "Premium airport arrival assist with dedicated baggage support and complete arrival coordination.",
-        price: "₹4,400 / pax",
-        isRecommended: true,
-        duration: "Full Arrival Escort",
-        features: [
-          "Welcome at the Aerobridge",
-          "Dedicated Staff with Placard",
-          "Baggage Assist",
-          "Assist at the Baggage Belt Area",
-          "Coordination with the Receiving Party",
-          "Escort to the Car Parking Area",
-        ],
-      },
-    ],
+    meetGreetPackages: [],
     faqs: [
       ["Which services are available at AMD Airport?", "Ahmedabad Airport supports Meet & Greet escort and Ground Transportation chauffeured transfers."],
     ],
@@ -294,17 +210,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: true,
     availableServiceIds: ["meet_greet", "lounge", "fast_track", "transport"],
-    meetGreetPackages: [
-      {
-        id: "gold",
-        title: "BLR VIP Gold",
-        tagline: "Aerobridge Escort & Fast Track",
-        price: "₹7,500 / pax",
-        isRecommended: true,
-        duration: "3 Hours",
-        features: ["Aerobridge exit welcome with placard", "Fast-track security clearance", "Luggage porter support"],
-      },
-    ],
+    meetGreetPackages: [],
     faqs: [
       ["Does BLR Airport support VIP escort services?", "Yes, full Meet & Greet and lounge sanctuary access is available at Bengaluru Airport."],
     ],
@@ -444,23 +350,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: false,
     availableServiceIds: ["meet_greet", "transport"],
-    meetGreetPackages: [
-      {
-        id: "silver",
-        title: "Silver Service",
-        tagline: "Dedicated domestic & international airport escort from curbside/aerobridge to gate.",
-        price: "From ₹2,500 / pax",
-        duration: "Full Escort",
-        features: [
-          "Welcome Guest from Curbside / Aerobridge Area",
-          "Dedicated Porter Service with Staff",
-          "Wheelchair Assist Available (Through Airlines)",
-          "Assist through Entry Gate & Check-in",
-          "Assist in Security Hold Area (SHA)",
-          "Escort to Boarding Gate / Car Parking Area",
-        ],
-      },
-    ],
+    meetGreetPackages: [],
     faqs: [
       ["Where does the officer meet me at Chennai Airport?", "Your escort officer greets you at the aerobridge gate exit with a name placard."],
     ],
@@ -493,40 +383,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: false,
     availableServiceIds: ["meet_greet", "transport"],
-    meetGreetPackages: [
-      {
-        id: "silver",
-        title: "Silver Service",
-        tagline: "Domestic & International departure/arrival assistance from curbside/aerobridge.",
-        price: "₹2,500 / pax",
-        duration: "Full Escort",
-        features: [
-          "Welcome at Departure Curbside / Aerobridge",
-          "Dedicated Porter Service",
-          "Wheelchair Assist (through the airline)",
-          "Assist at Departure Area / Baggage Belt",
-          "Assist with Baggage Check-in",
-          "Escort to Boarding Gate / Car Parking Area",
-        ],
-      },
-      {
-        id: "gold",
-        title: "Gold Service",
-        tagline: "Enhanced domestic departure assistance with lounge service and airport support.",
-        price: "₹4,000 / pax",
-        duration: "Full Escort",
-        features: [
-          "Welcome at Departure Curbside",
-          "Dedicated Porter Service",
-          "Wheelchair Assist (through the airline)",
-          "Assist at Departure Area",
-          "Assist with Baggage Check-in",
-          "Assist inside Security Hold Area (SHA)",
-          "Lounge Service Facility",
-          "Escort to Boarding Gate",
-        ],
-      },
-    ],
+    meetGreetPackages: [],
     faqs: [
       ["Where does the officer meet me at Goa Airport?", "Your officer greets you at the exit gate or departure curbside holding a discrete name placard."],
     ],
@@ -562,39 +419,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: false,
     availableServiceIds: ["meet_greet", "transport"],
-    meetGreetPackages: [
-      {
-        id: "platinum",
-        title: "Platinum Service",
-        tagline: "Premium domestic departure/arrival assistance from curbside to gate.",
-        price: "₹2,420 / pax",
-        duration: "Full Escort",
-        features: [
-          "Welcome at Curbside / Aerobridge",
-          "Dedicated Porter Service",
-          "Wheelchair Assist (through the airline)",
-          "Assist at Departure Area / Baggage Belt",
-          "Assist with Baggage Check-in",
-          "Escort to Boarding Gate / Car Parking Area",
-        ],
-      },
-      {
-        id: "elite",
-        title: "Elite Service",
-        tagline: "Complete domestic departure/arrival assistance with lounge service.",
-        price: "₹4,400 / pax",
-        duration: "Full Escort",
-        features: [
-          "Welcome at Curbside / Aerobridge",
-          "Dedicated Porter Service",
-          "Wheelchair Assist (through the airline)",
-          "Assist through Separate Entry Gate",
-          "Assist at Baggage Belt Area",
-          "Lounge Service Facility (Departure)",
-          "Escort to Boarding Gate / Car Parking Area",
-        ],
-      },
-    ],
+    meetGreetPackages: [],
     faqs: [
       ["Where does the officer meet me at Jaipur Airport?", "Your officer greets you at the exit gate or departure curbside holding a discrete name placard."],
     ],
@@ -630,23 +455,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: false,
     availableServiceIds: ["meet_greet", "transport"],
-    meetGreetPackages: [
-      {
-        id: "meet_greet",
-        title: "Meet & Assist Service",
-        tagline: "Dedicated airport arrival/departure escort.",
-        price: "₹2,500 / pax",
-        duration: "Full Escort",
-        features: [
-          "Welcome Guest from Curbside / Aerobridge Area",
-          "Dedicated Porter Service",
-          "Wheelchair Assist (Through Airlines)",
-          "Assist at Separate Entry Gate / Immigration",
-          "Assist in Security Hold / Baggage Area",
-          "Escort to Boarding Gate / Parking Area",
-        ],
-      },
-    ],
+    meetGreetPackages: [],
     faqs: [
       ["Where does the officer meet me at Amritsar Airport?", "Your officer greets you at the arrival exit or departure curbside holding a discrete name placard."],
     ],
@@ -711,42 +520,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     status: "Active",
     featured: true,
     availableServiceIds: ["meet_greet", "lounge", "transport"],
-    meetGreetPackages: [
-      {
-        id: "silver",
-        title: "Silver Service",
-        tagline: "Domestic departure & arrival VIP escort with dedicated staff and lounge access.",
-        price: "₹3,500 / pax",
-        duration: "Full Escort",
-        features: [
-          "WELCOME GUEST FROM CURBSIDE / AEROBRIDGE AREA",
-          "PORTER SERVICE WITH DEDICATED STAFF",
-          "BAGGAGE ASSISTANCE AT BAGGAGE (3 PCS)",
-          "ASSIST IN SEPARATE ENTRY GATE",
-          "ASSIST IN AIRLINE CHECK IN BAGGAGE",
-          "ASSIST IN S.H.A (SECURITY HOLD AREA)",
-          "LOUNGE ACCESS FOR 2 HOURS",
-          "DROP OFF TILL BOARDING GATE / CAR PARKING",
-        ],
-      },
-      {
-        id: "elite",
-        title: "Elite Service",
-        tagline: "Premium domestic VIP escort with dedicated concierge, baggage assist, and lounge sanctuary.",
-        price: "₹5,500 / pax",
-        duration: "Full Escort",
-        features: [
-          "WELCOME GUEST FROM CURBSIDE / AEROBRIDGE AREA",
-          "PORTER SERVICE WITH DEDICATED STAFF",
-          "BAGGAGE ASSISTANCE AT BAGGAGE (3 PCS)",
-          "ASSIST IN SEPARATE ENTRY GATE",
-          "ASSIST IN AIRLINE CHECK IN BAGGAGE",
-          "ASSIST IN S.H.A (SECURITY HOLD AREA)",
-          "LOUNGE ACCESS FOR 2 HOURS",
-          "DROP OFF TILL BOARDING GATE / CAR PARKING",
-        ],
-      },
-    ],
+    meetGreetPackages: [],
     faqs: [["Is lounge access available at Cochin Airport?", "Yes, VIP Meet & Greet with lounge access is available at Cochin Airport (COK)."]],
     relatedAirportCodes: ["BLR", "MAA", "TRV"],
     seo: {
@@ -1036,58 +810,16 @@ export function searchAirportRegistry(query: string): AirportRegistryEntry[] {
   });
 }
 
-import { getAirportServices } from "./airports";
 
 /**
- * Single Source of Truth for Airport Concierge & VIP Package Pricing.
- * Resolves pricing directly from AIRPORT_REGISTRY and getAirportServices.
+ * @deprecated Authoritative airport pricing is calculated by the backend API (/api/airport/calculate-price or /api/airport/services).
  */
 export function getAirportBusinessPrice(
-  airportCode: string,
-  mode: "individual" | "package",
-  serviceOrPackageId: string
+  _airportCode: string,
+  _mode: "individual" | "package",
+  _serviceOrPackageId: string
 ): number {
-  const registryEntry = getAirportRegistryEntry(airportCode);
-
-  if (mode === "package") {
-    const pkgId = (serviceOrPackageId || "").toLowerCase();
-    const pkgs = registryEntry?.meetGreetPackages || [];
-
-    const match = pkgs.find(
-      (p) =>
-        p.id.toLowerCase() === pkgId ||
-        pkgId.includes(p.id.toLowerCase()) ||
-        p.id.toLowerCase().includes(pkgId)
-    );
-
-    if (match && match.price) {
-      const numMatch = match.price.match(/\d[\d,.]*/);
-      if (numMatch) {
-        return parseFloat(numMatch[0].replace(/,/g, ""));
-      }
-    }
-
-    if (pkgId.includes("silver")) return 4500;
-    if (pkgId.includes("gold")) return 8500;
-    if (pkgId.includes("elite") || pkgId.includes("platinum") || pkgId.includes("majlis")) return 18000;
-    return 8500;
-  }
-
-  // Individual Service Mode
-  const svcId = (serviceOrPackageId || "").toLowerCase();
-  const availableServices = getAirportServices(airportCode);
-  const foundSvc = availableServices.find(
-    (s) => s.id.toLowerCase() === svcId || svcId.includes(s.id.toLowerCase())
-  );
-  if (foundSvc && typeof foundSvc.price === "number") {
-    return foundSvc.price;
-  }
-
-  if (svcId.includes("lounge")) return 4500;
-  if (svcId.includes("fast_track")) return 3200;
-  if (svcId.includes("transport") || svcId.includes("transfer")) return 3500;
-
-  return 5000;
+  return 0;
 }
 
 /**

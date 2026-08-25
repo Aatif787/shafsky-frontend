@@ -14,7 +14,7 @@ import {
   Building2,
   Check,
 } from "lucide-react";
-import { getAirportServices, type Airport } from "@/data/airports";
+import { type Airport } from "@/data/airports";
 import { NoServicesState } from "@/components/ui/LuxuryFallbacks";
 import { MeetGreetPackageComparison } from "@/components/airports/MeetGreetPackageComparison";
 

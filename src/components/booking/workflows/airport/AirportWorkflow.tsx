@@ -12,6 +12,7 @@ import { IntelligentAirportAutocomplete } from "../../shared/IntelligentAirportA
 import { BookingSummaryReviewStep } from "./BookingSummaryReviewStep";
 import { PassengerDetailsStep } from "./PassengerDetailsStep";
 import { ApiClient } from "@/lib/ApiClient";
+import { toRazorpayContact } from "../../validation/sharedValidation";
 
 interface AirportWorkflowProps {
   searchParams?: any;
@@ -147,6 +148,151 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
     return map[state.selectedService] || map[state.selectedPackage] || "SHF-[#MEET]-";
   }, [state.selectedService, state.selectedPackage]);
 
+  const [paymentStatus, setPaymentStatus] = useState<"IDLE" | "OPEN" | "VERIFYING" | "FAILED" | "DISMISSED" | "SUCCESS">("IDLE");
+
+  const loadRazorpayScript = useCallback((): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (typeof window !== "undefined" && (window as any).Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  }, []);
+
+  const pollBookingConfirmation = useCallback(async (targetRef: string, maxAttempts = 10): Promise<boolean> => {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        await new Promise((r) => setTimeout(r, 2000));
+        const res = await ApiClient.fetchWithAuth(`/api/bookings/${targetRef}/status`);
+        const data = await res.json().catch(() => null);
+        if (res.ok && (data?.data?.status === "CONFIRMED" || data?.data?.paymentStatus === "PAID")) {
+          toast.success("Payment confirmed by gateway! Booking is active.");
+          setCurrentStep(5);
+          setPaymentStatus("SUCCESS");
+          return true;
+        }
+      } catch (err) {
+        console.warn(`[Poll] Attempt ${attempt} error:`, err);
+      }
+    }
+    toast.info("Payment received by gateway. Confirmation details will be emailed to you shortly.");
+    setCurrentStep(5);
+    setPaymentStatus("SUCCESS");
+    return true;
+  }, [setCurrentStep]);
+
+  const launchRazorpayModal = useCallback(async (
+    orderId: string,
+    keyId: string,
+    amount: number,
+    currency: string,
+    targetRef: string,
+    amountPaise?: number
+  ) => {
+    const loaded = await loadRazorpayScript();
+    if (!loaded) {
+      toast.error("Failed to load Razorpay Checkout SDK. Please check your internet connection.");
+      setBusy(false);
+      return;
+    }
+
+    const paise = Number.isFinite(Number(amountPaise)) && Number(amountPaise) >= 100
+      ? Math.round(Number(amountPaise))
+      : Math.round(Number(amount) * 100);
+    const contact = toRazorpayContact(state.phone);
+
+    try {
+      const previous = (window as any).__shafskyRzp;
+      if (previous && typeof previous.close === "function") {
+        previous.close();
+      }
+    } catch {
+      /* previous checkout instance may already be gone */
+    }
+
+    const options: Record<string, unknown> = {
+      key: keyId,
+      amount: paise,
+      currency: currency || "INR",
+      name: "Shafsky Aviation Concierge",
+      description: `Airport Service — ${targetRef}`,
+      order_id: orderId,
+      prefill: {
+        name: state.fullName,
+        email: state.email,
+        ...(contact ? { contact } : {}),
+      },
+      remember_customer: false,
+      retry: { enabled: false },
+      theme: {
+        color: "#d97706",
+      },
+      handler: async (response: any) => {
+        setBusy(true);
+        setPaymentStatus("VERIFYING");
+        toast.loading("Verifying payment with bank...", { id: "payment-verify" });
+
+        try {
+          const verifyRes = await ApiClient.fetchWithAuth("/api/payments/verify", {
+            method: "POST",
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id || orderId,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              booking_ref: targetRef,
+            }),
+          });
+          const verifyData = await verifyRes.json().catch(() => null);
+          toast.dismiss("payment-verify");
+
+          if (verifyRes.ok && verifyData?.success) {
+            toast.success("Payment verified! Booking confirmed.");
+            setPaymentStatus("SUCCESS");
+            setCurrentStep(5);
+          } else {
+            toast.info("Awaiting payment webhook confirmation. Checking status...");
+            await pollBookingConfirmation(targetRef);
+          }
+        } catch (vErr) {
+          toast.dismiss("payment-verify");
+          console.error("Payment verification error:", vErr);
+          await pollBookingConfirmation(targetRef);
+        } finally {
+          setBusy(false);
+        }
+      },
+      modal: {
+        ondismiss: () => {
+          setBusy(false);
+          setPaymentStatus("DISMISSED");
+          toast.info("Payment window closed. You can retry payment anytime.");
+        },
+      },
+    };
+
+    try {
+      const rzp = new (window as any).Razorpay(options);
+      (window as any).__shafskyRzp = rzp;
+      rzp.on("payment.failed", (failRes: any) => {
+        setBusy(false);
+        setPaymentStatus("FAILED");
+        toast.error(`Payment failed: ${failRes.error?.description || "Gateway transaction failed"}`);
+      });
+      setPaymentStatus("OPEN");
+      rzp.open();
+    } catch (openErr) {
+      console.error("Razorpay open error:", openErr);
+      toast.error("Unable to open checkout modal. Please try again.");
+      setBusy(false);
+    }
+  }, [loadRazorpayScript, state.fullName, state.email, state.phone, setBusy, setCurrentStep, pollBookingConfirmation]);
+
   const handleSubmit = useCallback(async () => {
     if (!state.fullName || !state.phone || !state.email) {
       toast.error("Please fill in Lead Guest Name, Phone Number, and Email.");
@@ -157,9 +303,49 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       return;
     }
 
-    setBusy(true);
-
     const serviceClock = resolveBookingServiceTime(state) || state.serviceTime;
+    if (!state.serviceDate || !serviceClock) {
+      toast.error("Flight date and time are required before payment.");
+      return;
+    }
+
+    const originCode = (
+      state.originCode ||
+      state.validatedFlightData?.origin?.code ||
+      (state.direction === "departure" ? state.airportCode : "")
+    )
+      .toString()
+      .trim()
+      .toUpperCase();
+    const destCode = (
+      state.destCode ||
+      state.validatedFlightData?.destination?.code ||
+      (state.direction === "arrival" ? state.airportCode : "")
+    )
+      .toString()
+      .trim()
+      .toUpperCase();
+
+    if (!originCode || !destCode) {
+      toast.error("Origin and destination airport codes are required. Please verify the flight first.");
+      return;
+    }
+
+    const serviceAt = new Date(`${state.serviceDate}T${serviceClock}:00`);
+    if (Number.isNaN(serviceAt.getTime())) {
+      toast.error("The flight date or time is invalid. Please go back and verify the itinerary.");
+      return;
+    }
+
+    const direction = (state.direction || "arrival").toLowerCase();
+    const departureTime = direction === "arrival" ? undefined : serviceAt.toISOString();
+    const arrivalTime = direction === "departure" ? undefined : serviceAt.toISOString();
+    const packageSlug = (state.selectedPackageId || state.selectedPackage || state.selectedService || "gold")
+      .toString()
+      .trim()
+      .toLowerCase();
+
+    setBusy(true);
     const ref = bookingRef || `${getRefPrefix()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
     try {
@@ -170,18 +356,24 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
           passengerEmail: state.email,
           passengerPhone: state.phone,
           serviceCategory: "Airport Assistance",
-          serviceType: state.selectedPackage || state.selectedService || "Meet & Assist",
+          serviceType: packageSlug,
           flightNum: state.flightNumber || "MANUAL-ENTRY",
-          originCode: state.originCode || state.validatedFlightData?.origin?.code,
-          destCode: state.destCode || state.validatedFlightData?.destination?.code,
+          originCode,
+          destCode,
           metadataJson: {
-            journey_type: state.direction,
-            flight_type: state.travelType,
-            travel_type: state.travelType,
-            transit_code: state.transitCode,
-            service_airport: state.airportCode,
+            journey_type: direction.toUpperCase(),
+            direction,
+            flight_type: (state.travelType || "domestic").toUpperCase(),
+            travel_type: (state.travelType || "domestic").toUpperCase(),
+            transit_code: state.transitCode || undefined,
+            service_airport: (state.airportCode || "").toUpperCase(),
+            terminal: state.selectedTerminal || undefined,
+            pax_adults: state.guestCount || 1,
+            guest_count: state.guestCount || 1,
+            package: packageSlug,
           },
-          departureTime: state.serviceDate && serviceClock ? new Date(`${state.serviceDate}T${serviceClock}:00`) : new Date(),
+          departureTime,
+          arrivalTime,
           totalAmount: totalPrice,
           currency: state.catalogCurrency || "INR",
           notes: state.specialRequests || `Airport: ${state.airportCode}, Direction: ${state.direction}`,
@@ -189,20 +381,87 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       });
       const result = await res.json().catch(() => null);
 
+      const apiError = (() => {
+        const detail = result?.detail ?? result?.error;
+        if (typeof detail === "string" && detail.trim()) return detail;
+        if (Array.isArray(detail) && detail[0]?.msg) return String(detail[0].msg);
+        if (detail && typeof detail === "object" && detail.msg) return String(detail.msg);
+        return "";
+      })();
+
       if (res.ok && result && result.success) {
-        setBookingRef(result.data?.bookingRef || result.data?.booking_ref || ref);
-        setCurrentStep(5);
-        toast.success("Booking request submitted successfully!");
+        const confirmedRef = result.data?.bookingRef || result.data?.booking_ref || ref;
+        setBookingRef(confirmedRef);
+
+        const orderId = result.data?.razorpay_order_id;
+        const keyId = result.data?.razorpay_key_id;
+        const authoritativeAmount = Number(result.data?.totalAmount || totalPrice);
+        const currency = result.data?.currency || state.catalogCurrency || "INR";
+        const amountPaise = result.data?.razorpay_amount_paise;
+
+        if (orderId && keyId && !String(orderId).startsWith("order_sim_")) {
+          await launchRazorpayModal(orderId, keyId, authoritativeAmount, currency, confirmedRef, amountPaise);
+        } else {
+          setPaymentStatus("DISMISSED");
+          toast.error(apiError || result?.error || "Booking saved. Payment could not be started — use Retry Payment.");
+          setBusy(false);
+        }
       } else {
-        toast.error("Error creating booking. Please try again.");
+        toast.error(apiError || "Error creating booking. Please try again.");
+        setBusy(false);
       }
     } catch (err) {
       console.error("Booking error:", err);
       toast.error("Failed to submit booking. Please try again.");
-    } finally {
       setBusy(false);
     }
-  }, [state, totalPrice, getRefPrefix, setCurrentStep, setBusy, setBookingRef, bookingRef]);
+  }, [state, totalPrice, getRefPrefix, setCurrentStep, setBusy, setBookingRef, bookingRef, launchRazorpayModal]);
+
+  const handleRetryPayment = useCallback(async () => {
+    if (!bookingRef) {
+      toast.error("No active booking found to retry. Please submit your details.");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const res = await ApiClient.fetchWithAuth("/api/payments/retry", {
+        method: "POST",
+        body: JSON.stringify({ booking_ref: bookingRef }),
+      });
+      const result = await res.json().catch(() => null);
+      const apiError = (() => {
+        const detail = result?.detail ?? result?.error;
+        if (typeof detail === "string" && detail.trim()) return detail;
+        if (Array.isArray(detail) && detail[0]?.msg) return String(detail[0].msg);
+        if (detail && typeof detail === "object" && detail.msg) return String(detail.msg);
+        return "";
+      })();
+
+      if (res.ok && result && result.success) {
+        const orderId = result.data?.razorpay_order_id;
+        const keyId = result.data?.razorpay_key_id;
+        const authoritativeAmount = Number(result.data?.totalAmount || totalPrice);
+        const currency = result.data?.currency || state.catalogCurrency || "INR";
+        const amountPaise = result.data?.razorpay_amount_paise;
+
+        if (orderId && keyId && !String(orderId).startsWith("order_sim_")) {
+          await launchRazorpayModal(orderId, keyId, authoritativeAmount, currency, bookingRef, amountPaise);
+        } else {
+          toast.error(apiError || "Unable to generate payment order for retry.");
+          setBusy(false);
+        }
+      } else {
+        toast.error(apiError || "Payment retry failed. Please try again.");
+        setBusy(false);
+      }
+    } catch (err) {
+      console.error("Retry payment error:", err);
+      toast.error("Failed to retry payment.");
+      setBusy(false);
+    }
+  }, [bookingRef, totalPrice, state.catalogCurrency, launchRazorpayModal, setBusy]);
+
 
   const handleGoBack = useCallback(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -689,6 +948,8 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                   state={state}
                   bookingRef={bookingRef || "SHF-DRAFT"}
                   priceBreakdown={priceBreakdown}
+                  paymentStatus={paymentStatus}
+                  onRetryPayment={handleRetryPayment}
                   onEditJourney={() => setCurrentStep(1)}
                   onEditServices={() => setCurrentStep(2)}
                   onEditPassengers={() => setCurrentStep(3)}

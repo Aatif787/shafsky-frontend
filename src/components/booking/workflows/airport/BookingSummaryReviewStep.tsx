@@ -23,6 +23,8 @@ interface BookingSummaryReviewStepProps {
   state: AirportWorkflowState;
   bookingRef: string;
   priceBreakdown?: any;
+  paymentStatus?: "IDLE" | "OPEN" | "VERIFYING" | "FAILED" | "DISMISSED" | "SUCCESS";
+  onRetryPayment?: () => void;
   onEditJourney: () => void;
   onEditServices: () => void;
   onEditPassengers: () => void;
@@ -35,6 +37,8 @@ export function BookingSummaryReviewStep({
   state,
   bookingRef,
   priceBreakdown,
+  paymentStatus,
+  onRetryPayment,
   onEditJourney,
   onEditServices,
   onEditPassengers,
@@ -363,6 +367,22 @@ export function BookingSummaryReviewStep({
 
       {/* ── 6. TERMS ACCEPTANCE & AUTHORITATIVE ACTION BUTTON ── */}
       <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-xs space-y-6">
+        {(paymentStatus === "DISMISSED" || paymentStatus === "FAILED") && (
+          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3 text-amber-900">
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="text-xs space-y-1">
+              <p className="font-bold">
+                {paymentStatus === "DISMISSED"
+                  ? "Payment Incomplete — Checkout was dismissed"
+                  : "Payment Failed — The gateway transaction was unsuccessful"}
+              </p>
+              <p className="text-amber-800/80">
+                Your booking details ({bookingRef}) are reserved. You can retry payment directly below without re-entering your details.
+              </p>
+            </div>
+          </div>
+        )}
+
         <label className="flex items-start gap-3.5 cursor-pointer">
           <input
             type="checkbox"
@@ -384,29 +404,47 @@ export function BookingSummaryReviewStep({
             <ArrowLeft className="w-4 h-4" />
             <span>Back</span>
           </button>
-          <button
-          type="button"
-          disabled={!agreedToTerms || isValidating || state.isValidatingBooking}
-          onClick={handleAction}
-          className={`flex-1 py-4 rounded-2xl font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
-            agreedToTerms && !isValidating && !state.isValidatingBooking
-              ? "bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white shadow-lg cursor-pointer hover:scale-[1.01]"
-              : "bg-slate-200 text-slate-400 cursor-not-allowed"
-          }`}
-        >
-          {isValidating || state.isValidatingBooking ? (
-            <>
-              <RefreshCw className="w-4 h-4 animate-spin text-white" />
-              <span>Checking your booking...</span>
-            </>
-          ) : (
-            <>
-              <Lock className="w-4 h-4" />
-              <span>Validate & Proceed to Payment</span>
+          
+          {(paymentStatus === "DISMISSED" || paymentStatus === "FAILED") && onRetryPayment ? (
+            <button
+              type="button"
+              disabled={!agreedToTerms || isValidating || state.isValidatingBooking}
+              onClick={onRetryPayment}
+              className={`flex-1 py-4 rounded-2xl font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
+                agreedToTerms && !isValidating && !state.isValidatingBooking
+                  ? "bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white shadow-lg cursor-pointer hover:scale-[1.01]"
+                  : "bg-slate-200 text-slate-400 cursor-not-allowed"
+              }`}
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Retry Secure Payment</span>
               <ArrowRight className="w-4 h-4" />
-            </>
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={!agreedToTerms || isValidating || state.isValidatingBooking}
+              onClick={handleAction}
+              className={`flex-1 py-4 rounded-2xl font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 ${
+                agreedToTerms && !isValidating && !state.isValidatingBooking
+                  ? "bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white shadow-lg cursor-pointer hover:scale-[1.01]"
+                  : "bg-slate-200 text-slate-400 cursor-not-allowed"
+              }`}
+            >
+              {isValidating || state.isValidatingBooking ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                  <span>Checking your booking...</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="w-4 h-4" />
+                  <span>Validate & Proceed to Payment</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
           )}
-        </button>
         </div>
       </div>
     </div>

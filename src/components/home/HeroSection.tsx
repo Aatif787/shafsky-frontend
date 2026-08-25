@@ -120,8 +120,8 @@ export function HeroSection({ visible }: { visible: boolean }) {
           className="mt-6 md:mt-8 max-w-xl text-[14px] md:text-[16px] leading-relaxed"
           style={{ color: "rgba(255, 255, 255, 0.85)" }}
         >
-          Meet & Greet, private lounge access, premium ground transport, and concierge —
-          orchestrated across India's busiest airports and global hubs since 2022.
+          From airport pickups to lounge access and personal assistance, we handle everything
+          so you can travel stress-free. Serving travelers across India and around the world since 2022.
         </motion.p>
       </div>
 

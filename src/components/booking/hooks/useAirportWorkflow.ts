@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getAirportBusinessPrice, getAirportRegistryEntry } from "@/data/airportRegistry";
+import { getAirportRegistryEntry } from "@/data/airportRegistry";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { ApiClient } from "@/lib/ApiClient";
 import { airportApi } from "@/lib/api/airportApi";
@@ -11,6 +11,7 @@ import {
   ServiceCatalogItem,
   PriceBreakdown,
 } from "../utils/serviceAirportResolver";
+import { indianMobileDigits } from "../validation/sharedValidation";
 
 export type FlightValidationMode = "IDLE" | "LOADING" | "VERIFIED" | "ERROR" | "MANUAL";
 
@@ -938,9 +939,9 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
     if (!state.email || !emailRegex.test(state.email.trim())) {
       fieldErrors.email = "Please enter a valid email address.";
     }
-    const phoneClean = (state.phone || "").replace(/\D/g, "");
-    if (!state.phone || phoneClean.length < 7) {
-      fieldErrors.phone = "Please enter a valid phone/WhatsApp number (at least 7 digits).";
+    const phoneClean = indianMobileDigits(state.phone || "");
+    if (!phoneClean) {
+      fieldErrors.phone = "Please enter a valid 10-digit Indian mobile number.";
     }
 
     if (!state.isFlightValidated || !(state.flightNumber || "").trim()) {

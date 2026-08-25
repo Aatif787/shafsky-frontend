@@ -11,11 +11,6 @@ const SignatureConciergeSection = lazy(() =>
 );
 const WhyChooseUs = lazy(() => import("./sections/WhyChooseUs").then((m) => ({ default: m.WhyChooseUs })));
 const TrustBar = lazy(() => import("./sections/TrustBar").then((m) => ({ default: m.TrustBar })));
-const EnterpriseServicesPlatform = lazy(() =>
-  import("@/components/services/EnterpriseServicesPlatform").then((m) => ({
-    default: m.EnterpriseServicesPlatform,
-  })),
-);
 const EnterpriseSolutions = lazy(() =>
   import("./sections/EnterpriseSolutions").then((m) => ({ default: m.EnterpriseSolutions })),
 );
@@ -65,11 +60,6 @@ export function Hero({ visible = true }: { visible?: boolean }) {
       <ScrollSection>
         <Deferred height={220}>
           <TrustBar />
-        </Deferred>
-      </ScrollSection>
-      <ScrollSection id="services">
-        <Deferred height={640}>
-          <EnterpriseServicesPlatform />
         </Deferred>
       </ScrollSection>
       <Deferred height={720}>

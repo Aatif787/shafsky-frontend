@@ -20,12 +20,15 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
   });
 
 export const ConfirmPaymentInput = z.object({
-  bookingId: z.string().uuid(),
-  provider: z.enum(["stripe", "razorpay"]),
-  amount: z.number().positive(),
-  transactionId: z.string(),
+  bookingId: z.string().optional(),
+  bookingRef: z.string().optional(),
+  provider: z.enum(["stripe", "razorpay"]).default("razorpay"),
+  amount: z.number().positive().optional(),
+  transactionId: z.string().optional(),
   signature: z.string().optional(),
   razorpayOrderId: z.string().optional(),
+  razorpayPaymentId: z.string().optional(),
+  razorpaySignature: z.string().optional(),
 });
 
 export const confirmPayment = createServerFn({ method: "POST" })
@@ -33,31 +36,23 @@ export const confirmPayment = createServerFn({ method: "POST" })
   .validator((d: unknown) => ConfirmPaymentInput.parse(d))
   .handler(async ({ data }) => {
     const token = getTokenFromRequest();
-    const result = await apiPost<any>("/api/payments/confirm", data, token);
+    
+    // Route to authoritative cryptographic verification
+    const orderId = data.razorpayOrderId || data.transactionId;
+    const paymentId = data.razorpayPaymentId || data.transactionId;
+    const signature = data.razorpaySignature || data.signature;
+    const bookingRef = data.bookingRef || data.bookingId;
 
-    // Queue payment confirmation notifications asynchronously (fire-and-forget, non-blocking)
-    (async () => {
-      try {
-        const payloadParams = {
-          bookingId: data.bookingId,
-          amount: data.amount,
-          transactionId: data.transactionId,
-        };
+    if (orderId && paymentId && signature) {
+      return await apiPost<any>("/api/payments/verify", {
+        razorpay_order_id: orderId,
+        razorpay_payment_id: paymentId,
+        razorpay_signature: signature,
+        booking_ref: bookingRef,
+      }, token);
+    }
 
-        const adminEmail = process.env.ADMIN_EMAIL || "admin@shafsky.com";
-        await enqueueNotification({
-          bookingId: data.bookingId,
-          recipient: adminEmail,
-          channel: "email",
-          eventType: "payment_received",
-          payload: payloadParams,
-        });
-      } catch (err) {
-        console.error("Failed to enqueue payment confirmation notifications:", err);
-      }
-    })();
-
-    return result;
+    return await apiPost<any>("/api/payments/verify", data, token);
   });
 
 export const listPaymentLedger = createServerFn({ method: "POST" })

@@ -15,7 +15,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { getAirportServices, type Airport } from "@/data/airports";
+import { type Airport } from "@/data/airports";
 import { LIGHT, display, mono, SectionLabel, GridCard, StatusDot } from "./Atoms";
 import { MeetGreetPackageComparison } from "./MeetGreetPackageComparison";
 import { AssistanceCTA } from "@/components/navigation/AssistanceCTA";
@@ -34,15 +34,11 @@ const SERVICE_IMAGES: Record<string, string> = {
 };
 
 export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearch?: Record<string, unknown> }) {
-  const airportServices = getAirportServices(a.code);
-
   const quickInfoChips = [
     a.code ? { label: "Airport Code", value: a.code, Icon: Plane } : null,
     a.city ? { label: "City", value: a.city, Icon: MapPin } : null,
     a.country ? { label: "Country", value: a.country, Icon: Globe } : null,
-    airportServices.length > 0
-      ? { label: "Available Services", value: `${airportServices.length} Services`, Icon: ConciergeBell }
-      : null,
+    { label: "Concierge Status", value: "Live Authoritative", Icon: ConciergeBell },
     { label: "24/7 Support", value: "24/7 Operations", Icon: Clock },
     { label: "VIP Assist", value: "Airside Escort", Icon: ShieldCheck },
   ].filter(Boolean) as Array<{ label: string; value: string; Icon: any }>;

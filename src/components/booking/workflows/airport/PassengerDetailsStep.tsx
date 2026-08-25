@@ -12,6 +12,7 @@ import {
   Search,
 } from "lucide-react";
 import { AirportWorkflowState, formatBookingServiceDateTime } from "../../hooks/useAirportWorkflow";
+import { indianMobileDigits } from "../../validation/sharedValidation";
 import { PriceBreakdown } from "../../utils/serviceAirportResolver";
 import { FlightItineraryStrip } from "./FlightItineraryStrip";
 import { ManualFlightEntryForm } from "../../shared/ManualFlightEntryForm";
@@ -106,9 +107,9 @@ export function PassengerDetailsStep({
       errs.email = "Please enter a valid email address (e.g. name@domain.com).";
     }
 
-    const phoneVal = state.phone.trim().replace(/[^\d+]/g, "");
-    if (!phoneVal || phoneVal.length < 7) {
-      errs.phone = "Please enter a valid phone number (min 7 digits).";
+    const phoneVal = indianMobileDigits(state.phone);
+    if (!phoneVal) {
+      errs.phone = "Enter a 10-digit Indian mobile number (e.g. 9876543210).";
     }
 
     if (state.guestCount < 1) {
@@ -404,7 +405,7 @@ export function PassengerDetailsStep({
                       onChange({ phone: e.target.value });
                       if (localErrors.phone) setLocalErrors((p) => ({ ...p, phone: "" }));
                     }}
-                    placeholder="e.g. +91 98765 43210"
+                    placeholder="10-digit mobile, e.g. 9876543210"
                     aria-invalid={Boolean(getFieldError("phone"))}
                     aria-describedby="phone_error"
                     className={`w-full px-4 py-3.5 rounded-2xl bg-slate-50 text-slate-900 text-sm font-sans font-medium transition-all outline-none border ${

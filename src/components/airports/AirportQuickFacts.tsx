@@ -12,19 +12,17 @@ import {
   Compass,
   FileCheck,
 } from "lucide-react";
-import { getAirportServices, type Airport } from "@/data/airports";
+import { type Airport } from "@/data/airports";
 
 interface AirportQuickFactsProps {
   a: Airport;
 }
 
 export function AirportQuickFacts({ a }: AirportQuickFactsProps) {
-  const availableServices = getAirportServices(a.code);
-
   const facts = [
     {
       title: "Airport Services Available",
-      value: `${availableServices.length} Staged Services`,
+      value: "VIP Airside Concierge",
       desc: "Meet & Greet, VIP Lounge, Fast Track & Chauffeured Transfers",
       icon: ConciergeBell,
       color: "#c5a059",

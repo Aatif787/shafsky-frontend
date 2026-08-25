@@ -8,7 +8,6 @@ import { ServiceAudience, type PersonaItem } from "./ServiceAudience";
 import { ServiceFAQ, type FAQPair } from "./ServiceFAQ";
 import { RelatedServices, type RelatedServiceItem } from "@/components/navigation/RelatedServices";
 import { AssistanceCTA } from "@/components/navigation/AssistanceCTA";
-import { EnterpriseServicesPlatform } from "./EnterpriseServicesPlatform";
 import { ServiceCategoryId } from "@/data/servicesPlatformData";
 
 interface ServiceLayoutProps {
@@ -66,9 +65,6 @@ export function ServiceLayout({
         onSelectSubService={onSelectSubService}
         serviceId={serviceId}
       />
-
-      {/* 2. REUSABLE ENTERPRISE SERVICES PLATFORM GRID */}
-      <EnterpriseServicesPlatform initialCategoryId={categoryId} />
 
       {/* 3. KEY BENEFITS */}
       <ServiceWhyChoose serviceName={serviceName} benefits={benefits} />

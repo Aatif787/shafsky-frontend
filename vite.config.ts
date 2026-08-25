@@ -34,6 +34,10 @@ export default defineConfig(({ mode }) => {
   return {
     server: {
       port: 5174,
+      headers: {
+        "Permissions-Policy":
+          'accelerometer=(self "https://checkout.razorpay.com" "https://api.razorpay.com"), gyroscope=(self "https://checkout.razorpay.com" "https://api.razorpay.com"), camera=(), microphone=(), geolocation=()',
+      },
       proxy: {
         "/api": {
           target: backendTarget,

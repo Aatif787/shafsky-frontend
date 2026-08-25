@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import { Crown, Check, ArrowRight, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import { Crown, Check, ArrowRight, ChevronDown, ChevronUp, Sparkles, AlertCircle, RefreshCw } from "lucide-react";
 import { getAirportRegistryEntry } from "@/data/airportRegistry";
 import { ApiClient } from "@/lib/ApiClient";
 
@@ -51,16 +51,17 @@ export function MeetGreetPackageComparison({
     setFlightType(flightFromSearch(bookingSearch));
   }, [bookingSearch?.from_hero, bookingSearch?.direction, bookingSearch?.travel_type, bookingSearch?.flight_type]);
 
-  // Dynamic packages loaded from backend DB API
+  // Dynamic packages loaded authoritatively from backend DB API
   const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<boolean>(false);
+  const [retryTrigger, setRetryTrigger] = useState<number>(0);
   const [expandedPackages, setExpandedPackages] = useState<Record<string, boolean>>({});
-
-
 
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
+    setFetchError(false);
 
     const isDel = airportCode.toUpperCase() === "DEL";
     const flightTypeParam = journeyType === "TRANSIT" ? transitType : flightType;
@@ -69,134 +70,95 @@ export function MeetGreetPackageComparison({
     ApiClient.fetchWithAuth(
       `/api/journey/airports/${airportCode}/services?journey_type=${journeyType}&flight_type=${flightTypeParam}${terminalParam}`
     )
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
-        if (isMounted && data && data.success !== false && Array.isArray(data.data)) {
-          if (data.data.length > 0) {
-            const titleMap: Record<string, string> = {
-              DOMESTIC_DOMESTIC: "Domestic → Domestic",
-              DOMESTIC_INTERNATIONAL: "Domestic → International",
-              INTERNATIONAL_DOMESTIC: "International → Domestic",
-              INTERNATIONAL_INTERNATIONAL: "International → International",
-            };
-
-            const mapped = data.data.map((item: any) => {
-              const slug = item.service?.slug || item.id;
-              let itemFeatures = item.features || [];
-              if (!itemFeatures || itemFeatures.length === 0) {
-                if (slug === "platinum") {
-                  itemFeatures = [
-                    "Welcome at the Aerobridge",
-                    "Dedicated Staff with Placard",
-                    "Baggage Assist (Up to 3 Pieces)",
-                    "Assist at the Baggage Belt Area",
-                    "Coordination with the Receiving Party",
-                    "Escort to the Car Parking Area",
-                  ];
-                } else if (slug === "elite") {
-                  itemFeatures = [
-                    "Welcome at the Aerobridge",
-                    "Dedicated Staff with Placard",
-                    "Baggage Assist",
-                    "Assist at the Baggage Belt Area",
-                    "Coordination with the Receiving Party",
-                    "Escort to the Car Parking Area",
-                  ];
-                }
-              }
-
-              let title = item.service?.name || "Service Package";
-              if (item.journey_type === "TRANSIT" && item.flight_type && titleMap[item.flight_type]) {
-                title = titleMap[item.flight_type];
-              }
-
-              const cleanPackageText = (txt: string) =>
-                typeof txt === "string"
-                  ? txt
-                      .replace(/\bAssistance\b/g, "Assist")
-                      .replace(/\bassistance\b/g, "assist")
-                      .replace(/\bPersonalized Placard\b/gi, "Placard")
-                      .replace(/\bPersonalized Name Badge\b/gi, "Name Badge")
-                      .replace(/\bPersonalized Name Placard\b/gi, "Name Placard")
-                      .replace(/\bPersonalized\s+/gi, "")
-                      .replace(/\s+personalized\b/gi, "")
-                      .replace(/\bpersonalized\b/gi, "")
-                  : txt;
-
-              return {
-                id: slug,
-                title: cleanPackageText(title),
-                desc: cleanPackageText(item.short_description || item.service?.description || "VIP Airport Service Package."),
-                price: `${item.currency === "USD" ? "$" : "₹"}${item.price?.toLocaleString()}`,
-                rawPrice: item.price,
-                features: itemFeatures.map(cleanPackageText),
-                additionalBenefits: (item.additional_benefits || []).map(cleanPackageText),
-                isRecommended: !!item.is_recommended,
+        if (isMounted) {
+          if (data && data.success !== false && Array.isArray(data.data)) {
+            if (data.data.length > 0) {
+              const titleMap: Record<string, string> = {
+                DOMESTIC_DOMESTIC: "Domestic → Domestic",
+                DOMESTIC_INTERNATIONAL: "Domestic → International",
+                INTERNATIONAL_DOMESTIC: "International → Domestic",
+                INTERNATIONAL_INTERNATIONAL: "International → International",
               };
-            });
-            setPackages(mapped);
+
+              const mapped = data.data.map((item: any) => {
+                const slug = item.service?.slug || item.id;
+                let itemFeatures = item.features || [];
+                if (!itemFeatures || itemFeatures.length === 0) {
+                  if (slug === "platinum") {
+                    itemFeatures = [
+                      "Welcome at the Aerobridge",
+                      "Dedicated Staff with Placard",
+                      "Baggage Assist (Up to 3 Pieces)",
+                      "Assist at the Baggage Belt Area",
+                      "Coordination with the Receiving Party",
+                      "Escort to the Car Parking Area",
+                    ];
+                  } else if (slug === "elite") {
+                    itemFeatures = [
+                      "Welcome at the Aerobridge",
+                      "Dedicated Staff with Placard",
+                      "Baggage Assist",
+                      "Assist at the Baggage Belt Area",
+                      "Coordination with the Receiving Party",
+                      "Escort to the Car Parking Area",
+                    ];
+                  }
+                }
+
+                let title = item.service?.name || "Service Package";
+                if (item.journey_type === "TRANSIT" && item.flight_type && titleMap[item.flight_type]) {
+                  title = titleMap[item.flight_type];
+                }
+
+                const cleanPackageText = (txt: string) =>
+                  typeof txt === "string"
+                    ? txt
+                        .replace(/\bAssistance\b/g, "Assist")
+                        .replace(/\bassistance\b/g, "assist")
+                        .replace(/\bPersonalized Placard\b/gi, "Placard")
+                        .replace(/\bPersonalized Name Badge\b/gi, "Name Badge")
+                        .replace(/\bPersonalized Name Placard\b/gi, "Name Placard")
+                        .replace(/\bPersonalized\s+/gi, "")
+                        .replace(/\s+personalized\b/gi, "")
+                        .replace(/\bpersonalized\b/gi, "")
+                    : txt;
+
+                return {
+                  id: slug,
+                  title: cleanPackageText(title),
+                  desc: cleanPackageText(item.short_description || item.service?.description || "VIP Airport Service Package."),
+                  price: `${item.currency === "USD" ? "$" : "₹"}${item.price?.toLocaleString()}`,
+                  rawPrice: item.price,
+                  features: itemFeatures.map(cleanPackageText),
+                  additionalBenefits: (item.additional_benefits || []).map(cleanPackageText),
+                  isRecommended: !!item.is_recommended,
+                };
+              });
+              setPackages(mapped);
+              setFetchError(false);
+            } else {
+              // Authoritative backend returned 0 active packages for this configuration
+              setPackages([]);
+              setFetchError(false);
+            }
           } else {
-            // API returned empty list for this filter combination — resolve official fallback packages
-            const cleanPackageText = (txt: string) =>
-              typeof txt === "string"
-                ? txt
-                    .replace(/\bAssistance\b/g, "Assist")
-                    .replace(/\bassistance\b/g, "assist")
-                    .replace(/\bPersonalized Placard\b/gi, "Placard")
-                    .replace(/\bPersonalized\s+/gi, "")
-                    .replace(/\s+personalized\b/gi, "")
-                    .replace(/\bpersonalized\b/gi, "")
-                : txt;
-            const defaultPackages: any[] = [];
-            const fallback = (airportEntry?.meetGreetPackages || defaultPackages).map((pkg: any) => ({
-              ...pkg,
-              title: cleanPackageText(pkg.title || ""),
-              desc: cleanPackageText(pkg.tagline || pkg.desc || "VIP Airport Concierge Package."),
-              features: (pkg.features || []).map(cleanPackageText),
-            }));
-            setPackages(fallback);
+            setPackages([]);
+            setFetchError(true);
           }
-        } else if (isMounted) {
-          const cleanPackageText = (txt: string) =>
-            typeof txt === "string"
-              ? txt
-                  .replace(/\bAssistance\b/g, "Assist")
-                  .replace(/\bassistance\b/g, "assist")
-                  .replace(/\bPersonalized Placard\b/gi, "Placard")
-                  .replace(/\bPersonalized\s+/gi, "")
-                  .replace(/\s+personalized\b/gi, "")
-                  .replace(/\bpersonalized\b/gi, "")
-              : txt;
-          const defaultPackages: any[] = [];
-          const fallback = (airportEntry?.meetGreetPackages || defaultPackages).map((pkg: any) => ({
-            ...pkg,
-            title: cleanPackageText(pkg.title || ""),
-            desc: cleanPackageText(pkg.tagline || pkg.desc || "VIP Airport Concierge Package."),
-            features: (pkg.features || []).map(cleanPackageText),
-          }));
-          setPackages(fallback);
         }
       })
-      .catch(() => {
+      .catch((_err) => {
         if (isMounted) {
-          const cleanPackageText = (txt: string) =>
-            typeof txt === "string"
-              ? txt
-                  .replace(/\bAssistance\b/g, "Assist")
-                  .replace(/\bassistance\b/g, "assist")
-                  .replace(/\bPersonalized Placard\b/gi, "Placard")
-                  .replace(/\bPersonalized\s+/gi, "")
-                  .replace(/\s+personalized\b/gi, "")
-                  .replace(/\bpersonalized\b/gi, "")
-              : txt;
-          const defaultPackages: any[] = [];
-          const fallback = (airportEntry?.meetGreetPackages || defaultPackages).map((pkg: any) => ({
-            ...pkg,
-            title: cleanPackageText(pkg.title || ""),
-            desc: cleanPackageText(pkg.tagline || pkg.desc || "VIP Airport Concierge Package."),
-            features: (pkg.features || []).map(cleanPackageText),
-          }));
-          setPackages(fallback);
+          // Backend unreachable / offline — show unavailable state, never fabricate fake packages
+          setPackages([]);
+          setFetchError(true);
         }
       })
       .finally(() => {
@@ -206,7 +168,7 @@ export function MeetGreetPackageComparison({
     return () => {
       isMounted = false;
     };
-  }, [airportCode, flightType, journeyType, transitType, terminal, airportEntry]);
+  }, [airportCode, flightType, journeyType, transitType, terminal, retryTrigger]);
 
   return (
     <div className="space-y-8 my-10">
@@ -363,15 +325,61 @@ export function MeetGreetPackageComparison({
         <div className="py-12 text-center text-xs font-mono text-slate-400">
           Loading production packages for {cityName}...
         </div>
+      ) : fetchError ? (
+        <div className="p-8 sm:p-10 rounded-3xl bg-slate-50 border border-slate-200 text-center max-w-xl mx-auto space-y-4 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+            <AlertCircle className="w-6 h-6" />
+          </div>
+          <div className="space-y-1.5">
+            <h4 className="text-base sm:text-lg font-serif font-bold text-slate-900">
+              Airport services are temporarily unavailable.
+            </h4>
+            <p className="text-xs text-slate-600 font-sans max-w-md mx-auto leading-relaxed">
+              We were unable to connect to the live service catalog for {cityName} ({airportCode}). Please retry or contact our 24/7 VIP Concierge directly.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setRetryTrigger((c) => c + 1)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-slate-800 transition-all cursor-pointer shadow-sm"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Retry</span>
+            </button>
+            <a
+              href="https://wa.me/919599087959?text=Hello%20Shafsky%20Aviation,%20I%20need%20assistance%20with%20airport%20services"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] text-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-[#20bd5a] transition-all shadow-sm"
+            >
+              <span>WhatsApp Concierge</span>
+            </a>
+          </div>
+        </div>
       ) : packages.length === 0 ? (
-        <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 text-center max-w-xl mx-auto space-y-2">
-          <Sparkles className="w-6 h-6 text-slate-400 mx-auto" />
-          <h4 className="text-sm font-serif font-bold text-slate-800">
-            {flightType} {journeyType} Packages Coming Soon
-          </h4>
-          <p className="text-xs text-slate-500 font-sans">
-            Packages for this flight category will be added shortly. You can contact our 24/7 command desk for direct reservation.
-          </p>
+        <div className="p-8 sm:p-10 rounded-3xl bg-slate-50 border border-slate-200 text-center max-w-xl mx-auto space-y-4 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-purple-50 text-[#7c3aed] flex items-center justify-center mx-auto">
+            <Sparkles className="w-6 h-6" />
+          </div>
+          <div className="space-y-1.5">
+            <h4 className="text-base sm:text-lg font-serif font-bold text-slate-900">
+              No Active Packages for this Selection
+            </h4>
+            <p className="text-xs text-slate-600 font-sans max-w-md mx-auto leading-relaxed">
+              No concierge packages are currently active for {journeyType.toLowerCase()} {flightType.toLowerCase()} flights at {cityName} ({airportCode}). Custom reservations can be arranged directly through our 24/7 command desk.
+            </p>
+          </div>
+          <div className="pt-2">
+            <a
+              href="https://wa.me/919599087959?text=Hello%20Shafsky%20Aviation,%20I%20would%20like%20to%20inquire%20about%20custom%20concierge%20services"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#7c3aed] text-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-[#6d28d9] transition-all shadow-sm"
+            >
+              <span>Contact Concierge Desk</span>
+            </a>
+          </div>
         </div>
       ) : (
         <div
