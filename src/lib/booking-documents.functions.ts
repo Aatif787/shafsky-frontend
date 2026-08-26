@@ -11,7 +11,7 @@ const GenInput = z.object({
   amount: z.number().nonnegative().optional(),
 });
 
-async function buildPdf(opts: {
+export async function buildPdf(opts: {
   kind: "quotation" | "invoice" | "receipt";
   ref: string;
   customer: string;
@@ -39,7 +39,7 @@ async function buildPdf(opts: {
 
   // Header bar
   page.drawRectangle({ x: 0, y: height - 96, width, height: 96, color: teal });
-  page.drawText("SHAFSKY AVIATION", {
+  page.drawText("SHAFSKY AVIATION SERVICES", {
     x: 40,
     y: height - 50,
     size: 18,
@@ -187,7 +187,7 @@ async function buildPdf(opts: {
 
   // Footer
   page.drawRectangle({ x: 0, y: 0, width, height: 70, color: rgb(0.97, 0.98, 0.99) });
-  page.drawText(`Shafsky Aviation Pvt Ltd  ·  ${CONTACT.PHONE}  ·  ${CONTACT.EMAIL}`, {
+  page.drawText(`Shafsky Aviation Services Pvt Ltd  ·  ${CONTACT.PHONE}  ·  ${CONTACT.EMAIL}`, {
     x: 40,
     y: 42,
     size: 9,
@@ -200,7 +200,7 @@ async function buildPdf(opts: {
         ? "Quotation valid for 7 days. Subject to slot, parking, and clearance approvals."
         : "Quotation valid for 7 days. Subject to airport terminal approvals."
       : opts.service_type === "Private Charter"
-        ? "Thank you for flying with Shafsky Aviation."
+        ? "Thank you for flying with Shafsky Aviation Services."
         : "Thank you for choosing Shafsky Airport Services.",
     { x: 40, y: 26, size: 9, font, color: muted },
   );

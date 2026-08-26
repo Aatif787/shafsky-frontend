@@ -1,5 +1,5 @@
 /**
- * Official Razorpay Standard Web Checkout Integration for Shafsky Aviation.
+ * Official Razorpay Standard Web Checkout Integration for Shafsky Aviation Services.
  * Provides client-side script loader, order creation, checkout modal launcher,
  * and server-side payment signature verification.
  */
@@ -137,7 +137,7 @@ export async function openRazorpayCheckout(options: RazorpayCheckoutOptions): Pr
       key: keyId,
       amount: options.amount,
       currency: options.currency || "INR",
-      name: options.name || "Shafsky Aviation Concierge",
+      name: options.name || "Shafsky Aviation Services Concierge",
       description: options.description || "Airport Concierge Services Payment",
       order_id: orderId,
       prefill: {

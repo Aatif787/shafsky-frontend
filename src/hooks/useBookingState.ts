@@ -1,6 +1,6 @@
 /**
  * Booking Draft & State Storage Hook
- * (Shafsky Aviation Architecture - Phase 1 Foundation)
+ * (Shafsky Aviation Services Architecture - Phase 1 Foundation)
  */
 
 import { useState, useEffect } from "react";

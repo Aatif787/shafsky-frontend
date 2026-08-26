@@ -16,7 +16,7 @@ function SettingsPage() {
   const fetchSettings = useServerFn(listSystemSettings);
   const execUpsertSetting = useServerFn(upsertSystemSetting);
 
-  const [platformName, setPlatformName] = useState("Shafsky Aviation");
+  const [platformName, setPlatformName] = useState("Shafsky Aviation Services");
   const [supportEmail, setSupportEmail] = useState("concierge@shafsky.com");
   const [sessionTimeout, setSessionTimeout] = useState("3600");
   const [isSubmitting, setIsSubmitting] = useState(false);

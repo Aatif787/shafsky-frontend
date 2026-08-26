@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
-import { QRCodeSVG } from "qrcode.react";
 import { CheckCircle2 } from "lucide-react";
 
 interface BookingSuccessPassProps {
@@ -37,9 +36,6 @@ export function BookingSuccessPass({
       </div>
 
       <div className="p-8 rounded-3xl bg-white border border-slate-200 max-w-md mx-auto shadow-sm flex flex-col items-center">
-        <div className="p-3 bg-white border border-slate-100 rounded-2xl mb-4 shadow-sm">
-          <QRCodeSVG value={`https://shafskyaviation.com/pass/${bookingRef}`} size={140} />
-        </div>
         <div className="text-sm font-mono font-bold text-emerald-800 tracking-widest">
           REF: {bookingRef || "SHF-849201"}
         </div>

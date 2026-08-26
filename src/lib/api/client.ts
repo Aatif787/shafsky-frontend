@@ -1,6 +1,6 @@
 /**
  * Canonical HTTP API Client Infrastructure
- * (Shafsky Aviation Architecture - Phase 1 Foundation)
+ * (Shafsky Aviation Services Architecture - Phase 1 Foundation)
  */
 
 export interface ApiErrorPayload {

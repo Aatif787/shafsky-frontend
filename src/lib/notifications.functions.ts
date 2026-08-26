@@ -43,7 +43,7 @@ export const sendSignUpVerificationEmail = createServerFn({ method: "POST" })
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #06090f; color: #ffffff; border-radius: 16px; border: 1px solid #0d5a6e;">
         <div style="text-align: center; border-bottom: 2px solid #0d5a6e; padding-bottom: 20px; margin-bottom: 24px;">
           <h1 style="color: #ffffff; font-size: 20px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin: 0;">${branding.company_name}</h1>
-          <p style="color: #5ed3ff; font-size: 10px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; margin: 4px 0 0 0;">Premier Aviation & Concierge Services</p>
+          <p style="color: #5ed3ff; font-size: 10px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; margin: 4px 0 0 0;">${branding.company_name}</p>
         </div>
         <h2 style="color: #5ed3ff; font-size: 18px; margin-top: 0;">Registration Confirmed</h2>
         <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6;">Dear ${name},</p>

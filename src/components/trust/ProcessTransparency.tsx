@@ -56,7 +56,7 @@ export function ProcessTransparency() {
               className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-serif font-light text-white"
               style={{ fontFamily: "'Fraunces', serif" }}
             >
-              How Shafsky Aviation Works
+              How Shafsky Aviation Services Works
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-white/60 font-sans max-w-xl">

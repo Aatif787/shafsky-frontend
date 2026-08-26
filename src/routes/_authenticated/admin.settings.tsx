@@ -42,7 +42,7 @@ const SettingsSchema = z.object({
   operatingHours: z.string().default("24/7 Ops Desk"),
 
   // Branding
-  platformName: z.string().default("Shafsky Aviation Concierge"),
+  platformName: z.string().default("Shafsky Aviation Services Concierge"),
   primaryColor: z.string().default("#5ed3ff"),
   logoUrl: z.string().default(""),
   faviconUrl: z.string().default(""),
@@ -56,7 +56,7 @@ const SettingsSchema = z.object({
 
   // Email Templates
   resendSenderEmail: z.string().default(String(NOTIFICATION.FROM_EMAIL)),
-  emailSubjectConfirmation: z.string().default("Booking Confirmed — Shafsky Aviation"),
+  emailSubjectConfirmation: z.string().default("Booking Confirmed — Shafsky Aviation Services"),
   emailSubjectQuote: z.string().default("Your VIP Aviation Quote is Ready"),
   emailSubjectReceipt: z.string().default("Official Tax Invoice & Payment Receipt"),
   enableEmailReceipts: z.boolean().default(true),
@@ -110,7 +110,7 @@ function CentralizedSettingsView() {
     hqAddress: "Indira Gandhi International Airport, Terminal 3, New Delhi, India",
     operatingHours: "24/7 Ops Desk",
 
-    platformName: "Shafsky Aviation Concierge",
+    platformName: "Shafsky Aviation Services Concierge",
     primaryColor: "#5ed3ff",
     logoUrl: "",
     faviconUrl: "",
@@ -122,7 +122,7 @@ function CentralizedSettingsView() {
     sixHourRuleThreshold: 6,
 
     resendSenderEmail: String(NOTIFICATION.FROM_EMAIL),
-    emailSubjectConfirmation: "Booking Confirmed — Shafsky Aviation",
+    emailSubjectConfirmation: "Booking Confirmed — Shafsky Aviation Services",
     emailSubjectQuote: "Your VIP Aviation Quote is Ready",
     emailSubjectReceipt: "Official Tax Invoice & Payment Receipt",
     enableEmailReceipts: true,

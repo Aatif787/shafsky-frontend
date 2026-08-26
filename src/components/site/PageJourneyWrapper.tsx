@@ -5,6 +5,7 @@ import { PrevNextNav, NavigationStep } from "@/components/navigation/PrevNextNav
 import { RelatedServices, RelatedServiceItem } from "@/components/navigation/RelatedServices";
 import { AssistanceCTA } from "@/components/navigation/AssistanceCTA";
 import { CustomerConfidence } from "@/components/trust/TrustMasterSection";
+import { Footer } from "@/components/home/sections/Footer";
 
 interface PageJourneyWrapperProps {
   children: ReactNode;
@@ -21,6 +22,7 @@ interface PageJourneyWrapperProps {
   showRelated?: boolean;
   showCTA?: boolean;
   showNav?: boolean;
+  showFooter?: boolean;
   className?: string;
 }
 
@@ -37,10 +39,14 @@ export function PageJourneyWrapper({
   showBreadcrumbs = true,
   showPrevNext = true,
   showRelated = true,
-  showCTA = true,
+  showCTA,
   showNav = true,
+  showFooter = true,
   className = "",
 }: PageJourneyWrapperProps) {
+  // If showCTA is not explicitly specified, do not show duplicate CTA on Coverage/Airport pages
+  const shouldShowCTA = showCTA !== undefined ? showCTA : category !== "Coverage";
+
   return (
     <div className={`min-h-screen bg-[#FAF9F5] text-slate-900 flex flex-col justify-between relative ${className}`}>
       {/* 1. STICKY GLASS NAVBAR */}
@@ -78,10 +84,13 @@ export function PageJourneyWrapper({
         {category !== "Coverage" && <CustomerConfidence />}
 
         {/* NEED ASSISTANCE? BOOK YOUR SERVICE NOW. CTA */}
-        {showCTA && (
+        {shouldShowCTA && (
           <AssistanceCTA />
         )}
       </main>
+
+      {/* 3. GLOBAL PURPLE FOOTER */}
+      {showFooter && <Footer />}
     </div>
   );
 }

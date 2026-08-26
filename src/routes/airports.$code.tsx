@@ -35,8 +35,8 @@ export const Route = createFileRoute("/airports/$code")({
     const title = registryEntry
       ? registryEntry.seo.title
       : a
-      ? `${a.city} (${a.code}) — Shafsky Aviation Experience`
-      : "Destination — Shafsky Aviation";
+      ? `${a.city} (${a.code}) — Shafsky Aviation Services Experience`
+      : "Destination — Shafsky Aviation Services";
     const desc = registryEntry
       ? registryEntry.seo.description
       : a
@@ -89,7 +89,7 @@ function DestinationPage() {
       categoryHref="/airports"
       current={`${a.city} (${a.code})`}
     >
-      {/* 1. AIRPORT HERO */}
+      {/* 1. AIRPORT HERO (back bar lives inside DestinationHero so SSR/client trees match) */}
       <DestinationHero a={a} />
 
       {/* 2. DYNAMIC AIRPORT BODY */}

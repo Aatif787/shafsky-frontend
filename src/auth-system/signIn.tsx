@@ -242,11 +242,24 @@ export function SignInPage() {
         }}
       />
 
+      <style>{`
+        @keyframes fadeInZoom {
+          0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes trackingIn {
+          0% { letter-spacing: -0.2em; opacity: 0; }
+          40% { opacity: 0.6; }
+          100% { letter-spacing: 0.1em; opacity: 1; }
+        }
+      `}</style>
+
       {/* Main card */}
       <div
-        className="w-full max-w-[440px] rounded-[24px] sm:rounded-[32px] bg-[#faf5ea] border border-white/50 p-5 xs:p-8 sm:p-10 text-left transition-all duration-500 relative z-10 my-auto"
+        className="w-full max-w-[440px] rounded-[24px] sm:rounded-[32px] bg-[#faf5ea] border border-white/50 p-5 xs:p-8 sm:p-10 text-left transition-all duration-500 relative z-10 my-auto hover:shadow-xl"
         style={{
           boxShadow: "16px 16px 40px #e2dace, -16px -16px 40px #ffffff",
+          animation: "fadeInZoom 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards"
         }}
       >
         {/* Top Row back button (prevents overlap on mobile) */}
@@ -306,10 +319,13 @@ export function SignInPage() {
           </div>
 
           <h1
-            className="text-lg font-extrabold tracking-[0.3em] text-[#0d2a36] uppercase"
-            style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+            className="text-lg font-extrabold tracking-[0.1em] text-[#0d2a36] uppercase"
+            style={{ 
+              fontFamily: "'Inter', system-ui, sans-serif",
+              animation: "trackingIn 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000) both 0.2s"
+            }}
           >
-            SHAFSKY
+            SHAFSKY AVIATION SERVICES
           </h1>
           <p
             className="text-[9px] uppercase tracking-[0.4em] mt-1 font-semibold"
@@ -402,8 +418,8 @@ export function SignInPage() {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Aariz Khan"
-                  className="w-full h-11 pl-11 pr-4 rounded-xl border-none text-xs font-semibold outline-none transition-all duration-300 text-[#0d2a36] placeholder:text-[#b0b8be]"
+                  placeholder="Enter your full name"
+                  className="w-full h-11 pl-11 pr-4 rounded-xl border-none text-xs font-semibold outline-none transition-all duration-300 hover:scale-[1.01] hover:shadow-md text-[#0d2a36] placeholder:text-[#b0b8be]"
                   style={{
                     background: "#faf5ea",
                     boxShadow: "inset 4px 4px 8px #e0d9ca, inset -4px -4px 8px #ffffff",
@@ -438,7 +454,7 @@ export function SignInPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="ops@shafsky.com"
-                  className="w-full h-11 pl-11 pr-4 rounded-xl border-none text-xs font-semibold outline-none transition-all duration-300 text-[#0d2a36] placeholder:text-[#b0b8be]"
+                  className="w-full h-11 pl-11 pr-4 rounded-xl border-none text-xs font-semibold outline-none transition-all duration-300 hover:scale-[1.01] hover:shadow-md text-[#0d2a36] placeholder:text-[#b0b8be]"
                   style={{
                     background: "#faf5ea",
                     boxShadow: "inset 4px 4px 8px #e0d9ca, inset -4px -4px 8px #ffffff",
@@ -482,7 +498,7 @@ export function SignInPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full h-11 pl-11 pr-12 rounded-xl border-none text-xs font-semibold outline-none transition-all duration-300 text-[#0d2a36] placeholder:text-[#b0b8be]"
+                  className="w-full h-11 pl-11 pr-12 rounded-xl border-none text-xs font-semibold outline-none transition-all duration-300 hover:scale-[1.01] hover:shadow-md text-[#0d2a36] placeholder:text-[#b0b8be]"
                   style={{
                     background: "#faf5ea",
                     boxShadow: "inset 4px 4px 8px #e0d9ca, inset -4px -4px 8px #ffffff",
@@ -597,7 +613,7 @@ export function SignInPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full h-11 pl-11 pr-12 rounded-xl border-none text-xs font-semibold outline-none transition-all duration-300 text-[#0d2a36] placeholder:text-[#b0b8be]"
+                  className="w-full h-11 pl-11 pr-12 rounded-xl border-none text-xs font-semibold outline-none transition-all duration-300 hover:scale-[1.01] hover:shadow-md text-[#0d2a36] placeholder:text-[#b0b8be]"
                   style={{
                     background: "#faf5ea",
                     boxShadow:
@@ -701,7 +717,7 @@ export function SignInPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full h-12 rounded-2xl text-white text-[11px] font-bold uppercase tracking-[0.25em] flex items-center justify-center gap-2 disabled:opacity-50 transition-all duration-300 cursor-pointer active:scale-[0.97]"
+            className="w-full h-12 rounded-2xl text-white text-[11px] font-bold uppercase tracking-[0.25em] flex items-center justify-center gap-2 disabled:opacity-50 transition-all duration-300 hover:scale-[1.02] hover:brightness-110 cursor-pointer active:scale-[0.97]"
             style={{
               background: "linear-gradient(145deg, #0e6378, #0c5264)",
               boxShadow: submitting
@@ -763,7 +779,7 @@ export function SignInPage() {
               className="text-[10px] uppercase tracking-[0.15em] text-[#8a9aa3]"
               style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
             >
-              New to Shafsky Aviation?{" "}
+              New to Shafsky Aviation Services?{" "}
               <button
                 onClick={() => changeMode("signup")}
                 className="font-bold tracking-[0.15em] transition-all duration-300 cursor-pointer px-2.5 py-1 rounded-lg ml-1"

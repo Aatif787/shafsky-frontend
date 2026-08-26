@@ -2066,7 +2066,7 @@ export default function DashboardView({ userId }: { userId: string }) {
                           type="text"
                           value={company}
                           onChange={(e) => setCompany(e.target.value)}
-                          placeholder="Shafsky Aviation Pvt Ltd"
+                          placeholder="Shafsky Aviation Services Pvt Ltd"
                           className="w-full h-10 px-3.5 rounded-lg border border-black/10 bg-transparent text-xs font-semibold outline-none"
                         />
                       </div>
@@ -2311,7 +2311,7 @@ export default function DashboardView({ userId }: { userId: string }) {
 
             {/* Global Footer elements */}
             <footer className="mt-10 pt-6 border-t border-black/[0.06] text-center text-[10px] tracking-wider text-[#5b6b75] uppercase font-mono flex flex-col md:flex-row justify-between gap-4">
-              <span>Shafsky Aviation — Client Dashboard v2.0</span>
+              <span>Shafsky Aviation Services — Client Dashboard v2.0</span>
               <span>All operations encrypted via SSL</span>
             </footer>
           </div>

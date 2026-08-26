@@ -6,12 +6,12 @@
 export const CONTACT = {
   EMAIL: "ops@shafskyaviation.com",
   PHONE: "+91 9599087959",
-  COMPANY: "Shafsky Aviation",
+  COMPANY: "Shafsky Aviation Services",
   WEBSITE: "https://shafskyaviation.com",
 } as const;
 
 export const BUSINESS = {
-  NAME: "Shafsky Aviation",
+  NAME: "Shafsky Aviation Services",
   DESCRIPTION:
     "Private charter, cargo, medical evacuation, aircraft management and Suswagatam airport concierge",
   BASE_URL: "https://aero-launch-sequence.lovable.app/",
@@ -19,7 +19,7 @@ export const BUSINESS = {
 
 export const NOTIFICATION = {
   FROM_EMAIL: "concierge@shafskyaviation.com",
-  FROM_NAME: "Shafsky Aviation",
+  FROM_NAME: "Shafsky Aviation Services",
 } as const;
 
 export const CONTACT_DETAILS = {

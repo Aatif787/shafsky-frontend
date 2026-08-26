@@ -35,11 +35,11 @@ export const Route = createFileRoute("/book")({
   validateSearch: (search) => bookSearchSchema.parse(search),
   head: () => ({
     meta: [
-      { title: "Book Airport Services — Shafsky Aviation" },
+      { title: "Book Airport Services — Shafsky Aviation Services" },
       {
         name: "description",
         content:
-          "Validate your flight details and book premium airport concierge services with Shafsky Aviation.",
+          "Validate your flight details and book premium airport concierge services with Shafsky Aviation Services.",
       },
     ],
   }),

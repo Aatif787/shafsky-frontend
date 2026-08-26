@@ -1,6 +1,6 @@
 /**
  * Canonical Domain Types for Services, Packages, and Workflows
- * (Shafsky Aviation Architecture - Phase 1 Foundation)
+ * (Shafsky Aviation Services Architecture - Phase 1 Foundation)
  */
 
 export enum ServiceId {

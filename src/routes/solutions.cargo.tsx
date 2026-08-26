@@ -8,7 +8,7 @@ import vipTransport1 from "@/assets/vip-transport-1.png";
 export const Route = createFileRoute("/solutions/cargo")({
   head: () => ({
     meta: [
-      { title: "Cargo & Live Animal AVI Logistics — Shafsky Aviation" },
+      { title: "Cargo & Live Animal AVI Logistics — Shafsky Aviation Services" },
       {
         name: "description",
         content:

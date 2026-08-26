@@ -1,4 +1,4 @@
-// Centralized Airport Registry for Shafsky Aviation Platform
+// Centralized Airport Registry for Shafsky Aviation Services Platform
 // Single source of truth for all airport pages, search, cards, service catalogs, and booking integrations.
 
 import dekAmdAir from "@/assets/airports/amd/Dek-Amd-air.png";
@@ -110,7 +110,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     relatedAirportCodes: ["BOM", "AMD", "BLR"],
     seo: {
-      title: "Delhi Airport Concierge & Meet & Greet (DEL) — Shafsky Aviation",
+      title: "Delhi Airport Concierge & Meet & Greet (DEL) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort, lounge suites, fast track, and tarmac transfers at Delhi Indira Gandhi International Airport (DEL).",
       keywords: ["delhi airport meet and greet", "delhi airport lounge booking", "delhi airport fast track"],
     },
@@ -145,7 +145,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     relatedAirportCodes: ["DEL", "BLR", "HYD"],
     seo: {
-      title: "Mumbai Airport Concierge & Meet & Greet (BOM) — Shafsky Aviation",
+      title: "Mumbai Airport Concierge & Meet & Greet (BOM) — Shafsky Aviation Services",
       description: "Reserve VIP Meet & Greet, fast-track customs, and Maybach chauffeur transfers at Mumbai Airport (BOM).",
       keywords: ["mumbai airport meet and greet", "mumbai lounge suite", "mumbai airport fast track"],
     },
@@ -181,7 +181,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     relatedAirportCodes: ["DEL", "BOM", "BLR"],
     seo: {
-      title: "Ahmedabad Airport Concierge & Meet & Greet (AMD) — Shafsky Aviation",
+      title: "Ahmedabad Airport Concierge & Meet & Greet (AMD) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort and chauffeured transfers at Sardar Vallabhbhai Patel International Airport (AMD).",
       keywords: ["ahmedabad airport meet and greet", "amd airport concierge"],
     },
@@ -216,7 +216,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     relatedAirportCodes: ["DEL", "BOM", "HYD"],
     seo: {
-      title: "Bengaluru Airport Concierge (BLR) — Shafsky Aviation",
+      title: "Bengaluru Airport Concierge (BLR) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet, lounge suites, and transfers at Kempegowda International Airport (BLR).",
       keywords: ["bengaluru airport meet and greet", "blr lounge"],
     },
@@ -251,7 +251,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     relatedAirportCodes: ["BLR", "BOM", "DEL"],
     seo: {
-      title: "Hyderabad Airport Concierge & Meet & Greet (HYD) — Shafsky Aviation",
+      title: "Hyderabad Airport Concierge & Meet & Greet (HYD) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet and lounge suites at Hyderabad Rajiv Gandhi International Airport (HYD).",
       keywords: ["hyderabad airport meet and greet", "hyd lounge access"],
     },
@@ -286,7 +286,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     relatedAirportCodes: ["DEL", "BOM"],
     seo: {
-      title: "Lucknow Airport Concierge & Meet & Greet (LKO) — Shafsky Aviation",
+      title: "Lucknow Airport Concierge & Meet & Greet (LKO) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet and chauffeur transfers at Lucknow Airport (LKO).",
       keywords: ["lucknow airport meet and greet", "lko concierge"],
     },
@@ -322,7 +322,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     relatedAirportCodes: ["DEL", "BOM", "HYD", "LKO"],
     seo: {
-      title: "Kolkata Airport Concierge & Meet & Greet (CCU) — Shafsky Aviation",
+      title: "Kolkata Airport Concierge & Meet & Greet (CCU) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort and concierge services at Netaji Subhas Chandra Bose International Airport (CCU).",
       keywords: ["kolkata airport meet and greet", "ccu airport concierge", "kolkata airport fast track"],
     },
@@ -356,7 +356,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     relatedAirportCodes: ["BLR", "HYD", "DEL", "BOM"],
     seo: {
-      title: "Chennai Airport Concierge & Meet & Greet (MAA) — Shafsky Aviation",
+      title: "Chennai Airport Concierge & Meet & Greet (MAA) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort and chauffeur transfers at Chennai International Airport (MAA).",
       keywords: ["chennai airport meet and greet", "maa airport concierge"],
     },
@@ -389,7 +389,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     relatedAirportCodes: ["BOM", "DEL", "BLR"],
     seo: {
-      title: "Goa Airport Concierge & Meet & Greet (GOI) — Shafsky Aviation",
+      title: "Goa Airport Concierge & Meet & Greet (GOI) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort and resort transfers at Goa Dabolim Airport (GOI).",
       keywords: ["goa airport meet and greet", "goi airport concierge"],
     },
@@ -425,7 +425,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     relatedAirportCodes: ["DEL", "BOM", "AMD"],
     seo: {
-      title: "Jaipur Airport Concierge & Meet & Greet (JAI) — Shafsky Aviation",
+      title: "Jaipur Airport Concierge & Meet & Greet (JAI) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort and luxury transfers at Jaipur International Airport (JAI).",
       keywords: ["jaipur airport meet and greet", "jai airport concierge"],
     },
@@ -461,7 +461,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     ],
     relatedAirportCodes: ["DEL", "JAI", "IXC"],
     seo: {
-      title: "Amritsar Airport Concierge & Meet & Greet (ATQ) — Shafsky Aviation",
+      title: "Amritsar Airport Concierge & Meet & Greet (ATQ) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort and luxury transfers at Sri Guru Ram Dass Jee International Airport (ATQ).",
       keywords: ["amritsar airport meet and greet", "atq airport concierge"],
     },
@@ -492,7 +492,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     faqs: [["Is Meet & Greet available at Bhubaneswar Airport?", "Yes, aerobridge and curbside VIP escort services are active at Bhubaneswar Airport."]],
     relatedAirportCodes: ["CCU", "DEL", "HYD"],
     seo: {
-      title: "Bhubaneswar Airport Concierge (BBI) — Shafsky Aviation",
+      title: "Bhubaneswar Airport Concierge (BBI) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort at Biju Patnaik International Airport (BBI).",
       keywords: ["bhubaneswar airport meet and greet", "bbi airport concierge"],
     },
@@ -524,7 +524,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     faqs: [["Is lounge access available at Cochin Airport?", "Yes, VIP Meet & Greet with lounge access is available at Cochin Airport (COK)."]],
     relatedAirportCodes: ["BLR", "MAA", "TRV"],
     seo: {
-      title: "Cochin Airport Concierge & Meet & Greet (COK) — Shafsky Aviation",
+      title: "Cochin Airport Concierge & Meet & Greet (COK) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort and lounge sanctuary at Cochin Airport (COK).",
       keywords: ["cochin airport meet and greet", "cok lounge access"],
     },
@@ -554,7 +554,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     faqs: [["Is VIP escort available at Goa Mopa Airport?", "Yes, VIP Meet & Greet is active across North Goa Mopa Airport (GOX)."]],
     relatedAirportCodes: ["GOI", "BOM", "DEL"],
     seo: {
-      title: "Goa Mopa Airport Concierge (GOX) — Shafsky Aviation",
+      title: "Goa Mopa Airport Concierge (GOX) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort at Manohar International Airport Mopa (GOX).",
       keywords: ["goa mopa airport meet and greet", "gox concierge"],
     },
@@ -584,7 +584,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     faqs: [["Where does the officer meet me at Chandigarh Airport?", "Your officer greets you at the arrival exit or departure curbside with a placard."]],
     relatedAirportCodes: ["DEL", "ATQ"],
     seo: {
-      title: "Chandigarh Airport Concierge (IXC) — Shafsky Aviation",
+      title: "Chandigarh Airport Concierge (IXC) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort at Chandigarh Airport (IXC).",
       keywords: ["chandigarh airport meet and greet", "ixc concierge"],
     },
@@ -615,7 +615,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     faqs: [["Is Meet & Greet available at Guwahati Airport?", "Yes, VIP Meet & Greet escort is available at Guwahati Airport (GAU)."]],
     relatedAirportCodes: ["CCU", "DEL"],
     seo: {
-      title: "Guwahati Airport Concierge (GAU) — Shafsky Aviation",
+      title: "Guwahati Airport Concierge (GAU) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort at Guwahati Airport (GAU).",
       keywords: ["guwahati airport meet and greet", "gau concierge"],
     },
@@ -646,7 +646,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     faqs: [["Is Meet & Greet available at Mangaluru Airport?", "Yes, dedicated VIP escort is active at Mangaluru Airport (IXE)."]],
     relatedAirportCodes: ["BLR", "BOM"],
     seo: {
-      title: "Mangaluru Airport Concierge (IXE) — Shafsky Aviation",
+      title: "Mangaluru Airport Concierge (IXE) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort at Mangaluru Airport (IXE).",
       keywords: ["mangaluru airport meet and greet", "ixe concierge"],
     },
@@ -676,7 +676,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     faqs: [["Is Meet & Greet available at Ranchi Airport?", "Yes, VIP Meet & Greet escort is available at Birsa Munda Airport Ranchi (IXR)."]],
     relatedAirportCodes: ["CCU", "DEL"],
     seo: {
-      title: "Ranchi Airport Concierge (IXR) — Shafsky Aviation",
+      title: "Ranchi Airport Concierge (IXR) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort at Ranchi Airport (IXR).",
       keywords: ["ranchi airport meet and greet", "ixr concierge"],
     },
@@ -706,7 +706,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     faqs: [["Is lounge access available at TRV Airport?", "Yes, Meet & Greet with lounge access is available at Thiruvananthapuram Airport."]],
     relatedAirportCodes: ["COK", "BLR", "MAA"],
     seo: {
-      title: "Thiruvananthapuram Airport Concierge (TRV) — Shafsky Aviation",
+      title: "Thiruvananthapuram Airport Concierge (TRV) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort and lounge access at Trivandrum Airport (TRV).",
       keywords: ["trivandrum airport meet and greet", "trv lounge access"],
     },
@@ -737,7 +737,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     faqs: [["Is Meet & Greet available at Visakhapatnam Airport?", "Yes, VIP Meet & Greet escort is available at Visakhapatnam Airport (VTZ)."]],
     relatedAirportCodes: ["HYD", "MAA", "CCU"],
     seo: {
-      title: "Visakhapatnam Airport Concierge (VTZ) — Shafsky Aviation",
+      title: "Visakhapatnam Airport Concierge (VTZ) — Shafsky Aviation Services",
       description: "Book VIP Meet & Greet escort at Visakhapatnam Airport (VTZ).",
       keywords: ["visakhapatnam airport meet and greet", "vtz concierge"],
     },
@@ -784,7 +784,7 @@ export function getAirportRegistryEntry(code: string): AirportRegistryEntry {
     ],
     relatedAirportCodes: ["DEL", "BOM", "HYD"],
     seo: {
-      title: `${city} Airport Concierge & Meet & Greet — Shafsky Aviation`,
+      title: `${city} Airport Concierge & Meet & Greet — Shafsky Aviation Services`,
       description: `Book VIP Meet & Greet escort and concierge services at ${name}.`,
       keywords: [`${city.toLowerCase()} airport meet and greet`, `airport concierge`],
     },

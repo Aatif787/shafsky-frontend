@@ -1,6 +1,6 @@
 /**
  * Booking Workflow Resolver Component
- * (Shafsky Aviation Architecture - Phase 1 Foundation)
+ * (Shafsky Aviation Services Architecture - Phase 1 Foundation)
  *
  * Decouples workflow selection from main BookingPage composition.
  */

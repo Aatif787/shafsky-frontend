@@ -1,5 +1,5 @@
 /**
- * Enterprise REST API Client for Shafsky Aviation Frontend
+ * Enterprise REST API Client for Shafsky Aviation Services Frontend
  * Forwards Supabase Auth JWT Access Tokens to FastAPI Backend Services
  */
 

@@ -144,67 +144,7 @@ export async function enqueueNotification(
       token,
     );
 
-    // Also attempt direct synchronous dispatch for maximum reliability
-    try {
-      const branding = await getActiveBrandingServer();
-      const rendered = renderTemplate(params.channel, params.eventType, params.payload, branding);
-
-      let dispatchResult: { success: boolean; messageId?: string; error?: string } = {
-        success: false,
-      };
-
-      if (params.channel === "email") {
-        const attachments = params.bookingId
-          ? await getEmailAttachments(params.bookingId, params.eventType)
-          : [];
-        dispatchResult = await sendEmail({
-          recipient: params.recipient,
-          subject: rendered.subject,
-          html: rendered.html || "",
-          text: rendered.body,
-          attachments,
-        });
-      } else if (params.channel === "whatsapp") {
-        dispatchResult = await sendWhatsApp({
-          recipient: params.recipient,
-          body: rendered.body,
-        });
-      } else if (params.channel === "in_app") {
-        if (params.userId) {
-          dispatchResult = await sendInApp(clientAdmin, {
-            userId: params.userId,
-            kind: params.eventType,
-            title: rendered.subject,
-            body: rendered.body,
-            link: params.eventType.startsWith("admin_") ? "/admin" : "/dashboard",
-            entity: "booking",
-            entityId: params.bookingId || undefined,
-          });
-        }
-      }
-
-      if (dispatchResult.success) {
-        const isSimulated = (dispatchResult as { simulated?: boolean }).simulated === true;
-        await apiPost(
-          "/api/notifications/log",
-          {
-            booking_id: params.bookingId || null,
-            booking_ref: params.bookingRef || null,
-            recipient: params.recipient,
-            channel: params.channel,
-            template: params.eventType,
-            subject: rendered.subject,
-            body: rendered.body,
-            status: isSimulated ? "simulated" : "sent",
-          },
-          token,
-        );
-      }
-    } catch (fallbackErr: any) {
-      console.warn("[Queue Direct Dispatch] Non-blocking warning:", fallbackErr.message);
-    }
-
-    return { success: true, queueId: res.id };
+    return { success: true, queueId: res?.id };
   } catch (err: any) {
     console.error("[Queue] Exception during enqueue:", err);
     return { success: false, error: err.message || String(err) };

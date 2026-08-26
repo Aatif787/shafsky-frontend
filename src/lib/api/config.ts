@@ -2,7 +2,7 @@
  * Canonical Backend URL and API Resolution Configuration
  * 
  * Provides unified, safe, and normalized URL resolution for all client-side
- * and server-side API requests across the Shafsky Aviation frontend platform.
+ * and server-side API requests across the Shafsky Aviation Services frontend platform.
  */
 
 const DEFAULT_DEV_BACKEND_URL = "http://127.0.0.1:8003";

@@ -8,7 +8,7 @@ export function FAQ() {
   const faqs = [
     [
       "What is Suswagatam Meet & Greet?",
-      "Suswagatam is Shafsky Aviation's signature welcome and assist service for domestic and international passengers across Indian airports — escort, fast-track, lounge, transport and more.",
+      "Suswagatam is Shafsky Aviation Services's signature welcome and assist service for domestic and international passengers across Indian airports — escort, fast-track, lounge, transport and more.",
     ],
     [
       "Which airports do you cover?",

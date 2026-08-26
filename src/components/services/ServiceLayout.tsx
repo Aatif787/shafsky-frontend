@@ -27,7 +27,9 @@ interface ServiceLayoutProps {
   features?: FeatureItem[];
   audiences?: PersonaItem[];
   faqs?: FAQPair[];
+  showFAQ?: boolean;
   relatedServices?: RelatedServiceItem[];
+  children?: React.ReactNode;
 }
 
 export function ServiceLayout({
@@ -45,13 +47,17 @@ export function ServiceLayout({
   benefits,
   timelineSteps,
   faqs,
+  showFAQ = true,
   relatedServices,
+  children,
 }: ServiceLayoutProps) {
   return (
     <PageJourneyWrapper
       category={category}
       categoryHref={categoryHref}
       current={serviceName}
+      showCTA={false}
+      showRelated={false}
     >
       {/* 1. HERO & SHORT OVERVIEW */}
       <ServiceHero
@@ -66,23 +72,26 @@ export function ServiceLayout({
         serviceId={serviceId}
       />
 
-      {/* 3. KEY BENEFITS */}
+      {/* 2. KEY BENEFITS */}
       <ServiceWhyChoose serviceName={serviceName} benefits={benefits} />
 
-      {/* 4. SIMPLE 3-STEP PROCESS */}
+      {/* 3. SIMPLE 3-STEP PROCESS */}
       <ServiceHowItWorks serviceName={serviceName} steps={timelineSteps} />
 
-      {/* 5. BOOKING SECTION CTA */}
-      <AssistanceCTA
-        heading={`Reserve ${serviceName} Service`}
-        subheading="Experience seamless airside concierge. Proceed to step-by-step reservation."
-      />
+      {/* 4. OPTIONAL CHILDREN (e.g. EnterpriseFAQ on About page) */}
+      {children}
+
+      {/* 5. SMALL FAQ */}
+      {showFAQ && <ServiceFAQ serviceName={serviceName} faqs={faqs} />}
 
       {/* 6. RELATED SERVICES */}
       <RelatedServices services={relatedServices} title="Explore Connected Services" />
 
-      {/* 7. SMALL FAQ */}
-      <ServiceFAQ serviceName={serviceName} faqs={faqs} />
+      {/* 7. BOOKING SECTION CTA */}
+      <AssistanceCTA
+        heading={`Reserve ${serviceName} Service`}
+        subheading="Experience seamless airside concierge. Proceed to step-by-step reservation."
+      />
     </PageJourneyWrapper>
   );
 }

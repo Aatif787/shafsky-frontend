@@ -110,15 +110,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Shafsky Aviation — Private Charter & Airport Concierge" },
+      { title: "Shafsky Aviation Services — Private Charter & Airport Concierge" },
       {
         name: "description",
         content:
-          "Shafsky Aviation delivers private charter, cargo, medical evacuation, aircraft management and Suswagatam airport concierge across 19 Indian hubs and global destinations.",
+          "Shafsky Aviation Services delivers private charter, cargo, medical evacuation, aircraft management and Suswagatam airport concierge across 19 Indian hubs and global destinations.",
       },
-      { name: "author", content: "Shafsky Aviation" },
-      { property: "og:site_name", content: "Shafsky Aviation" },
-      { property: "og:title", content: "Shafsky Aviation — Private Charter & Airport Concierge" },
+      { name: "author", content: "Shafsky Aviation Services" },
+      { property: "og:site_name", content: "Shafsky Aviation Services" },
+      { property: "og:title", content: "Shafsky Aviation Services — Private Charter & Airport Concierge" },
       {
         property: "og:description",
         content:
@@ -126,7 +126,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Shafsky Aviation" },
+      { name: "twitter:title", content: "Shafsky Aviation Services" },
       {
         name: "twitter:description",
         content:

@@ -29,11 +29,11 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "24/7 Concierge Assistance Hub — Shafsky Aviation" },
+      { title: "24/7 Concierge Assistance Hub — Shafsky Aviation Services" },
       {
         name: "description",
         content:
-          "Connect with Shafsky Aviation's 24/7 command desk for immediate airport Meet & Greet, VIP lounge access, emergency air ICU ambulance dispatch, and private jet charters.",
+          "Connect with Shafsky Aviation Services's 24/7 command desk for immediate airport Meet & Greet, VIP lounge access, emergency air ICU ambulance dispatch, and private jet charters.",
       },
     ],
   }),
@@ -127,6 +127,8 @@ function AssistanceHubPage() {
       category="Support & Assistance"
       categoryHref="/contact"
       current="24/7 Assistance Hub"
+      showCTA={false}
+      showRelated={false}
     >
       {/* ──────────────────────────────────────────────────────────────────────
        * 1. CINEMATIC HERO HEADER

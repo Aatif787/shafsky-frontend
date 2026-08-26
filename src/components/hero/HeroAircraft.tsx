@@ -71,7 +71,7 @@ export function HeroAircraft() {
           });
         },
       });
-    }, containerRef);
+    }, container);
 
     return () => ctx.revert();
   }, []);
@@ -176,7 +176,7 @@ export function HeroAircraft() {
         <img
           ref={planeRef}
           src={planeImg}
-          alt="Shafsky Aviation Airliner"
+          alt="Shafsky Aviation Services Airliner"
           loading="eager"
           decoding="async"
           width={600}

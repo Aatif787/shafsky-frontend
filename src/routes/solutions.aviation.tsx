@@ -8,7 +8,7 @@ import vipTransport1 from "@/assets/vip-transport-1.png";
 export const Route = createFileRoute("/solutions/aviation")({
   head: () => ({
     meta: [
-      { title: "Private Jet Charter & Private Aviation — Shafsky Aviation" },
+      { title: "Private Jet Charter & Private Aviation — Shafsky Aviation Services" },
       {
         name: "description",
         content:

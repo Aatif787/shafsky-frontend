@@ -1,6 +1,6 @@
 /**
  * Canonical Flight API Client
- * (Shafsky Aviation Architecture - Phase 1 Foundation)
+ * (Shafsky Aviation Services Architecture - Phase 1 Foundation)
  */
 
 import { apiFetch, ApiResponse } from "./client";

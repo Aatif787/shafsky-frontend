@@ -2,7 +2,7 @@ import type { BrandingSettings } from "./branding.types";
 
 export const FALLBACK_BRANDING: BrandingSettings = {
   id: "fallback-id",
-  company_name: "Shafsky Aviation",
+  company_name: "Shafsky Aviation Services",
   company_tagline: "Welcome Begins Before You Land.",
   website: "https://shafskyaviation.com",
   booking_email: "bookings@shafskyaviation.com",

@@ -51,11 +51,12 @@ function SolutionPanel({
       const gsap = gsapModule.gsap;
       gsap.registerPlugin(ScrollTrigger);
 
-      if (!panelRef.current) return;
+      const panel = panelRef.current;
+      if (!panel) return;
 
       ctx = gsap.context(() => {
         gsap.fromTo(
-          panelRef.current,
+          panel,
           { y: 80, opacity: 0, scale: 0.96 },
           {
             y: 0,
@@ -64,14 +65,14 @@ function SolutionPanel({
             duration: 0.9,
             ease: "power3.out",
             scrollTrigger: {
-              trigger: panelRef.current,
+              trigger: panel,
               start: "top 88%",
               toggleActions: "play none none none",
             },
             delay: idx * 0.12,
           }
         );
-      }, panelRef);
+      }, panel);
     })();
 
     return () => { ctx?.revert(); };
@@ -325,13 +326,10 @@ export function EnterpriseSolutions() {
             className="mt-6 text-[clamp(2.6rem,6vw,5.2rem)] leading-[1.0] text-slate-900 tracking-tight"
             style={{ fontFamily: 'var(--font-heading)', fontWeight: 400 }}
           >
-            Five pillars of{" "}
-            <span className="italic text-[#7c3aed]" style={{ fontFamily: 'var(--font-heading)' }}>
-              aviation excellence.
-            </span>
+            OUR <span className="text-[#7c3aed]">SERVICES</span>
           </h2>
           <p className="mt-5 text-sm md:text-[15px] text-slate-600 font-body-luxury max-w-xl mx-auto leading-relaxed">
-            Our complete portfolio — organized into specialized enterprise domains — serves every dimension of premium flight and airport transit.
+            Our complete portfolio — organized into specialized enterprise domains — serves every dimension of your premium experience.
           </p>
         </div>
 

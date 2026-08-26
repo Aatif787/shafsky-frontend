@@ -1193,7 +1193,7 @@ function BookingDetailsView() {
                       Enterprise PDF Generation Engine
                     </h4>
                     <p className="text-xs text-white/50 mt-1 max-w-xl">
-                      Shafsky Aviation's luxury document engine generates print-ready PDFs with Code128 barcodes and security verification QR codes.
+                      Shafsky Aviation Services's luxury document engine generates print-ready PDFs with Code128 barcodes and security verification QR codes.
                     </p>
                   </div>
                   <button

@@ -546,7 +546,7 @@ export async function generateInvoicePdf(booking: any, isCorporate = false): Pro
   
   // Company details
   drawContentBox(ctx, "Issuer", 300, y - 80, 255, 80);
-  page.drawText("Shafsky Aviation Pvt. Ltd.", { x: 312, y: y - 32, size: 10, font: bold, color: colors.ink });
+  page.drawText("Shafsky Aviation Services Pvt. Ltd.", { x: 312, y: y - 32, size: 10, font: bold, color: colors.ink });
   page.drawText("PAN: AADCS8888P", { x: 312, y: y - 46, size: 8, font: mono, color: colors.muted });
   page.drawText("GSTIN: 27AADCS8888P1ZX", { x: 312, y: y - 60, size: 8, font: mono, color: colors.muted });
   
@@ -836,7 +836,22 @@ export async function generatePdfByType(type: string, booking: any, services: an
     case "booking_confirmation":
       return generateBookingConfirmationPdf(booking);
     case "customer_invoice":
-      return generateInvoicePdf(booking, false);
+      const { buildPdf } = await import("./booking-documents.functions");
+      return buildPdf({
+        kind: "invoice",
+        ref: booking.booking_ref || booking.booking_reference,
+        customer: booking.contact_name || booking.passenger_name || "Guest Passenger",
+        email: booking.contact_email || booking.passenger_email || "guest@shafsky.com",
+        phone: booking.contact_phone || booking.passenger_phone || "",
+        origin: booking.origin || booking.origin_code || "DEL",
+        destination: booking.destination || booking.dest_code || "DXB",
+        depart: booking.depart_date || booking.flight_date || "",
+        ret: booking.return_date || null,
+        pax: `${booking.pax_adults || booking.num_passengers || 1} adult · ${booking.pax_children || 0} child · ${booking.pax_infants || 0} infant`,
+        amount: Number(booking.quote_amount || booking.price || 0),
+        currency: booking.quote_currency ?? booking.currency ?? "INR",
+        service_type: booking.service_type || booking.service_package,
+      });
     case "corporate_invoice":
       return generateInvoicePdf(booking, true);
     case "service_voucher":

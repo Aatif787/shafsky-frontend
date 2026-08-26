@@ -33,8 +33,22 @@ import goxDesktop from "../assets/airports/gox/Dek-Gox-air.jpg";
 import goxMobile from "../assets/airports/gox/Mob-Gox-air.jpg";
 import bbiDesktop from "../assets/airports/bbi/Dek-Bbi-air.jpg";
 import bbiMobile from "../assets/airports/bbi/Mob-Bbi-air.jpg";
+import blrDesktop from "../assets/airports/blr/Dek-Blr-air.jpg";
+import blrMobile from "../assets/airports/blr/Mob-Blr-air.jpg";
+import ixcDesktop from "../assets/airports/ixc/Dek-Ixc-air.jpg";
+import ixcMobile from "../assets/airports/ixc/Mob-Ixc-air.jpg";
 
 const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: string }> = {
+  ixc: {
+    desktop: ixcDesktop,
+    mobile: ixcMobile,
+    tablet: ixcDesktop,
+  },
+  blr: {
+    desktop: blrDesktop,
+    mobile: blrMobile,
+    tablet: blrDesktop,
+  },
   del: {
     desktop: delDesktop,
     mobile: delMobile,

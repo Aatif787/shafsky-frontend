@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDown, MapPin } from "lucide-react";
+import { ArrowDown, ArrowLeft, MapPin } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import type { Airport } from "@/data/airports";
-import { DARK, display, mono, MagneticButton } from "./Atoms";
+import { DARK, mono, MagneticButton } from "./Atoms";
 import { getAirportAsset } from "@/lib/airport-assets";
 import { ResponsiveAirportHero } from "./ResponsiveAirportHero";
 
 export function DestinationHero({ a }: { a: Airport }) {
   const [slide, setSlide] = useState(0);
   const [time, setTime] = useState("");
+  // Defer Framer Motion entrance styles until after hydration so SSR HTML matches the first client paint.
+  const [motionReady, setMotionReady] = useState(false);
+
+  useEffect(() => {
+    setMotionReady(true);
+  }, []);
 
   useEffect(() => {
     const id = setInterval(() => setSlide((s) => (s + 1) % a.slideshow.length), 5000);
@@ -41,14 +48,34 @@ export function DestinationHero({ a }: { a: Airport }) {
     !!getAirportAsset(a.code, "hero-mobile.webp") ||
     !!getAirportAsset(a.code, "hero-tablet.webp");
 
+  const heroZoom = motionReady ? { opacity: 0, scale: 1.08 } : false;
+  const fadeUp = motionReady ? { opacity: 0, y: 20 } : false;
+  const fadeUpSm = motionReady ? { opacity: 0, y: 15 } : false;
+  const overlayGradient =
+    "linear-gradient(180deg, rgba(11,26,36,0.75) 0%, rgba(11,26,36,0.3) 45%, rgba(11,26,36,0.85) 100%)";
+
   return (
-    <section className="relative h-[100svh] min-h-[560px] w-full overflow-hidden p-2 sm:p-4 md:p-6" style={{ background: DARK.bg }}>
-      <div className="relative h-full w-full rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10">
+    <section
+      className="relative flex h-[100svh] min-h-[560px] w-full flex-col overflow-hidden p-2 sm:p-4 md:p-6"
+      style={{ backgroundColor: DARK.bg }}
+    >
+      {/* Outside the hero image, still inside the same <section> so SSR and client trees match */}
+      <div className="relative z-20 mb-3 shrink-0 sm:mb-4">
+        <Link
+          to="/airports"
+          className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white border border-slate-200/90 text-slate-700 hover:text-[#7c3aed] hover:border-[#7c3aed]/40 hover:bg-purple-50/40 shadow-xs hover:shadow-md transition-all duration-300 text-xs sm:text-sm font-medium group cursor-pointer"
+        >
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 text-slate-500 group-hover:text-[#7c3aed]" />
+          <span>Back to All Airports</span>
+        </Link>
+      </div>
+
+      <div className="relative min-h-0 w-full flex-1 overflow-hidden rounded-[1.5rem] border border-white/10 shadow-2xl sm:rounded-[2.5rem]">
         <AnimatePresence mode="sync">
           {hasDynamicHero ? (
             <motion.div
               key="dynamic-hero"
-              initial={{ opacity: 0, scale: 1.08 }}
+              initial={heroZoom}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
@@ -62,16 +89,13 @@ export function DestinationHero({ a }: { a: Airport }) {
               />
               <div
                 className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(11,26,36,0.75) 0%, rgba(11,26,36,0.3) 45%, rgba(11,26,36,0.85) 100%)",
-                }}
+                style={{ backgroundImage: overlayGradient }}
               />
             </motion.div>
           ) : (
             <motion.div
               key={slide}
-              initial={{ opacity: 0, scale: 1.08 }}
+              initial={heroZoom}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
@@ -91,10 +115,7 @@ export function DestinationHero({ a }: { a: Airport }) {
               />
               <div
                 className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(11,26,36,0.75) 0%, rgba(11,26,36,0.3) 45%, rgba(11,26,36,0.85) 100%)",
-                }}
+                style={{ backgroundImage: overlayGradient }}
               />
             </motion.div>
           )}
@@ -105,7 +126,7 @@ export function DestinationHero({ a }: { a: Airport }) {
           {/* Top Info & Airport Name */}
           <div className="max-w-4xl pt-safe">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={fadeUp}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="flex flex-wrap items-center gap-2 sm:gap-3 text-[9.5px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] font-bold text-amber-300/90"
@@ -117,12 +138,11 @@ export function DestinationHero({ a }: { a: Airport }) {
               <span>IATA: {a.code} · ICAO: {a.icao}</span>
             </motion.div>
 
-
-            {/* Official Airport Name Rendered Directly on Image ONLY for Guwahati Airport (GAU) */}
-            {a.code === "GAU" && (
+            {/* Official Airport Name Rendered on Hero Section for GAU and IXC */}
+            {(a.code === "GAU" || a.code === "IXC") && (
               <>
                 <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={fadeUp}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4 }}
                   className="mt-3 text-3xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight text-white drop-shadow-xl leading-tight"
@@ -136,7 +156,7 @@ export function DestinationHero({ a }: { a: Airport }) {
 
                 {/* Tagline */}
                 <motion.p
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={fadeUpSm}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.6 }}
                   className="mt-2 text-lg sm:text-xl font-serif italic text-amber-200/90 drop-shadow-md"
@@ -146,7 +166,7 @@ export function DestinationHero({ a }: { a: Airport }) {
 
                 {/* Basic Key Details Badges */}
                 <motion.div
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={fadeUpSm}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.8 }}
                   className="mt-4 flex flex-wrap items-center gap-2.5 text-xs font-semibold"
@@ -161,7 +181,7 @@ export function DestinationHero({ a }: { a: Airport }) {
                       🏛️ Terminals: {a.airport.terminals}
                     </span>
                   )}
-                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-200 font-mono text-[11px] tracking-wider backdrop-blur-md shadow-lg">
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-200 font-mono text-[11px] tracking-wider uppercase backdrop-blur-md shadow-lg">
                     ✨ 24x7 VIP Concierge Active
                   </span>
                 </motion.div>
@@ -171,7 +191,7 @@ export function DestinationHero({ a }: { a: Airport }) {
 
           {/* Bottom Area: Local Time, Weather & Actions */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={fadeUp}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1 }}
             className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end pt-6"
@@ -209,7 +229,7 @@ export function DestinationHero({ a }: { a: Airport }) {
               className="h-px transition-all duration-500"
               style={{
                 width: i === slide ? 40 : 14,
-                background: i === slide ? "#7c3aed" : "rgba(0,0,0,0.2)",
+                backgroundColor: i === slide ? "#7c3aed" : "rgba(0,0,0,0.2)",
               }}
             />
           ))}
@@ -217,7 +237,8 @@ export function DestinationHero({ a }: { a: Airport }) {
       )}
 
       <motion.div
-        animate={{ y: [0, 6, 0] }}
+        initial={false}
+        animate={motionReady ? { y: [0, 6, 0] } : { y: 0 }}
         transition={{ duration: 2, repeat: Infinity }}
         className="absolute bottom-6 right-8 z-10 flex flex-col items-center gap-2 text-[9px] uppercase tracking-[0.4em] text-slate-500 font-bold"
         style={mono}
@@ -226,16 +247,5 @@ export function DestinationHero({ a }: { a: Airport }) {
         <ArrowDown className="h-3 w-3 text-[#7c3aed]" />
       </motion.div>
     </section>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="min-w-0 bg-white/80 border border-[#e5dfd5] px-4 py-2.5 rounded-2xl shadow-xs backdrop-blur-md">
-      <div className="truncate text-[9px] uppercase tracking-[0.28em] text-slate-500 font-bold sm:tracking-[0.35em]">
-        {label}
-      </div>
-      <div className="mt-0.5 truncate text-sm font-extrabold text-slate-900">{value}</div>
-    </div>
   );
 }

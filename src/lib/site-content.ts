@@ -16,7 +16,7 @@ export const HERO_CONTENT = {
   eyebrow: "Suswagatam · Premium Airport Concierge",
   headline: "Welcome Begins Before You Land.",
   subtitle:
-    "Shafsky Aviation's Suswagatam concierge service meets you at the aerobridge, fast-tracks every checkpoint and delivers you to your destination — door to door, every flight.",
+    "Shafsky Aviation Services's Suswagatam concierge service meets you at the aerobridge, fast-tracks every checkpoint and delivers you to your destination — door to door, every flight.",
   ctaPrimary: "Book Services",
   ctaSecondary: "Private Charter",
   ctaWhatsApp: "WhatsApp Us",
@@ -59,7 +59,7 @@ export const WHY_CHOOSE_US: WhyItem[] = [
   {
     icon: Award,
     title: "Trusted by Leaders",
-    desc: "Sports legends, filmmakers, diplomats and Fortune 500 executives trust Shafsky Aviation.",
+    desc: "Sports legends, filmmakers, diplomats and Fortune 500 executives trust Shafsky Aviation Services.",
   },
 ];
 
@@ -79,7 +79,7 @@ export const TESTIMONIALS: TestimonialItem[] = [
     name: "Sachin Tendulkar",
     role: "Cricketing Legend",
     quote:
-      "Excellent customer services! Whenever I needed something they were there for me. Shafsky Aviation understands what premium travel means.",
+      "Excellent customer services! Whenever I needed something they were there for me. Shafsky Aviation Services understands what premium travel means.",
     initials: "ST",
     color: "#0d5a6e",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=220&h=220&fit=crop",
@@ -123,7 +123,7 @@ export const TESTIMONIALS: TestimonialItem[] = [
     name: "Mohd Azharuddin",
     role: "Former Indian Captain",
     quote:
-      "You are a great team player and you constantly help others meet their demands. Well done, Shafsky Aviation!",
+      "You are a great team player and you constantly help others meet their demands. Well done, Shafsky Aviation Services!",
     initials: "MA",
     color: "#059669",
     image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=220&h=220&fit=crop",
@@ -132,7 +132,7 @@ export const TESTIMONIALS: TestimonialItem[] = [
     name: "Hemant Sharma",
     role: "Business Leader",
     quote:
-      "The top-notch friendly and very professional customer service I've received from Shafsky Aviation is second to none.",
+      "The top-notch friendly and very professional customer service I've received from Shafsky Aviation Services is second to none.",
     initials: "HS",
     color: "#dc2626",
   },
@@ -161,7 +161,7 @@ export const TESTIMONIALS: TestimonialItem[] = [
 export const FAQ_ITEMS: [string, string][] = [
   [
     "What is Suswagatam Meet & Greet?",
-    "Suswagatam is Shafsky Aviation's signature welcome and assist service for domestic and international passengers across Indian airports — escort, fast-track, lounge, transport and more.",
+    "Suswagatam is Shafsky Aviation Services's signature welcome and assist service for domestic and international passengers across Indian airports — escort, fast-track, lounge, transport and more.",
   ],
   [
     "Which airports do you cover?",

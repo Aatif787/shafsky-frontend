@@ -47,7 +47,7 @@ export function Footer() {
               )}
             </div>
             <h3 className="mt-6 sm:mt-8 text-[clamp(1.65rem,3vw,2.6rem)] leading-[1.08]" style={display}>
-              {branding.company_tagline || "Welcome Begins Before You Land."}
+              {branding.company_name || "Shafsky Aviation Services"}
             </h3>
             <p className="mt-4 sm:mt-5 max-w-md text-xs sm:text-[14px] leading-relaxed text-white/70">
               {branding.business_address}, {branding.city}, {branding.state}, {branding.country} -{" "}

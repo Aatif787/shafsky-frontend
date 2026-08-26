@@ -89,7 +89,7 @@ export const SERVICE_REGISTRY: Record<string, ServiceEntry> = OFFICIAL_SHAFSKY_S
       accentColor: "#7c3aed",
       bookingConfigId: item.bookingServiceId,
       seo: {
-        title: `${item.name} — Shafsky Aviation`,
+        title: `${item.name} — Shafsky Aviation Services`,
         description: item.overview,
         keywords: [item.name.toLowerCase(), item.categoryName.toLowerCase(), "shafsky aviation"],
       },

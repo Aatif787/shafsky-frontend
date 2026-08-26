@@ -220,7 +220,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       key: keyId,
       amount: paise,
       currency: currency || "INR",
-      name: "Shafsky Aviation Concierge",
+      name: "Shafsky Aviation Services Concierge",
       description: `Airport Service — ${targetRef}`,
       order_id: orderId,
       prefill: {
@@ -809,7 +809,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                             : `We currently do not offer services at ${state.airportName || state.airportCode} for ${state.direction} journeys.`}
                         </h3>
                         <p className="text-xs text-slate-400 font-sans leading-relaxed">
-                          Shafsky Aviation VIP concierge services are rapidly expanding. Contact our 24/7 Command Desk for bespoke arrangement or custom airport dispatch.
+                          Shafsky Aviation Services VIP concierge services are rapidly expanding. Contact our 24/7 Command Desk for bespoke arrangement or custom airport dispatch.
                         </p>
                       </div>
 

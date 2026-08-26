@@ -185,7 +185,7 @@ function SuperAdminLayout() {
               className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#a78bfa]"
               style={saMono}
             >
-              Shafsky Aviation
+              Shafsky Aviation Services
             </div>
             <div
               className="text-[8px] uppercase tracking-[0.3em] text-white/30 mt-0.5"

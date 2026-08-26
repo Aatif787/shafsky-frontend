@@ -146,7 +146,7 @@ export function generateDocumentChecklist(
       category: "insurance",
       isRequired: true,
       status: "recommended",
-      tooltipInfo: "Can be issued directly by Shafsky Aviation Concierge Desk.",
+      tooltipInfo: "Can be issued directly by Shafsky Aviation Services Concierge Desk.",
     });
   }
 

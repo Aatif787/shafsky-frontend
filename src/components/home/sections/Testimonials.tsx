@@ -9,7 +9,7 @@ export function Testimonials() {
       name: "Sachin Tendulkar",
       role: "Cricketing Legend",
       quote:
-        "Excellent customer services! Whenever I needed something they were there for me. Shafsky Aviation understands what premium travel means.",
+        "Excellent customer services! Whenever I needed something they were there for me. Shafsky Aviation Services understands what premium travel means.",
       initials: "ST",
       color: "#0d5a6e",
       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=220&h=220&fit=crop",
@@ -53,7 +53,7 @@ export function Testimonials() {
       name: "Mohd Azharuddin",
       role: "Former Indian Captain",
       quote:
-        "You are a great team player and you constantly help others meet their demands. Well done, Shafsky Aviation!",
+        "You are a great team player and you constantly help others meet their demands. Well done, Shafsky Aviation Services!",
       initials: "MA",
       color: "#059669",
       image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=220&h=220&fit=crop",
@@ -62,7 +62,7 @@ export function Testimonials() {
       name: "Hemant Sharma",
       role: "Business Leader",
       quote:
-        "The top-notch friendly and very professional customer service I've received from Shafsky Aviation is second to none.",
+        "The top-notch friendly and very professional customer service I've received from Shafsky Aviation Services is second to none.",
       initials: "HS",
       color: "#dc2626",
     },

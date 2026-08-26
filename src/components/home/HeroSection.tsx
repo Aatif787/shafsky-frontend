@@ -110,7 +110,7 @@ export function HeroSection({ visible }: { visible: boolean }) {
           </span>{" "}
           from
           <br />
-          Shafsky Aviation
+          Shafsky Aviation Services
         </motion.h1>
 
         <motion.p

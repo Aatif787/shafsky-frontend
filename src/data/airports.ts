@@ -1,4 +1,4 @@
-// Premium destination dataset for Shafsky Aviation Airport Explorer.
+// Premium destination dataset for Shafsky Aviation Services Airport Explorer.
 // Images sourced from Unsplash featured (stable redirect) — keyed by landmark queries.
 
 import chaarminar from "@/assets/chaarminar.jpg";
@@ -47,6 +47,10 @@ import dekGoxAir from "@/assets/airports/gox/Dek-Gox-air.jpg";
 import mobGoxAir from "@/assets/airports/gox/Mob-Gox-air.jpg";
 import dekBbiAir from "@/assets/airports/bbi/Dek-Bbi-air.jpg";
 import mobBbiAir from "@/assets/airports/bbi/Mob-Bbi-air.jpg";
+import dekBlrAir from "@/assets/airports/blr/Dek-Blr-air.jpg";
+import mobBlrAir from "@/assets/airports/blr/Mob-Blr-air.jpg";
+import dekIxcAir from "@/assets/airports/ixc/Dek-Ixc-air.jpg";
+import mobIxcAir from "@/assets/airports/ixc/Mob-Ixc-air.jpg";
 
 import { AIRPORT_REGISTRY, getAirportRegistryEntry } from "./airportRegistry";
 
@@ -978,7 +982,13 @@ export const AIRPORTS: Airport[] = [
       ["Lalbagh Botanical", "Lalbagh Bengaluru", "240-acre Tipu Sultan garden."],
       ["Bangalore Palace", "Bangalore Palace", "Tudor-style royal residence."],
     ],
-  }),
+  }).map((a) => ({
+    ...a,
+    cover: dekBlrAir,
+    mobCover: mobBlrAir,
+    slideshow: [dekBlrAir],
+    gallery: [dekBlrAir, mobBlrAir, a.gallery[0], a.gallery[1]],
+  })),
   ...buildCity({
     code: "COK",
     icao: "VOCI",
@@ -1080,7 +1090,13 @@ export const AIRPORTS: Airport[] = [
       ["Sukhna Lake", "Sukhna Lake", "Reservoir at the foothills of the Himalayas (Shivalik Hills)."],
       ["Rose Garden", "Rose Garden Chandigarh", "Largest botanical rose garden in Asia."]
     ]
-  }),
+  }).map((a) => ({
+    ...a,
+    cover: dekIxcAir,
+    mobCover: mobIxcAir,
+    slideshow: [dekIxcAir],
+    gallery: [dekIxcAir, mobIxcAir, a.gallery[0], a.gallery[1]],
+  })),
   ...buildCity({
     code: "GOX",
     icao: "VOMY",
@@ -1332,7 +1348,7 @@ export function getAirport(code: string): Airport {
       "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=95",
     ],
     videoId: "5qap5aO4i9A",
-    about: `${airportName} (${upperCode}) serves as a primary aviation hub connecting ${cityName}, ${countryName} with major domestic and international destinations. Shafsky Aviation provides full VVIP airside escorts, Meet & Greet, fast-track customs clearance, and chauffeured transit at this hub.`,
+    about: `${airportName} (${upperCode}) serves as a primary aviation hub connecting ${cityName}, ${countryName} with major domestic and international destinations. Shafsky Aviation Services provides full VVIP airside escorts, Meet & Greet, fast-track customs clearance, and chauffeured transit at this hub.`,
     bestTime: "Year-Round",
     languages: "English, Local Official Languages",
     currency: countryName === "India" ? "INR (₹)" : "USD ($)",

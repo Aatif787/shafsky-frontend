@@ -76,7 +76,7 @@ export function Preloader({ onFinish }: { onFinish: () => void }) {
         <div className="relative flex flex-col items-center justify-center w-full max-w-[540px] px-8 select-none">
           {/* Top branding text */}
           <div className="text-center font-mono uppercase tracking-[0.3em] mb-14">
-            <div className="text-[12px] font-semibold text-[#0d2a36]">SHAFSKY AVIATION</div>
+            <div className="text-[12px] font-semibold text-[#0d2a36]">SHAFSKY AVIATION SERVICES</div>
             <div className="mt-1.5 text-[8px] text-[#5b6b75]/60">VIP CONCIERGE · EST. 2022</div>
           </div>
 

@@ -120,7 +120,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
             </h2>
 
             <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-slate-600 font-sans max-w-xl font-medium leading-relaxed">
-              Explore official Shafsky Aviation services across 6 business areas — understandable in 1 second, pre-configured, and bookable instantly.
+              Explore official Shafsky Aviation Services services across 6 business areas — understandable in 1 second, pre-configured, and bookable instantly.
             </p>
           </div>
 

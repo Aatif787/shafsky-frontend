@@ -391,7 +391,7 @@ export function BookingSummaryReviewStep({
             className="w-5 h-5 rounded border-slate-300 text-amber-600 focus:ring-amber-600 mt-0.5 shrink-0 cursor-pointer"
           />
           <span className="text-xs text-slate-600 font-sans leading-relaxed">
-            I agree to the <strong className="text-slate-900">Shafsky Aviation VIP Concierge Terms of Service</strong> and <strong className="text-slate-900">Cancellation Policy</strong>. I understand that final booking confirmation is verified authoritatively against database availability.
+            I agree to the <strong className="text-slate-900">Shafsky Aviation Services VIP Concierge Terms of Service</strong> and <strong className="text-slate-900">Cancellation Policy</strong>. I understand that final booking confirmation is verified authoritatively against database availability.
           </span>
         </label>
 

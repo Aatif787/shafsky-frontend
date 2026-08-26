@@ -266,7 +266,7 @@ export function QuoteBuilderModal({
                 </span>
               </div>
               <p className="text-xs text-white/50" style={pageMono}>
-                Shafsky Aviation · Luxury Quotation Engine
+                Shafsky Aviation Services · Luxury Quotation Engine
               </p>
             </div>
           </div>
@@ -672,7 +672,7 @@ export function QuoteBuilderModal({
               <div className="flex justify-between items-start border-b border-gray-300 pb-6">
                 <div>
                   <h1 className="text-2xl font-bold tracking-widest text-[#0d3b4c]" style={pageDisplay}>
-                    SHAFSKY AVIATION
+                    SHAFSKY AVIATION SERVICES
                   </h1>
                   <p className="text-xs text-gray-500 font-mono mt-1">
                     Private Aviation · Airport Concierge · Meet & Greet

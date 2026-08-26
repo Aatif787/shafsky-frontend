@@ -46,7 +46,7 @@ const FAQ_DATASET: FAQItem[] = [
     category: "concierge",
     categoryLabel: "Airport Concierge",
     q: "Can I access VIP airport lounges regardless of my ticket airline class?",
-    a: "Yes. Shafsky Aviation grants private VIP lounge access to all registered guests regardless of your commercial ticket class or airline loyalty tier. Enjoy private rest suites, shower facilities, gourmet buffets, and high-speed Wi-Fi.",
+    a: "Yes. Shafsky Aviation Services grants private VIP lounge access to all registered guests regardless of your commercial ticket class or airline loyalty tier. Enjoy private rest suites, shower facilities, gourmet buffets, and high-speed Wi-Fi.",
     highlight: "Lounge Privilege",
     relatedServiceId: "lounge",
     relatedServiceLink: "/solutions/concierge?sub=lounge",

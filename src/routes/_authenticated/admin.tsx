@@ -255,7 +255,7 @@ function AdminLayout() {
               className="text-[#5ed3ff] font-bold text-xs uppercase tracking-[0.25em]"
               style={pageMono}
             >
-              SHAFSKY AVIATION
+              SHAFSKY AVIATION SERVICES
             </div>
             <div
               className="text-[9px] uppercase tracking-[0.3em] text-white/40 mt-1"
@@ -306,7 +306,7 @@ function AdminLayout() {
               className="text-[#5ed3ff] font-bold text-[10px] uppercase tracking-[0.25em]"
               style={pageMono}
             >
-              SHAFSKY AVIATION
+              SHAFSKY AVIATION SERVICES
             </div>
             <div className="text-[8px] uppercase tracking-[0.3em] text-white/40" style={pageMono}>
               OPS PORTAL

@@ -24,7 +24,7 @@ import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
 export const Route = createFileRoute("/airports")({
   head: () => ({
     meta: [
-      { title: "Airports Around the World — Shafsky Aviation" },
+      { title: "Airports Around the World — Shafsky Aviation Services" },
       {
         name: "description",
         content: "Explore our global network of major airports and book premium concierge services.",

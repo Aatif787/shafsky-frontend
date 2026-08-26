@@ -17,7 +17,7 @@ export const Route = createFileRoute("/flight-verification")({
   validateSearch: (search) => flightVerificationSearchSchema.parse(search),
   head: () => ({
     meta: [
-      { title: "Journey Details — Shafsky Aviation" },
+      { title: "Journey Details — Shafsky Aviation Services" },
     ],
   }),
   component: FlightVerificationPage,

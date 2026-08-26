@@ -4,13 +4,13 @@ import { Hero } from "@/components/Hero";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Shafsky Aviation — Engineering the Edge of Flight" },
+      { title: "Shafsky Aviation Services — Engineering the Edge of Flight" },
       {
         name: "description",
         content:
-          "Shafsky Aviation: private charter, cargo, medical evacuation and Suswagatam airport concierge across 19 Indian hubs and global destinations.",
+          "Shafsky Aviation Services: private charter, cargo, medical evacuation and Suswagatam airport concierge across 19 Indian hubs and global destinations.",
       },
-      { property: "og:title", content: "Shafsky Aviation — Engineering the Edge of Flight" },
+      { property: "og:title", content: "Shafsky Aviation Services — Engineering the Edge of Flight" },
       {
         property: "og:description",
         content:
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "Shafsky Aviation",
+          name: "Shafsky Aviation Services",
           url: "https://aero-launch-sequence.lovable.app/",
           description:
             "Private charter, cargo, medical evacuation, aircraft management and Suswagatam airport concierge.",
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
-          name: "Shafsky Aviation",
+          name: "Shafsky Aviation Services",
           url: "https://aero-launch-sequence.lovable.app/",
         }),
       },

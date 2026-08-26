@@ -8,7 +8,7 @@ import vipTransport1 from "@/assets/vip-transport-1.png";
 export const Route = createFileRoute("/solutions/medical")({
   head: () => ({
     meta: [
-      { title: "24/7 Air Ambulance & Medical Evacuation — Shafsky Aviation" },
+      { title: "24/7 Air Ambulance & Medical Evacuation — Shafsky Aviation Services" },
       {
         name: "description",
         content:
