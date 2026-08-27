@@ -438,6 +438,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         if (controller.signal.aborted) return;
 
         if (fetchRes.success) {
+          const derivedFt = String(fetchRes.flightType || "").toLowerCase();
           setState((prev) => ({
             ...prev,
             isLoadingServices: false,
@@ -446,6 +447,10 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
             availableServicesList: fetchRes.services,
             availablePackagesList: fetchRes.packages,
             flightType: fetchRes.flightType,
+            travelType:
+              derivedFt === "international" || derivedFt === "domestic"
+                ? (derivedFt as "domestic" | "international")
+                : prev.travelType,
             airportName: fetchRes.airport?.name || prev.airportName,
             resolvedAirport: fetchRes.airport
               ? {

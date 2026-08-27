@@ -128,6 +128,11 @@ export function BookingPanel() {
       return false;
     }
     const serviceAirport = String(res.service_airport).trim().toUpperCase();
+    const derivedTravel = String(res.flight_type || travelType || "").toLowerCase();
+    const travelForIntent =
+      derivedTravel === "international" || derivedTravel === "domestic"
+        ? derivedTravel
+        : travelType;
     const intent = {
       airport: serviceAirport,
       airport_id: res.airport?.id,
@@ -138,8 +143,8 @@ export function BookingPanel() {
       booking_mode: "package",
       depart_date: departDate,
       direction: tab === "connection" ? "transit" : tab,
-      travel_type: travelType,
-      flight_type: travelType,
+      travel_type: travelForIntent,
+      flight_type: travelForIntent,
       pax_adults: adults,
       pax_children: childrenCount,
       pax_infants: infants,

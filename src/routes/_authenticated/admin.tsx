@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   LayoutDashboard,
   PlaneTakeoff,
+  Plane,
   Users,
   ConciergeBell,
   BellRing,
@@ -144,6 +145,12 @@ function AdminLayout() {
       label: "Bookings",
       path: "/admin/bookings",
       icon: PlaneTakeoff,
+      show: clientHasPermission(roles, "bookings:read"),
+    },
+    {
+      label: "Private Charter",
+      path: "/admin/charter",
+      icon: Plane,
       show: clientHasPermission(roles, "bookings:read"),
     },
     {

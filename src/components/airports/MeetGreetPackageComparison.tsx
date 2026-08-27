@@ -63,12 +63,18 @@ export function MeetGreetPackageComparison({
     setLoading(true);
     setFetchError(false);
 
+    const originParam = String(bookingSearch?.origin || "").trim().toUpperCase();
+    const destParam = String(bookingSearch?.destination || "").trim().toUpperCase();
     const isDel = airportCode.toUpperCase() === "DEL";
     const flightTypeParam = journeyType === "TRANSIT" ? transitType : flightType;
     const terminalParam = journeyType !== "TRANSIT" && isDel && terminal ? `&terminal=${encodeURIComponent(terminal)}` : "";
+    const routeParam =
+      originParam && destParam
+        ? `&origin=${encodeURIComponent(originParam)}&destination=${encodeURIComponent(destParam)}`
+        : "";
 
     ApiClient.fetchWithAuth(
-      `/api/journey/airports/${airportCode}/services?journey_type=${journeyType}&flight_type=${flightTypeParam}${terminalParam}`
+      `/api/journey/airports/${airportCode}/services?journey_type=${journeyType}&flight_type=${flightTypeParam}${terminalParam}${routeParam}`
     )
       .then((res) => {
         if (!res.ok) {
@@ -143,6 +149,10 @@ export function MeetGreetPackageComparison({
               });
               setPackages(mapped);
               setFetchError(false);
+              const derivedFt = String(data.flight_type || "").toUpperCase();
+              if (derivedFt === "DOMESTIC" || derivedFt === "INTERNATIONAL") {
+                setFlightType(derivedFt);
+              }
             } else {
               // Authoritative backend returned 0 active packages for this configuration
               setPackages([]);
@@ -168,7 +178,7 @@ export function MeetGreetPackageComparison({
     return () => {
       isMounted = false;
     };
-  }, [airportCode, flightType, journeyType, transitType, terminal, retryTrigger]);
+  }, [airportCode, flightType, journeyType, transitType, terminal, retryTrigger, bookingSearch?.origin, bookingSearch?.destination]);
 
   return (
     <div className="space-y-8 my-10">

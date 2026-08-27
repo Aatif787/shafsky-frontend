@@ -190,6 +190,22 @@ export async function fetchAirportServices(
     if (res.ok) {
       const data = await res.json();
       if (data) {
+        if (
+          data.success === false &&
+          data.flightType == null &&
+          data.flight_type == null &&
+          data.error
+        ) {
+          return {
+            success: false,
+            isCovered: false,
+            currency: data.currency || "INR",
+            services: [],
+            packages: [],
+            airport: data.airport,
+            error: data.error,
+          };
+        }
         if (data.covered === false || data.is_covered === false) {
           return {
             success: true,
