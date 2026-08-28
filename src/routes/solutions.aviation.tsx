@@ -1,14 +1,44 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PrivateJetHero } from "@/components/charter/PrivateJetHero";
+import { useState } from "react";
+import { createFileRoute, useNavigate, useLocation } from "@tanstack/react-router";
+import { ServiceLayout } from "@/components/services/ServiceLayout";
+
+import heroJet from "@/assets/hero-jet.png";
+import vipTransport1 from "@/assets/vip-transport-1.png";
+import { BUSINESS } from "@/lib/constants";
 
 export const Route = createFileRoute("/solutions/aviation")({
   head: () => ({
     meta: [
-      { title: "SkyElite — Premium Accessible Private Jets" },
+      { title: "Private Jet Charter & Private Aviation — Shafsky Aviation Services" },
       {
         name: "description",
         content:
-          "Experience the pinnacle of private aviation with SkyElite. Premium and accessible private jet charters tailored to your schedule.",
+          "On-demand private jet charter, VIP FBO terminal access, custom flight schedules, and bespoke private cabin luxury across India and worldwide.",
+      },
+      { name: "robots", content: "index, follow" },
+      { property: "og:title", content: "Private Jet Charter & Private Aviation — Shafsky Aviation Services" },
+      { property: "og:description", content: "On-demand private jet charter, VIP FBO terminal access, custom flight schedules." },
+      { property: "og:url", content: `${BUSINESS.BASE_URL}/solutions/aviation` },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Private Jet Charter & Private Aviation — Shafsky Aviation Services" },
+      { name: "twitter:description", content: "On-demand private jet charter, VIP FBO terminal access, custom flight schedules." },
+      { name: "twitter:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
+    ],
+    links: [{ rel: "canonical", href: `${BUSINESS.BASE_URL}/solutions/aviation` }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Private Aviation & Jet Charter",
+          provider: { "@type": "Organization", name: BUSINESS.NAME },
+          url: `${BUSINESS.BASE_URL}/solutions/aviation`,
+          description: "On-demand private jet charter, VIP FBO terminal access, custom flight schedules, and bespoke private cabin luxury.",
+          areaServed: "IN",
+        }),
       },
     ],
   }),
@@ -16,5 +46,116 @@ export const Route = createFileRoute("/solutions/aviation")({
 });
 
 function PrivateAviationPage() {
-  return <PrivateJetHero />;
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const searchObj: any = location.search || {};
+  const activeSub = typeof searchObj === "object" && searchObj.sub ? searchObj.sub : "jet_charter";
+
+  const subServices = [
+    {
+      id: "jet_charter",
+      label: "Private Jet Charter",
+      tagline: "On-Demand Heavy & Light Jet Charters",
+      description: "Direct point-to-point private aircraft charters (Global 6000, Gulfstream G650, Falcon 8X, Citation XLS) with bespoke flight schedules.",
+      image: heroJet,
+      badge: "Flagship Charter",
+    },
+    {
+      id: "fbo_lounge",
+      label: "FBO Terminal Suites",
+      tagline: "Private General Aviation Terminal Access",
+      description: "Bypass main airport concourses completely via private FBO general aviation terminals with direct tarmac Maybach transfers.",
+      image: vipTransport1,
+      badge: "FBO Privilege",
+    },
+  ];
+
+  const handleSelectSubService = (subId: string) => {
+    navigate({ to: "/solutions/aviation", search: { sub: subId } as any });
+  };
+
+  const currentSub = subServices.find((s) => s.id === activeSub) || subServices[0];
+
+  return (
+    <ServiceLayout
+      category="Private Aviation"
+      categoryHref="/solutions/aviation"
+      categoryId="private_charter"
+      serviceName={currentSub.label}
+      tagline={currentSub.tagline}
+      description={currentSub.description}
+      heroImage={currentSub.image}
+      serviceId={currentSub.id}
+      activeSubService={activeSub}
+      subServices={subServices}
+      onSelectSubService={handleSelectSubService}
+      benefits={[
+        {
+          title: "Complete Schedule Freedom",
+          description: "Fly on your exact schedule with zero commercial flight delays or connecting gate layovers.",
+          icon: undefined,
+          highlight: "On-Demand",
+        },
+        {
+          title: "Direct FBO Terminal Access",
+          description: "Board directly from private general aviation terminals in under 15 minutes from curbside arrival.",
+          icon: undefined,
+          highlight: "15-Min Boarding",
+        },
+        {
+          title: "Michelin Inflight Catering",
+          description: "Customized culinary menus prepared by top chefs paired with fine wines and champagne.",
+          icon: undefined,
+          highlight: "Gourmet Dining",
+        },
+        {
+          title: "100% Confidentiality",
+          description: "Strict passenger manifest privacy and non-disclosure protocols for high-net-worth individuals and executives.",
+          icon: undefined,
+          highlight: "Confidential",
+        },
+      ]}
+      timelineSteps={[
+        {
+          number: "01",
+          title: "Flight Itinerary & Aircraft Selection",
+          description: "Specify your origin, destination, passenger count, and preferred aircraft category.",
+          badge: "Step 1: Consultation",
+        },
+        {
+          number: "02",
+          title: "Flight Dispatch & FBO Confirmation",
+          description: "Our flight command dispatches aircraft specs, landing permits, and custom catering menus.",
+          badge: "Step 2: Dispatch",
+        },
+        {
+          number: "03",
+          title: "FBO Lounge Greeting & Tarmac Maybach",
+          description: "Arrive at the private FBO lounge where your captain greets you for direct tarmac boarding.",
+          badge: "Step 3: Boarding",
+        },
+        {
+          number: "04",
+          title: "Airborne Flight & Destination Handoff",
+          description: "Enjoy luxurious inflight dining followed by immediate chauffeured pickup upon landing.",
+          badge: "Step 4: Completion",
+        },
+      ]}
+      faqs={[
+        {
+          q: "How fast can a private jet charter be dispatched?",
+          a: "For emergency or short-notice travel, we can dispatch aircraft in as little as 2 to 4 hours, subject to landing permits and crew positioning.",
+        },
+        {
+          q: "What is included in the private charter pricing?",
+          a: "All quotes include complete aircraft charter cost, captain and flight crew fees, FBO terminal handling, gourmet inflight catering, and fuel surcharges.",
+        },
+        {
+          q: "Can I bring pets on the private jet flight?",
+          a: "Yes. Pets travel in the main cabin alongside you in complete comfort without crates or compartment segregation.",
+        },
+      ]}
+    />
+  );
 }

@@ -25,6 +25,7 @@ import { AssistanceCTA } from "@/components/navigation/AssistanceCTA";
 import { submitContact } from "@/lib/contact.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { BUSINESS } from "@/lib/constants";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -35,7 +36,18 @@ export const Route = createFileRoute("/contact")({
         content:
           "Connect with Shafsky Aviation Services's 24/7 command desk for immediate airport Meet & Greet, VIP lounge access, emergency air ICU ambulance dispatch, and private jet charters.",
       },
+      { name: "robots", content: "index, follow" },
+      { property: "og:title", content: "24/7 Concierge Assistance Hub — Shafsky Aviation Services" },
+      { property: "og:description", content: "Connect with our 24/7 command desk for airport Meet & Greet, VIP lounge, emergency air ambulance, and private jet charters." },
+      { property: "og:url", content: `${BUSINESS.BASE_URL}/contact` },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "24/7 Concierge Assistance Hub — Shafsky Aviation Services" },
+      { name: "twitter:description", content: "Connect with our 24/7 command desk for airport Meet & Greet, VIP lounge, emergency air ambulance, and private jet charters." },
+      { name: "twitter:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
     ],
+    links: [{ rel: "canonical", href: `${BUSINESS.BASE_URL}/contact` }],
   }),
   component: AssistanceHubPage,
 });

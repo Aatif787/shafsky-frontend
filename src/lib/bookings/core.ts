@@ -16,10 +16,6 @@ import { requireAdminRole } from "@/lib/admin.middleware";
 import type { Json, Database } from "@/integrations/supabase/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const AdminSettingsSchema = z.object({
-  sixHourRuleThreshold: z.number().int().min(0).optional(),
-});
-
 export const BookingInput = z.object({
   contact_name: z.string().trim().min(2).max(120),
   contact_email: z.string().trim().email().max(200),
@@ -71,7 +67,30 @@ export const createBooking = createServerFn({ method: "POST" })
     const token = getTokenFromRequest();
     const userId = context.userId;
 
-    // 1. Backend 6-Hour Rule check for standard bookings
+    const enquiryService = String(data.service_type || "").toLowerCase();
+    const isEnquiryOnly = [
+      "hotel",
+      "hotel_booking",
+      "air_ticketing",
+      "ticketing",
+      "charter",
+      "jet_charter",
+      "private_jet",
+      "private_charter",
+    ].includes(enquiryService);
+
+    if (isEnquiryOnly) {
+      const booking_ref = `SHF-ENQ-${Math.floor(100000 + Math.random() * 900000)}`;
+      return {
+        id: crypto.randomUUID(),
+        booking_ref,
+        status: "pending",
+        created_at: new Date().toISOString(),
+        service_type: enquiryService,
+      };
+    }
+
+    // Airport services: 12h domestic / 24h international
     const getAirportCode = (str: string): string | null => {
       if (!str) return null;
       const match = str.match(/\(([A-Z0-9]{3,4})\)/i);
@@ -92,24 +111,8 @@ export const createBooking = createServerFn({ method: "POST" })
     const originCode = getAirportCode(data.origin) || "DEL";
     const destCode = getAirportCode(data.destination) || "BOM";
 
-    let threshold = 6;
-    try {
-      const settings = await apiGet<any>("/api/admin/system-settings", token);
-      if (Array.isArray(settings)) {
-        const sRow = settings.find((s) => s.key === "admin_settings");
-        if (sRow?.value) {
-          const parsedSettings = AdminSettingsSchema.safeParse(sRow.value);
-          if (
-            parsedSettings.success &&
-            typeof parsedSettings.data.sixHourRuleThreshold === "number"
-          ) {
-            threshold = parsedSettings.data.sixHourRuleThreshold;
-          }
-        }
-      }
-    } catch (err) {
-      console.warn("Failed to load dynamic threshold settings, using default of 6:", err);
-    }
+    const travelHint = `${data.trip_type || ""} ${(data as any).flight_type || ""} ${(data as any).travel_type || ""}`;
+    const threshold = /international/i.test(travelHint) ? 24 : 12;
 
     const toIsoDateTime = (dateStr: string, notesStr?: string, searchKey?: string): string | null => {
       if (!dateStr) return null;

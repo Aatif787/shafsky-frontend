@@ -89,13 +89,14 @@ export interface FlightEligibility {
 }
 
 /**
- * Computes the 6-hour booking cutoff rule dynamically for departures and arrivals.
+ * Computes airport-service booking eligibility.
+ * Domestic: 12 hours. International: 24 hours.
  */
 export function checkBookingEligibility(
   scheduledTime: string,
   airportIata: string,
   tripType?: string,
-  threshold: number = 6,
+  threshold: number = 12,
   isArrival: boolean = false,
 ): FlightEligibility {
   const targetDate = parseFlightDateTime(scheduledTime, airportIata);
@@ -136,7 +137,7 @@ export function checkBookingEligibility(
   const eventLabel = isArrival ? "arrival" : "departure";
   const blockingMessage = isBookable
     ? undefined
-    : `Bookings must be made at least ${threshold} hours before ${eventLabel}. (${isArrival ? "Flight arrives in" : "Flight departs in"} ${timeStr})`;
+    : `Airport services need at least ${threshold} hours before ${eventLabel} (${threshold === 24 ? "international" : "domestic"}). Flight is in ${timeStr}. For urgent help, call our executive on +91 9599087959.`;
 
   return {
     isBookable,

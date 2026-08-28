@@ -17,6 +17,7 @@ import { AirportWorkflow } from "@/components/booking/workflows/airport/AirportW
 import { HotelWorkflow } from "@/components/booking/workflows/hotel/HotelWorkflow";
 import { VisaWorkflow } from "@/components/booking/workflows/visa/VisaWorkflow";
 import { CargoWorkflow } from "@/components/booking/workflows/cargo/CargoWorkflow";
+import { PrivateCharterRequestFlow } from "@/components/charter/PrivateCharterRequestFlow";
 
 // Custom Workflow State Hook
 import { useWorkflowState } from "@/components/booking/hooks/useWorkflowState";
@@ -40,9 +41,27 @@ export default function BookingView({ searchParams }: BookingViewProps) {
   const [createdBookingRef, setCreatedBookingRef] = useState<string | null>(null);
 
   // Workflow Detection
-  const initialServiceId = searchParams?.service_id || searchParams?.sub || "meet_greet";
+  const [sessionService, setSessionService] = useState("");
+  useEffect(() => {
+    try {
+      setSessionService(sessionStorage.getItem("shafsky_selected_service") || "");
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
-  const isCharterWorkflow = initialServiceId === "jet_charter" || initialServiceId === "charter" || initialServiceId === "private_jet";
+  const initialServiceId =
+    searchParams?.service_id || searchParams?.sub || sessionService || "meet_greet";
+
+  const charterIds = new Set([
+    "jet_charter",
+    "charter",
+    "private_jet",
+    "private_charter",
+    "private_aircraft_charter",
+    "group_charter",
+  ]);
+  const isCharterWorkflow = charterIds.has(String(initialServiceId).toLowerCase());
   const isAirAmbulanceWorkflow = initialServiceId === "air_ambulance" || initialServiceId === "medical";
   const isTrainAmbulanceWorkflow = initialServiceId === "train_ambulance";
   const isHumWorkflow = initialServiceId === "hum" || initialServiceId === "repatriation" || initialServiceId === "human_remains";
@@ -181,6 +200,18 @@ export default function BookingView({ searchParams }: BookingViewProps) {
       setBusy(false);
     }
   };
+
+  if (isCharterWorkflow) {
+    return (
+      <div className="min-h-screen bg-[#FAF9F5] text-slate-900 py-8 sm:py-12 px-4 sm:px-8 max-w-5xl mx-auto">
+        <PrivateCharterRequestFlow
+          initialOrigin={searchParams?.origin || ""}
+          initialDestination={searchParams?.destination || ""}
+        />
+        <BookingCancelModal show={showCancelDialog} onClose={() => setShowCancelDialog(false)} />
+      </div>
+    );
+  }
 
   if (isTicketingWorkflow) {
     return (

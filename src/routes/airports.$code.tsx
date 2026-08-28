@@ -6,6 +6,7 @@ import { getAirportRegistryEntry } from "@/data/airportRegistry";
 import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
 import { DestinationHero } from "@/components/airports/DestinationHero";
 import { DestinationBody } from "@/components/airports/DestinationBody";
+import { BUSINESS } from "@/lib/constants";
 
 const airportPageSearchSchema = z.object({
   origin: z.string().optional().catch(""),
@@ -31,7 +32,7 @@ export const Route = createFileRoute("/airports/$code")({
   head: ({ params }) => {
     const registryEntry = getAirportRegistryEntry(params.code);
     const a = getAirport(params.code);
-    const url = `https://aero-launch-sequence.lovable.app/airports/${params.code}`;
+    const url = `${BUSINESS.BASE_URL}/airports/${params.code}`;
     const title = registryEntry
       ? registryEntry.seo.title
       : a

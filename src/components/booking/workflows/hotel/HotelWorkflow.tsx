@@ -73,17 +73,18 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
     try {
       await submitBookingFn({
         data: {
-          flight_number: `SHF-HOTEL-${stay.hotelCategory || "CURATED"}`,
-          departure_airport: "N/A",
-          arrival_airport: stay.destination,
+          contact_name: guest.fullName,
+          contact_email: guest.email,
+          contact_phone: guest.phone,
+          company: guest.isCorporateBooking ? guest.companyName || "" : "",
+          trip_type: "one_way",
+          origin: stay.destination,
+          destination: stay.destination,
           depart_date: stay.checkIn,
           return_date: stay.checkOut,
-          lead_passenger_name: guest.fullName,
-          passenger_email: guest.email,
-          passenger_phone: guest.phone,
-          pax_adults: stay.paxAdults,
-          pax_children: stay.paxChildren,
-          pax_infants: stay.paxInfants,
+          pax_adults: stay.paxAdults || 1,
+          pax_children: stay.paxChildren || 0,
+          pax_infants: stay.paxInfants || 0,
           service_type: "hotel",
           check_in: stay.checkIn,
           check_out: stay.checkOut,
@@ -92,8 +93,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
           room_count: stay.roomCount,
           meal_plan: stay.mealPlan,
           special_requests: `[Purpose: ${stay.purposeOfStay}] [Category: ${stay.hotelCategory}] [Brand: ${stay.brandPreference || "None"}] ${guest.specialRequests}`,
-          company: guest.isCorporateBooking ? guest.companyName : undefined,
-        } as any,
+        },
       });
       setBookingRef(refCode);
       setSubmitted(true);

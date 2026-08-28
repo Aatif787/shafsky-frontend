@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ServiceLayout } from "@/components/services/ServiceLayout";
 import { EnterpriseFAQ } from "@/components/faq/EnterpriseFAQ";
+import { BUSINESS } from "@/lib/constants";
+import { FAQ_ITEMS } from "@/lib/site-content";
 
 import meetGreetImg from "@/assets/meet-greet.png";
 
@@ -12,6 +14,31 @@ export const Route = createFileRoute("/services/guide")({
         name: "description",
         content:
           "Learn how airport concierge services work: Meet & Greet, fast-track immigration, porter assistance, lounge access and chauffeur transfers — what's included and when to book.",
+      },
+      { name: "robots", content: "index, follow" },
+      { property: "og:title", content: "The Complete Guide to Airport Concierge Services — Shafsky Aviation Services" },
+      { property: "og:description", content: "Meet & Greet, fast-track immigration, lounge access and chauffeur transfers — what's included and when to book." },
+      { property: "og:url", content: `${BUSINESS.BASE_URL}/services/guide` },
+      { property: "og:type", content: "article" },
+      { property: "og:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "The Complete Guide to Airport Concierge Services" },
+      { name: "twitter:description", content: "Meet & Greet, fast-track immigration, lounge access and chauffeur transfers." },
+      { name: "twitter:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
+    ],
+    links: [{ rel: "canonical", href: `${BUSINESS.BASE_URL}/services/guide` }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ_ITEMS.map(([q, a]) => ({
+            "@type": "Question",
+            name: q,
+            acceptedAnswer: { "@type": "Answer", text: a },
+          })),
+        }),
       },
     ],
   }),

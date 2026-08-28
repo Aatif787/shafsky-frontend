@@ -39,17 +39,73 @@ export async function buildPdf(opts: {
 
   // Header bar
   page.drawRectangle({ x: 0, y: height - 96, width, height: 96, color: teal });
+
+  let titleX = 40;
+  try {
+    let logoBytes: Uint8Array | null = null;
+    if (typeof window !== "undefined" && typeof fetch === "function") {
+      const resp = await fetch("/shafsky-logo.png");
+      if (resp.ok) {
+        const ab = await resp.arrayBuffer();
+        logoBytes = new Uint8Array(ab);
+      }
+    } else {
+      try {
+        const fsMod = await import(/* @vite-ignore */ "node:fs/promises");
+        const pathMod = await import(/* @vite-ignore */ "node:path");
+        const candidates = [
+          pathMod.resolve(process.cwd(), "public/shafsky-logo.png"),
+          pathMod.resolve(process.cwd(), "public/logo.png"),
+          pathMod.resolve(process.cwd(), "src/assets/shafsky aviation services logo.png"),
+        ];
+        for (const cand of candidates) {
+          try {
+            logoBytes = await fsMod.readFile(cand);
+            if (logoBytes) break;
+          } catch {
+            continue;
+          }
+        }
+      } catch {
+        logoBytes = null;
+      }
+    }
+
+    if (logoBytes) {
+      const logoImg = await pdf.embedPng(logoBytes);
+      const maxH = 58;
+      const maxW = 110;
+      const dims = logoImg.scaleToFit(maxW, maxH);
+      page.drawImage(logoImg, {
+        x: 40,
+        y: height - 48 - dims.height / 2,
+        width: dims.width,
+        height: dims.height,
+      });
+      titleX = 40 + dims.width + 14;
+    }
+  } catch (e) {
+    titleX = 40;
+  }
+
   page.drawText("SHAFSKY AVIATION SERVICES", {
-    x: 40,
-    y: height - 50,
-    size: 18,
+    x: titleX,
+    y: height - 44,
+    size: titleX > 40 ? 14 : 18,
     font: bold,
     color: rgb(1, 1, 1),
   });
   page.drawText("Private Aviation · Meet & Greet · Ground Services", {
-    x: 40,
-    y: height - 72,
-    size: 9,
+    x: titleX,
+    y: height - 60,
+    size: 8.5,
+    font,
+    color: rgb(0.85, 0.95, 0.95),
+  });
+  page.drawText("ops@shafskyaviation.com · +91 9599087959", {
+    x: titleX,
+    y: height - 73,
+    size: 8,
     font,
     color: rgb(0.85, 0.95, 0.95),
   });
@@ -60,15 +116,22 @@ export async function buildPdf(opts: {
 
   page.drawText(headerTitle, {
     x: width - 180,
-    y: height - 50,
-    size: 18,
+    y: height - 44,
+    size: 16,
     font: bold,
     color: rgb(1, 1, 1),
   });
   page.drawText(`Ref: ${opts.ref}`, {
     x: width - 180,
-    y: height - 72,
-    size: 9,
+    y: height - 60,
+    size: 8.5,
+    font,
+    color: rgb(0.85, 0.95, 0.95),
+  });
+  page.drawText(`ID: ${opts.ref}-${opts.kind.toUpperCase()}`, {
+    x: width - 180,
+    y: height - 73,
+    size: 8,
     font,
     color: rgb(0.85, 0.95, 0.95),
   });

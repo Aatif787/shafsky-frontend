@@ -16,7 +16,7 @@ export class FlightValidationService {
    */
   public async validateFlight(
     req: FlightRequest,
-    threshold: number = 6,
+    threshold: number = 12,
   ): Promise<FlightData | FlightData[]> {
     // 1. Pre-clearance validation pre-checks (regex format syntax check)
     const cleanedFlightNum = req.flightNum.trim().toUpperCase().replace(/[\s\-_]+/g, "");

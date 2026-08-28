@@ -4,6 +4,7 @@ import { ServiceLayout } from "@/components/services/ServiceLayout";
 
 import cargoAssistImg from "@/assets/cargo-assist.png";
 import vipTransport1 from "@/assets/vip-transport-1.png";
+import { BUSINESS } from "@/lib/constants";
 
 export const Route = createFileRoute("/solutions/cargo")({
   head: () => ({
@@ -12,7 +13,32 @@ export const Route = createFileRoute("/solutions/cargo")({
       {
         name: "description",
         content:
-          "White-glove air cargo customs clearance, high-value freight escort, and climate-controlled live pet AVI transit.",
+          "White-glove air cargo customs clearance, high-value freight escort, and climate-controlled live pet AVI transit across India.",
+      },
+      { name: "robots", content: "index, follow" },
+      { property: "og:title", content: "Cargo & Live Animal AVI Logistics — Shafsky Aviation Services" },
+      { property: "og:description", content: "White-glove air cargo customs clearance, high-value freight escort, and live pet AVI transit." },
+      { property: "og:url", content: `${BUSINESS.BASE_URL}/solutions/cargo` },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Cargo & Live Animal AVI Logistics — Shafsky Aviation Services" },
+      { name: "twitter:description", content: "White-glove air cargo customs clearance, high-value freight escort, and live pet AVI transit." },
+      { name: "twitter:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
+    ],
+    links: [{ rel: "canonical", href: `${BUSINESS.BASE_URL}/solutions/cargo` }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Air Cargo & Live Animal Logistics",
+          provider: { "@type": "Organization", name: BUSINESS.NAME },
+          url: `${BUSINESS.BASE_URL}/solutions/cargo`,
+          description: "White-glove air cargo customs clearance, high-value freight escort, and climate-controlled live pet AVI transit.",
+          areaServed: "IN",
+        }),
       },
     ],
   }),

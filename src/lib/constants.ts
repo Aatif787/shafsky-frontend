@@ -14,7 +14,7 @@ export const BUSINESS = {
   NAME: "Shafsky Aviation Services",
   DESCRIPTION:
     "Private charter, cargo, medical evacuation, aircraft management and Suswagatam airport concierge",
-  BASE_URL: "https://aero-launch-sequence.lovable.app/",
+  BASE_URL: "https://shafskyaviation.com",
 } as const;
 
 export const NOTIFICATION = {

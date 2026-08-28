@@ -12,6 +12,7 @@ import { TicketingWorkflow } from "@/components/booking/workflows/ticketing/Tick
 import { HotelWorkflow } from "@/components/booking/workflows/hotel/HotelWorkflow";
 import { VisaWorkflow } from "@/components/booking/workflows/visa/VisaWorkflow";
 import { CargoWorkflow } from "@/components/booking/workflows/cargo/CargoWorkflow";
+import { PrivateCharterRequestFlow } from "@/components/charter/PrivateCharterRequestFlow";
 
 interface BookingWorkflowResolverProps {
   searchParams?: any;
@@ -33,7 +34,11 @@ export function resolveWorkflowType(searchParams?: any): WorkflowType {
   if (["CARGO", "AIR_CARGO", "FREIGHT"].includes(normalized)) {
     return WorkflowType.TRAVEL;
   }
-  if (["JET_CHARTER", "CHARTER", "PRIVATE_JET"].includes(normalized)) {
+  if (
+    ["JET_CHARTER", "CHARTER", "PRIVATE_JET", "PRIVATE_CHARTER", "PRIVATE_AIRCRAFT_CHARTER", "GROUP_CHARTER"].includes(
+      normalized,
+    )
+  ) {
     return WorkflowType.CHARTER;
   }
 
@@ -45,6 +50,13 @@ export const BookingWorkflowResolver: React.FC<BookingWorkflowResolverProps> = (
   const workflowType = resolveWorkflowType(searchParams);
 
   switch (workflowType) {
+    case WorkflowType.CHARTER:
+      return (
+        <PrivateCharterRequestFlow
+          initialOrigin={searchParams?.origin || ""}
+          initialDestination={searchParams?.destination || ""}
+        />
+      );
     case WorkflowType.TICKETING:
       return <TicketingWorkflow searchParams={searchParams} />;
     case WorkflowType.VISA:

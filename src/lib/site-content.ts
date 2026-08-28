@@ -53,8 +53,8 @@ export const WHY_CHOOSE_US: WhyItem[] = [
   },
   {
     icon: Clock,
-    title: "6-Hour Guarantee",
-    desc: "Book up to 6 hours before departure. For urgent requests, our hotline is always open.",
+    title: "Advance Booking",
+    desc: "Airport services: 12 hours for domestic, 24 hours for international. For urgent requests, call our executive.",
   },
   {
     icon: Award,
@@ -173,7 +173,7 @@ export const FAQ_ITEMS: [string, string][] = [
   ],
   [
     "Do you accept last-minute bookings?",
-    "Yes. We accept bookings up to 6 hours before departure (except 23:00–06:00 hrs). For urgent assistance, contact our 24×7 support.",
+    "Airport services must be booked at least 12 hours in advance for domestic flights and 24 hours for international flights. For urgent requests, call our executive on +91 9599087959.",
   ],
   [
     "Is the service available for groups?",

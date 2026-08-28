@@ -20,6 +20,7 @@ import { AIRPORTS, type Airport } from "@/data/airports";
 import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
 import { getAirportAsset } from "@/lib/airport-assets";
 import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
+import { BUSINESS } from "@/lib/constants";
 
 export const Route = createFileRoute("/airports")({
   head: () => ({
@@ -27,10 +28,20 @@ export const Route = createFileRoute("/airports")({
       { title: "Airports Around the World — Shafsky Aviation Services" },
       {
         name: "description",
-        content: "Explore our global network of major airports and book premium concierge services.",
+        content: "Explore our global network of major airports and book premium concierge services. Meet & Greet, VIP lounge access, fast-track immigration and chauffeured transfers at 20+ Indian airports.",
       },
+      { name: "robots", content: "index, follow" },
+      { property: "og:title", content: "Airports Around the World — Shafsky Aviation Services" },
+      { property: "og:description", content: "Explore our global network of major airports and book premium concierge services." },
+      { property: "og:url", content: `${BUSINESS.BASE_URL}/airports` },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Airports Around the World — Shafsky Aviation Services" },
+      { name: "twitter:description", content: "Explore our global network of major airports and book premium concierge services." },
+      { name: "twitter:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
     ],
-    links: [{ rel: "canonical", href: "https://aero-launch-sequence.lovable.app/airports" }],
+    links: [{ rel: "canonical", href: `${BUSINESS.BASE_URL}/airports` }],
   }),
   component: AirportsIndexPage,
 });

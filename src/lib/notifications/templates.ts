@@ -38,7 +38,7 @@ function wrapHtmlLayout(title: string, bodyContent: string): string {
     if (!logoUrl.startsWith("http") && !logoUrl.startsWith("data:")) {
       // Remove leading slash if present
       const cleanPath = logoUrl.startsWith("/") ? logoUrl.slice(1) : logoUrl;
-      resolvedLogoUrl = `https://aero-launch-sequence.lovable.app/${cleanPath}`;
+      resolvedLogoUrl = `https://shafskyaviation.com/${cleanPath}`;
     }
   }
 

@@ -30,7 +30,6 @@ export function TicketingWorkflow({ searchParams }: TicketingWorkflowProps) {
     updatePassenger,
     ancillaries,
     updateAncillaries,
-    estimatedFare,
   } = useTicketingWorkflow(searchParams?.origin, searchParams?.destination);
 
   const stepConfigs = [
@@ -172,7 +171,6 @@ export function TicketingWorkflow({ searchParams }: TicketingWorkflowProps) {
               passenger={passenger}
               ancillaries={ancillaries}
               onUpdateAncillaries={updateAncillaries}
-              estimatedFare={estimatedFare}
               busy={busy}
               onEdit={() => setCurrentStep(1)}
               onSubmit={handleSubmit}

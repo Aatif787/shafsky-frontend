@@ -8,7 +8,6 @@ interface TicketingReviewProps {
   passenger: TicketingPassengerData;
   ancillaries?: AncillarySelection;
   onUpdateAncillaries?: (fields: Partial<AncillarySelection>) => void;
-  estimatedFare: number;
   busy: boolean;
   onEdit: () => void;
   onSubmit: () => void;
@@ -19,7 +18,6 @@ export function TicketingReview({
   passenger,
   ancillaries,
   onUpdateAncillaries,
-  estimatedFare,
   busy,
   onEdit,
   onSubmit,
@@ -69,7 +67,7 @@ export function TicketingReview({
                       <span className="text-[9px] font-mono font-bold bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded">Recommended</span>
                     )}
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono">+₹4,500 / seat</span>
+                  <span className="text-[10px] text-slate-500 font-mono">Quoted on request</span>
                 </div>
               </div>
               <input
@@ -115,7 +113,7 @@ export function TicketingReview({
                       <span className="text-[9px] font-mono font-bold bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded">Recommended</span>
                     )}
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono">+₹5,500 / bag</span>
+                  <span className="text-[10px] text-slate-500 font-mono">Quoted on request</span>
                 </div>
               </div>
               <input
@@ -138,7 +136,7 @@ export function TicketingReview({
                       <span className="text-[9px] font-mono font-bold bg-emerald-100 text-emerald-900 px-1.5 py-0.2 rounded">Recommended</span>
                     )}
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono">+₹12,500</span>
+                  <span className="text-[10px] text-slate-500 font-mono">Quoted on request</span>
                 </div>
               </div>
               <input
@@ -166,7 +164,6 @@ export function TicketingReview({
           { label: "Contact Phone", value: passenger.phone },
           { label: "Contact Email", value: passenger.email },
         ]}
-        totalPrice={estimatedFare}
         submitLabel="Request Flight Ticket Quote"
         busy={busy}
         onEdit={onEdit}

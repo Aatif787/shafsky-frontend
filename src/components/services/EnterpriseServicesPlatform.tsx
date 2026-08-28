@@ -18,7 +18,7 @@ import {
   ShieldCheck,
   Search,
 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   useServiceCatalog,
@@ -37,6 +37,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
   className = "",
 }) => {
   const { data: services = [], isLoading } = useServiceCatalog();
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<ServiceCategoryId>(initialCategoryId);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedServiceId, setSelectedServiceId] = useState<string>("gold");
@@ -80,8 +81,28 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
         sessionStorage.setItem("shafsky_selected_category", service.categoryId);
       }
 
+      const bookingId = (service.bookingServiceId || service.id || "").toLowerCase();
+      const category = (service.categoryId || "").toLowerCase();
+
+      if (category === "private_charter" || bookingId.includes("charter")) {
+        navigate({ to: "/charter" });
+        return;
+      }
+      if (category === "air_ticketing" || bookingId.includes("ticket")) {
+        navigate({ to: "/book", search: { service_id: "air_ticketing" } as any });
+        return;
+      }
+      if (bookingId === "hotel" || category.includes("hotel")) {
+        navigate({ to: "/book", search: { service_id: "hotel" } as any });
+        return;
+      }
+      if (category === "ground_transport" || bookingId === "transport") {
+        navigate({ to: "/book", search: { service_id: "transport" } as any });
+        return;
+      }
+
       toast.success(`${service.name} selected`, {
-        description: "Pre-configured into booking engine. Complete your flight details to proceed.",
+        description: "Continue in the booking form below.",
       });
 
       const bookEl = document.getElementById("book");
@@ -93,7 +114,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
     } catch {
       window.location.hash = "book";
     }
-  }, []);
+  }, [navigate]);
 
   if (!activeService) return null;
 

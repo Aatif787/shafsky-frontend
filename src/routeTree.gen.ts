@@ -19,6 +19,7 @@ import { Route as CharterRouteImport } from './routes/charter'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FlightVerificationRouteImport } from './routes/flight-verification'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -63,8 +64,10 @@ import { Route as AuthenticatedSuperAdminSecurityRouteImport } from './routes/_a
 import { Route as AuthenticatedSuperAdminSettingsRouteImport } from './routes/_authenticated/super-admin.settings'
 import { Route as AuthenticatedSuperAdminSystemRouteImport } from './routes/_authenticated/super-admin.system'
 import { Route as AuthenticatedSuperAdminUsersRouteImport } from './routes/_authenticated/super-admin.users'
+import { Route as ApiCharterRequestsRouteImport } from './routes/api.charter.requests'
 import { Route as ApiFlightValidateRouteImport } from './routes/api.flight.validate'
 import { Route as AuthenticatedAdminBookingsIdRouteImport } from './routes/_authenticated/admin.bookings.$id'
+import { Route as ApiV1CharterRequestsRouteImport } from './routes/api.v1.charter.requests'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -113,6 +116,11 @@ const FlightVerificationRoute = FlightVerificationRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -363,6 +371,11 @@ const AuthenticatedSuperAdminUsersRoute =
     path: '/users',
     getParentRoute: () => AuthenticatedSuperAdminRoute,
   } as any)
+const ApiCharterRequestsRoute = ApiCharterRequestsRouteImport.update({
+  id: '/api/charter/requests',
+  path: '/api/charter/requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiFlightValidateRoute = ApiFlightValidateRouteImport.update({
   id: '/api/flight/validate',
   path: '/api/flight/validate',
@@ -374,6 +387,11 @@ const AuthenticatedAdminBookingsIdRoute =
     path: '/$id',
     getParentRoute: () => AuthenticatedAdminBookingsRoute,
   } as any)
+const ApiV1CharterRequestsRoute = ApiV1CharterRequestsRouteImport.update({
+  id: '/api/v1/charter/requests',
+  path: '/api/v1/charter/requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -385,6 +403,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
   '/login': typeof LoginRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -427,10 +446,12 @@ export interface FileRoutesByFullPath {
   '/super-admin/settings': typeof AuthenticatedSuperAdminSettingsRoute
   '/super-admin/system': typeof AuthenticatedSuperAdminSystemRoute
   '/super-admin/users': typeof AuthenticatedSuperAdminUsersRoute
+  '/api/charter/requests': typeof ApiCharterRequestsRoute
   '/api/flight/validate': typeof ApiFlightValidateRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/super-admin/': typeof AuthenticatedSuperAdminIndexRoute
   '/admin/bookings/$id': typeof AuthenticatedAdminBookingsIdRoute
+  '/api/v1/charter/requests': typeof ApiV1CharterRequestsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -442,6 +463,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
   '/login': typeof LoginRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/airports/$code': typeof AirportsCodeRoute
@@ -482,10 +504,12 @@ export interface FileRoutesByTo {
   '/super-admin/settings': typeof AuthenticatedSuperAdminSettingsRoute
   '/super-admin/system': typeof AuthenticatedSuperAdminSystemRoute
   '/super-admin/users': typeof AuthenticatedSuperAdminUsersRoute
+  '/api/charter/requests': typeof ApiCharterRequestsRoute
   '/api/flight/validate': typeof ApiFlightValidateRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/super-admin': typeof AuthenticatedSuperAdminIndexRoute
   '/admin/bookings/$id': typeof AuthenticatedAdminBookingsIdRoute
+  '/api/v1/charter/requests': typeof ApiV1CharterRequestsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -499,6 +523,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
   '/login': typeof LoginRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -541,10 +566,12 @@ export interface FileRoutesById {
   '/_authenticated/super-admin/settings': typeof AuthenticatedSuperAdminSettingsRoute
   '/_authenticated/super-admin/system': typeof AuthenticatedSuperAdminSystemRoute
   '/_authenticated/super-admin/users': typeof AuthenticatedSuperAdminUsersRoute
+  '/api/charter/requests': typeof ApiCharterRequestsRoute
   '/api/flight/validate': typeof ApiFlightValidateRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/super-admin/': typeof AuthenticatedSuperAdminIndexRoute
   '/_authenticated/admin/bookings/$id': typeof AuthenticatedAdminBookingsIdRoute
+  '/api/v1/charter/requests': typeof ApiV1CharterRequestsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -558,6 +585,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/flight-verification'
     | '/login'
+    | '/robots.txt'
     | '/sitemap.xml'
     | '/admin'
     | '/dashboard'
@@ -600,10 +628,12 @@ export interface FileRouteTypes {
     | '/super-admin/settings'
     | '/super-admin/system'
     | '/super-admin/users'
+    | '/api/charter/requests'
     | '/api/flight/validate'
     | '/admin/'
     | '/super-admin/'
     | '/admin/bookings/$id'
+    | '/api/v1/charter/requests'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -615,6 +645,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/flight-verification'
     | '/login'
+    | '/robots.txt'
     | '/sitemap.xml'
     | '/dashboard'
     | '/airports/$code'
@@ -655,10 +686,12 @@ export interface FileRouteTypes {
     | '/super-admin/settings'
     | '/super-admin/system'
     | '/super-admin/users'
+    | '/api/charter/requests'
     | '/api/flight/validate'
     | '/admin'
     | '/super-admin'
     | '/admin/bookings/$id'
+    | '/api/v1/charter/requests'
   id:
     | '__root__'
     | '/'
@@ -671,6 +704,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/flight-verification'
     | '/login'
+    | '/robots.txt'
     | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
@@ -713,10 +747,12 @@ export interface FileRouteTypes {
     | '/_authenticated/super-admin/settings'
     | '/_authenticated/super-admin/system'
     | '/_authenticated/super-admin/users'
+    | '/api/charter/requests'
     | '/api/flight/validate'
     | '/_authenticated/admin/'
     | '/_authenticated/super-admin/'
     | '/_authenticated/admin/bookings/$id'
+    | '/api/v1/charter/requests'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -730,6 +766,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FlightVerificationRoute: typeof FlightVerificationRoute
   LoginRoute: typeof LoginRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiProcessQueueRoute: typeof ApiProcessQueueRoute
   ServicesGuideRoute: typeof ServicesGuideRoute
@@ -739,7 +776,9 @@ export interface RootRouteChildren {
   SolutionsMedicalRoute: typeof SolutionsMedicalRoute
   SolutionsTravelRoute: typeof SolutionsTravelRoute
   VerifyIdRoute: typeof VerifyIdRoute
+  ApiCharterRequestsRoute: typeof ApiCharterRequestsRoute
   ApiFlightValidateRoute: typeof ApiFlightValidateRoute
+  ApiV1CharterRequestsRoute: typeof ApiV1CharterRequestsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -812,6 +851,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -1122,6 +1168,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuperAdminUsersRouteImport
       parentRoute: typeof AuthenticatedSuperAdminRoute
     }
+    '/api/charter/requests': {
+      id: '/api/charter/requests'
+      path: '/api/charter/requests'
+      fullPath: '/api/charter/requests'
+      preLoaderRoute: typeof ApiCharterRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/flight/validate': {
       id: '/api/flight/validate'
       path: '/api/flight/validate'
@@ -1135,6 +1188,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/bookings/$id'
       preLoaderRoute: typeof AuthenticatedAdminBookingsIdRouteImport
       parentRoute: typeof AuthenticatedAdminBookingsRoute
+    }
+    '/api/v1/charter/requests': {
+      id: '/api/v1/charter/requests'
+      path: '/api/v1/charter/requests'
+      fullPath: '/api/v1/charter/requests'
+      preLoaderRoute: typeof ApiV1CharterRequestsRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -1276,6 +1336,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FlightVerificationRoute: FlightVerificationRoute,
   LoginRoute: LoginRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiProcessQueueRoute: ApiProcessQueueRoute,
   ServicesGuideRoute: ServicesGuideRoute,
@@ -1285,7 +1346,9 @@ const rootRouteChildren: RootRouteChildren = {
   SolutionsMedicalRoute: SolutionsMedicalRoute,
   SolutionsTravelRoute: SolutionsTravelRoute,
   VerifyIdRoute: VerifyIdRoute,
+  ApiCharterRequestsRoute: ApiCharterRequestsRoute,
   ApiFlightValidateRoute: ApiFlightValidateRoute,
+  ApiV1CharterRequestsRoute: ApiV1CharterRequestsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

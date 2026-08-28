@@ -55,14 +55,14 @@ export const sendSignUpVerificationEmail = createServerFn({ method: "POST" })
         </div>
         <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6;">You can now log in to manage your flight concierge requests, view active quotes, and track bookings.</p>
         <div style="text-align: center; margin-top: 28px;">
-          <a href="https://aero-launch-sequence.lovable.app/auth?mode=signin" style="display: inline-block; padding: 12px 28px; background: #5ed3ff; color: #06090f; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; border-radius: 8px;">Sign In to Dashboard</a>
+          <a href="https://shafskyaviation.com/auth?mode=signin" style="display: inline-block; padding: 12px 28px; background: #5ed3ff; color: #06090f; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; border-radius: 8px;">Sign In to Dashboard</a>
         </div>
         <hr style="border: 0; border-top: 1px solid #1e293b; margin: 32px 0 20px 0;" />
         <p style="font-size: 11px; color: #64748b; text-align: center; margin: 0;">${branding.company_name} Ops Desk · 24/7 Priority Support</p>
       </div>
     `;
 
-    const text = `Welcome to ${branding.company_name}\n\nDear ${name},\n\nThank you for registering your account (${data.email}). Your registration is verified and confirmed.\n\nYou can now sign in at https://aero-launch-sequence.lovable.app/auth to manage flight concierge requests and active quotes.\n\nBest regards,\n${branding.company_name} Ops Desk`;
+    const text = `Welcome to ${branding.company_name}\n\nDear ${name},\n\nThank you for registering your account (${data.email}). Your registration is verified and confirmed.\n\nYou can now sign in at https://shafskyaviation.com/auth to manage flight concierge requests and active quotes.\n\nBest regards,\n${branding.company_name} Ops Desk`;
 
     return await sendEmail({
       recipient: data.email,
@@ -81,7 +81,7 @@ export const sendPasswordResetNotificationEmail = createServerFn({ method: "POST
     const { getActiveBrandingServer } = await import("@/lib/branding/branding.server");
     const branding = await getActiveBrandingServer();
 
-    const link = data.resetUrl || "https://aero-launch-sequence.lovable.app/auth?mode=reset";
+    const link = data.resetUrl || "https://shafskyaviation.com/auth?mode=reset";
     const subject = `Password Reset Request — ${branding.company_name}`;
 
     const html = `

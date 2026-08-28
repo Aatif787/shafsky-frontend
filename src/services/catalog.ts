@@ -162,7 +162,7 @@ export const OFFICIAL_SHAFSKY_SERVICES: ServiceCatalogItem[] = [
     icon: Ticket,
     oneLiner: "Instant domestic flight bookings across 20+ Indian hubs with preferred seat holds.",
     estTime: "1 min booking",
-    startingPrice: "Starting ₹2,999",
+    startingPrice: "On Request",
     badge: "Domestic Flight",
     overview:
       "Official domestic flight seat reservations across all Indian commercial airlines with preferred seat allocation, meal holds, and schedule verification.",
@@ -189,7 +189,7 @@ export const OFFICIAL_SHAFSKY_SERVICES: ServiceCatalogItem[] = [
     icon: PlaneTakeoff,
     oneLiner: "Global international flight ticketing with flexible fares and priority seating.",
     estTime: "2 min booking",
-    startingPrice: "Starting ₹7,999",
+    startingPrice: "On Request",
     badge: "Global Flight",
     overview:
       "Global international flight reservations in First, Business, and Premium Economy Class with flexible cancellation options and multi-city routing.",
@@ -216,7 +216,7 @@ export const OFFICIAL_SHAFSKY_SERVICES: ServiceCatalogItem[] = [
     icon: Clock,
     oneLiner: "Urgent flight rebooking for missed connections and schedule changes.",
     estTime: "2 min dispatch",
-    startingPrice: "Starting ₹1,499",
+    startingPrice: "On Request",
     badge: "Urgent Support",
     overview:
       "Express flight rebooking assistance when connections are missed or flights are delayed, securing next-available seats across partner carriers.",
@@ -243,7 +243,7 @@ export const OFFICIAL_SHAFSKY_SERVICES: ServiceCatalogItem[] = [
     icon: Clock,
     oneLiner: "Flexible date and time modification for confirmed flight tickets.",
     estTime: "1 min request",
-    startingPrice: "Starting ₹999",
+    startingPrice: "On Request",
     badge: "Schedule Flexibility",
     overview:
       "Seamless travel date or time adjustment assistance on existing bookings with fare difference optimization and instant seat re-assignment.",
@@ -270,7 +270,7 @@ export const OFFICIAL_SHAFSKY_SERVICES: ServiceCatalogItem[] = [
     icon: ShieldCheck,
     oneLiner: "Express ticket cancellation and maximum refund recovery support.",
     estTime: "1 min request",
-    startingPrice: "Starting ₹799",
+    startingPrice: "On Request",
     badge: "Refund Recovery",
     overview:
       "Fast ticket cancellation processing and maximum refund claim tracking directly with airlines to minimize cancellation penalties.",
@@ -355,7 +355,7 @@ export const OFFICIAL_SHAFSKY_SERVICES: ServiceCatalogItem[] = [
     icon: Car,
     oneLiner: "Reliable private pickup and drop-off between airport and your destination.",
     estTime: "1 min booking",
-    startingPrice: "Starting ₹1,999",
+    startingPrice: "On Request",
     badge: "Airport Ride",
     overview:
       "Pre-booked private transfers ensuring your chauffeur is waiting for you outside arrivals with a clean, air-conditioned vehicle.",

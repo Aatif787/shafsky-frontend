@@ -38,6 +38,19 @@ export const ServiceOverviewModal: React.FC<ServiceOverviewModalProps> = ({
 
   const handleBookNow = () => {
     onClose();
+    const bookingId = (service.bookingServiceId || service.id || "").toLowerCase();
+    if (bookingId.includes("charter") || bookingId.includes("jet")) {
+      navigate({ to: "/charter" });
+      return;
+    }
+    if (bookingId.includes("ticket")) {
+      navigate({ to: "/book", search: { service_id: "air_ticketing" } as any });
+      return;
+    }
+    if (bookingId.includes("hotel")) {
+      navigate({ to: "/book", search: { service_id: "hotel" } as any });
+      return;
+    }
     navigate({
       to: "/book",
       search: {

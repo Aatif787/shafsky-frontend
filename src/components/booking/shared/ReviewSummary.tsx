@@ -6,7 +6,7 @@ interface ReviewSummaryProps {
   badgeLabel: string;
   badgeValue: string;
   items: { label: string; value: string }[];
-  totalPrice: number;
+  totalPrice?: number;
   currencySymbol?: string;
   submitLabel: string;
   busy: boolean;
@@ -27,7 +27,8 @@ export function ReviewSummary({
   onSubmit,
 }: ReviewSummaryProps) {
   const isIntlSymbol = currencySymbol === "$" || currencySymbol === "£" || currencySymbol === "€";
-  const formattedPrice = totalPrice.toLocaleString(isIntlSymbol ? "en-US" : "en-IN");
+  const showPrice = typeof totalPrice === "number" && Number.isFinite(totalPrice);
+  const formattedPrice = showPrice ? totalPrice.toLocaleString(isIntlSymbol ? "en-US" : "en-IN") : "";
 
   return (
     <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
@@ -53,9 +54,11 @@ export function ReviewSummary({
 
       <div className="pt-5 border-t border-slate-200 flex items-center justify-between">
         <div>
-          <span className="text-xs font-mono text-slate-500 font-bold uppercase">Total Estimate</span>
+          <span className="text-xs font-mono text-slate-500 font-bold uppercase">
+            {showPrice ? "Total Estimate" : "Pricing"}
+          </span>
           <div className="text-2xl sm:text-3xl font-serif font-bold text-emerald-700">
-            {currencySymbol}{formattedPrice}
+            {showPrice ? `${currencySymbol}${formattedPrice}` : "On request"}
           </div>
         </div>
 
