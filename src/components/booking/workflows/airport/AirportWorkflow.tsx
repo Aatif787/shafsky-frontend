@@ -345,6 +345,12 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       .trim()
       .toLowerCase();
 
+    // Prefer the last validated authoritative total so Razorpay matches the review screen.
+    const reviewTotal =
+      Number(state.authoritativeValidationResult?.total) > 0
+        ? Number(state.authoritativeValidationResult.total)
+        : totalPrice;
+
     setBusy(true);
     const ref = bookingRef || `${getRefPrefix()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
@@ -371,10 +377,14 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
             pax_adults: state.guestCount || 1,
             guest_count: state.guestCount || 1,
             package: packageSlug,
+            unit_price:
+              Number(state.authoritativeValidationResult?.selectedPackage?.price) ||
+              Number(priceBreakdown?.unitTotal) ||
+              undefined,
           },
           departureTime,
           arrivalTime,
-          totalAmount: totalPrice,
+          totalAmount: reviewTotal,
           currency: state.catalogCurrency || "INR",
           notes: state.specialRequests || `Airport: ${state.airportCode}, Direction: ${state.direction}`,
         }),
@@ -395,9 +405,19 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
 
         const orderId = result.data?.razorpay_order_id;
         const keyId = result.data?.razorpay_key_id;
-        const authoritativeAmount = Number(result.data?.totalAmount || totalPrice);
+        const authoritativeAmount = Number(result.data?.totalAmount || reviewTotal);
         const currency = result.data?.currency || state.catalogCurrency || "INR";
         const amountPaise = result.data?.razorpay_amount_paise;
+
+        if (
+          Number.isFinite(reviewTotal) &&
+          Number.isFinite(authoritativeAmount) &&
+          Math.abs(authoritativeAmount - reviewTotal) > 1
+        ) {
+          console.warn(
+            `[AirportWorkflow] Charge ₹${authoritativeAmount} differs from review ₹${reviewTotal}`
+          );
+        }
 
         if (orderId && keyId && !String(orderId).startsWith("order_sim_")) {
           await launchRazorpayModal(orderId, keyId, authoritativeAmount, currency, confirmedRef, amountPaise);
@@ -415,7 +435,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       toast.error("Failed to submit booking. Please try again.");
       setBusy(false);
     }
-  }, [state, totalPrice, getRefPrefix, setCurrentStep, setBusy, setBookingRef, bookingRef, launchRazorpayModal]);
+  }, [state, totalPrice, priceBreakdown, getRefPrefix, setCurrentStep, setBusy, setBookingRef, bookingRef, launchRazorpayModal]);
 
   const handleRetryPayment = useCallback(async () => {
     if (!bookingRef) {
