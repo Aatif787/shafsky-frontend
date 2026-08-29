@@ -26,9 +26,46 @@ function AirportConciergePage() {
   const navigate = useNavigate();
 
   const searchObj: any = location.search || {};
-  const activeSub = typeof searchObj === "object" && searchObj.sub ? searchObj.sub : "gold";
+  const activeSub = typeof searchObj === "object" && searchObj.sub ? searchObj.sub : "meet_greet";
 
-  const subServices: any[] = [];
+  const subServices = [
+    {
+      id: "meet_greet",
+      label: "Meet & Greet Concierge",
+      tagline: "Dedicated Airside Guest Relations & Aerobridge Welcome",
+      description:
+        "Personal Guest Relations Officer escorts you from aerobridge or curbside, handling security lines, priority check-in, and baggage retrieval.",
+      image: meetGreetImg,
+      badge: "Flagship",
+    },
+    {
+      id: "vip_lounge",
+      label: "Airport VIP Lounge",
+      tagline: "Premium Relaxation Suites & Gourmet Dining",
+      description:
+        "Guaranteed access to premium airside departure and transit lounges with hot buffets, high-speed Wi-Fi, shower suites, and private work pods.",
+      image: loungeImg,
+      badge: "Comfort",
+    },
+    {
+      id: "fast_track",
+      label: "Fast Track Immigration",
+      tagline: "Expedited Diplomatic & Priority Clearance Lanes",
+      description:
+        "Bypass standard passenger queues with dedicated priority lane escorts through security checks, passport control, and customs checkpoints.",
+      image: fastTrackImg,
+      badge: "Priority",
+    },
+    {
+      id: "airport_transfer",
+      label: "Airport Chauffeur Transfer",
+      tagline: "Luxury Executive Sedan & Maybach Fleet",
+      description:
+        "Seamless city-to-airport and tarmac executive transfers with sanitized premium vehicles, flight-tracked pickup, and professional chauffeurs.",
+      image: vipTransport1,
+      badge: "Mobility",
+    },
+  ];
 
   const handleSelectSubService = (subId: string) => {
     navigate({ to: "/solutions/concierge", search: { sub: subId } as any });
@@ -41,11 +78,11 @@ function AirportConciergePage() {
       category="Airport Services"
       categoryHref="/solutions/concierge"
       categoryId="airport_assistance"
-      serviceName={currentSub.label}
-      tagline={currentSub.tagline}
-      description={currentSub.description}
-      heroImage={currentSub.image}
-      serviceId={currentSub.id}
+      serviceName={currentSub?.label || "Meet & Greet Concierge"}
+      tagline={currentSub?.tagline || "Dedicated Airside Guest Relations"}
+      description={currentSub?.description || "Personal Guest Relations Officer escorts you seamlessly."}
+      heroImage={currentSub?.image || meetGreetImg}
+      serviceId={currentSub?.id || "meet_greet"}
       activeSubService={activeSub}
       subServices={subServices}
       onSelectSubService={handleSelectSubService}
