@@ -55,10 +55,10 @@ export function BookingSummaryReviewStep({
 
   const authResult = state.authoritativeValidationResult;
 
-  // Use authoritative backend totals if validated; fallback to local estimate
-  const subtotal = authResult?.subtotal ?? priceBreakdown?.unitTotal ? (priceBreakdown.unitTotal * guestCount) : 0;
-  const taxAmount = authResult?.taxes ?? (priceBreakdown?.grandTotal ? Math.round(priceBreakdown.grandTotal * 0.1525) : 0);
-  const grandTotal = authResult?.total ?? priceBreakdown?.grandTotal ?? subtotal + taxAmount;
+  // Use authoritative backend totals if validated; fallback to local estimate (all prices are GST-inclusive)
+  const subtotal = authResult?.subtotal ?? (priceBreakdown?.unitTotal ? priceBreakdown.unitTotal * guestCount : 0);
+  const grandTotal = authResult?.total ?? priceBreakdown?.grandTotal ?? subtotal;
+  const taxAmount = authResult?.taxes ?? 0;
 
   const pkgItem = authResult?.selectedPackage || priceBreakdown?.packageItem;
   const additionalSvcs = authResult?.selectedServices || priceBreakdown?.additionalServices || [];
@@ -349,13 +349,13 @@ export function BookingSummaryReviewStep({
           ))}
 
           <div className="flex items-center justify-between pt-2 text-slate-300 font-mono">
-            <span>Subtotal ({guestCount} guest{guestCount > 1 ? "s" : ""})</span>
-            <span className="font-bold">{currencySymbol}{subtotal.toLocaleString()}</span>
+            <span>Total ({guestCount} guest{guestCount > 1 ? "s" : ""})</span>
+            <span className="font-bold">{currencySymbol}{grandTotal.toLocaleString()}</span>
           </div>
 
-          <div className="flex items-center justify-between text-slate-400 font-mono">
-            <span>Taxes & Airport Surcharges (18% GST/VAT)</span>
-            <span className="font-bold">{currencySymbol}{taxAmount.toLocaleString()}</span>
+          <div className="flex items-center justify-between text-slate-400 font-mono text-[11px]">
+            <span>Taxes & GST</span>
+            <span className="text-emerald-400 font-medium">Included (18% GST)</span>
           </div>
 
           <div className="flex items-center justify-between pt-4 border-t border-slate-700 text-lg sm:text-xl font-bold text-amber-400 font-mono">

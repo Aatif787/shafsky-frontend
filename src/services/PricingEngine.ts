@@ -90,10 +90,9 @@ export class PricingEngine {
       baseInTarget + seasonMarkup + weekendMarkup + nightMarkup - vipDiscount - couponDiscount,
     );
 
-    // 7. Dynamic Tax calculation
-    const taxPct = params.taxPercent !== undefined ? params.taxPercent : 18; // default 18% GST/VAT
-    const taxes = subtotal * (taxPct / 100);
-    const total = subtotal + taxes;
+    // 7. Dynamic Tax calculation (All prices are GST-inclusive)
+    const total = subtotal;
+    const taxes = 0;
 
     return {
       basePrice: Number(baseInTarget.toFixed(2)),

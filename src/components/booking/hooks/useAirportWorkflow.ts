@@ -114,6 +114,16 @@ export function formatFlightLookupError(error: unknown, status?: number): string
       return `Flight validation request timed out. The server took too long to respond. Please try again or enter flight details manually.`;
     }
 
+    // ===== PROVIDER HAS NO SCHEDULE PUBLISHED FOR THIS DATE (422) =====
+    // The flight number may be valid; our data provider simply does not publish
+    // schedules this far out. Manual entry is the expected path, not a retry.
+    if (errorCode === "FLIGHT_SCHEDULE_UNAVAILABLE") {
+      if (rawString.length > 5 && !rawString.startsWith("{")) {
+        return rawString;
+      }
+      return `Flight schedules for this date are not published by our data provider yet. Please enter the flight times and airports manually to continue.`;
+    }
+
     // ===== FLIGHT NOT FOUND / INVALID DATE (404) =====
     if (
       status === 404 ||

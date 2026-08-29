@@ -181,10 +181,10 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
         console.warn(`[Poll] Attempt ${attempt} error:`, err);
       }
     }
-    toast.info("Payment received by gateway. Confirmation details will be emailed to you shortly.");
-    setCurrentStep(5);
-    setPaymentStatus("SUCCESS");
-    return true;
+    // Payment was NOT confirmed after all poll attempts — do NOT assume success
+    toast.error("Payment could not be confirmed. If you were charged, please contact support or retry.");
+    setPaymentStatus("FAILED");
+    return false;
   }, [setCurrentStep]);
 
   const launchRazorpayModal = useCallback(async (

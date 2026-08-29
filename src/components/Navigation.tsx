@@ -19,18 +19,6 @@ import { useBranding } from "@/lib/branding/branding.context";
 const mono = { fontFamily: "'JetBrains Mono', monospace" };
 const displayFont = { fontFamily: "'Fraunces', serif" };
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * PROMINENT LOGO CONFIGURATION
- * ─────────────────────────────────────────────────────────────────────────── */
-const LOGO_CONFIG = {
-  height: "72px",
-  width: "auto",
-  maxWidth: "360px",
-  scale: "2.3",
-  offsetX: "0px",
-  offsetY: "0px",
-};
-
 interface MegaMenuItem {
   title: string;
   href: string;
@@ -174,26 +162,19 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
-          ? "bg-[#faf9f5]/95 backdrop-blur-xl border-b border-slate-200/80 shadow-md py-3.5"
-          : "bg-gradient-to-b from-[#faf9f5] via-[#faf9f5]/90 to-transparent py-4.5"
+          ? "bg-[#faf9f5]/95 backdrop-blur-xl border-b border-slate-200/80 shadow-md py-2.5 sm:py-3"
+          : "bg-gradient-to-b from-[#faf9f5] via-[#faf9f5]/90 to-transparent py-3 sm:py-4"
         } ${!visible ? "-translate-y-full" : "translate-y-0"}`}
     >
-      <div className="relative max-w-[1440px] mx-auto w-full px-4 sm:px-6 md:px-8 flex items-center justify-between min-h-[52px]">
-        {/* ── 1. LOGO SECTION (Left - Prominent, Adaptive & Balanced) ── */}
-        <div className="relative shrink-0 z-20 overflow-visible transition-transform duration-300 origin-left scale-[1.25] sm:scale-[1.55] md:scale-[1.9] lg:scale-[2.3]">
+      <div className="relative max-w-[1440px] mx-auto w-full px-4 sm:px-6 md:px-8 flex items-center justify-between min-h-[56px]">
+        {/* ── 1. LOGO SECTION (Left - Balanced & Elegant) ── */}
+        <div className="relative shrink-0 z-20 flex items-center">
           <Link to="/" className="inline-flex items-center gap-3 group">
             {branding.logo_url ? (
               <img
                 src={branding.logo_dark_url || branding.logo_url}
                 alt={branding.company_name}
-                style={{
-                  height: LOGO_CONFIG.height,
-                  width: LOGO_CONFIG.width,
-                  maxWidth: "min(320px, 45vw)",
-                  objectFit: "contain",
-                  display: "block",
-                }}
-                className="transition-all duration-300 transform-gpu hover:scale-105"
+                className="h-11 sm:h-13 md:h-14 max-h-[56px] w-auto max-w-[220px] sm:max-w-[260px] md:max-w-[300px] object-contain transition-all duration-300 transform-gpu group-hover:scale-[1.02]"
               />
             ) : (
               <div className="flex items-center gap-2.5 sm:gap-3">
