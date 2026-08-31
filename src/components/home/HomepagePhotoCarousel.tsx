@@ -13,6 +13,14 @@ const ALL_HOMEPAGE_PHOTOS = [
     photo: HOMEPAGE_PHOTOS.suswagatamHostess,
   },
   {
+    id: "charter",
+    photo: HOMEPAGE_PHOTOS.privateCharter,
+  },
+  {
+    id: "transit",
+    photo: HOMEPAGE_PHOTOS.transitComfort,
+  },
+  {
     id: "vvip",
     photo: HOMEPAGE_PHOTOS.vvipTerminal,
   },
@@ -23,10 +31,6 @@ const ALL_HOMEPAGE_PHOTOS = [
   {
     id: "lounge",
     photo: HOMEPAGE_PHOTOS.vvipLounge,
-  },
-  {
-    id: "charter",
-    photo: HOMEPAGE_PHOTOS.privateCharter,
   },
   {
     id: "transport",
@@ -43,10 +47,6 @@ const ALL_HOMEPAGE_PHOTOS = [
   {
     id: "dutyfree",
     photo: HOMEPAGE_PHOTOS.dutyFreeShopping,
-  },
-  {
-    id: "transit",
-    photo: HOMEPAGE_PHOTOS.transitComfort,
   },
   {
     id: "hotel",
