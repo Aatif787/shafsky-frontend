@@ -1,141 +1,169 @@
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { C, display, mono } from "../theme";
-import { SectionLabel } from "./SectionLabel";
-import heroJet from "@/assets/hero-jet.png";
-import jetTarmac from "@/assets/jet-tarmac.jpg";
-import interior from "@/assets/interior.jpg";
-import ctaBg from "@/assets/cta-bg.jpg";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Plane, ShieldCheck, Compass, Sparkles } from "lucide-react";
 
 export function Fleet() {
   const fleet = [
     {
-      name: "Delhi · IGI Airport",
-      cat: "Flagship Hub",
-      img: heroJet,
-      pax: "Domestic + Intl",
-      range: "24×7",
-      speed: "All Airlines",
+      name: "Ultra-Long Range Heavy Jets",
+      cat: "Gulfstream G650 / Global 6000",
+      pax: "14 – 16 Pax",
+      range: "7,000+ nm",
+      speed: "Mach 0.90",
+      desc: "Intercontinental non-stop flight capability with private master stateroom and bespoke Michelin dining.",
     },
     {
-      name: "Mumbai · CSMIA",
-      cat: "Western Gateway",
-      img: jetTarmac,
-      pax: "Full Airport Coverage",
-      range: "24×7",
-      speed: "All Airlines",
+      name: "Super Midsize Executive Jets",
+      cat: "Challenger 350 / Falcon 2000",
+      pax: "8 – 10 Pax",
+      range: "3,200 nm",
+      speed: "Mach 0.82",
+      desc: "Optimal balance of transcontinental speed, generous stand-up cabin, and short runway access.",
     },
     {
-      name: "Bengaluru · Kempegowda",
-      cat: "Southern Hub",
-      img: interior,
-      pax: "Full Airport Coverage",
-      range: "24×7",
-      speed: "All Airlines",
+      name: "Light Executive Jets",
+      cat: "Phenom 300 / Citation XLS",
+      pax: "6 – 8 Pax",
+      range: "1,900 nm",
+      speed: "Mach 0.78",
+      desc: "Agile domestic and regional private charter for rapid business day-trips with minimal notice.",
     },
     {
-      name: "Hyderabad · RGIA",
-      cat: "Deccan Gateway",
-      img: ctaBg,
-      pax: "Integrated",
-      range: "24×7",
-      speed: "All Airlines",
+      name: "Twin-Engine Helicopters",
+      cat: "Leonardo AW139 / Bell 429",
+      pax: "6 – 8 Pax",
+      range: "500 nm",
+      speed: "160 kts",
+      desc: "Point-to-point transfers connecting metropolitan hubs directly to private estates and helipads.",
     },
   ];
+
   const ref = useRef<HTMLDivElement>(null);
+
   return (
-    <section className="relative overflow-hidden py-16 sm:py-24 md:py-36" style={{ background: C.bg }}>
+    <section className="relative overflow-hidden py-20 sm:py-28 md:py-36 bg-[#050b14] border-b border-[#c5a869]/20">
       <div className="mx-auto max-w-[1480px] px-4 sm:px-8 md:px-14">
-        <div className="flex items-end justify-between gap-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <SectionLabel index="06" label="Flagship Airports" />
-            <h2 className="mt-5 sm:mt-8 text-[clamp(2.1rem,5vw,4.4rem)] leading-[1.02]" style={display}>
-              Our{" "}
-              <span className="italic" style={{ color: C.teal }}>
-                signature
-              </span>{" "}
-              terminals.
+            <div
+              className="inline-flex items-center gap-3 text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.35em] sm:tracking-[0.45em] text-[#d9c18b] font-bold"
+              style={mono}
+            >
+              <span className="h-px w-8 bg-[#c5a869]/50" />
+              <span>PRIVATE AVIATION FLEET</span>
+            </div>
+            <h2 className="mt-4 sm:mt-5 text-[clamp(2.2rem,5vw,4.4rem)] leading-[1.05] text-white font-normal" style={display}>
+              Executive Aircraft{" "}
+              <span
+                className="italic font-normal"
+                style={{
+                  background: "linear-gradient(135deg, #d9c18b 0%, #c5a869 50%, #fef3e2 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Categories.
+              </span>
             </h2>
           </div>
-          <div className="hidden gap-2 md:flex" style={mono}>
-            <button
-              aria-label="Previous"
-              onClick={() => ref.current?.scrollBy({ left: -480, behavior: "smooth" })}
-              className="h-12 w-12 transition cursor-pointer"
-              style={{ border: `1px solid ${C.line}`, color: C.ink }}
+
+          <div className="flex items-center gap-4">
+            <Link
+              to="/charter"
+              className="hidden sm:inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#d9c18b] hover:text-white transition-colors"
+              style={mono}
             >
-              ←
-            </button>
-            <button
-              aria-label="Next"
-              onClick={() => ref.current?.scrollBy({ left: 480, behavior: "smooth" })}
-              className="h-12 w-12 transition cursor-pointer"
-              style={{ border: `1px solid ${C.line}`, color: C.ink }}
-            >
-              →
-            </button>
+              <span>View Full Fleet Guide</span>
+              <ArrowRight size={14} />
+            </Link>
+
+            <div className="flex gap-2" style={mono}>
+              <button
+                aria-label="Previous"
+                onClick={() => ref.current?.scrollBy({ left: -480, behavior: "smooth" })}
+                className="h-11 w-11 rounded-xl bg-[#0a1424] border border-[#c5a869]/30 text-[#d9c18b] hover:border-[#c5a869] hover:bg-[#11223b] flex items-center justify-center transition cursor-pointer"
+              >
+                ←
+              </button>
+              <button
+                aria-label="Next"
+                onClick={() => ref.current?.scrollBy({ left: 480, behavior: "smooth" })}
+                className="h-11 w-11 rounded-xl bg-[#0a1424] border border-[#c5a869]/30 text-[#d9c18b] hover:border-[#c5a869] hover:bg-[#11223b] flex items-center justify-center transition cursor-pointer"
+              >
+                →
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div
         ref={ref}
-        className="mt-8 sm:mt-10 flex snap-x snap-mandatory gap-4 sm:gap-5 overflow-x-auto px-4 pb-6 sm:px-8 md:px-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-0"
+        className="mt-10 sm:mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-6 sm:px-8 md:px-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {fleet.map((f, i) => (
           <motion.article
             key={f.name}
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: i * 0.08 }}
-            className="group relative w-[85vw] max-w-[340px] sm:max-w-none sm:w-[460px] shrink-0 snap-start overflow-hidden rounded-2xl"
-            style={{ background: C.paper, border: `1px solid ${C.line}` }}
+            transition={{ duration: 0.6, delay: i * 0.08 }}
+            className="group relative w-[85vw] max-w-[340px] sm:max-w-none sm:w-[420px] shrink-0 snap-start overflow-hidden rounded-2xl bg-[#0a1424] border border-[#c5a869]/25 p-7 shadow-xl hover:border-[#c5a869]/60 transition-all duration-300 flex flex-col justify-between"
           >
-
-            <div className="relative aspect-[4/3] overflow-hidden">
-              <img
-                src={f.img}
-                alt={f.name}
-                loading="lazy"
-                className="h-full w-full object-cover transition-transform duration-[1600ms] group-hover:scale-110"
-              />
-              <div
-                className="absolute inset-0"
-                style={{ background: "linear-gradient(to top, rgba(13,42,54,0.6), transparent)" }}
-              />
-              <div
-                className="absolute left-5 top-5 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.3em]"
-                style={{ ...mono, background: C.mint, color: C.ink }}
-              >
-                {f.cat}
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <div className="h-11 w-11 rounded-xl bg-[#11223b] border border-[#c5a869]/30 text-[#d9c18b] flex items-center justify-center">
+                  <Plane size={20} />
+                </div>
+                <div
+                  className="rounded-full px-3 py-1 text-[9px] uppercase tracking-[0.25em] bg-[#050b14] text-[#d9c18b] border border-[#c5a869]/40 font-bold"
+                  style={mono}
+                >
+                  {f.cat}
+                </div>
               </div>
-            </div>
-            <div className="p-7">
-              <h3 className="text-[24px] leading-tight" style={display}>
+
+              <h3 className="text-xl sm:text-2xl leading-tight text-white font-normal" style={display}>
                 {f.name}
               </h3>
+              <p className="mt-3 text-xs text-slate-300 leading-relaxed font-light">
+                {f.desc}
+              </p>
+
               <div
-                className="mt-6 grid grid-cols-3 gap-4 pt-6"
-                style={{ ...mono, borderTop: `1px solid ${C.line}` }}
+                className="mt-6 grid grid-cols-3 gap-3 pt-5 border-t border-white/10"
+                style={mono}
               >
-                <Spec label="Terminals" value={f.pax} />
-                <Spec label="Hours" value={f.range} />
-                <Spec label="Coverage" value={f.speed} />
+                <div>
+                  <div className="text-[9px] uppercase tracking-[0.2em] text-[#a88b4a]">Capacity</div>
+                  <div className="mt-1 text-xs font-bold text-white">{f.pax}</div>
+                </div>
+                <div>
+                  <div className="text-[9px] uppercase tracking-[0.2em] text-[#a88b4a]">Range</div>
+                  <div className="mt-1 text-xs font-bold text-white">{f.range}</div>
+                </div>
+                <div>
+                  <div className="text-[9px] uppercase tracking-[0.2em] text-[#a88b4a]">Speed</div>
+                  <div className="mt-1 text-xs font-bold text-white">{f.speed}</div>
+                </div>
               </div>
-              <div
-                className="mt-6 flex items-center justify-between text-[10px] uppercase tracking-[0.3em]"
-                style={{ ...mono, color: C.mute }}
+            </div>
+
+            <div className="mt-8 pt-5 border-t border-white/10 flex items-center justify-between">
+              <span className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-[#d9c18b]" style={mono}>
+                <span className="h-1.5 w-1.5 rounded-full bg-[#c5a869] animate-pulse" />
+                24/7 Dispatch
+              </span>
+              <Link
+                to="/charter"
+                className="text-xs font-bold text-white hover:text-[#d9c18b] flex items-center gap-1 group/link"
+                style={mono}
               >
-                <span>Available</span>
-                <span className="flex items-center gap-2">
-                  <span
-                    className="h-1.5 w-1.5 animate-pulse rounded-full"
-                    style={{ background: C.mint }}
-                  />
-                  Live
-                </span>
-              </div>
+                <span>Request Quote</span>
+                <ArrowRight size={12} className="transition-transform group-hover/link:translate-x-1" />
+              </Link>
             </div>
           </motion.article>
         ))}
@@ -143,16 +171,3 @@ export function Fleet() {
     </section>
   );
 }
-function Spec({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <div className="text-[9px] uppercase tracking-[0.3em]" style={{ color: C.mute }}>
-        {label}
-      </div>
-      <div className="mt-1 text-[13px]" style={{ color: C.ink }}>
-        {value}
-      </div>
-    </div>
-  );
-}
-

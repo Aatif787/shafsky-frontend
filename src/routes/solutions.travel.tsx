@@ -3,9 +3,11 @@ import { createFileRoute, useNavigate, useLocation } from "@tanstack/react-route
 import { ServiceLayout } from "@/components/services/ServiceLayout";
 import { getServicesByCategory } from "@/data/serviceRegistry";
 
-import hotelImg from "@/assets/hotel.png";
-import fastTrackImg from "@/assets/fast-track.png";
-import vipTransport1 from "@/assets/vip-transport-1.png";
+import { ASSETS } from "@/lib/assets";
+
+const hotelImg = ASSETS.hotel;
+const fastTrackImg = ASSETS.fastTrack;
+const vipTransport1 = ASSETS.vipTransport;
 
 export const Route = createFileRoute("/solutions/travel")({
   head: () => ({

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { ShieldCheck, Globe2, Users, Clock } from "lucide-react";
-import { C, mono } from "../theme";
+import { C, mono, display } from "../theme";
 
 function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
   const [v, setV] = useState(0);
@@ -24,40 +24,40 @@ function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
   }, [inView, end]);
 
   return (
-    <span ref={ref} className="inline-flex items-baseline font-serif">
-      <span className="font-extrabold tracking-tight text-[#0b1a24]">{v.toLocaleString()}</span>
-      <span className="text-2xl sm:text-3xl font-bold text-[#0c3b46] ml-1 font-sans">{suffix}</span>
+    <span ref={ref} className="inline-flex items-baseline font-serif" style={display}>
+      <span className="font-bold tracking-tight text-slate-950">{v.toLocaleString()}</span>
+      <span className="text-2xl sm:text-3xl font-extrabold text-lime-600 ml-1 font-sans">{suffix}</span>
     </span>
   );
 }
 
 export function TrustBar() {
   const stats = [
-    { n: 100, suf: "%", l: "Reliability", sub: "Dispatch safety record", Icon: ShieldCheck },
-    { n: 20, suf: "", l: "Airports", sub: "Indian network", Icon: Globe2 },
-    { n: 42000, suf: "+", l: "Guests", sub: "Welcomed annually", Icon: Users },
-    { n: 12, suf: "min", l: "Response", sub: "Average dispatch", Icon: Clock },
+    { n: 100, suf: "%", l: "Reliability", sub: "DGCA compliant airside safety record", Icon: ShieldCheck },
+    { n: 20, suf: "+", l: "Airports", sub: "Live Indian hub operations", Icon: Globe2 },
+    { n: 42000, suf: "+", l: "Guests", sub: "Welcomed across our network", Icon: Users },
+    { n: 12, suf: "min", l: "Response", sub: "Average 24/7 dispatch timeline", Icon: Clock },
   ];
 
   return (
-    <section className="relative px-6 py-14 md:px-14 md:py-24" style={{ background: C.bg }}>
-      <div className="mx-auto grid max-w-[1480px] grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+    <section className="relative px-6 py-12 md:px-14 md:py-16 bg-white border-y border-slate-100">
+      <div className="mx-auto grid max-w-[1480px] grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
         {stats.map(({ n, suf, l, sub, Icon }, i) => (
           <motion.div
             key={l}
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -6 }}
+            whileHover={{ y: -4 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: i * 0.08 }}
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-[#faf8f5] border border-white/80 p-7 shadow-[6px_6px_12px_rgba(200,188,170,0.5),-6px_-6px_12px_rgba(255,255,255,0.9)] transition-all duration-300 hover:shadow-[10px_10px_20px_rgba(190,178,160,0.6),-10px_-10px_20px_rgba(255,255,255,1)]"
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-slate-50/80 border border-slate-200/80 p-6 md:p-7 shadow-xs hover:border-lime-400 hover:shadow-md hover:shadow-lime-500/10 transition-all duration-300"
           >
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div
-                  className="grid h-10 w-10 place-items-center rounded-xl bg-[#faf8f5] border border-white/80 shadow-[3px_3px_6px_rgba(200,188,170,0.5),-3px_-3px_6px_rgba(255,255,255,0.9)] text-[#0c3b46] transition-transform duration-300 group-hover:scale-105"
+                  className="grid h-11 w-11 place-items-center rounded-xl bg-lime-50 border border-lime-300 text-lime-700 transition-transform duration-300 group-hover:scale-105"
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-5 w-5" />
                 </div>
               </div>
 
@@ -66,13 +66,13 @@ export function TrustBar() {
               </div>
 
               <div
-                className="mt-4 text-[10px] uppercase tracking-[0.3em] font-mono font-bold text-[#0c3b46]"
+                className="mt-4 text-[10.5px] uppercase tracking-[0.25em] font-mono font-bold text-lime-700"
                 style={mono}
               >
                 {l}
               </div>
 
-              <div className="mt-1 text-xs text-[#576875] font-body-luxury">
+              <div className="mt-1 text-xs text-slate-600 font-normal">
                 {sub}
               </div>
             </div>

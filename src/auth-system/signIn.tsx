@@ -443,7 +443,7 @@ export function SignInPage() {
                 className="text-[10px] uppercase tracking-widest text-[#5b6b75] font-bold block"
                 htmlFor="email"
               >
-                Email Address
+                Email
               </label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5b6b75]/50 z-10" />

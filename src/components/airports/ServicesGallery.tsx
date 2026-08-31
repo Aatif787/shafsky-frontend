@@ -1,12 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
-import depWheelchair from "@/assets/gallery/dep-wheelchair.jpg";
-import depLounge from "@/assets/gallery/dep-lounge.jpg";
-import depSpa from "@/assets/gallery/dep-spa.jpg";
-import depBuggy from "@/assets/gallery/dep-buggy.jpg";
-import arrBaggage from "@/assets/gallery/arr-baggage.jpg";
-import arrChauffeur from "@/assets/gallery/arr-chauffeur.jpg";
-import arrDutyFree from "@/assets/gallery/arr-dutyfree.jpg";
+import { ASSETS } from "@/lib/assets";
+
+const depWheelchair = ASSETS.depWheelchair;
+const depLounge = ASSETS.depLounge;
+const depSpa = ASSETS.depSpa;
+const depBuggy = ASSETS.depBuggy;
+const arrBaggage = ASSETS.arrBaggage;
+const arrChauffeur = ASSETS.arrChauffeur;
+const arrDutyFree = ASSETS.arrDutyFree;
 
 interface ServicesGalleryProps {
   airportCity?: string;

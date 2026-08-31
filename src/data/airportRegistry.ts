@@ -1,35 +1,37 @@
 // Centralized Airport Registry for Shafsky Aviation Services Platform
 // Single source of truth for all airport pages, search, cards, service catalogs, and booking integrations.
 
-import dekAmdAir from "@/assets/airports/amd/Dek-Amd-air.png";
-import mobAmdAir from "@/assets/airports/amd/Mob-Amd-air.png";
-import dekDelAir from "@/assets/airports/del/Dek-Del-air.png";
-import mobDelAir from "@/assets/airports/del/Mob-Del-air.png";
-import dekMumAir from "@/assets/airports/bom/Dek-mum-air.png";
-import dekHydAir from "@/assets/airports/hyd/Dek-Hyd-air.png";
-import mobHydAir from "@/assets/airports/hyd/Mob-Hyd-air.png";
-import dekLkoAir from "@/assets/airports/lko/Dek-lko-air.png";
-import mobLkoAir from "@/assets/airports/lko/Mob-lko-air.png";
-import dekJaiAir from "@/assets/airports/jai/Dek-Jai_air.png";
-import mobJaiAir from "@/assets/airports/jai/Mob-Jai-air.png";
-import dekAtqAir from "@/assets/airports/atq/Dek-Atq-air.jpg";
-import mobAtqAir from "@/assets/airports/atq/Mob-Atq-air.jpg";
-import dekGauAir from "@/assets/airports/gau/Dek-Gau-air.jpg";
-import mobGauAir from "@/assets/airports/gau/Mob-Gau-air.jpg";
-import dekVtzAir from "@/assets/airports/vtz/Dek-Vtz-air.jpg";
-import mobVtzAir from "@/assets/airports/vtz/Mob-Vtz-air.jpg";
-import dekIxeAir from "@/assets/airports/ixe/Dek-Ixe-air.jpg";
-import mobIxeAir from "@/assets/airports/ixe/Mob-Ixe-air.jpg";
-import dekCokAir from "@/assets/airports/cok/Dek-Cok-air.jpg";
-import mobCokAir from "@/assets/airports/cok/Mob-Cok-air.jpg";
-import dekMaaAir from "@/assets/airports/maa/Dek-Maa-air.jpg";
-import mobMaaAir from "@/assets/airports/maa/Mob-Maa-air.jpg";
-import dekGoiAir from "@/assets/airports/goi/Dek-Goi-air.jpg";
-import mobGoiAir from "@/assets/airports/goi/Mob-Goi-air.jpg";
-import dekGoxAir from "@/assets/airports/gox/Dek-Gox-air.jpg";
-import mobGoxAir from "@/assets/airports/gox/Mob-Gox-air.jpg";
-import dekBbiAir from "@/assets/airports/bbi/Dek-Bbi-air.jpg";
-import mobBbiAir from "@/assets/airports/bbi/Mob-Bbi-air.jpg";
+import { ASSETS } from "@/lib/assets";
+
+const dekAmdAir = ASSETS.amd;
+const mobAmdAir = ASSETS.amd;
+const dekDelAir = ASSETS.del;
+const mobDelAir = ASSETS.del;
+const dekMumAir = ASSETS.bom;
+const dekHydAir = ASSETS.hyd;
+const mobHydAir = ASSETS.hyd;
+const dekLkoAir = ASSETS.lko;
+const mobLkoAir = ASSETS.lko;
+const dekJaiAir = ASSETS.jai;
+const mobJaiAir = ASSETS.jai;
+const dekAtqAir = ASSETS.atq;
+const mobAtqAir = ASSETS.atq;
+const dekGauAir = ASSETS.gau;
+const mobGauAir = ASSETS.gau;
+const dekVtzAir = ASSETS.vtz;
+const mobVtzAir = ASSETS.vtz;
+const dekIxeAir = ASSETS.ixe;
+const mobIxeAir = ASSETS.ixe;
+const dekCokAir = ASSETS.cok;
+const mobCokAir = ASSETS.cok;
+const dekMaaAir = ASSETS.maa;
+const mobMaaAir = ASSETS.maa;
+const dekGoiAir = ASSETS.goi;
+const mobGoiAir = ASSETS.goi;
+const dekGoxAir = ASSETS.gox;
+const mobGoxAir = ASSETS.gox;
+const dekBbiAir = ASSETS.bbi;
+const mobBbiAir = ASSETS.bbi;
 
 export interface MeetGreetPackage {
   id: string;

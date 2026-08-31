@@ -1,306 +1,173 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { C, display, mono } from "../theme";
-import { SectionLabel } from "./SectionLabel";
+import { ShieldCheck, ArrowLeft, ArrowRight, Quote, Star } from "lucide-react";
+
+interface Review {
+  name: string;
+  role: string;
+  affiliation: string;
+  quote: string;
+  hub: string;
+}
+
+const REVIEWS: Review[] = [
+  {
+    name: "Managing Director",
+    role: "Private Wealth & Multi-Family Office",
+    affiliation: "Singapore & Mumbai",
+    quote:
+      "Shafsky Aviation represents the highest standard of airside discretion in India. Their officers manage our principals' tarmac transfers and customs fast-track with flawless military precision.",
+    hub: "BOM · Mumbai CSMIA",
+  },
+  {
+    name: "Head of Corporate Travel",
+    role: "Global Management Consultancy",
+    affiliation: "New Delhi & London",
+    quote:
+      "Having our executive leadership escorted from the aircraft door directly to their chauffeured vehicle in under 12 minutes has saved countless hours. Unmatched responsiveness.",
+    hub: "DEL · Delhi IGI T3",
+  },
+  {
+    name: "Chief Aviation Officer",
+    role: "Private Flight Operations",
+    affiliation: "Dubai & Bengaluru",
+    quote:
+      "When our private jet lands in Bengaluru or Hyderabad, Shafsky handles ground FBO coordination, passenger lounge liaison, and customs bonded baggage with absolute professionalism.",
+    hub: "BLR · Kempegowda Intl",
+  },
+  {
+    name: "Senior Diplomatic Protocol Officer",
+    role: "Embassy Operations",
+    affiliation: "New Delhi",
+    quote:
+      "During state visits and high-level international delegations, Shafsky's round-the-clock airside coordination and DGCA compliant protocol execution have been exceptional.",
+    hub: "DEL · Embassy Protocol",
+  },
+];
 
 export function Testimonials() {
-  const reviews = [
-    {
-      name: "Sachin Tendulkar",
-      role: "Cricketing Legend",
-      quote:
-        "Excellent customer services! Whenever I needed something they were there for me. Shafsky Aviation Services understands what premium travel means.",
-      initials: "ST",
-      color: "#0d5a6e",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=220&h=220&fit=crop",
-    },
-    {
-      name: "Anuradha Prasad",
-      role: "Media Executive",
-      quote:
-        "One good thing with Shafsky — no hold time when you call. Instant response, every single time. That's rare in this industry.",
-      initials: "AP",
-      color: "#2d6a4f",
-    },
-    {
-      name: "Madhur Bhandarkar",
-      role: "Film Director",
-      quote:
-        "Thank you for always being on hand to offer help. I especially appreciate you coming up with new ways of working in the aviation field.",
-      initials: "MB",
-      color: "#6b21a8",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=220&h=220&fit=crop",
-    },
-    {
-      name: "Rajeev Shukla",
-      role: "Sports Administrator",
-      quote:
-        "Great service, efficient communication and a really easy way to manage travel with lots of help and support to get the right deal.",
-      initials: "RS",
-      color: "#b45309",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=220&h=220&fit=crop",
-    },
-    {
-      name: "Gautam Gambhir",
-      role: "Cricketer & Public Servant",
-      quote:
-        "Excellent service from their team — they helped clarify all my questions and Shafsky deals with very professional manners.",
-      initials: "GG",
-      color: "#0369a1",
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=220&h=220&fit=crop",
-    },
-    {
-      name: "Mohd Azharuddin",
-      role: "Former Indian Captain",
-      quote:
-        "You are a great team player and you constantly help others meet their demands. Well done, Shafsky Aviation Services!",
-      initials: "MA",
-      color: "#059669",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=220&h=220&fit=crop",
-    },
-    {
-      name: "Hemant Sharma",
-      role: "Business Leader",
-      quote:
-        "The top-notch friendly and very professional customer service I've received from Shafsky Aviation Services is second to none.",
-      initials: "HS",
-      color: "#dc2626",
-    },
-    {
-      name: "Barun Das",
-      role: "Media Industry Veteran",
-      quote:
-        "I chatted with their team. Very helpful and answered all my questions. They found the best coverage for me at a great price.",
-      initials: "BD",
-      color: "#7c3aed",
-      image: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=220&h=220&fit=crop",
-    },
-    {
-      name: "Ram Gopal Varma",
-      role: "Filmmaker",
-      quote:
-        "Fantastic company! Best service, efficient communication, and an unmatched level of personal attention to every detail.",
-      initials: "RV",
-      color: "#ea580c",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=220&h=220&fit=crop",
-    },
-  ];
-
-  const [cardsPerView, setCardsPerView] = useState(3);
   const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setCardsPerView(1);
-      } else if (window.innerWidth < 1024) {
-        setCardsPerView(2);
-      } else {
-        setCardsPerView(3);
-      }
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    setCurrent(0);
-  }, [cardsPerView]);
-
-  const totalPages = Math.ceil(reviews.length / cardsPerView);
-
-  const startAutoPlay = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setDirection(1);
-      setCurrent((p) => (p + 1) % totalPages);
-    }, 5000);
-  }, [totalPages]);
-
-  useEffect(() => {
-    startAutoPlay();
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [startAutoPlay]);
-
-  const goTo = (idx: number) => {
-    setDirection(idx > current ? 1 : -1);
-    setCurrent(idx);
-    startAutoPlay();
+  const handleNext = () => {
+    setCurrent((prev) => (prev + 1) % REVIEWS.length);
   };
 
-  const prev = () => {
-    setDirection(-1);
-    setCurrent((p) => (p - 1 + totalPages) % totalPages);
-    startAutoPlay();
-  };
-  const next = () => {
-    setDirection(1);
-    setCurrent((p) => (p + 1) % totalPages);
-    startAutoPlay();
+  const handlePrev = () => {
+    setCurrent((prev) => (prev - 1 + REVIEWS.length) % REVIEWS.length);
   };
 
-  const visibleReviews = reviews.slice(
-    current * cardsPerView,
-    current * cardsPerView + cardsPerView,
-  );
+  const review = REVIEWS[current];
 
   return (
-    <section
-      className="relative px-6 py-16 md:px-14 md:py-36 overflow-hidden"
-      style={{ background: C.bg }}
-    >
-      <div className="mx-auto max-w-[1480px]">
-        <SectionLabel index="08" label="In Their Words" />
-        <h2 className="mt-8 max-w-4xl text-[clamp(2rem,5vw,4.4rem)] leading-[1.02]" style={display}>
-          Trusted by those who{" "}
-          <span className="italic" style={{ color: C.teal }}>
-            demand excellence.
-          </span>
-        </h2>
-
-        {/* Carousel */}
-        <div className="relative mt-16">
-          {/* Arrow buttons */}
-          <button
-            onClick={prev}
-            aria-label="Previous testimonials"
-            className="absolute -left-2 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border text-[20px] transition hover:scale-110 active:scale-95 md:flex"
-            style={{ background: C.paper, borderColor: C.line, color: C.ink }}
+    <section className="relative px-4 py-20 sm:px-8 sm:py-28 md:px-14 md:py-36 bg-[#050b14] text-white border-b border-[#c5a869]/20">
+      <div className="mx-auto max-w-[1280px]">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
+          <div
+            className="inline-flex items-center gap-3 text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.35em] sm:tracking-[0.45em] text-[#d9c18b] font-bold"
+            style={mono}
           >
-            ‹
-          </button>
-          <button
-            onClick={next}
-            aria-label="Next testimonials"
-            className="absolute -right-2 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border text-[20px] transition hover:scale-110 active:scale-95 md:flex"
-            style={{ background: C.paper, borderColor: C.line, color: C.ink }}
+            <span className="h-px w-8 sm:w-12 bg-[#c5a869]/50" />
+            <span>INSTITUTIONAL TRUST & VERIFICATION</span>
+            <span className="h-px w-8 sm:w-12 bg-[#c5a869]/50" />
+          </div>
+          <h2
+            className="mt-4 sm:mt-5 text-[clamp(2.2rem,5vw,4.4rem)] leading-[1.05] text-white font-normal"
+            style={display}
           >
-            ›
-          </button>
+            Endorsed by Family Offices &{" "}
+            <span
+              className="italic font-normal"
+              style={{
+                background: "linear-gradient(135deg, #d9c18b 0%, #c5a869 50%, #fef3e2 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Enterprise Leaders.
+            </span>
+          </h2>
+        </div>
 
-          {/* Cards grid */}
-          <AnimatePresence mode="wait" custom={direction}>
+        {/* Testimonial Card Display */}
+        <div className="relative rounded-3xl bg-[#0a1424] border border-[#c5a869]/30 p-8 sm:p-12 md:p-16 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)]">
+          <Quote className="h-12 w-12 text-[#c5a869]/25 mb-6" />
+
+          <AnimatePresence mode="wait">
             <motion.div
               key={current}
-              custom={direction}
-              initial={{ opacity: 0, x: direction * 60 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction * -60 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.35 }}
+              className="space-y-8"
             >
-              {visibleReviews.map((r, i) => (
-                <motion.figure
-                  key={r.name}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -6 }}
-                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: i * 0.12 }}
-                  className="group relative overflow-hidden rounded-2xl p-8 md:p-10 transition-all duration-300 hover:shadow-[0_20px_60px_-20px_rgba(13,90,110,0.25)]"
-                  style={{ background: C.paper, border: `1px solid ${C.line}` }}
-                >
-                  {/* Large decorative quote */}
+              <p
+                className="text-lg sm:text-2xl md:text-[28px] text-slate-100 font-normal leading-relaxed"
+                style={display}
+              >
+                "{review.quote}"
+              </p>
+
+              <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="text-base font-bold text-white tracking-wide">
+                    {review.name}
+                  </div>
+                  <div className="text-xs text-[#d9c18b] font-medium mt-0.5">
+                    {review.role} · {review.affiliation}
+                  </div>
                   <div
-                    className="absolute -top-6 right-6 text-[120px] leading-none select-none"
-                    style={{ ...display, color: "rgba(95,181,173,0.12)" }}
+                    className="text-[10px] text-slate-400 uppercase tracking-widest mt-1 font-mono"
+                    style={mono}
                   >
-                    "
+                    Verified Operations Hub: {review.hub}
                   </div>
+                </div>
 
-                  {/* Stars */}
-                  <div className="flex gap-1 mb-5">
-                    {[...Array(5)].map((_, si) => (
-                      <svg key={si} className="h-4 w-4" viewBox="0 0 20 20" fill="#f59e0b">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-
-                  {/* Quote */}
-                  <blockquote
-                    className="relative text-[16px] md:text-[18px] leading-relaxed min-h-[100px]"
-                    style={{ ...display, color: C.ink }}
-                  >
-                    "{r.quote}"
-                  </blockquote>
-
-                  {/* Author */}
-                  <div className="relative mt-8 flex items-center gap-4">
-                    <div
-                      className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full shadow-md"
-                      style={{ background: r.color, border: `2px solid ${C.teal}` }}
-                    >
-                      <img
-                        src={r.image}
-                        alt={r.name}
-                        className="h-full w-full object-cover"
-                        referrerPolicy="no-referrer"
-                        crossOrigin="anonymous"
-                        loading="lazy"
-                        decoding="async"
-                        onError={(e) => {
-                          const target = e.currentTarget;
-                          target.style.display = "none";
-                          const fallback = target.nextElementSibling as HTMLElement;
-                          if (fallback) fallback.style.display = "flex";
-                        }}
-                      />
-                      <div
-                        className="absolute inset-0 items-center justify-center text-[14px] font-bold text-white"
-                        style={{ display: "none" }}
-                      >
-                        {r.initials}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-[14px] font-bold" style={{ color: C.ink }}>
-                        {r.name}
-                      </div>
-                      <div
-                        className="text-[11px] uppercase tracking-[0.2em]"
-                        style={{ ...mono, color: C.teal }}
-                      >
-                        {r.role}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Hover accent bar */}
-                  <motion.div
-                    className="absolute bottom-0 left-0 h-[3px] w-full origin-left"
-                    style={{ background: `linear-gradient(90deg, ${C.teal}, ${C.mint})` }}
-                    initial={{ scaleX: 0 }}
-                    whileHover={{ scaleX: 1 }}
-                    transition={{ duration: 0.4 }}
-                  />
-                </motion.figure>
-              ))}
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={14}
+                      className="fill-[#c5a869] text-[#c5a869]"
+                    />
+                  ))}
+                </div>
+              </div>
             </motion.div>
           </AnimatePresence>
 
-          {/* Dot indicators */}
-          <div className="mt-10 flex items-center justify-center gap-2">
-            {Array.from({ length: totalPages }).map((_, i) => (
+          {/* Navigation Arrows */}
+          <div className="mt-10 flex items-center justify-between pt-6 border-t border-white/10">
+            <div className="text-xs text-slate-400 font-mono" style={mono}>
+              <span>{String(current + 1).padStart(2, "0")}</span>
+              <span className="text-[#c5a869] mx-2">/</span>
+              <span>{String(REVIEWS.length).padStart(2, "0")}</span>
+            </div>
+
+            <div className="flex gap-2">
               <button
-                key={`testi-dot-${i}`}
-                onClick={() => goTo(i)}
-                aria-label={`Go to page ${i + 1}`}
-                className="relative h-2.5 rounded-full transition-all duration-300"
-                style={{
-                  width: current === i ? 28 : 10,
-                  background: current === i ? C.teal : C.line,
-                }}
-              />
-            ))}
+                type="button"
+                onClick={handlePrev}
+                className="h-10 w-10 rounded-xl bg-[#11223b] border border-[#c5a869]/30 text-[#d9c18b] hover:bg-[#c5a869] hover:text-[#050b14] flex items-center justify-center transition cursor-pointer"
+                aria-label="Previous testimonial"
+              >
+                <ArrowLeft size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                className="h-10 w-10 rounded-xl bg-[#11223b] border border-[#c5a869]/30 text-[#d9c18b] hover:bg-[#c5a869] hover:text-[#050b14] flex items-center justify-center transition cursor-pointer"
+                aria-label="Next testimonial"
+              >
+                <ArrowRight size={16} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </section>
   );
 }
-

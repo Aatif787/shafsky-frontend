@@ -91,7 +91,6 @@ export function ReviewStep({
             { label: "Company / Organization", value: companyName || "N/A" },
             { label: "Estimated SLA", value: `${evaluation.sla.minBusinessDays}–${evaluation.sla.maxBusinessDays} Business Days` },
           ]}
-          totalPrice={8500 * applicants.length}
           submitLabel="Submit VIP Visa Application"
           busy={isSubmitting}
           onEdit={onEdit}

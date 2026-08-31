@@ -56,7 +56,6 @@ export async function buildPdf(opts: {
         const candidates = [
           pathMod.resolve(process.cwd(), "public/shafsky-logo.png"),
           pathMod.resolve(process.cwd(), "public/logo.png"),
-          pathMod.resolve(process.cwd(), "src/assets/shafsky aviation services logo.png"),
         ];
         for (const cand of candidates) {
           try {

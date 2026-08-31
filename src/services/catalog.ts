@@ -23,21 +23,24 @@ import {
   LucideIcon,
 } from "lucide-react";
 
-import meetGreetImg from "@/assets/meet-greet.png";
-import meetVideo from "@/assets/meet.mp4";
-import lounge from "@/assets/lounge.png";
-import fastTrackImg from "@/assets/fast-track.png";
-import vipTransport1 from "@/assets/vip-transport-1.png";
-import hotelImg from "@/assets/hotel.png";
-import cargoAssistImg from "@/assets/cargo-assist.png";
-import medicalAssistImg from "@/assets/medical-assist.png";
-import vipConciergeImg from "@/assets/vip-concierge.png";
-import interior from "@/assets/interior.jpg";
-import jetTarmac from "@/assets/jet-tarmac.jpg";
-import cargo from "@/assets/cargo.jpg";
-import medical from "@/assets/medical.jpg";
-import concierge from "@/assets/concierge.jpg";
-import heroJet from "@/assets/hero-jet.png";
+import { ASSETS } from "@/lib/assets";
+
+const meetGreetImg = ASSETS.meetGreet;
+const lounge = ASSETS.lounge;
+const fastTrackImg = ASSETS.fastTrack;
+const vipTransport1 = ASSETS.vipTransport;
+const hotelImg = ASSETS.hotel;
+const cargoAssistImg = ASSETS.cargoAssist;
+const medicalAssistImg = ASSETS.medicalAssist;
+const vipConciergeImg = ASSETS.concierge;
+const concierge = ASSETS.concierge;
+const heroJet = ASSETS.heroJet;
+
+const meetVideo = "https://assets.mixkit.co/videos/preview/mixkit-plane-flying-above-the-clouds-at-sunset-1002-large.mp4";
+const interior = ASSETS.interior;
+const jetTarmac = ASSETS.jetTarmac;
+const cargo = ASSETS.cargo;
+const medical = ASSETS.medical;
 
 export type ServiceCategoryId =
   | "all"
@@ -384,7 +387,7 @@ export const OFFICIAL_SHAFSKY_SERVICES: ServiceCatalogItem[] = [
     icon: Package,
     oneLiner: "Express air cargo clearance, customs documentation, and priority baggage handling.",
     estTime: "1 min inquiry",
-    startingPrice: "Starting ₹4,999",
+    startingPrice: "On Request",
     badge: "Customs Escort",
     overview:
       "Comprehensive air freight solutions with priority airline cargo space allocation, temperature tracking, and door-to-door delivery.",
@@ -413,7 +416,7 @@ export const OFFICIAL_SHAFSKY_SERVICES: ServiceCatalogItem[] = [
     icon: HeartPulse,
     oneLiner: "Trained airport attendant and medical escort for safe passenger travel.",
     estTime: "1 min booking",
-    startingPrice: "Starting ₹3,499",
+    startingPrice: "On Request",
     badge: "Medical Support",
     overview:
       "Wheelchair assistance, ambulift, nursing escort, and medical coordination across our network of airports.",

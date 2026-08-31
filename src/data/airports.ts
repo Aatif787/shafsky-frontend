@@ -1,56 +1,58 @@
 // Premium destination dataset for Shafsky Aviation Services Airport Explorer.
 // Images sourced from Unsplash featured (stable redirect) — keyed by landmark queries.
 
-import chaarminar from "@/assets/chaarminar.jpg";
-import golkunda from "@/assets/golkunda.jpg";
-import imambada from "@/assets/imambada.jpg";
-import indiagate from "@/assets/indiagate.png";
-import redfort from "@/assets/redfort.png";
-import clouds from "@/assets/clouds.jpg";
-import interior from "@/assets/interior.jpg";
-import jetTarmac from "@/assets/jet-tarmac.jpg";
-import lounge from "@/assets/lounge.png";
-import hotel from "@/assets/hotel.png";
-import cargo from "@/assets/cargo.jpg";
-import medical from "@/assets/medical.jpg";
-import world from "@/assets/world.png";
-import vipConcierge from "@/assets/vip-concierge.png";
-import vipTransport1 from "@/assets/vip-transport-1.png";
-import vipTransport2 from "@/assets/vip-transport-2.png";
-import vipTransport3 from "@/assets/vip-transport-3.png";
-import vipTransport4 from "@/assets/vip-transport-4.png";
-import vipTransport5 from "@/assets/vip-transport-5.png";
+import { ASSETS } from "@/lib/assets";
 
-// Airport custom desktop & mobile images provided by user
-import dekAmdAir from "@/assets/airports/amd/Dek-Amd-air.png";
-import mobAmdAir from "@/assets/airports/amd/Mob-Amd-air.png";
-import dekDelAir from "@/assets/airports/del/Dek-Del-air.png";
-import mobDelAir from "@/assets/airports/del/Mob-Del-air.png";
-import dekMumAir from "@/assets/airports/bom/Dek-mum-air.png";
-import dekHydAir from "@/assets/airports/hyd/Dek-Hyd-air.png";
-import mobHydAir from "@/assets/airports/hyd/Mob-Hyd-air.png";
-import dekLkoAir from "@/assets/airports/lko/Dek-lko-air.png";
-import mobLkoAir from "@/assets/airports/lko/Mob-lko-air.png";
-import dekJaiAir from "@/assets/airports/jai/Dek-Jai_air.png";
-import mobJaiAir from "@/assets/airports/jai/Mob-Jai-air.png";
-import dekAtqAir from "@/assets/airports/atq/Dek-Atq-air.png";
-import mobAtqAir from "@/assets/airports/atq/Mob-Atq-air.png";
-import dekGauAir from "@/assets/airports/gau/Dek-Gau-air.jpg";
-import mobGauAir from "@/assets/airports/gau/Mob-Gau-air.jpg";
-import dekCokAir from "@/assets/airports/cok/Dek-Cok-air.jpg";
-import mobCokAir from "@/assets/airports/cok/Mob-Cok-air.jpg";
-import dekMaaAir from "@/assets/airports/maa/Dek-Maa-air.jpg";
-import mobMaaAir from "@/assets/airports/maa/Mob-Maa-air.jpg";
-import dekGoiAir from "@/assets/airports/goi/Dek-Goi-air.jpg";
-import mobGoiAir from "@/assets/airports/goi/Mob-Goi-air.jpg";
-import dekGoxAir from "@/assets/airports/gox/Dek-Gox-air.jpg";
-import mobGoxAir from "@/assets/airports/gox/Mob-Gox-air.jpg";
-import dekBbiAir from "@/assets/airports/bbi/Dek-Bbi-air.jpg";
-import mobBbiAir from "@/assets/airports/bbi/Mob-Bbi-air.jpg";
-import dekBlrAir from "@/assets/airports/blr/Dek-Blr-air.jpg";
-import mobBlrAir from "@/assets/airports/blr/Mob-Blr-air.jpg";
-import dekIxcAir from "@/assets/airports/ixc/Dek-Ixc-air.jpg";
-import mobIxcAir from "@/assets/airports/ixc/Mob-Ixc-air.jpg";
+const chaarminar = ASSETS.charminar;
+const golkunda = ASSETS.golkunda;
+const imambada = ASSETS.imambada;
+const indiagate = ASSETS.indiagate;
+const redfort = ASSETS.redfort;
+const clouds = ASSETS.clouds;
+const interior = ASSETS.interior;
+const jetTarmac = ASSETS.jetTarmac;
+const lounge = ASSETS.lounge;
+const hotel = ASSETS.hotel;
+const vipTransport1 = ASSETS.vipTransport;
+const cargo = ASSETS.cargo;
+const medical = ASSETS.medical;
+const world = ASSETS.world;
+const vipConcierge = ASSETS.concierge;
+const vipTransport2 = ASSETS.vipTransport2;
+const vipTransport3 = ASSETS.vipTransport3;
+const vipTransport4 = ASSETS.vipTransport4;
+const vipTransport5 = ASSETS.vipTransport5;
+
+// Airport cloud imagery
+const dekAmdAir = ASSETS.amd;
+const mobAmdAir = ASSETS.amd;
+const dekDelAir = ASSETS.del;
+const mobDelAir = ASSETS.del;
+const dekMumAir = ASSETS.bom;
+const dekHydAir = ASSETS.hyd;
+const mobHydAir = ASSETS.hyd;
+const dekLkoAir = ASSETS.lko;
+const mobLkoAir = ASSETS.lko;
+const dekJaiAir = ASSETS.jai;
+const mobJaiAir = ASSETS.jai;
+const dekAtqAir = ASSETS.atq;
+const mobAtqAir = ASSETS.atq;
+const dekGauAir = ASSETS.gau;
+const mobGauAir = ASSETS.gau;
+const dekCokAir = ASSETS.cok;
+const mobCokAir = ASSETS.cok;
+const dekMaaAir = ASSETS.maa;
+const mobMaaAir = ASSETS.maa;
+const dekGoiAir = ASSETS.goi;
+const mobGoiAir = ASSETS.goi;
+const dekGoxAir = ASSETS.gox;
+const mobGoxAir = ASSETS.gox;
+const dekBbiAir = ASSETS.bbi;
+const mobBbiAir = ASSETS.bbi;
+const dekBlrAir = ASSETS.blr;
+const mobBlrAir = ASSETS.blr;
+const dekIxcAir = ASSETS.ixc;
+const mobIxcAir = ASSETS.ixc;
 
 import { AIRPORT_REGISTRY, getAirportRegistryEntry } from "./airportRegistry";
 
@@ -372,7 +374,7 @@ export const AIRPORTS: Airport[] = [
         distance: "16 km",
         travel: "35 min",
         hours: "06:00 – 17:00",
-        fee: "₹50",
+        fee: "Standard Entry Fee",
         photo: "Inner courtyard, golden hour",
         maps: "https://maps.google.com/?q=Bara+Imambara+Lucknow",
       },
@@ -394,7 +396,7 @@ export const AIRPORTS: Airport[] = [
         distance: "17 km",
         travel: "40 min",
         hours: "06:00 – 17:00",
-        fee: "₹25",
+        fee: "Standard Entry Fee",
         photo: "Interior chandeliers",
         maps: "https://maps.google.com/?q=Chota+Imambara",
       },
@@ -411,40 +413,40 @@ export const AIRPORTS: Airport[] = [
       flying: "Excellent",
     },
     transport: [
-      { mode: "Metro", fare: "₹10–60", time: "25 min to centre", availability: "06:00 – 22:00" },
-      { mode: "Taxi", fare: "₹400", time: "30 min", availability: "24×7" },
-      { mode: "Uber / Ola", fare: "₹320", time: "30 min", availability: "24×7" },
-      { mode: "Car Rental", fare: "₹2,200/day", time: "On demand", availability: "24×7" },
-      { mode: "Bus", fare: "₹40", time: "55 min", availability: "05:00 – 23:00" },
-      { mode: "Parking", fare: "₹120/hr", time: "—", availability: "24×7" },
+      { mode: "Metro", fare: "Standard Transit Fare", time: "25 min to centre", availability: "06:00 – 22:00" },
+      { mode: "Taxi", fare: "Metered / App Rate", time: "30 min", availability: "24×7" },
+      { mode: "Uber / Ola", fare: "App-Based Fare", time: "30 min", availability: "24×7" },
+      { mode: "Car Rental", fare: "Daily Rate on Request", time: "On demand", availability: "24×7" },
+      { mode: "Bus", fare: "Standard Transit Fare", time: "55 min", availability: "05:00 – 23:00" },
+      { mode: "Parking", fare: "Standard Airport Rate", time: "—", availability: "24×7" },
     ],
     hotels: [
       {
         name: "Taj Mahal Lucknow",
         stars: 5,
         distance: "14 km",
-        price: "₹14,000+",
+        price: "Live Rates on Request",
         img: us("luxury hotel suite"),
       },
       {
         name: "Hyatt Regency",
         stars: 5,
         distance: "10 km",
-        price: "₹12,500+",
+        price: "Live Rates on Request",
         img: us("hyatt hotel lobby"),
       },
       {
         name: "Renaissance",
         stars: 5,
         distance: "12 km",
-        price: "₹11,800+",
+        price: "Live Rates on Request",
         img: us("renaissance hotel"),
       },
       {
         name: "Lebua Lucknow",
         stars: 5,
         distance: "13 km",
-        price: "₹16,200+",
+        price: "Live Rates on Request",
         img: us("heritage hotel india"),
       },
     ],
@@ -539,7 +541,7 @@ export const AIRPORTS: Airport[] = [
         distance: "12 km",
         travel: "25 min",
         hours: "07:00 – 17:00",
-        fee: "₹40",
+        fee: "Standard Entry Fee",
         photo: "Looking up from base",
         maps: "https://maps.google.com/?q=Qutub+Minar",
       },
@@ -550,7 +552,7 @@ export const AIRPORTS: Airport[] = [
         distance: "20 km",
         travel: "40 min",
         hours: "06:00 – 18:00",
-        fee: "₹40",
+        fee: "Standard Entry Fee",
         photo: "Charbagh symmetry",
         maps: "https://maps.google.com/?q=Humayun+Tomb",
       },
@@ -569,43 +571,43 @@ export const AIRPORTS: Airport[] = [
     transport: [
       {
         mode: "Airport Metro",
-        fare: "₹60",
+        fare: "Standard Transit Fare",
         time: "20 min to centre",
         availability: "04:45 – 23:30",
       },
-      { mode: "Prepaid Taxi", fare: "₹500", time: "35 min", availability: "24×7" },
-      { mode: "Uber Premier", fare: "₹650", time: "35 min", availability: "24×7" },
-      { mode: "Car Rental", fare: "₹3,200/day", time: "On demand", availability: "24×7" },
-      { mode: "DTC Bus", fare: "₹50", time: "60 min", availability: "05:00 – 23:00" },
-      { mode: "Multi-level Parking", fare: "₹150/hr", time: "—", availability: "24×7" },
+      { mode: "Prepaid Taxi", fare: "Fixed Terminal Rate", time: "35 min", availability: "24×7" },
+      { mode: "Uber Premier", fare: "App-Based Fare", time: "35 min", availability: "24×7" },
+      { mode: "Car Rental", fare: "Daily Rate on Request", time: "On demand", availability: "24×7" },
+      { mode: "DTC Bus", fare: "Standard Transit Fare", time: "60 min", availability: "05:00 – 23:00" },
+      { mode: "Multi-level Parking", fare: "Standard Airport Rate", time: "—", availability: "24×7" },
     ],
     hotels: [
       {
         name: "The Leela Palace",
         stars: 5,
         distance: "14 km",
-        price: "₹28,000+",
+        price: "Live Rates on Request",
         img: us("leela palace"),
       },
       {
         name: "The Oberoi",
         stars: 5,
         distance: "16 km",
-        price: "₹32,000+",
+        price: "Live Rates on Request",
         img: us("oberoi hotel"),
       },
       {
         name: "Taj Mahal Hotel",
         stars: 5,
         distance: "18 km",
-        price: "₹25,500+",
+        price: "Live Rates on Request",
         img: us("taj mahal hotel delhi"),
       },
       {
         name: "Andaz Aerocity",
         stars: 5,
         distance: "3 km",
-        price: "₹18,000+",
+        price: "Live Rates on Request",
         img: us("andaz hotel"),
       },
     ],
@@ -721,7 +723,7 @@ export const AIRPORTS: Airport[] = [
         distance: "30 km + ferry",
         travel: "1.5 hrs",
         hours: "09:00 – 17:00",
-        fee: "₹40",
+        fee: "Standard Entry Fee",
         photo: "Trimurti sculpture",
         maps: "https://maps.google.com/?q=Elephanta+Caves",
       },
@@ -740,43 +742,43 @@ export const AIRPORTS: Airport[] = [
     transport: [
       {
         mode: "Metro Line 3",
-        fare: "₹50",
+        fare: "Standard Transit Fare",
         time: "30 min to centre",
         availability: "06:00 – 22:30",
       },
-      { mode: "Cool Cab", fare: "₹600", time: "60 min", availability: "24×7" },
-      { mode: "Uber Black", fare: "₹850", time: "55 min", availability: "24×7" },
-      { mode: "Car Rental", fare: "₹3,500/day", time: "On demand", availability: "24×7" },
-      { mode: "BEST Bus", fare: "₹45", time: "90 min", availability: "05:00 – 24:00" },
-      { mode: "Valet Parking", fare: "₹200/hr", time: "—", availability: "24×7" },
+      { mode: "Cool Cab", fare: "Metered Rate", time: "60 min", availability: "24×7" },
+      { mode: "Uber Black", fare: "App-Based Rate", time: "55 min", availability: "24×7" },
+      { mode: "Car Rental", fare: "Daily Rate on Request", time: "On demand", availability: "24×7" },
+      { mode: "BEST Bus", fare: "Standard Transit Fare", time: "90 min", availability: "05:00 – 24:00" },
+      { mode: "Valet Parking", fare: "Standard Valet Rate", time: "—", availability: "24×7" },
     ],
     hotels: [
       {
         name: "Taj Mahal Palace",
         stars: 5,
         distance: "23 km",
-        price: "₹35,000+",
+        price: "Live Rates on Request",
         img: us("taj palace mumbai"),
       },
       {
         name: "The Oberoi Mumbai",
         stars: 5,
         distance: "22 km",
-        price: "₹38,000+",
+        price: "Live Rates on Request",
         img: us("oberoi mumbai"),
       },
       {
         name: "Trident BKC",
         stars: 5,
         distance: "8 km",
-        price: "₹22,000+",
+        price: "Live Rates on Request",
         img: us("trident hotel"),
       },
       {
         name: "JW Marriott Juhu",
         stars: 5,
         distance: "6 km",
-        price: "₹26,000+",
+        price: "Live Rates on Request",
         img: us("marriott juhu"),
       },
     ],
@@ -1276,26 +1278,26 @@ function buildCity(a: CityArgs): Airport[] {
         flying: "Excellent",
       },
       transport: [
-        { mode: "Taxi", fare: "₹450", time: "30 min", availability: "24×7" },
-        { mode: "Uber / Ola", fare: "₹360", time: "30 min", availability: "24×7" },
-        { mode: "Car Rental", fare: "₹2,500/day", time: "On demand", availability: "24×7" },
-        { mode: "Bus", fare: "₹40", time: "60 min", availability: "05:00 – 23:00" },
-        { mode: "Parking", fare: "₹120/hr", time: "—", availability: "24×7" },
-        { mode: "Metro / Rail", fare: "₹40", time: "—", availability: "06:00 – 22:00" },
+        { mode: "Taxi", fare: "Metered / App Rate", time: "30 min", availability: "24×7" },
+        { mode: "Uber / Ola", fare: "App-Based Fare", time: "30 min", availability: "24×7" },
+        { mode: "Car Rental", fare: "Daily Rate on Request", time: "On demand", availability: "24×7" },
+        { mode: "Bus", fare: "Standard Transit Fare", time: "60 min", availability: "05:00 – 23:00" },
+        { mode: "Parking", fare: "Standard Airport Rate", time: "—", availability: "24×7" },
+        { mode: "Metro / Rail", fare: "Standard Transit Fare", time: "—", availability: "06:00 – 22:00" },
       ],
       hotels: [
         {
           name: "Taj " + a.city,
           stars: 5,
           distance: "10 km",
-          price: "₹14,000+",
+          price: "Live Rates on Request",
           img: us("taj hotel " + a.city),
         },
         {
           name: "ITC " + a.city,
           stars: 5,
           distance: "12 km",
-          price: "₹13,500+",
+          price: "Live Rates on Request",
           img: us("itc hotel"),
         },
       ],
@@ -1410,7 +1412,7 @@ export function getAirport(code: string): Airport {
         name: `Grand Hyatt ${cityName}`,
         stars: 5,
         distance: "5 km",
-        price: "₹12,000 / night",
+        price: "Live Rates on Request",
         img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
       },
     ],

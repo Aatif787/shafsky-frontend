@@ -18,20 +18,16 @@ import {
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { format, parseISO, isValid } from "date-fns";
-import { C, mono } from "../theme";
+import { C, mono, display } from "../theme";
 import { DoublePlaneIcon } from "./DoublePlaneIcon";
 
-const HeroAircraft = lazy(() =>
-  import("@/components/hero/HeroAircraft").then((m) => ({ default: m.HeroAircraft })),
-);
-
 const FIELD =
-  "flex h-12 w-full items-center justify-between rounded-xl border border-white/25 bg-white/90 px-4 text-xs font-semibold text-slate-900 outline-none transition-all hover:border-white/50";
+  "flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300 bg-transparent px-4 text-xs font-semibold text-slate-900 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-none";
 const DATE_BTN =
-  "relative flex h-12 w-full items-center rounded-xl border border-white/25 bg-white/90 pl-9 pr-9 text-left text-xs font-semibold text-slate-900 outline-none transition-all hover:border-white/50";
+  "relative flex h-12 w-full items-center rounded-2xl border border-slate-300 bg-transparent pl-10 pr-4 text-left text-xs font-semibold text-slate-900 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-none";
 const AIRPORT_INPUT =
-  "h-12 w-full rounded-xl border border-white/25 bg-white/90 pl-9 pr-3.5 text-xs font-semibold text-slate-900 placeholder-gray-400 outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-500/20";
-const LABEL = "h-4 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700";
+  "h-12 w-full rounded-2xl border border-slate-300 bg-transparent pl-10 pr-4 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-none";
+const LABEL = "h-4 text-[10.5px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5";
 
 export function BookingPanel() {
   const navigate = useNavigate();
@@ -42,7 +38,7 @@ export function BookingPanel() {
   const [destLabel, setDestLabel] = useState<string>("");
   const [transitLabel, setTransitLabel] = useState<string>("");
   const [travelType, setTravelType] = useState<"domestic" | "international">("domestic");
-  const [tab, setTab] = useState<"arrival" | "departure" | "connection">("arrival");
+  const [tab, setTab] = useState<"arrival" | "departure" | "connection">("departure");
   const [showPassengerModal, setShowPassengerModal] = useState(false);
   const [adults, setAdults] = useState(1);
   const [childrenCount, setChildrenCount] = useState(0);
@@ -52,13 +48,6 @@ export function BookingPanel() {
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [departDate2, setDepartDate2] = useState("");
   const [datePopoverOpen2, setDatePopoverOpen2] = useState(false);
-
-  const [showPlane, setShowPlane] = useState(false);
-
-  useEffect(() => {
-    const t = window.setTimeout(() => setShowPlane(true), 1200);
-    return () => window.clearTimeout(t);
-  }, []);
 
   const todayStart = useMemo(() => {
     const d = new Date();
@@ -181,76 +170,37 @@ export function BookingPanel() {
   };
 
   const tabs: [typeof tab, string, React.ComponentType<{ className?: string }>][] = [
-    ["arrival", "Arrival", PlaneLanding],
     ["departure", "Departure", PlaneTakeoff],
+    ["arrival", "Arrival", PlaneLanding],
     ["connection", "Transit", DoublePlaneIcon],
   ];
 
+  const totalPax = adults + childrenCount + infants;
+
   return (
-    <section id="book" className="relative -mt-20 md:-mt-32 px-4 pb-16 md:px-14 md:pb-32">
-      {showPlane ? (
-        <Suspense fallback={null}>
-          <HeroAircraft />
-        </Suspense>
-      ) : null}
+    <section id="book" className="relative mt-6 sm:mt-10 mb-16 sm:mb-24 md:mb-28 px-4 sm:px-8 md:px-14">
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 25 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-        className="relative mx-auto max-w-[1280px] rounded-3xl shadow-[0_32px_120px_-16px_rgba(13,42,54,0.18)] border z-20 overflow-visible"
-        style={{
-          borderColor: "rgba(255, 255, 255, 0.4)",
-          background:
-            "linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 50%, rgba(95, 181, 173, 0.06) 100%)",
-          backdropFilter: "blur(45px) saturate(160%)",
-          boxShadow:
-            "0 32px 120px -16px rgba(13, 42, 54, 0.18), inset 0 1px 3px rgba(255, 255, 255, 0.65), inset 0 -1px 3px rgba(13, 90, 110, 0.15)",
-        }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="relative mx-auto max-w-[960px] rounded-[2rem] bg-transparent border-2 border-slate-200 shadow-sm z-20 overflow-hidden"
       >
-        {/* Decorative Specular Glare / Rainbow Sheen Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/12 pointer-events-none rounded-[22px]" />
-        <div
-          className="absolute inset-0 pointer-events-none rounded-[22px] opacity-[0.03]"
-          style={{
-            background:
-              "radial-gradient(circle at 80% 20%, rgba(255, 107, 0, 0.4) 0%, transparent 60%), radial-gradient(circle at 20% 80%, rgba(95, 181, 173, 0.4) 0%, transparent 60%)",
-          }}
-        />
-
-        {/* Header Strip */}
-        <div
-          className="px-6 py-4 md:px-10 border-b border-white/15 rounded-t-[22px] relative z-10 flex flex-col gap-3 items-center text-center"
-          style={{
-            background:
-              "linear-gradient(90deg, rgba(95, 181, 173, 0.08) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 107, 0, 0.04) 100%)",
-          }}
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7c3aed]/10 border border-[#7c3aed]/20 text-[#7c3aed] text-[10px] font-mono uppercase font-extrabold tracking-widest">
-            <Crown className="w-3.5 h-3.5" />
-            <span>Master Airport VIP Packages</span>
-          </div>
+        {/* Header Title */}
+        <div className="px-6 pt-6 pb-4 md:px-10 md:pt-8 md:pb-5 bg-transparent text-center border-b border-slate-200">
           <h2
-            className="text-center text-xs sm:text-sm font-extrabold uppercase tracking-[0.2em] text-slate-900 flex items-center justify-center gap-2"
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            className="text-center text-lg sm:text-xl font-bold text-slate-950 tracking-tight"
+            style={display}
           >
-            Choose Your Airport & Select VIP Package
+            Book your seamless VIP airport experience.
           </h2>
-          <p className="text-[11px] text-slate-600 font-sans max-w-md">
-            All-inclusive airside escort, fast-track customs clearance, VIP lounge sanctuary, and chauffeured tarmac transfers.
-          </p>
         </div>
 
-        <motion.div
-          key={`booking-form-grid-${tab}`}
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
-          className="grid items-stretch gap-8 p-6 opacity-100 transition-all duration-300 md:grid-cols-12 md:gap-10 md:p-10"
-        >
-          {/* LEFT — Tabs + Flight Info (7 cols on desktop) */}
-          <div className="md:col-span-7 flex flex-col gap-5">
-            <div className="grid w-full grid-cols-3 rounded-xl border border-white/15 bg-white/10 p-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]">
+        <div className="p-6 md:p-8 space-y-6">
+          {/* Top Control Bar: Direction Tabs + Domestic/International */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+            {/* Direction Tabs */}
+            <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200">
               {tabs.map(([k, label, Icon]) => {
                 const active = tab === k;
                 return (
@@ -258,444 +208,372 @@ export function BookingPanel() {
                     key={k}
                     type="button"
                     onClick={() => setTab(k)}
-                    className="relative z-10 flex h-11 min-w-0 items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] outline-none transition-colors"
-                    style={{
-                      ...mono,
-                      color: active ? "#ffffff" : C.mute,
-                    }}
+                    className={`relative z-10 flex flex-1 sm:flex-initial h-9 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                      active
+                        ? "text-slate-950 bg-[#84cc16] font-bold shadow-xs"
+                        : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50"
+                    }`}
+                    style={mono}
                   >
-                    {active && (
-                      <motion.div
-                        layoutId="activeBookingTabPill"
-                        className="absolute inset-0 rounded-lg"
-                        style={{
-                          backgroundColor: C.teal,
-                          boxShadow:
-                            "0 4px 12px rgba(13,90,110,0.35), inset 0 1px 1px rgba(255,255,255,0.25)",
-                        }}
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                    <Icon className="relative z-20 h-3.5 w-3.5 shrink-0" />
-                    <span className="relative z-20 truncate">{label}</span>
+                    <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-slate-950" : "text-slate-500"}`} />
+                    <span className="truncate">{label}</span>
                   </button>
                 );
               })}
             </div>
 
-            <div className="grid w-full grid-cols-2 rounded-xl border border-white/15 bg-white/10 p-1">
+            {/* Domestic / International Toggle */}
+            <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200 self-start sm:self-auto w-full sm:w-auto">
               {(["domestic", "international"] as const).map((kind) => {
                 const active = travelType === kind;
-                const isDomestic = kind === "domestic";
                 return (
                   <button
                     key={kind}
                     type="button"
                     onClick={() => setTravelType(kind)}
-                    className="relative z-10 h-11 text-[10px] font-bold uppercase tracking-[0.16em] outline-none"
-                    style={{
-                      ...mono,
-                      color: active ? (isDomestic ? "#365314" : "#0c4a6e") : C.mute,
-                    }}
+                    className={`relative z-10 flex-1 sm:flex-initial h-9 sm:px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                      active
+                        ? "text-white bg-slate-950 shadow-xs"
+                        : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50"
+                    }`}
+                    style={mono}
                   >
-                    {active && (
-                      <motion.span
-                        layoutId="activeTravelTypePill"
-                        className="absolute inset-0 rounded-lg"
-                        style={{
-                          backgroundColor: isDomestic ? "#d9f99d" : "#7dd3fc",
-                          boxShadow: isDomestic
-                            ? "0 4px 14px rgba(132,204,22,0.35), inset 0 1px 1px rgba(255,255,255,0.55)"
-                            : "0 4px 14px rgba(56,189,248,0.4), inset 0 1px 1px rgba(255,255,255,0.55)",
-                        }}
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                    <span className="relative z-20">{kind}</span>
+                    <span>{kind}</span>
                   </button>
                 );
               })}
             </div>
-
-            <div className={`grid w-full gap-3 ${tab === "connection" ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
-              <div className="flex min-w-0 flex-col gap-1.5">
-                <label className={LABEL}>
-                  Origin Airport *
-                </label>
-                <IntelligentAirportAutocomplete
-                  key={`origin-${tab}`}
-                  mode={tab === "departure" ? "supported" : "global"}
-                  journeyType={tab === "departure" ? "DEPARTURE" : undefined}
-                  value={originLabel || originCode}
-                  inputClassName={AIRPORT_INPUT}
-                  onSelect={(ap) => {
-                    setOriginCode(ap.code);
-                    setOriginLabel(formatAirportOption(ap));
-                  }}
-                  placeholder={tab === "departure" ? "Search supported origin airport" : "Search origin airport"}
-                />
-              </div>
-              {tab === "connection" && (
-                <div className="flex min-w-0 flex-col gap-1.5">
-                  <label className={LABEL}>
-                    Transit Airport *
-                  </label>
-                  <IntelligentAirportAutocomplete
-                    key="transit-supported"
-                    mode="supported"
-                    journeyType="TRANSIT"
-                    value={transitLabel || transitCode}
-                    inputClassName={AIRPORT_INPUT}
-                    onSelect={(ap) => {
-                      setTransitCode(ap.code);
-                      setTransitLabel(formatAirportOption(ap));
-                    }}
-                    placeholder="Search supported transit airport"
-                  />
-                </div>
-              )}
-              <div className="flex min-w-0 flex-col gap-1.5">
-                <label className={LABEL}>
-                  Destination Airport *
-                </label>
-                <IntelligentAirportAutocomplete
-                  key={`dest-${tab}`}
-                  mode={tab === "arrival" ? "supported" : "global"}
-                  journeyType={tab === "arrival" ? "ARRIVAL" : undefined}
-                  value={destLabel || destCode}
-                  inputClassName={AIRPORT_INPUT}
-                  onSelect={(ap) => {
-                    setDestCode(ap.code);
-                    setDestLabel(formatAirportOption(ap));
-                  }}
-                  placeholder={tab === "arrival" ? "Search supported destination airport" : "Search destination airport"}
-                />
-              </div>
-            </div>
-
-            {tab === "connection" ? (
-              <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="flex min-w-0 flex-col gap-1.5">
-                  <label className={LABEL}>Travel date *</label>
-                  <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <button
-                        type="button"
-                        className={`${DATE_BTN} cursor-pointer ${touched.departDate && !departDate ? "border-red-400" : ""}`}
-                      >
-                        <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-                        <span className={`truncate ${departDate ? "text-slate-900" : "text-gray-400"}`}>
-                          {departDate ? format(parseISO(departDate), "MMM dd, yyyy") : "Select date"}
-                        </span>
-                        <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-60" />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarPicker
-                        mode="single"
-                        selected={dateValue}
-                        onSelect={(d) => {
-                          if (d) setDepartDate(format(d, "yyyy-MM-dd"));
-                          setDatePopoverOpen(false);
-                        }}
-                        disabled={{ before: todayStart }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="flex min-w-0 flex-col gap-1.5">
-                  <label className={LABEL}>Connecting date</label>
-                  <Popover open={datePopoverOpen2} onOpenChange={setDatePopoverOpen2}>
-                    <PopoverTrigger asChild>
-                      <button type="button" className={`${DATE_BTN} cursor-pointer`}>
-                        <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-                        <span className={`truncate ${departDate2 ? "text-slate-900" : "text-gray-400"}`}>
-                          {departDate2 ? format(parseISO(departDate2), "MMM dd, yyyy") : "Optional"}
-                        </span>
-                        <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-60" />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarPicker
-                        mode="single"
-                        selected={dateValue2}
-                        onSelect={(d) => {
-                          if (d) setDepartDate2(format(d, "yyyy-MM-dd"));
-                          setDatePopoverOpen2(false);
-                        }}
-                        disabled={{ before: dateValue || todayStart }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="hidden sm:block" />
-              </div>
-            ) : (
-              <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="flex min-w-0 flex-col gap-1.5">
-                  <label className={LABEL}>Travel date *</label>
-                  <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <button
-                        type="button"
-                        className={`${DATE_BTN} cursor-pointer ${touched.departDate && !departDate ? "border-red-400" : ""}`}
-                      >
-                        <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-                        <span className={`truncate ${departDate ? "text-slate-900" : "text-gray-400"}`}>
-                          {departDate ? format(parseISO(departDate), "MMM dd, yyyy") : "Select date"}
-                        </span>
-                        <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-60" />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarPicker
-                        mode="single"
-                        selected={dateValue}
-                        onSelect={(d) => {
-                          if (d) setDepartDate(format(d, "yyyy-MM-dd"));
-                          setDatePopoverOpen(false);
-                        }}
-                        disabled={{ before: todayStart }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* RIGHT — Pax/Bags + Search Button (5 cols on desktop) */}
-          <div
-            className="relative mt-4 md:col-span-5 flex h-full flex-col justify-between gap-6 border-t border-white/10 pt-8 md:mt-0 md:border-l md:border-t-0 md:pl-10 md:pt-0"
-            style={{ borderColor: "rgba(255,255,255,0.2)" }}
+          {/* Form Inputs Grid */}
+          <motion.div
+            key={`booking-form-grid-${tab}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className={`grid gap-4 sm:gap-5 ${
+              tab === "connection"
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                : "grid-cols-1 sm:grid-cols-2"
+            }`}
           >
-            <div>
-              <div
-                className="flex items-center gap-2.5 text-xs font-semibold"
-                style={{ color: C.ink }}
-              >
-                <span style={mono}>Need more than one service type?</span>
-                <button
-                  type="button"
-                  aria-label="More information"
-                  className="grid h-5 w-5 place-items-center rounded-full text-[10px] font-bold border hover:bg-white/20 active:scale-95 transition"
-                  style={{
-                    borderColor: "rgba(255,255,255,0.25)",
-                    background: "rgba(255,255,255,0.08)",
-                    color: C.teal,
+            {/* Origin Airport */}
+            <div className="flex flex-col gap-1.5">
+              <label className={LABEL}>
+                <span>Origin Airport</span>
+                <span className="text-lime-600 font-bold">*</span>
+              </label>
+              <IntelligentAirportAutocomplete
+                key={`origin-${tab}`}
+                mode={tab === "departure" ? "supported" : "global"}
+                journeyType={tab === "departure" ? "DEPARTURE" : undefined}
+                value={originLabel || originCode}
+                inputClassName={AIRPORT_INPUT}
+                onSelect={(ap) => {
+                  setOriginCode(ap.code);
+                  setOriginLabel(formatAirportOption(ap));
+                }}
+                placeholder={tab === "departure" ? "Search departure hub" : "Search origin airport"}
+              />
+            </div>
+
+            {/* Transit Hub (Only if connection) */}
+            {tab === "connection" && (
+              <div className="flex flex-col gap-1.5">
+                <label className={LABEL}>
+                  <span>Transit Hub</span>
+                  <span className="text-lime-600 font-bold">*</span>
+                </label>
+                <IntelligentAirportAutocomplete
+                  key="transit-supported"
+                  mode="supported"
+                  journeyType="TRANSIT"
+                  value={transitLabel || transitCode}
+                  inputClassName={AIRPORT_INPUT}
+                  onSelect={(ap) => {
+                    setTransitCode(ap.code);
+                    setTransitLabel(formatAirportOption(ap));
                   }}
-                >
-                  ?
-                </button>
+                  placeholder="Search transit hub"
+                />
               </div>
+            )}
 
-              {/* Custom Interactive Passenger / Bag Selectors */}
-              <div className="relative mt-4">
-                <Popover open={showPassengerModal} onOpenChange={setShowPassengerModal}>
+            {/* Destination Airport */}
+            <div className="flex flex-col gap-1.5">
+              <label className={LABEL}>
+                <span>Destination Airport</span>
+                <span className="text-lime-600 font-bold">*</span>
+              </label>
+              <IntelligentAirportAutocomplete
+                key={`dest-${tab}`}
+                mode={tab === "arrival" ? "supported" : "global"}
+                journeyType={tab === "arrival" ? "ARRIVAL" : undefined}
+                value={destLabel || destCode}
+                inputClassName={AIRPORT_INPUT}
+                onSelect={(ap) => {
+                  setDestCode(ap.code);
+                  setDestLabel(formatAirportOption(ap));
+                }}
+                placeholder={tab === "arrival" ? "Search arrival hub" : "Search destination airport"}
+              />
+            </div>
+
+            {/* Flight Date (or Inbound Date for connection) */}
+            <div className="flex flex-col gap-1.5">
+              <label className={LABEL}>
+                <span>{tab === "connection" ? "Inbound Date" : "Flight Date"}</span>
+                <span className="text-lime-600 font-bold">*</span>
+              </label>
+              <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+                <PopoverTrigger asChild>
+                  <button type="button" className={`${DATE_BTN} cursor-pointer`}>
+                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-lime-600" />
+                    <span className="truncate">
+                      {dateValue ? format(dateValue, "dd MMMM yyyy") : "Select travel date"}
+                    </span>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.12),0_0_30px_rgba(132,204,22,0.15)] rounded-3xl" align="start">
+                  <CalendarPicker
+                    mode="single"
+                    selected={dateValue}
+                    onSelect={(d) => {
+                      if (d) {
+                        setDepartDate(format(d, "yyyy-MM-dd"));
+                        setDatePopoverOpen(false);
+                      }
+                    }}
+                    disabled={{ before: todayStart }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Outbound Date (Only if connection) */}
+            {tab === "connection" && (
+              <div className="flex flex-col gap-1.5">
+                <label className={LABEL}>
+                  <span>Outbound Date</span>
+                </label>
+                <Popover open={datePopoverOpen2} onOpenChange={setDatePopoverOpen2}>
                   <PopoverTrigger asChild>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        className={`${FIELD} cursor-pointer normal-case`}
-                        style={{
-                          borderColor: "rgba(255,255,255,0.25)",
-                          color: C.ink,
-                          boxShadow:
-                            "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
-                        }}
-                      >
-                        <span className="truncate flex items-center gap-2">
-                          <Users size={14} style={{ color: C.teal }} />
-                          {adults + childrenCount + infants} Pax ({adults} Ad)
-                        </span>
-                        <ChevronDown
-                          className={`h-4 w-4 opacity-60 transition-transform duration-200 ${showPassengerModal ? "rotate-180" : ""}`}
-                        />
-                      </button>
-
-                      <button
-                        type="button"
-                        className={`${FIELD} cursor-pointer normal-case`}
-                        style={{
-                          borderColor: "rgba(255,255,255,0.25)",
-                          color: C.ink,
-                          boxShadow:
-                            "inset 0 1.5px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.1)",
-                        }}
-                      >
-                        <span className="truncate flex items-center gap-2">
-                          <Package size={14} style={{ color: C.teal }} />
-                          {bags} Bag{bags !== 1 ? "s" : ""}
-                        </span>
-                        <ChevronDown
-                          className={`h-4 w-4 opacity-60 transition-transform duration-200 ${showPassengerModal ? "rotate-180" : ""}`}
-                        />
-                      </button>
-                    </div>
+                    <button type="button" className={`${DATE_BTN} cursor-pointer`}>
+                      <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-lime-600" />
+                      <span className="truncate">
+                        {dateValue2 ? format(dateValue2, "dd MMMM yyyy") : "Same / Next Day"}
+                      </span>
+                    </button>
                   </PopoverTrigger>
-
-                  <PopoverContent className="w-80 p-5 bg-white/95 backdrop-blur-xl border border-black/10 shadow-2xl rounded-2xl">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between border-b border-black/5 pb-2">
-                        <span className="text-xs font-bold uppercase tracking-wider text-gray-700">
-                          Passengers & Luggage
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setShowPassengerModal(false)}
-                          className="text-gray-400 hover:text-gray-700"
-                        >
-                          <X size={16} />
-                        </button>
-                      </div>
-
-                      {/* Adult */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="text-xs font-semibold text-gray-800">Adult</span>
-                          <span className="text-[10px] text-gray-500 font-medium">12+ years</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <button
-                            type="button"
-                            onClick={() => setAdults(Math.max(1, adults - 1))}
-                            disabled={adults <= 1}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 text-lg font-semibold transition hover:bg-black/5 active:scale-95 disabled:opacity-30 outline-none"
-                          >
-                            -
-                          </button>
-                          <span className="w-5 text-center text-xs font-bold text-gray-800">
-                            {adults}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setAdults(adults + 1)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 text-lg font-semibold transition hover:bg-black/5 active:scale-95 outline-none"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Child */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="text-xs font-semibold text-gray-800">Child</span>
-                          <span className="text-[10px] text-gray-500 font-medium">
-                            2 - 12 years
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <button
-                            type="button"
-                            onClick={() => setChildrenCount(Math.max(0, childrenCount - 1))}
-                            disabled={childrenCount <= 0}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 text-lg font-semibold transition hover:bg-black/5 active:scale-95 disabled:opacity-30 outline-none"
-                          >
-                            -
-                          </button>
-                          <span className="w-5 text-center text-xs font-bold text-gray-800">
-                            {childrenCount}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setChildrenCount(childrenCount + 1)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 text-lg font-semibold transition hover:bg-black/5 active:scale-95 outline-none"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Infant */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="text-xs font-semibold text-gray-800">Infant</span>
-                          <span className="text-[10px] text-gray-500 font-medium">
-                            Under 2 years
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <button
-                            type="button"
-                            onClick={() => setInfants(Math.max(0, infants - 1))}
-                            disabled={infants <= 0}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 text-lg font-semibold transition hover:bg-black/5 active:scale-95 disabled:opacity-30 outline-none"
-                          >
-                            -
-                          </button>
-                          <span className="w-5 text-center text-xs font-bold text-gray-800">
-                            {infants}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setInfants(infants + 1)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 text-lg font-semibold transition hover:bg-black/5 active:scale-95 outline-none"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Bags */}
-                      <div className="flex items-center justify-between border-t border-black/5 pt-3">
-                        <div className="flex flex-col">
-                          <span className="text-xs font-semibold text-gray-800">Check-in Bags</span>
-                          <span className="text-[10px] text-gray-500 font-medium">Luggage items</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <button
-                            type="button"
-                            onClick={() => setBags(Math.max(0, bags - 1))}
-                            disabled={bags <= 0}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 text-lg font-semibold transition hover:bg-black/5 active:scale-95 disabled:opacity-30 outline-none"
-                          >
-                            -
-                          </button>
-                          <span className="w-5 text-center text-xs font-bold text-gray-800">
-                            {bags}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setBags(bags + 1)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 text-lg font-semibold transition hover:bg-black/5 active:scale-95 outline-none"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                  <PopoverContent className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.12),0_0_30px_rgba(132,204,22,0.15)] rounded-3xl" align="start">
+                    <CalendarPicker
+                      mode="single"
+                      selected={dateValue2}
+                      onSelect={(d) => {
+                        if (d) {
+                          setDepartDate2(format(d, "yyyy-MM-dd"));
+                          setDatePopoverOpen2(false);
+                        }
+                      }}
+                      disabled={{ before: dateValue || todayStart }}
+                      initialFocus
+                    />
                   </PopoverContent>
                 </Popover>
               </div>
+            )}
+
+            {/* Passengers & Luggage */}
+            <div className="flex flex-col gap-1.5">
+              <label className={LABEL}>
+                <span>Party & Luggage</span>
+              </label>
+              <Popover open={showPassengerModal} onOpenChange={setShowPassengerModal}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className={`${FIELD} cursor-pointer normal-case`}
+                  >
+                    <span className="truncate flex items-center gap-2">
+                      <Users size={15} className="text-lime-600" />
+                      <span>
+                        {totalPax} {totalPax === 1 ? "Guest" : "Guests"}
+                      </span>
+                      <span className="text-slate-300">•</span>
+                      <Package size={15} className="text-lime-600" />
+                      <span>
+                        {bags} {bags === 1 ? "Bag" : "Bags"}
+                      </span>
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${showPassengerModal ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                </PopoverTrigger>
+
+                <PopoverContent className="w-80 p-5 bg-white/95 backdrop-blur-2xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.12),0_0_30px_rgba(132,204,22,0.15)] rounded-3xl">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-900" style={mono}>
+                        Party & Luggage Details
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowPassengerModal(false)}
+                        className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+
+                    {/* Adult */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-semibold text-slate-900">Adult</span>
+                        <span className="text-[10px] text-slate-500">12+ years</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => setAdults(Math.max(1, adults - 1))}
+                          disabled={adults <= 1}
+                          className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50/80 text-sm font-semibold transition hover:bg-white disabled:opacity-30 cursor-pointer shadow-2xs"
+                        >
+                          -
+                        </button>
+                        <span className="w-5 text-center text-xs font-bold text-slate-900">
+                          {adults}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setAdults(adults + 1)}
+                          className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50/80 text-sm font-semibold transition hover:bg-white cursor-pointer shadow-2xs"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Child */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-semibold text-slate-900">Child</span>
+                        <span className="text-[10px] text-slate-500">2 - 12 years</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => setChildrenCount(Math.max(0, childrenCount - 1))}
+                          disabled={childrenCount <= 0}
+                          className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50/80 text-sm font-semibold transition hover:bg-white disabled:opacity-30 cursor-pointer shadow-2xs"
+                        >
+                          -
+                        </button>
+                        <span className="w-5 text-center text-xs font-bold text-slate-900">
+                          {childrenCount}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setChildrenCount(childrenCount + 1)}
+                          className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50/80 text-sm font-semibold transition hover:bg-white cursor-pointer shadow-2xs"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Infant */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-semibold text-slate-900">Infant</span>
+                        <span className="text-[10px] text-slate-500">Under 2 years</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => setInfants(Math.max(0, infants - 1))}
+                          disabled={infants <= 0}
+                          className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50/80 text-sm font-semibold transition hover:bg-white disabled:opacity-30 cursor-pointer shadow-2xs"
+                        >
+                          -
+                        </button>
+                        <span className="w-5 text-center text-xs font-bold text-slate-900">
+                          {infants}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setInfants(infants + 1)}
+                          className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50/80 text-sm font-semibold transition hover:bg-white cursor-pointer shadow-2xs"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Luggage */}
+                    <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-semibold text-slate-900">Luggage Bags</span>
+                        <span className="text-[10px] text-slate-500">Checked luggage</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => setBags(Math.max(0, bags - 1))}
+                          disabled={bags <= 0}
+                          className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50/80 text-sm font-semibold transition hover:bg-white disabled:opacity-30 cursor-pointer shadow-2xs"
+                        >
+                          -
+                        </button>
+                        <span className="w-5 text-center text-xs font-bold text-slate-900">
+                          {bags}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setBags(bags + 1)}
+                          className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50/80 text-sm font-semibold transition hover:bg-white cursor-pointer shadow-2xs"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+          </motion.div>
+
+          {/* Bottom Bar: Trust Indicators & Central Super CTA */}
+          <div className="pt-5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1.5 text-[11px] text-slate-600 font-medium">
+              <span className="flex items-center gap-1.5">
+                <span className="text-lime-600 font-bold">✓</span>
+                <span>Dedicated Airside Officer</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-lime-600 font-bold">✓</span>
+                <span>Verified DGCA Clearance</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-lime-600 font-bold">✓</span>
+                <span>Priority Fast-Track</span>
+              </span>
             </div>
 
             <button
               type="button"
-              disabled={!isFormValid}
               onClick={handleContinueToPackages}
-              className={`mt-auto flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[11px] font-semibold uppercase tracking-[0.24em] transition ${isFormValid
-                  ? "hover:brightness-110 shadow-lg cursor-pointer"
-                  : "opacity-45 cursor-not-allowed"
-                }`}
-              style={{
-                ...mono,
-                background: "linear-gradient(135deg, #0d5a6e 0%, #083c4b 100%)",
-                color: "#ffffff",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-                boxShadow: isFormValid
-                  ? "0 12px 28px -6px rgba(13,90,110,0.55), inset 0 1px 1px rgba(255,255,255,0.3)"
-                  : "none",
-              }}
+              className="group/btn relative overflow-hidden w-full sm:w-auto min-w-[220px] inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#84cc16] via-[#9ee838] to-[#84cc16] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-slate-950 shadow-[0_10px_30px_rgba(132,204,22,0.45),inset_0_1px_2px_rgba(255,255,255,0.75)] transition-all duration-300 hover:shadow-[0_15px_40px_rgba(132,204,22,0.6),inset_0_1px_2px_rgba(255,255,255,1)] hover:-translate-y-0.5 cursor-pointer"
+              style={mono}
             >
-              <ArrowRight className="h-4 w-4" />
-              <span>Select package</span>
+              <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/60 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
+              <span className="relative z-10 font-extrabold drop-shadow-2xs">Book Now</span>
+              <ArrowRight className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
             </button>
           </div>
-        </motion.div>
+        </div>
       </motion.div>
     </section>
   );

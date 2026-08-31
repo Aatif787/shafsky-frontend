@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Maximize2, X, Image as ImageIcon, Sparkles } from "lucide-react";
 import type { Airport } from "@/data/airports";
 
-// Default high-res fallback visuals
-import lounge from "@/assets/lounge.png";
-import vipTransport1 from "@/assets/vip-transport-1.png";
-import meetGreetImg from "@/assets/meet-greet.png";
-import fastTrackImg from "@/assets/fast-track.png";
+import { ASSETS } from "@/lib/assets";
+
+const lounge = ASSETS.lounge;
+const vipTransport1 = ASSETS.vipTransport;
+const meetGreetImg = ASSETS.meetGreet;
+const fastTrackImg = ASSETS.fastTrack;
 
 interface AirportGalleryProps {
   a: Airport;

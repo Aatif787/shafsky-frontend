@@ -1,198 +1,177 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
-import { Plane } from "lucide-react";
+import { Plane, PhoneCall, Mail, MapPin, ShieldCheck, ArrowRight } from "lucide-react";
 import { useBranding } from "@/lib/branding/branding.context";
 import { C, display, mono } from "../theme";
 
 export function Footer() {
   const { branding } = useBranding();
 
-  const nameParts = branding.company_name.split(" ");
-  const firstPart = nameParts[0]?.toUpperCase() || "SHAFSKY";
-  const restPart = nameParts.slice(1).join(" ")?.toUpperCase() || "AVIATION";
-
   return (
-    <footer
-      className="relative px-4 sm:px-8 pb-12 pt-14 sm:pt-16 md:px-14"
-      style={{ background: C.tealDeep, color: "#fff" }}
-    >
+    <footer className="relative px-4 sm:px-8 pb-12 pt-16 sm:pt-20 md:px-14 bg-[#03070e] text-white border-t border-[#c5a869]/25">
       <div className="relative mx-auto max-w-[1480px]">
-        <div
-          className="grid gap-8 sm:gap-10 md:gap-16 pb-10 sm:pb-12 md:grid-cols-12"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
-        >
-          <div className="md:col-span-5">
+        <div className="grid gap-10 md:gap-16 pb-12 md:grid-cols-12 border-b border-white/10">
+          {/* Column 1: Brand & Headquarters */}
+          <div className="md:col-span-4">
             <div className="flex items-center gap-3">
-              {branding.logo_url ? (
+              <div className="flex items-center justify-center h-11 w-11 rounded-xl bg-[#0a1424] border border-[#c5a869]/40 p-1 shadow-md">
                 <img
-                  src={branding.logo_light_url || branding.logo_url}
-                  alt={branding.company_name}
-                  className="h-10 sm:h-12 md:h-15 max-h-[64px] w-auto max-w-[min(280px,50vw)] object-contain scale-[1.5] sm:scale-[2.0] md:scale-[2.6] origin-left transition-all duration-300 transform-gpu hover:scale-[2.75]"
+                  src={branding.logo_url || "/logo.png"}
+                  alt={branding.company_name || "Shafsky Aviation Services"}
+                  className="h-full w-full object-contain filter brightness-110"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = "none";
+                  }}
                 />
-              ) : (
-                <>
-                  <div
-                    className="grid h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 place-items-center rounded-2xl shadow-md"
-                    style={{ background: C.mint }}
-                  >
-                    <Plane className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 -rotate-45" style={{ color: C.tealDeep }} />
-                  </div>
-                  <div style={mono}>
-                    <div className="text-base sm:text-xl md:text-2xl font-bold tracking-[0.28em]">{firstPart}</div>
-                    <div className="mt-0.5 text-[8.5px] sm:text-[10px] tracking-[0.45em] text-white/60">
-                      {restPart} · SUSWAGATAM
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-            <h3 className="mt-6 sm:mt-8 text-[clamp(1.65rem,3vw,2.6rem)] leading-[1.08]" style={display}>
-              {branding.company_name || "Shafsky Aviation Services"}
-            </h3>
-            <p className="mt-4 sm:mt-5 max-w-md text-xs sm:text-[14px] leading-relaxed text-white/70">
-              {branding.business_address}, {branding.city}, {branding.state}, {branding.country} -{" "}
-              {branding.postal_code}
-            </p>
-            <p className="mt-2.5 sm:mt-3 text-xs sm:text-[14px] text-white/70" style={mono}>
-              {branding.support_phone}
-            </p>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-10 md:col-span-7">
-            <div>
-              <div className="text-[9.5px] sm:text-[10px] uppercase tracking-[0.35em] text-white/50" style={mono}>
-                Services
               </div>
+              <div>
+                <div className="text-xl font-bold font-serif tracking-tight text-white" style={display}>
+                  SHAFSKY
+                </div>
+                <div className="text-[9px] uppercase tracking-[0.35em] text-[#c5a869] font-mono -mt-1 font-semibold" style={mono}>
+                  Aviation Services
+                </div>
+              </div>
+            </div>
 
-              <ul className="mt-5 space-y-3 text-[14px] text-white/80">
+            <p className="mt-6 text-xs sm:text-sm text-slate-300 leading-relaxed font-light max-w-sm">
+              Official Aviation Ground Operations & Airport Services Partner based at IGI Airport Terminal 1, New Delhi. Delivering bespoke airside hospitality and executive private charters since 2022.
+            </p>
+
+            <div className="mt-6 space-y-2.5 text-xs text-slate-300">
+              <div className="flex items-start gap-2.5">
+                <MapPin size={15} className="text-[#c5a869] shrink-0 mt-0.5" />
+                <span>8/5, Ground Floor, West Mehram Nagar Gate No.1, Opp. IGI Airport Terminal 1, New Delhi 110010</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <PhoneCall size={14} className="text-[#c5a869] shrink-0" />
+                <a href="tel:+919599087959" className="hover:text-[#d9c18b] font-mono" style={mono}>
+                  +91 9599087959 (24/7 Operations Desk)
+                </a>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Mail size={14} className="text-[#c5a869] shrink-0" />
+                <a href="mailto:ops@shafsky.com" className="hover:text-[#d9c18b]">
+                  ops@shafsky.com
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Links Columns */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 md:col-span-8">
+            {/* Column 2: Airport Services */}
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.35em] text-[#d9c18b] font-bold" style={mono}>
+                Airport Services
+              </div>
+              <ul className="mt-5 space-y-2.5 text-xs sm:text-[13px] text-slate-300">
                 <li>
-                  <Link to="/services/guide" className="transition hover:text-white">
-                    Meet & Greet
+                  <Link to="/solutions/concierge" className="transition hover:text-white">
+                    Meet & Greet Escort
                   </Link>
                 </li>
                 <li>
-                  <Link to="/services/guide" className="transition hover:text-white">
-                    Lounge Access
+                  <Link to="/solutions/concierge" className="transition hover:text-white">
+                    Passport Fast-Track
                   </Link>
                 </li>
                 <li>
-                  <Link to="/services/guide" className="transition hover:text-white">
-                    Transport
+                  <Link to="/solutions/concierge" className="transition hover:text-white">
+                    Executive Lounge Access
                   </Link>
                 </li>
                 <li>
-                  <Link to="/services/guide" className="transition hover:text-white">
-                    Hotels
+                  <Link to="/solutions/travel" className="transition hover:text-white">
+                    Airside Tarmac Sedans
                   </Link>
                 </li>
                 <li>
-                  <Link to="/services/guide" className="transition hover:text-white">
-                    Concierge
+                  <Link to="/airports" className="transition hover:text-[#d9c18b] font-semibold">
+                    All 20+ Airport Hubs →
                   </Link>
                 </li>
               </ul>
             </div>
+
+            {/* Column 3: Private Aviation & Logistics */}
             <div>
-              <div className="text-[10px] uppercase tracking-[0.35em] text-white/50" style={mono}>
-                Company
+              <div className="text-[10px] uppercase tracking-[0.35em] text-[#d9c18b] font-bold" style={mono}>
+                Aviation Solutions
               </div>
-              <ul className="mt-5 space-y-3 text-[14px] text-white/80">
+              <ul className="mt-5 space-y-2.5 text-xs sm:text-[13px] text-slate-300">
                 <li>
-                  <Link to="/" className="transition hover:text-white">
-                    About Us
+                  <Link to="/charter" className="transition hover:text-white">
+                    Private Jet Charter
                   </Link>
                 </li>
                 <li>
-                  <Link to="/" className="transition hover:text-white">
-                    Our Team
+                  <Link to="/charter" className="transition hover:text-white">
+                    Helicopter Transfers
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/solutions/medical" className="transition hover:text-white">
+                    24/7 ICU Air Ambulance
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/solutions/cargo" className="transition hover:text-white">
+                    AVI Pet Transport
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/solutions/cargo" className="transition hover:text-white">
+                    Express Cargo Logistics
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4: Trust, Governance & Verification */}
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.35em] text-[#d9c18b] font-bold" style={mono}>
+                Governance & Trust
+              </div>
+              <ul className="mt-5 space-y-2.5 text-xs sm:text-[13px] text-slate-300">
+                <li>
+                  <Link to="/flight-verification" className="transition hover:text-[#d9c18b]">
+                    Flight & PNR Status
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/services/guide" className="transition hover:text-white">
+                    Standards & Heritage
                   </Link>
                 </li>
                 <li>
                   <Link to="/contact" className="transition hover:text-white">
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.35em] text-white/50" style={mono}>
-                Legal
-              </div>
-              <ul className="mt-5 space-y-3 text-[14px] text-white/80">
-                <li>
-                  <Link to="/" className="transition hover:text-white">
-                    Privacy Policy
+                    Duty Manager Contact
                   </Link>
                 </li>
                 <li>
-                  <Link to="/" className="transition hover:text-white">
-                    Terms of Use
+                  <Link to="/account" className="transition hover:text-white">
+                    VIP Client Portal
                   </Link>
                 </li>
                 <li>
-                  <Link to="/admin" className="transition hover:text-white">
-                    Admin Console
+                  <Link to="/services/guide" className="transition hover:text-white">
+                    Terms & Privacy Protocol
                   </Link>
                 </li>
               </ul>
             </div>
           </div>
         </div>
-        <div
-          className="mt-8 flex flex-wrap items-center justify-between gap-4 text-[11px] text-white/50"
-          style={mono}
-        >
-          <div>{branding.copyright_text}</div>
-          <div className="flex gap-5">
-            {branding.facebook_url && (
-              <a
-                href={branding.facebook_url}
-                className="hover:text-white"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Facebook
-              </a>
-            )}
-            {branding.twitter_url && (
-              <a
-                href={branding.twitter_url}
-                className="hover:text-white"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Twitter
-              </a>
-            )}
-            {branding.instagram_url && (
-              <a
-                href={branding.instagram_url}
-                className="hover:text-white"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Instagram
-              </a>
-            )}
-            {branding.linkedin_url && (
-              <a
-                href={branding.linkedin_url}
-                className="hover:text-white"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LinkedIn
-              </a>
-            )}
-            {branding.youtube_url && (
-              <a
-                href={branding.youtube_url}
-                className="hover:text-white"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                YouTube
-              </a>
-            )}
+
+        {/* Bottom Legal Copyright Bar */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          <div>
+            © {new Date().getFullYear()} Shafsky Aviation Services Pvt. Ltd. All rights reserved.
+          </div>
+          <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400" style={mono}>
+            <ShieldCheck size={14} className="text-[#c5a869]" />
+            <span>DGCA Security Protocol & Airside Clearance Compliant</span>
           </div>
         </div>
       </div>

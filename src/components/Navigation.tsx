@@ -10,14 +10,14 @@ import {
   Hotel,
   Package,
   HeartPulse,
-  Sparkles,
+  Car,
+  PhoneCall,
   ArrowRight,
   User,
+  ShieldCheck,
 } from "lucide-react";
 import { useBranding } from "@/lib/branding/branding.context";
-
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
-const displayFont = { fontFamily: "'Fraunces', serif" };
+import { C, mono, display } from "@/components/home/theme";
 
 interface MegaMenuItem {
   title: string;
@@ -38,7 +38,7 @@ interface NavCategory {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
- * STREAMLINED 5-SERVICE MEGA MENU NAVIGATION STRUCTURE
+ * SHAFSKY CATALOG-ALIGNED 5-SERVICE MEGA MENU NAVIGATION STRUCTURE
  * ─────────────────────────────────────────────────────────────────────────── */
 const NAV_STRUCTURE: NavCategory[] = [
   {
@@ -49,43 +49,50 @@ const NAV_STRUCTURE: NavCategory[] = [
     label: "Services",
     href: "/solutions/concierge",
     megaMenu: {
-      eyebrow: "Our Concierge Ecosystem",
-      description: "Explore our flagship airside, travel, cargo, medical, and private aviation solutions.",
+      eyebrow: "Services Ecosystem",
+      description: "Explore our authoritative suite of airside hospitality, private aviation, and specialized mission logistics.",
       items: [
         {
-          title: "Airport Services",
+          title: "Meet & Greet and Lounge",
           href: "/solutions/concierge",
           icon: Crown,
-          desc: "Everything you need for a smooth airport journey: Meet & Greet, Airport Lounge, Fast Track & Airport Transfer.",
-          tag: "Airport Services",
+          desc: "Dedicated personal escort, aerobridge greeting, baggage porterage, priority clearance & premier lounge access.",
+          tag: "Flagship Airside",
         },
         {
-          title: "Travel Services",
-          href: "/solutions/travel",
-          icon: Hotel,
-          desc: "5-Star luxury palace hotel reservations, consular visa clearance & executive flight booking.",
-          tag: "Bespoke Hospitality",
-        },
-        {
-          title: "Cargo & Logistics",
-          href: "/solutions/cargo",
-          icon: Package,
-          desc: "Express airside freight clearance & climate-controlled live animal pet AVI travel escort.",
-          tag: "White-Glove Freight",
-        },
-        {
-          title: "Medical Assist",
-          href: "/solutions/medical",
-          icon: HeartPulse,
-          desc: "24/7 Airborne ICU medevac flights, mobile rail ICU ambulance & dignified repatriation.",
-          tag: "Emergency ICU",
-        },
-        {
-          title: "Private Aviation",
+          title: "Private Aviation & Air Charter",
           href: "/charter",
           icon: Plane,
-          desc: "On-demand executive private jet charters & private FBO general aviation suites.",
-          tag: "VIP Charter",
+          desc: "Heavy jets, super midsize, and twin helicopter charters on demand with 2-hour rapid dispatch.",
+          tag: "VIP Aviation",
+        },
+        {
+          title: "Luxury Ground Transport",
+          href: "/solutions/travel",
+          icon: Car,
+          desc: "Chauffeured Maybach, Mercedes S-Class, and direct tarmac sedan transfer to the aircraft.",
+          tag: "Ground Luxury",
+        },
+        {
+          title: "Transit Hotel & VIP Hospitality",
+          href: "/solutions/travel",
+          icon: Hotel,
+          desc: "Palace estate bookings, 5-star transit hotel rooms, and private flight crew accommodations.",
+          tag: "5-Star Stay",
+        },
+        {
+          title: "Medical & Critical Evacuation",
+          href: "/solutions/medical",
+          icon: HeartPulse,
+          desc: "ICU-equipped air ambulance, bedside-to-bedside transfer, and specialized wheelchair care.",
+          tag: "Critical Care",
+        },
+        {
+          title: "Secure Cargo & Express Courier",
+          href: "/solutions/cargo",
+          icon: Package,
+          desc: "Airside secure courier, high-value art/diplomatic pouch handling, and urgent airfreight.",
+          tag: "Secure Logistics",
         },
       ],
     },
@@ -95,8 +102,8 @@ const NAV_STRUCTURE: NavCategory[] = [
     href: "/airports",
   },
   {
-    label: "About",
-    href: "/services/guide",
+    label: "Private Charter",
+    href: "/charter",
   },
   {
     label: "Contact",
@@ -107,24 +114,24 @@ const NAV_STRUCTURE: NavCategory[] = [
 export function Navigation({ visible = true }: { visible?: boolean }) {
   const { branding } = useBranding();
   const location = useLocation();
-
-  const [roles, setRoles] = useState<string[]>([]);
-  const [userName, setUserName] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [roles, setRoles] = useState<string[]>([]);
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null);
 
-  const getDashboardPath = () => {
-    if (roles.includes("super_admin")) return "/super-admin";
-    if (roles.includes("admin")) return "/admin";
-    return "/dashboard";
+  const getDashboardPath = (): any => {
+    if (roles.includes("super_admin")) return "/super-admin/dashboard";
+    if (roles.includes("staff")) return "/staff/dashboard";
+    if (roles.includes("admin")) return "/admin/dashboard";
+    return "/account";
   };
 
   const getDashboardLabel = () => {
     if (roles.includes("super_admin")) return "Super Admin";
-    if (roles.includes("admin")) return "Admin Console";
-    return userName || "My Account";
+    if (roles.includes("staff")) return "Operations";
+    if (roles.includes("admin")) return "Admin Portal";
+    return "VIP Account";
   };
 
   useEffect(() => {
@@ -132,8 +139,8 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     (async () => {
       try {
         const s = await getSessionInfo();
-        if (s?.roles && mounted) {
-          setRoles(s.roles);
+        if (mounted && s?.userId && s.roles) {
+          setRoles(s.roles as string[]);
         }
       } catch (e) {
         // ignore guest state
@@ -159,283 +166,296 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     setHoveredCategory(null);
   }, [location.pathname]);
 
+  if (!visible) return null;
+
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
-          ? "bg-[#faf9f5]/95 backdrop-blur-xl border-b border-slate-200/80 shadow-md py-2.5 sm:py-3"
-          : "bg-gradient-to-b from-[#faf9f5] via-[#faf9f5]/90 to-transparent py-3 sm:py-4"
-        } ${!visible ? "-translate-y-full" : "translate-y-0"}`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm py-3"
+          : "bg-white/90 backdrop-blur-md border-b border-slate-200/80 py-4"
+      }`}
     >
-      <div className="relative max-w-[1440px] mx-auto w-full px-4 sm:px-6 md:px-8 flex items-center justify-between min-h-[56px]">
-        {/* ── 1. LOGO SECTION (Left - Balanced & Elegant) ── */}
-        <div className="relative shrink-0 z-20 flex items-center">
-          <Link to="/" className="inline-flex items-center gap-3 group">
-            {branding.logo_url ? (
+      <div className="mx-auto max-w-[1480px] px-4 sm:px-8 md:px-14">
+        <div className="flex items-center justify-between">
+          {/* Brand Logo & Emblem */}
+          <Link to="/" className="flex items-center gap-3 group shrink-0">
+            <div className="relative flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-lime-50 border-2 border-lime-500/40 p-1 shadow-sm group-hover:border-lime-500 transition-all duration-300">
               <img
-                src={branding.logo_dark_url || branding.logo_url}
-                alt={branding.company_name}
-                className="h-11 sm:h-13 md:h-14 max-h-[56px] w-auto max-w-[220px] sm:max-w-[260px] md:max-w-[300px] object-contain transition-all duration-300 transform-gpu group-hover:scale-[1.02]"
+                src={branding.logo_url || "/logo.png"}
+                alt="Shafsky Aviation Services"
+                className="h-full w-full object-contain"
+                onError={(e) => {
+                  (e.target as HTMLElement).style.display = "none";
+                }}
               />
-            ) : (
-              <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#84cc16] flex items-center justify-center text-[#0f172a] shadow-md group-hover:scale-105 transition-transform duration-300">
-                  <Plane className="w-4 h-4 sm:w-5 sm:h-5 transform -rotate-45" />
-                </div>
-                <div>
-                  <div className="text-sm sm:text-base font-extrabold uppercase tracking-[0.25em] text-slate-900 leading-none">
-                    {branding.company_name.split(" ")[0]?.toUpperCase() || "SHAFSKY"}
-                  </div>
-                  <div className="text-[8px] sm:text-[9px] tracking-[0.45em] text-slate-600 uppercase mt-1 leading-none font-bold">
-                    {(branding.company_name.split(" ").slice(1).join(" ") || "AVIATION").toUpperCase()}
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
+            <div className="flex flex-col">
+              <span
+                className="text-[17px] sm:text-[19px] font-bold tracking-tight text-slate-900 group-hover:text-lime-600 transition-colors"
+                style={display}
+              >
+                SHAFSKY
+              </span>
+              <span
+                className="text-[8.5px] uppercase tracking-[0.35em] text-lime-700 font-mono -mt-1 font-bold"
+                style={mono}
+              >
+                Aviation Services
+              </span>
+            </div>
           </Link>
-        </div>
 
-        {/* ── 2. CENTER NAVIGATION LINKS WITH UNIFIED "SERVICES" MEGA MENU ── */}
-        <nav aria-label="Main Navigation" className="hidden lg:flex items-center justify-center flex-1 mx-8 z-20">
-          <ul className="flex items-center gap-7 xl:gap-9">
+          {/* Desktop Navigation Links */}
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
             {NAV_STRUCTURE.map((item) => {
+              const isMega = !!item.megaMenu;
+              const isHovered = hoveredCategory === item.label;
               const isActive =
                 item.href === "/"
                   ? location.pathname === "/"
                   : location.pathname.startsWith(item.href);
 
-              const hasMegaMenu = Boolean(item.megaMenu);
-
               return (
-                <li
+                <div
                   key={item.label}
                   className="relative py-2"
-                  onMouseEnter={() => setHoveredCategory(item.label)}
-                  onMouseLeave={() => setHoveredCategory(null)}
+                  onMouseEnter={() => isMega && setHoveredCategory(item.label)}
+                  onMouseLeave={() => isMega && setHoveredCategory(null)}
                 >
                   <Link
                     to={item.href}
-                    className={`text-[12px] font-bold uppercase tracking-[0.18em] transition-colors duration-200 flex items-center gap-1.5 py-1 ${isActive ? "text-emerald-700 font-extrabold" : "text-slate-700 hover:text-slate-900"
-                      }`}
+                    className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-semibold transition-all duration-200 ${
+                      isActive
+                        ? "text-slate-950 bg-lime-100 border border-lime-300"
+                        : "text-slate-700 hover:text-slate-950 hover:bg-slate-100"
+                    }`}
                   >
                     <span>{item.label}</span>
-                    {hasMegaMenu && (
+                    {isMega && (
                       <ChevronDown
-                        className={`w-3.5 h-3.5 text-emerald-700 transition-transform duration-300 ${hoveredCategory === item.label ? "rotate-180 text-emerald-700" : "opacity-70"
-                          }`}
+                        size={13}
+                        className={`transition-transform duration-300 text-lime-700 ${
+                          isHovered ? "rotate-180" : ""
+                        }`}
                       />
                     )}
                   </Link>
-                  <span
-                    className={`absolute bottom-0 left-0 w-full h-[2.5px] bg-emerald-600 rounded-full transition-transform duration-300 ${isActive || hoveredCategory === item.label ? "scale-x-100" : "scale-x-0"
-                      }`}
-                  />
 
-                  {/* UNIFIED 5-SERVICES MEGA MENU DROPDOWN */}
-                  {hasMegaMenu && item.megaMenu && (
-                    <div
-                      className={`absolute top-full left-1/2 -translate-x-1/2 pt-4 w-[680px] transition-all duration-250 pointer-events-none ${hoveredCategory === item.label
-                          ? "opacity-100 translate-y-0 pointer-events-auto"
-                          : "opacity-0 -translate-y-2 pointer-events-none"
-                        }`}
-                    >
-                      <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-xl overflow-hidden relative">
-                        {/* Mega Header */}
-                        <div className="mb-4 pb-3 border-b border-slate-100">
-                          <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-emerald-700 flex items-center gap-2 font-bold">
-                            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>{item.megaMenu.eyebrow}</span>
-                          </div>
-                          <p className="mt-1 text-xs text-slate-600 font-sans font-medium">
+                  {/* Mega Menu Dropdown */}
+                  {isMega && item.megaMenu && isHovered && (
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-[720px] rounded-2xl bg-white border-2 border-lime-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.12)] p-6 backdrop-blur-2xl transition-all duration-300">
+                      <div className="flex items-center justify-between pb-4 border-b border-slate-200 mb-5">
+                        <div>
+
+                          <p className="text-xs text-slate-600 mt-1 max-w-md">
                             {item.megaMenu.description}
                           </p>
                         </div>
+                        <Link
+                          to="/solutions/concierge"
+                          className="text-[11px] font-mono text-lime-700 hover:text-lime-800 flex items-center gap-1 uppercase tracking-wider group/view font-bold"
+                          style={mono}
+                        >
+                          <span>Full Ecosystem</span>
+                          <ArrowRight
+                            size={12}
+                            className="transition-transform group-hover/view:translate-x-1"
+                          />
+                        </Link>
+                      </div>
 
-                        {/* Mega Items Grid (5 Services) */}
-                        <div className="grid grid-cols-1 gap-2.5">
-                          {item.megaMenu.items.map((subItem, sIdx) => {
-                            const SubIcon = subItem.icon || Crown;
-                            return (
-                              <Link
-                                key={sIdx}
-                                to={subItem.href}
-                                className="group/item p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200/60 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all duration-200 flex items-start gap-3.5"
-                              >
-                                <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 group-hover/item:scale-110 transition-transform">
-                                  <SubIcon className="w-4 h-4" />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                  <div className="flex items-center justify-between">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {item.megaMenu.items.map((sub) => {
+                          const SubIcon = sub.icon;
+                          return (
+                            <Link
+                              key={sub.title}
+                              to={sub.href}
+                              className="group/item flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 hover:bg-lime-50/80 border border-slate-200 hover:border-lime-400 transition-all duration-200"
+                            >
+                              <div className="h-9 w-9 rounded-lg bg-lime-100 border border-lime-300 flex items-center justify-center text-lime-700 group-hover/item:bg-lime-500 group-hover/item:text-slate-950 transition-all shrink-0 mt-0.5">
+                                <SubIcon size={18} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[13px] font-bold text-slate-900 group-hover/item:text-lime-800 transition-colors">
+                                    {sub.title}
+                                  </span>
+                                  {sub.tag && (
                                     <span
-                                      className="text-xs font-bold text-slate-900 group-hover/item:text-emerald-700 transition-colors truncate"
-                                      style={displayFont}
+                                      className="text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-lime-100 text-lime-800 border border-lime-300 font-bold"
+                                      style={mono}
                                     >
-                                      {subItem.title}
+                                      {sub.tag}
                                     </span>
-                                    {subItem.tag && (
-                                      <span className="text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold shrink-0">
-                                        {subItem.tag}
-                                      </span>
-                                    )}
-                                  </div>
-                                  <p className="mt-1 text-[11px] text-slate-600 font-medium leading-relaxed">
-                                    {subItem.desc}
-                                  </p>
+                                  )}
                                 </div>
-                              </Link>
-                            );
-                          })}
-                        </div>
+                                <p className="text-[11.5px] text-slate-600 mt-1 leading-snug line-clamp-2">
+                                  {sub.desc}
+                                </p>
+                              </div>
+                            </Link>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
-                </li>
+                </div>
               );
             })}
-          </ul>
-        </nav>
+          </nav>
 
-        {/* ── 3. RIGHT ACTIONS: SIGN IN & SINGLE "BOOK NOW" LIME GREEN CTA ── */}
-        <div className="hidden lg:flex items-center gap-4 shrink-0 z-20">
-          {roles.length > 0 ? (
-            <Link
-              to={getDashboardPath() as any}
-              className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-800 hover:text-emerald-700 px-2 py-2 transition flex items-center gap-1.5"
+          {/* Right Action Controls: 24/7 Operations Desk & CTA */}
+          <div className="hidden sm:flex items-center gap-4">
+            <a
+              href="tel:+919599087959"
+              className="hidden xl:flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-lime-50 border border-lime-300 text-[11px] text-slate-800 hover:border-lime-500 hover:text-lime-700 transition-all font-semibold"
               style={mono}
             >
-              <User className="w-3.5 h-3.5 text-emerald-700" />
-              <span>{getDashboardLabel()}</span>
-            </Link>
-          ) : (
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-lime-600" />
+              </span>
+              <span className="tracking-wide">24/7: +91 9599087959</span>
+            </a>
+
+            {roles.length > 0 ? (
+              <Link
+                to={getDashboardPath()}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-100 border border-slate-300 text-xs font-semibold text-slate-900 hover:border-lime-500 transition-colors"
+                style={mono}
+              >
+                <User size={14} className="text-lime-700" />
+                <span>{getDashboardLabel()}</span>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="text-xs font-semibold text-slate-700 hover:text-slate-950 px-2 py-1 transition-colors"
+                style={mono}
+              >
+                VIP Portal
+              </Link>
+            )}
+
             <Link
-              to="/auth"
-              className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-700 hover:text-slate-900 px-2.5 py-2 transition"
+              to="/book"
+              className="group/btn relative overflow-hidden inline-flex items-center gap-2 rounded-xl bg-[#84cc16] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-950 shadow-md shadow-lime-500/20 transition-all duration-300 hover:shadow-lg hover:shadow-lime-500/40 hover:-translate-y-0.5"
               style={mono}
             >
-              Sign In
+              <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
+              <div className="absolute inset-0 bg-[#a3e635] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
+              <span className="relative z-10">Book Now</span>
+              <ArrowRight size={14} className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
             </Link>
-          )}
-
-          {/* SINGLE PRIMARY CTA: LIME GREEN "BOOK NOW" */}
-          <Link
-            to="/book"
-            className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#0f172a] bg-[#84cc16] hover:bg-[#65a30d] hover:text-[#0f172a] rounded-full px-6 py-2.5 transition duration-200 shadow-sm hover:shadow-md flex items-center gap-2 transform hover:scale-[1.03]"
-            style={mono}
-          >
-            <span>BOOK NOW</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        {/* MOBILE MENU TOGGLE BUTTON */}
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="lg:hidden text-slate-800 hover:text-slate-900 p-2.5 rounded-xl bg-slate-100/90 active:bg-slate-200 border border-slate-200/80 ml-auto z-30 touch-manipulation min-w-[42px] min-h-[42px] flex items-center justify-center"
-          aria-label="Toggle navigation menu"
-        >
-          {mobileOpen ? <X size={22} className="text-emerald-700" /> : <Menu size={22} />}
-        </button>
-      </div>
-
-      {/* MOBILE MENU DRAWER */}
-      <div
-        className={`fixed inset-0 w-full h-[100dvh] bg-[#faf9f5]/98 backdrop-blur-2xl px-5 sm:px-8 pt-24 pb-8 flex flex-col justify-between transition-all duration-300 ease-in-out lg:hidden z-20 overflow-y-auto ${mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
-      >
-        <div className="flex flex-col gap-4">
-          <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-emerald-700 font-bold mb-1">
-            Navigation Menu
           </div>
 
-          <ul className="flex flex-col gap-1.5">
-            {NAV_STRUCTURE.map((item) => {
-              const hasMega = Boolean(item.megaMenu);
-              const isExpanded = expandedMobileCategory === item.label;
-
-              return (
-                <li key={item.label} className="border-b border-slate-200/60 pb-2">
-                  <div className="flex items-center justify-between">
-                    <Link
-                      to={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="text-base sm:text-lg font-bold uppercase tracking-[0.12em] text-slate-800 hover:text-emerald-700 py-1.5 touch-manipulation"
-                    >
-                      {item.label}
-                    </Link>
-
-                    {hasMega && (
-                      <button
-                        onClick={() => setExpandedMobileCategory(isExpanded ? null : item.label)}
-                        className="p-2.5 text-slate-500 hover:text-emerald-700 min-w-[44px] min-h-[44px] flex items-center justify-center"
-                        aria-label={`Expand ${item.label} submenu`}
-                      >
-                        <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-180 text-emerald-700" : ""}`} />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Sub-items accordion for Services */}
-                  {hasMega && isExpanded && item.megaMenu && (
-                    <div className="mt-2 pl-3 flex flex-col gap-2 border-l-2 border-emerald-500/40 my-2">
-                      {item.megaMenu.items.map((sub, sIdx) => {
-                        const SubIcon = sub.icon || Crown;
-                        return (
-                          <Link
-                            key={sIdx}
-                            to={sub.href}
-                            onClick={() => setMobileOpen(false)}
-                            className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200/80 text-slate-800 hover:text-slate-900 active:bg-emerald-50/50"
-                          >
-                            <SubIcon className="w-4 h-4 text-emerald-700 shrink-0" />
-                            <div className="text-xs min-w-0">
-                              <div className="font-bold text-slate-900 truncate">{sub.title}</div>
-                              <div className="text-[10px] text-slate-600 line-clamp-1">{sub.desc}</div>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-
-        {/* Mobile Action Bar */}
-        <div className="pt-6 border-t border-slate-200/80 flex flex-col gap-3 pb-safe">
-          {roles.length > 0 ? (
-            <Link
-              to={getDashboardPath() as any}
-              onClick={() => setMobileOpen(false)}
-              className="w-full text-center py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 font-mono text-xs font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2"
-              style={mono}
-            >
-              <User className="w-4 h-4 text-emerald-700" />
-              <span>{getDashboardLabel()}</span>
-            </Link>
-          ) : (
-            <Link
-              to="/auth"
-              onClick={() => setMobileOpen(false)}
-              className="w-full text-center py-3 rounded-2xl bg-white border border-slate-200 text-slate-800 font-mono text-xs font-bold uppercase tracking-[0.15em]"
-              style={mono}
-            >
-              Sign In
-            </Link>
-          )}
-
-          <Link
-            to="/book"
-            onClick={() => setMobileOpen(false)}
-            className="w-full text-center py-3.5 rounded-full bg-[#84cc16] hover:bg-[#65a30d] text-[#0f172a] font-mono text-xs font-extrabold uppercase tracking-[0.2em] shadow-sm flex items-center justify-center gap-2"
-            style={mono}
+          {/* Mobile Menu Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="lg:hidden p-2 rounded-lg bg-slate-100 border border-slate-300 text-slate-900 hover:border-lime-500 transition-colors"
+            aria-label="Toggle menu"
           >
-            <span>BOOK NOW</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Full-Screen Drawer */}
+      {mobileOpen && (
+        <div className="lg:hidden fixed inset-x-0 top-full h-[calc(100vh-70px)] bg-white border-t border-slate-200 p-6 flex flex-col justify-between overflow-y-auto z-50 shadow-xl">
+          <div className="space-y-4">
+            <div
+              className="text-[10px] uppercase tracking-[0.3em] text-lime-700 font-bold pb-2 border-b border-slate-200"
+              style={mono}
+            >
+              Navigation Menu
+            </div>
+
+            <div className="flex flex-col gap-2">
+              {NAV_STRUCTURE.map((item) => {
+                const isMega = !!item.megaMenu;
+                const isExpanded = expandedMobileCategory === item.label;
+
+                return (
+                  <div key={item.label} className="border-b border-slate-100 pb-2">
+                    {isMega ? (
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setExpandedMobileCategory(isExpanded ? null : item.label)
+                          }
+                          className="w-full flex items-center justify-between py-2.5 text-base font-semibold text-slate-900"
+                        >
+                          <span>{item.label}</span>
+                          <ChevronDown
+                            size={16}
+                            className={`text-lime-700 transition-transform ${
+                              isExpanded ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+                        {isExpanded && item.megaMenu && (
+                          <div className="pl-3 mt-2 space-y-2.5 border-l-2 border-lime-400">
+                            {item.megaMenu.items.map((sub) => {
+                              const SIcon = sub.icon;
+                              return (
+                                <Link
+                                  key={sub.title}
+                                  to={sub.href}
+                                  className="flex items-center gap-2.5 py-1.5 text-sm font-medium text-slate-700 hover:text-lime-700"
+                                >
+                                  <SIcon size={16} className="text-lime-600" />
+                                  <span>{sub.title}</span>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <Link
+                        to={item.href}
+                        className="block py-2.5 text-base font-semibold text-slate-900 hover:text-lime-700"
+                      >
+                        {item.label}
+                      </Link>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Mobile Bottom Quick Actions */}
+          <div className="pt-6 border-t border-slate-200 space-y-3">
+            <a
+              href="tel:+919599087959"
+              className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-lime-50 border border-lime-300 text-xs font-bold text-slate-900 tracking-wider uppercase"
+              style={mono}
+            >
+              <PhoneCall size={14} className="text-lime-600" />
+              <span>Call 24/7 Desk (+91 9599087959)</span>
+            </a>
+
+            <Link
+              to="/book"
+              className="group/btn relative overflow-hidden w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#84cc16] text-slate-950 text-xs font-bold tracking-wider uppercase shadow-md shadow-lime-500/25 transition-all duration-300 hover:shadow-lg hover:shadow-lime-500/40 hover:-translate-y-0.5"
+              style={mono}
+            >
+              <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
+              <div className="absolute inset-0 bg-[#a3e635] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
+              <span className="relative z-10">Book Now</span>
+              <ArrowRight size={14} className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
 
+export default Navigation;

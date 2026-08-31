@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { createFileRoute, useNavigate, useLocation } from "@tanstack/react-router";
 import { ServiceLayout } from "@/components/services/ServiceLayout";
 
-import medicalAssistImg from "@/assets/medical-assist.png";
-import vipTransport1 from "@/assets/vip-transport-1.png";
+import { ASSETS } from "@/lib/assets";
+
+const medicalAssistImg = ASSETS.medicalAssist;
+const vipTransport1 = ASSETS.vipTransport;
 
 export const Route = createFileRoute("/solutions/medical")({
   head: () => ({

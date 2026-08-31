@@ -1,199 +1,158 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import { Plane } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, PhoneCall, ShieldCheck, Sparkles } from "lucide-react";
+import { mono, display } from "../theme";
 
-const MotionLink = motion.create(Link);
-const MotionA = motion.a;
-
-const VIDEOS = [
-  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260629_030107_874273ea-684a-4e90-bb96-8fdfde48d53d.mp4",
-  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260629_032424_3c9c2a9d-807b-4482-80e6-dd6d9dfd4545.mp4",
-  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260627_094019_4214ea73-b963-46a4-8327-61489192de99.mp4",
+const CTA_VIDEOS = [
+  {
+    id: 0,
+    label: "01 / WATER WAVE",
+    url: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260629_030107_874273ea-684a-4e90-bb96-8fdfde48d53d.mp4",
+  },
+  {
+    id: 1,
+    label: "02 / GRIDWAVE",
+    url: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260629_032424_3c9c2a9d-807b-4482-80e6-dd6d9dfd4545.mp4",
+  },
+  {
+    id: 2,
+    label: "03 / LIGHT TUNNEL",
+    url: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260627_094019_4214ea73-b963-46a4-8327-61489192de99.mp4",
+  },
 ];
 
 export function FinalCTA() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [videoSources, setVideoSources] = useState<string[]>(VIDEOS);
+  const [activeVideo, setActiveVideo] = useState(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  // Preload videos into object URLs for instant, smooth playback
+  // Ensure active video is playing with full hardware acceleration
   useEffect(() => {
-    let isMounted = true;
-    const objectUrls: string[] = [];
-
-    const preloadVideos = async () => {
-      const resolved = await Promise.all(
-        VIDEOS.map(async (url) => {
-          try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error("Fetch failed");
-            const blob = await res.blob();
-            const objUrl = URL.createObjectURL(blob);
-            objectUrls.push(objUrl);
-            return objUrl;
-          } catch {
-            return url;
-          }
-        })
-      );
-      if (isMounted) {
-        setVideoSources(resolved);
-      }
-    };
-
-    preloadVideos();
-
-    return () => {
-      isMounted = false;
-      objectUrls.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, []);
-
-  // Ensure active video is playing
-  useEffect(() => {
-    const currVideo = videoRefs.current[activeIndex];
-    if (currVideo) {
-      currVideo.play().catch(() => { });
+    const el = videoRefs.current[activeVideo];
+    if (el) {
+      el.play().catch(() => {});
     }
-  }, [activeIndex, videoSources]);
+  }, [activeVideo]);
 
   return (
-    <section className="relative min-h-[540px] sm:min-h-[640px] md:min-h-[740px] lg:min-h-[840px] w-full overflow-hidden flex items-center justify-center select-none bg-black">
-      {/* 100% Super Clear Crystal 4K Video Background Engine */}
+    <section className="relative min-h-[620px] md:min-h-[720px] w-full overflow-hidden flex items-center justify-center bg-black text-white border-b border-slate-800">
+      {/* 4K Ultra-Sharp Native Resolution Direct Video Stream (Zero Blur, Zero Dark Tint) */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        {/* 3 Animated Looping Crossfade Videos in Ultra Sharp 4K Clarity */}
-        {videoSources.map((src, idx) => (
+        {CTA_VIDEOS.map((vid, idx) => (
           <video
-            key={src + idx}
+            key={vid.id}
             ref={(el) => {
               videoRefs.current[idx] = el;
             }}
-            src={src}
+            src={vid.url}
             autoPlay
             muted
             loop
             playsInline
             preload="auto"
-            className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1200ms] ease-in-out will-change-transform ${activeIndex === idx ? "opacity-100" : "opacity-0"
-              }`}
+            disablePictureInPicture
+            disableRemotePlayback
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+              activeVideo === idx ? "opacity-100 z-10" : "opacity-0 z-0"
+            }`}
             style={{
-              imageRendering: "crisp-edges",
-              transform: "translateZ(0)",
+              imageRendering: "-webkit-optimize-contrast",
+              transform: "translate3d(0, 0, 0)",
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
             }}
           />
         ))}
-
-        {/* Minimal Crystal Clear Tint Overlay (Zero Blur, Preserves 100% Video Sharpness) */}
-        <div className="absolute inset-0 z-[1] bg-black/25" />
       </div>
 
-      {/* Main Crisp High-Definition Content */}
-      <div className="relative z-[2] mx-auto w-full max-w-5xl px-4 py-16 text-center sm:px-8 sm:py-24 md:py-32 lg:py-40">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-center"
-        >
-          {/* Top Line Tagline */}
-          <div className="inline-flex items-center justify-center gap-2.5 sm:gap-3 text-[9.5px] sm:text-[11px] uppercase tracking-[0.35em] sm:tracking-[0.45em] text-[#C084FC] font-semibold drop-shadow">
-            <span className="h-[1.5px] w-6 sm:w-8 md:w-12 bg-[#C084FC]" />
-            <span>Ready when you are</span>
-            <span className="h-[1.5px] w-6 sm:w-8 md:w-12 bg-[#C084FC]" />
-          </div>
-
-          {/* Heading - Razor Sharp 4K Typography */}
-          <h2
-            className="mt-5 sm:mt-6 md:mt-8 max-w-4xl text-[clamp(2.1rem,5.8vw,5.2rem)] leading-[1.08] tracking-[-0.02em] text-white font-normal drop-shadow-md"
-            style={{ fontFamily: "'Fraunces', Georgia, serif" }}
-          >
-            Let us plan your{" "}
-            <span
-              className="italic font-normal"
-              style={{
-                background: "linear-gradient(135deg, #A78BFA 0%, #C084FC 50%, #F472B6 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              next
-            </span>
-            <br />
-            <span
-              className="italic font-normal"
-              style={{
-                background: "linear-gradient(135deg, #A78BFA 0%, #C084FC 50%, #F472B6 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              welcome.
-            </span>
-          </h2>
-
-          {/* Subtitle - Sharp High Contrast */}
-          <p className="mt-4 sm:mt-5 md:mt-6 max-w-xl text-[13.5px] sm:text-[15px] md:text-[16px] leading-relaxed text-[#E2E8F0] font-medium drop-shadow">
-            A guest relations officer will reply within minutes. Tell us only where, and when.
-          </p>
-
-          {/* 3 Crisp Solid Action Buttons */}
-          <div className="mt-7 sm:mt-8 md:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-5">
-            {/* 1. Purple Book Services Button */}
-            <MotionA
-              href="#book"
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#7C3AED] px-6 sm:px-8 py-3.5 sm:py-4 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-white transition-colors hover:bg-[#6D28D9] touch-manipulation"
-              style={{ fontFamily: "'JetBrains Mono', monospace" }}
-            >
-              <span>Book Services</span>
-              <span className="text-sm font-bold leading-none">›</span>
-            </MotionA>
-
-            {/* 2. Vibrant Lime Green Private Charter Button */}
-            <MotionLink
-              to="/charter"
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-full bg-[#84CC16] px-6 sm:px-8 py-3.5 sm:py-4 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[#090a0f] transition-colors hover:bg-[#65A30D] hover:text-white touch-manipulation"
-              style={{ fontFamily: "'JetBrains Mono', monospace" }}
-            >
-              <Plane className="h-3.5 sm:h-4 w-3.5 sm:w-4 -rotate-45" />
-              <span>Private Charter</span>
-            </MotionLink>
-
-            {/* 3. Pure Crystal White / Glass WhatsApp Button */}
-            <MotionA
-              href="https://wa.me/919599087959"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center justify-center rounded-full border-2 border-white/60 bg-white/10 px-6 sm:px-8 py-3.5 sm:py-4 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-white transition-colors hover:border-white hover:bg-white hover:text-[#090a0f] touch-manipulation"
-              style={{ fontFamily: "'JetBrains Mono', monospace" }}
-            >
-              WhatsApp Us
-            </MotionA>
-          </div>
-
-
-          {/* Interactive Video Switcher Dots */}
-          <div className="mt-8 flex items-center justify-center gap-2.5" aria-label="Video switcher">
-            {VIDEOS.map((_, idx) => (
+      {/* Main Crisp Editorial Content */}
+      <div className="relative z-30 mx-auto w-full max-w-5xl px-4 py-20 text-center sm:px-8 sm:py-28 md:py-32 flex flex-col items-center">
+        {/* Video Switcher Buttons with Clean Frosted Glass */}
+        <div className="flex items-center justify-center gap-4 sm:gap-6 flex-wrap mb-8 pb-4 border-b border-white/20 bg-black/30 px-6 py-2.5 rounded-full backdrop-blur-xs">
+          {CTA_VIDEOS.map((vid) => {
+            const isActive = activeVideo === vid.id;
+            return (
               <button
-                key={idx}
+                key={vid.id}
                 type="button"
-                onClick={() => setActiveIndex(idx)}
-                className={`h-2 rounded-full transition-all duration-300 ${activeIndex === idx ? "w-8 bg-[#C084FC]" : "w-2 bg-white/40 hover:bg-white/80"
+                onClick={() => setActiveVideo(vid.id)}
+                className={`group relative text-[11px] tracking-wider uppercase font-mono font-bold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
+                  isActive
+                    ? "text-lime-400 opacity-100 scale-105"
+                    : "text-white/80 opacity-70 hover:opacity-100 hover:translate-x-1"
+                }`}
+                style={mono}
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
+                    isActive ? "bg-lime-400" : "bg-white/60 group-hover:bg-lime-400"
                   }`}
-                aria-label={`Switch to video background ${idx + 1}`}
-              />
-            ))}
-          </div>
-        </motion.div>
+                />
+                <span>{vid.label}</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="active-cta-video-indicator"
+                    className="absolute -bottom-1.5 inset-x-0 h-0.5 bg-lime-400"
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Eyebrow */}
+        <div className="inline-flex items-center gap-3 text-[9.5px] sm:text-[11px] uppercase tracking-[0.35em] sm:tracking-[0.45em] text-lime-400 font-bold mb-6" style={mono}>
+          <span className="h-px w-8 bg-lime-400" />
+          <Sparkles size={12} className="text-lime-400" />
+          <span>ENGINEERING THE EDGE OF FLIGHT</span>
+          <span className="h-px w-8 bg-lime-400" />
+        </div>
+
+        {/* Main Headline with Clean High-Contrast Text */}
+        <h2
+          className="text-[clamp(2.4rem,5.5vw,4.8rem)] leading-[1.05] text-white font-bold tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]"
+          style={display}
+        >
+          Your Journey Deserves{" "}
+          <span className="text-lime-400">
+            Flawless Execution.
+          </span>
+        </h2>
+
+        {/* Description */}
+        <p className="mt-6 text-sm sm:text-base md:text-lg text-white font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]">
+          Experience personal airside escorts, priority customs clearance, and bespoke private jet charter across 20+ Indian hubs and global destinations.
+        </p>
+
+        {/* Dual Luxury Action Buttons */}
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+          <Link
+            to="/book"
+            className="group/btn relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-full bg-[#84cc16] px-8 py-4 text-xs font-bold uppercase tracking-[0.22em] text-slate-950 transition-all duration-300 hover:bg-[#a3e635] hover:-translate-y-0.5 cursor-pointer font-mono"
+            style={mono}
+          >
+            <span className="relative z-10">Book Now</span>
+            <ArrowRight size={15} className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
+          </Link>
+
+          <a
+            href="tel:+919599087959"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-full bg-black/60 hover:bg-black/80 border-2 border-white/60 px-8 py-4 text-xs font-bold uppercase tracking-[0.22em] text-white transition-all hover:border-lime-400 cursor-pointer font-mono"
+            style={mono}
+          >
+            <PhoneCall size={15} className="text-lime-400" />
+            <span>24/7 Desk (+91 9599087959)</span>
+          </a>
+        </div>
+
+        {/* Verification Guarantee */}
+        <div className="mt-10 flex items-center justify-center gap-2 text-xs text-white/95 font-mono drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]" style={mono}>
+          <ShieldCheck size={14} className="text-lime-400" />
+          <span>Official Airside Compliance · DGCA Protocol Authorized</span>
+        </div>
       </div>
     </section>
   );
 }
+
+export default FinalCTA;

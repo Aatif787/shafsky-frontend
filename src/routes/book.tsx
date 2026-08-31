@@ -1,73 +1,55 @@
-import React, { Suspense } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import React from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { BookingEngineSkeleton } from "@/components/ui/SkeletonLoader";
-import { AppErrorBoundary } from "@/components/ui/AppErrorBoundary";
-
-const BookingView = React.lazy(() => import("@/components/views/BookingView"));
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/home/sections/Footer";
+import { UniversalBookingHub, BookingServiceType } from "@/components/booking/UniversalBookingHub";
 
 const bookSearchSchema = z.object({
-  origin: z.string().optional().catch(""),
-  destination: z.string().optional().catch(""),
-  transit: z.string().optional().catch(""),
-  airport: z.string().optional().catch(""),
-  airport_name: z.string().optional().catch(""),
-  depart_date: z.string().optional().catch(""),
-  pax_adults: z.number().optional().catch(1),
-  pax_children: z.number().optional().catch(0),
-  pax_infants: z.number().optional().catch(0),
-  notes: z.string().optional().catch(""),
+  service: z.string().optional().catch("meet-greet"),
   service_id: z.string().optional().catch(""),
-  package_id: z.string().optional().catch(""),
-  booking_mode: z.string().optional().catch(""),
-  mode: z.string().optional().catch(""),
-  sub: z.string().optional().catch(""),
-  flight_number: z.string().optional().catch(""),
-  direction: z.string().optional().catch(""),
-  travel_type: z.string().optional().catch(""),
-  flight_type: z.string().optional().catch(""),
-  from_hero: z.string().optional().catch(""),
-  validated: z.string().optional().catch(""),
-  source: z.string().optional().catch(""),
 });
 
 export const Route = createFileRoute("/book")({
   validateSearch: (search) => bookSearchSchema.parse(search),
   head: () => ({
     meta: [
-      { title: "Book Airport Services — Shafsky Aviation Services" },
+      { title: "Book Luxury Aviation & Concierge Services — Shafsky Aviation" },
       {
         name: "description",
         content:
-          "Validate your flight details and book premium airport concierge services with Shafsky Aviation Services.",
+          "Reserve airport meet & greet, private jet charter, luxury transport, 5-star hotels and special services across 20+ Indian airports and global hubs.",
       },
     ],
   }),
-  errorComponent: ({ error }: { error: Error }) => (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center p-8 text-center bg-[#06090f] text-white">
-      <h2 className="text-xl font-bold font-mono text-red-400">Booking Engine Unavailable</h2>
-      <p className="mt-2 text-xs text-white/60 max-w-md">
-        Unable to load the booking engine: {error.message}
-      </p>
-      <Link to="/" className="mt-6 px-4 py-2 bg-white/10 hover:bg-white/20 text-xs font-mono uppercase tracking-widest text-white transition">
-        Return to Homepage
-      </Link>
-    </div>
-  ),
-  component: BookRouteComponent,
+  component: BookRoutePage,
 });
 
-import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
+function BookRoutePage() {
+  const search = Route.useSearch();
+  
+  // Normalize search service to valid booking tab
+  let initialTab: BookingServiceType = "meet-greet";
+  const s = (search.service || search.service_id || "").toLowerCase();
+  if (s.includes("charter") || s.includes("aviation") || s.includes("jet")) {
+    initialTab = "charter";
+  } else if (s.includes("transport") || s.includes("car") || s.includes("vehicle")) {
+    initialTab = "transport";
+  } else if (s.includes("hotel") || s.includes("stay")) {
+    initialTab = "hotel";
+  } else if (s.includes("special") || s.includes("pso") || s.includes("visa")) {
+    initialTab = "special";
+  }
 
-function BookRouteComponent() {
-  const searchParams = Route.useSearch();
   return (
-    <PageJourneyWrapper category="Book Now" categoryHref="/book" showCTA={false} showRelated={false}>
-      <AppErrorBoundary name="BookingView">
-        <Suspense fallback={<BookingEngineSkeleton />}>
-          <BookingView searchParams={searchParams} />
-        </Suspense>
-      </AppErrorBoundary>
-    </PageJourneyWrapper>
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between">
+      <Navigation visible={true} />
+      <main className="flex-1 pt-16 sm:pt-20">
+        <UniversalBookingHub initialService={initialTab} />
+      </main>
+      <Footer />
+    </div>
   );
 }
+
+export default BookRoutePage;

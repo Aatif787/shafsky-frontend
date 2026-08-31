@@ -366,7 +366,7 @@ function AssistanceHubPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FloatingInput
                       id="contact_email"
-                      label="Email Address *"
+                      label="Email *"
                       type="email"
                       value={form.email}
                       onChange={(e: any) => setForm({ ...form, email: e.target ? e.target.value : e })}

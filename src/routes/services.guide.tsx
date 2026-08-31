@@ -4,7 +4,9 @@ import { EnterpriseFAQ } from "@/components/faq/EnterpriseFAQ";
 import { BUSINESS } from "@/lib/constants";
 import { FAQ_ITEMS } from "@/lib/site-content";
 
-import meetGreetImg from "@/assets/meet-greet.png";
+import { ASSETS } from "@/lib/assets";
+
+const meetGreetImg = ASSETS.meetGreet;
 
 export const Route = createFileRoute("/services/guide")({
   head: () => ({

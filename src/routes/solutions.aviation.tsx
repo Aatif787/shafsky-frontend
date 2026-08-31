@@ -2,8 +2,10 @@ import { useState } from "react";
 import { createFileRoute, useNavigate, useLocation } from "@tanstack/react-router";
 import { ServiceLayout } from "@/components/services/ServiceLayout";
 
-import heroJet from "@/assets/hero-jet.png";
-import vipTransport1 from "@/assets/vip-transport-1.png";
+import { ASSETS } from "@/lib/assets";
+
+const heroJet = ASSETS.heroJet;
+const vipTransport1 = ASSETS.vipTransport;
 import { BUSINESS } from "@/lib/constants";
 
 export const Route = createFileRoute("/solutions/aviation")({

@@ -51,7 +51,7 @@ export function ContactSection({
 
       <div className="sm:col-span-2">
         <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-          Email Address *
+          Email *
         </label>
         <input
           type="email"

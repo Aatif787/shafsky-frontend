@@ -26,7 +26,9 @@ import { useHotelWorkflow } from "@/components/booking/hooks/useHotelWorkflow";
 import { createBooking } from "@/lib/bookings.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import desktop169HotelPlaneImg from "@/assets/desktop-169-hotel-plane.png";
+import { ASSETS } from "@/lib/assets";
+
+const desktop169HotelPlaneImg = ASSETS.hotelPlane;
 
 export interface HotelWorkflowProps {
   searchParams?: Record<string, any>;

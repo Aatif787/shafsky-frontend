@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { createFileRoute, useNavigate, useLocation } from "@tanstack/react-router";
 import { ServiceLayout } from "@/components/services/ServiceLayout";
 
-import meetGreetImg from "@/assets/meet-greet.png";
-import loungeImg from "@/assets/lounge.png";
-import fastTrackImg from "@/assets/fast-track.png";
-import vipTransport1 from "@/assets/vip-transport-1.png";
+import { ASSETS } from "@/lib/assets";
+
+const meetGreetImg = ASSETS.meetGreet;
+const loungeImg = ASSETS.lounge;
+const fastTrackImg = ASSETS.fastTrack;
+const vipTransport1 = ASSETS.vipTransport;
 
 export const Route = createFileRoute("/solutions/concierge")({
   head: () => ({

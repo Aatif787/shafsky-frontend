@@ -358,7 +358,7 @@ export function PassengerDetailsStep({
                   htmlFor="email"
                   className="block text-xs font-mono text-slate-900 uppercase tracking-wider font-bold mb-1.5"
                 >
-                  Email Address <span className="text-amber-600">*</span>
+                  Email <span className="text-amber-600">*</span>
                 </label>
                 <div className="relative">
                   <input

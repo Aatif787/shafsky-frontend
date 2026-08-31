@@ -43,10 +43,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const syncAuthCookie = (userId: string | null) => {
     if (typeof document === "undefined") return;
+    const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+    const secureFlag = isSecure ? "; Secure" : "";
     if (userId) {
-      document.cookie = `shafsky_user_id=${encodeURIComponent(userId)}; path=/; max-age=31536000`;
+      document.cookie = `shafsky_user_id=${encodeURIComponent(userId)}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
     } else {
-      document.cookie = "shafsky_user_id=; path=/; max-age=0";
+      document.cookie = `shafsky_user_id=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
     }
   };
 

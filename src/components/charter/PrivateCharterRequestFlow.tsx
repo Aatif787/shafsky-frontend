@@ -349,15 +349,17 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
 
     try {
       const res = await charterApi.submitRequest(payload);
-      if (res.success && res.data) {
-        setSubmissionResult({
-          reference: res.data.request_reference,
-          customerName: res.data.customer_name,
-          origin: res.data.origin,
-          destination: res.data.destination,
-        });
-        setStep(7);
-        toast.success(`Charter request ${res.data.request_reference} received.`);
+      if (res.success) {
+        if (res.data) {
+          setSubmissionResult({
+            reference: res.data.request_reference,
+            customerName: res.data.customer_name,
+            origin: res.data.origin,
+            destination: res.data.destination,
+          });
+          setStep(7);
+          toast.success(`Charter request ${res.data.request_reference} received.`);
+        }
       } else {
         toast.error(res.error || "Failed to submit charter request. Please check backend connection.");
       }
@@ -877,7 +879,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
 
             <div>
               <label className="block text-xs font-semibold text-[#44403C] mb-1.5">
-                Email Address <span className="text-red-500">*</span>
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"

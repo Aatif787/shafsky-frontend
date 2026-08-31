@@ -6,24 +6,21 @@ import { HeroSection } from "./HeroSection";
 import { BookingPanel } from "./booking/BookingPanel";
 import { ViewportMount } from "./ViewportMount";
 
-const SignatureConciergeSection = lazy(() =>
-  import("./sections/SignatureConciergeSection").then((m) => ({ default: m.SignatureConciergeSection })),
-);
 const WhyChooseUs = lazy(() => import("./sections/WhyChooseUs").then((m) => ({ default: m.WhyChooseUs })));
 const TrustBar = lazy(() => import("./sections/TrustBar").then((m) => ({ default: m.TrustBar })));
 const EnterpriseSolutions = lazy(() =>
   import("./sections/EnterpriseSolutions").then((m) => ({ default: m.EnterpriseSolutions })),
 );
-const Coverage = lazy(() => import("./sections/Coverage").then((m) => ({ default: m.Coverage })));
-const Fleet = lazy(() => import("./sections/Fleet").then((m) => ({ default: m.Fleet })));
+const VIPTestimonials = lazy(() =>
+  import("./sections/VIPTestimonials").then((m) => ({ default: m.VIPTestimonials })),
+);
 const Journey = lazy(() => import("./sections/Journey").then((m) => ({ default: m.Journey })));
-const Testimonials = lazy(() => import("./sections/Testimonials").then((m) => ({ default: m.Testimonials })));
 const FAQ = lazy(() => import("./sections/FAQ").then((m) => ({ default: m.FAQ })));
 const FinalCTA = lazy(() => import("./sections/FinalCTA").then((m) => ({ default: m.FinalCTA })));
 const Footer = lazy(() => import("./sections/Footer").then((m) => ({ default: m.Footer })));
 
 function SectionFallback({ height = 360 }: { height?: number }) {
-  return <div className="w-full bg-[#faf9f5]" style={{ minHeight: height }} aria-hidden />;
+  return <div className="w-full bg-[#050b14]" style={{ minHeight: height }} aria-hidden />;
 }
 
 function Deferred({
@@ -49,52 +46,49 @@ export function Hero({ visible = true }: { visible?: boolean }) {
       <Navigation visible={visible} />
       <HeroSection visible={visible} />
       <BookingPanel />
-      <Deferred height={520}>
-        <SignatureConciergeSection />
+
+      {/* 1. Quick Proof & Key Performance Stats Bar */}
+      <Deferred height={200}>
+        <TrustBar />
       </Deferred>
+
+      {/* 2. OUR SERVICES: Core Aviation & Hospitality Suite */}
+      <Deferred height={720}>
+        <EnterpriseSolutions />
+      </Deferred>
+
+      {/* 3. VIP GUEST TESTIMONIALS: Celebrities, Cricketers & Leaders */}
+      <Deferred height={680}>
+        <VIPTestimonials />
+      </Deferred>
+
+      {/* 7. Why Choose Shafsky Aviation */}
       <ScrollSection id="why">
         <Deferred>
           <WhyChooseUs />
         </Deferred>
       </ScrollSection>
-      <ScrollSection>
-        <Deferred height={220}>
-          <TrustBar />
-        </Deferred>
-      </ScrollSection>
-      <Deferred height={720}>
-        <EnterpriseSolutions />
-      </Deferred>
-      <ScrollSection id="coverage">
-        <Deferred height={480}>
-          <Coverage />
-        </Deferred>
-      </ScrollSection>
-      <ScrollSection>
-        <Deferred>
-          <Fleet />
-        </Deferred>
-      </ScrollSection>
+
+      {/* 8. 3-Step Passenger Journey */}
       <ScrollSection>
         <Deferred>
           <Journey />
         </Deferred>
       </ScrollSection>
-      <ScrollSection>
-        <Deferred height={520}>
-          <Testimonials />
-        </Deferred>
-      </ScrollSection>
+
+      {/* 13. Frequently Asked Questions */}
       <ScrollSection>
         <Deferred>
           <FAQ />
         </Deferred>
       </ScrollSection>
-      <ScrollSection>
-        <Deferred>
-          <FinalCTA />
-        </Deferred>
-      </ScrollSection>
+
+      {/* 14. Final Booking Call to Action */}
+      <Deferred height={320}>
+        <FinalCTA />
+      </Deferred>
+
+      {/* 15. Luxury Footer */}
       <ScrollSection isLast>
         <Deferred height={280}>
           <Footer />

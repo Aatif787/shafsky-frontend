@@ -31,7 +31,7 @@ export function BrandingHead() {
       <meta name="twitter:description" content={desc} />
       <meta name="twitter:image" content={branding.logo_url} />
 
-      {/* JSON-LD Organization Schema */}
+      {/* JSON-LD Organization Schema (Sanitized against script breakouts) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -56,7 +56,7 @@ export function BrandingHead() {
               branding.youtube_url,
               branding.twitter_url,
             ].filter(Boolean),
-          }),
+          }).replace(/</g, "\\u003c"),
         }}
       />
     </>

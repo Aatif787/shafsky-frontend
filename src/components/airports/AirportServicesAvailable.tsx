@@ -18,15 +18,16 @@ import { type Airport } from "@/data/airports";
 import { NoServicesState } from "@/components/ui/LuxuryFallbacks";
 import { MeetGreetPackageComparison } from "@/components/airports/MeetGreetPackageComparison";
 
-// Service image mapping
-import lounge from "@/assets/lounge.png";
-import vipTransport1 from "@/assets/vip-transport-1.png";
-import hotelImg from "@/assets/hotel.png";
-import fastTrackImg from "@/assets/fast-track.png";
-import cargoAssistImg from "@/assets/cargo-assist.png";
-import medicalAssistImg from "@/assets/medical-assist.png";
-import meetGreetImg from "@/assets/meet-greet.png";
-import vipConciergeImg from "@/assets/vip-concierge.png";
+import { ASSETS } from "@/lib/assets";
+
+const lounge = ASSETS.lounge;
+const vipTransport1 = ASSETS.vipTransport;
+const hotelImg = ASSETS.hotel;
+const fastTrackImg = ASSETS.fastTrack;
+const cargoAssistImg = ASSETS.cargoAssist;
+const medicalAssistImg = ASSETS.medicalAssist;
+const meetGreetImg = ASSETS.meetGreet;
+const vipConciergeImg = ASSETS.concierge;
 
 const SERVICE_IMAGES: Record<string, string> = {
   meet_greet: meetGreetImg,

@@ -1,124 +1,120 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Calendar, ShieldCheck, Crown, Sparkles, Car, Headphones, Plane } from "lucide-react";
-import { C, display } from "../theme";
-import { SectionLabel } from "./SectionLabel";
+import { Calendar, ShieldCheck, Crown, Sparkles, Car, Headphones } from "lucide-react";
+import { C, display, mono } from "../theme";
 
 export function Journey() {
   const steps = [
-    ["Booking", "Tell us your flight — arrival, departure or connection — in just a few clicks."],
-    [
-      "Confirmation",
-      "Instant quote and confirmation, with your dedicated guest relations officer assigned.",
-    ],
-    ["Welcome", "Meet your escort the moment you arrive — kerbside or aerobridge, your choice."],
-    ["Fast-Track", "Immigration, security and baggage handled while you relax in the lounge."],
-    [
-      "Premium Transport",
-      "Step into your chauffeured car or onward flight — no queue, no friction.",
-    ],
-    [
-      "After-care",
-      "We stay on watch until your journey is complete. Feedback shapes every next flight.",
-    ],
+    {
+      title: "Reservation & Flight Details",
+      desc: "Tell us your flight number and requirements — arrival, departure, connection or private charter.",
+      icon: Calendar,
+      tag: "Step 01",
+    },
+    {
+      title: "Officer Assignment",
+      desc: "Instant confirmation with your dedicated Guest Relations Officer assigned directly to your mission.",
+      icon: ShieldCheck,
+      tag: "Step 02",
+    },
+    {
+      title: "Personal Reception",
+      desc: "Meet your officer the moment you arrive — at the aircraft aerobridge or curbside VIP terminal gate.",
+      icon: Crown,
+      tag: "Step 03",
+    },
+    {
+      title: "Fast-Track Clearance",
+      desc: "Passport control, customs clearance, and baggage retrieval expedited seamlessly with zero queuing.",
+      icon: Sparkles,
+      tag: "Step 04",
+    },
+    {
+      title: "Lounge & Chauffeur Transfer",
+      desc: "Relax in the executive lounge sanctuary or step directly into your chauffeured luxury tarmac vehicle.",
+      icon: Car,
+      tag: "Step 05",
+    },
+    {
+      title: "Dedicated After-Care",
+      desc: "Our operations desk remains on watch until your onward flight and destination arrival are fully completed.",
+      icon: Headphones,
+      tag: "Step 06",
+    },
   ];
 
-  const getStepIcon = (t: string) => {
-    const iconProps = { className: "h-5 w-5 text-[#0d5a6e]" };
-    switch (t) {
-      case "Booking":
-        return <Calendar {...iconProps} />;
-      case "Confirmation":
-        return <ShieldCheck {...iconProps} />;
-      case "Welcome":
-        return <Crown {...iconProps} />;
-      case "Fast-Track":
-        return <Sparkles {...iconProps} />;
-      case "Premium Transport":
-        return <Car {...iconProps} />;
-      case "After-care":
-        return <Headphones {...iconProps} />;
-      default:
-        return <Plane {...iconProps} />;
-    }
-  };
-
   return (
-    <section className="relative px-6 py-16 md:px-14 md:py-36" style={{ background: C.paper }}>
+    <section className="relative px-4 py-20 sm:px-8 sm:py-28 md:px-14 md:py-36 bg-[#fbf9f5] border-b border-[#e8dfc8]">
       <div className="mx-auto max-w-[1480px]">
-        <SectionLabel index="07" label="Your Journey" />
-        <h2 className="mt-8 max-w-3xl text-[clamp(2rem,5vw,4.4rem)] leading-[1.02]" style={display}>
-          Six steps.{" "}
-          <span className="italic" style={{ color: C.teal }}>
-            One signature welcome.
-          </span>
-        </h2>
-
-        <div className="relative mt-20">
-          {/* Vertical center timeline line */}
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
           <div
-            className="absolute left-[22px] top-0 h-full w-px md:left-1/2"
-            style={{ background: `linear-gradient(to bottom, ${C.mint}, ${C.line}, transparent)` }}
-          />
-
-          {steps.map(([t, d], i) => (
-            <motion.div
-              key={t}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-10px" }}
-              transition={{ duration: 0.7, delay: 0.05 * i }}
-              className={`relative mb-14 grid grid-cols-[44px_1fr] gap-6 md:grid-cols-2 md:gap-16 ${i % 2 ? "md:[&>*:first-child]:order-2" : ""
-                }`}
+            className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.45em] text-[#a88b4a] font-bold"
+            style={mono}
+          >
+            <span className="h-px w-10 bg-[#c5a869]/50" />
+            THE GUEST JOURNEY
+            <span className="h-px w-10 bg-[#c5a869]/50" />
+          </div>
+          <h2
+            className="mt-5 text-[clamp(2.2rem,5vw,4.4rem)] leading-[1.05] text-slate-950 font-normal"
+            style={display}
+          >
+            Six steps.{" "}
+            <span
+              className="italic font-normal"
+              style={{
+                background: "linear-gradient(135deg, #a88b4a 0%, #c5a869 50%, #8c733b 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
             >
-              {/* Timeline Indicator Dot */}
-              <div className="relative flex items-start">
-                <div
-                  className="absolute left-[16px] top-11 h-3 w-3 rounded-full md:left-1/2 md:-translate-x-1/2 z-10"
-                  style={{ background: C.teal, boxShadow: `0 0 18px ${C.mint}` }}
-                />
-              </div>
+              One signature standard.
+            </span>
+          </h2>
+          <p className="mt-4 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed font-normal">
+            From initial itinerary submission to final arrival, experience uninterrupted precision and warm hospitality.
+          </p>
+        </div>
 
-              {/* Neumorphic Step Card */}
+        {/* Timeline Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {steps.map((s, idx) => {
+            const SIcon = s.icon;
+            return (
               <motion.div
-                whileHover={{
-                  scale: 1.02,
-                  y: -8,
-                  boxShadow: "12px 12px 30px #dcd3c0, -12px -12px 30px #ffffff",
-                }}
-                className="p-8 rounded-[28px] transition-all duration-300 flex flex-col justify-between"
-                style={{
-                  background: C.paper,
-                  boxShadow: "6px 6px 16px #e8e0d0, -6px -6px 16px #ffffff",
-                  border: "1px solid rgba(255, 255, 255, 0.4)",
-                }}
+                key={s.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.08 }}
+                className="relative rounded-2xl bg-white border border-[#e8dfc8] p-7 shadow-xs hover:border-[#c5a869] hover:shadow-xl transition-all duration-300 group flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center gap-4 mb-4">
-                    {/* Neumorphic icon wrapper */}
-                    <div
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300"
-                      style={{
-                        background: C.paper,
-                        boxShadow: "inset 3px 3px 6px #e8e0d0, inset -3px -3px 6px #ffffff",
-                      }}
-                    >
-                      {getStepIcon(t)}
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="h-11 w-11 rounded-xl bg-[#fbf9f5] border border-[#e8dfc8] text-[#a88b4a] flex items-center justify-center group-hover:bg-[#050b14] group-hover:text-[#d9c18b] group-hover:border-[#c5a869]/40 transition-all duration-300">
+                      <SIcon size={20} />
                     </div>
-                    <h3 className="text-xl font-bold" style={{ ...display, color: C.ink }}>
-                      {t}
-                    </h3>
+                    <span
+                      className="text-[9.5px] font-mono uppercase tracking-widest text-[#a88b4a] font-bold px-3 py-1 rounded-full bg-[#fbf9f5] border border-[#e8dfc8]"
+                      style={mono}
+                    >
+                      {s.tag}
+                    </span>
                   </div>
-                  <p className="text-sm leading-relaxed" style={{ color: C.mute }}>
-                    {d}
+
+                  <h3 className="text-xl font-normal text-slate-950 leading-snug" style={display}>
+                    {s.title}
+                  </h3>
+                  <p className="mt-2.5 text-xs text-slate-600 leading-relaxed font-normal">
+                    {s.desc}
                   </p>
                 </div>
               </motion.div>
-            </motion.div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
-

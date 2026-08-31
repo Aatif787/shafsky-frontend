@@ -1,130 +1,26 @@
-import delDesktop from "../assets/airports/del/Dek-Del-air.png";
-import delMobile from "../assets/airports/del/Mob-Del-air.png";
-import hydDesktop from "../assets/airports/hyd/Dek-Hyd-air.png";
-import hydMobile from "../assets/airports/hyd/Mob-Hyd-air.png";
-import lkoDesktop from "../assets/airports/lko/Dek-lko-air.png";
-import lkoMobile from "../assets/airports/lko/Mob-lko-air.png";
-import lkoTablet from "../assets/airports/lko/lko-tab-air.jpg";
-import amdDesktop from "../assets/airports/amd/Dek-Amd-air.png";
-import amdMobile from "../assets/airports/amd/Mob-Amd-air.png";
-import bomDesktop from "../assets/airports/bom/Dek-mum-air.png";
-import bomMobile from "../assets/airports/bom/Dek-mum-air.png";
-import ixrDesktop from "../assets/airports/ixr/Dek-Ran-air.png";
-import ixrMobile from "../assets/airports/ixr/Mob-Ran-air.png";
-import jaiDesktop from "../assets/airports/jai/Dek-Jai_air.png";
-import jaiMobile from "../assets/airports/jai/Mob-Jai-air.png";
-import atqDesktop from "../assets/airports/atq/Dek-Atq-air.png";
-import atqMobile from "../assets/airports/atq/Mob-Atq-air.png";
-import gauDesktop from "../assets/airports/gau/Dek-Gau-air.jpg";
-import gauMobile from "../assets/airports/gau/Mob-Gau-air.jpg";
-import vtzDesktop from "../assets/airports/vtz/Dek-Vtz-air.jpg";
-import vtzMobile from "../assets/airports/vtz/Mob-Vtz-air.jpg";
-import ccuDesktop from "../assets/airports/ccu/Dek-Ccu-air.jpg";
-import ccuMobile from "../assets/airports/ccu/Mob-Ccu-air.jpg";
-import cokDesktop from "../assets/airports/cok/Dek-Cok-air.jpg";
-import cokMobile from "../assets/airports/cok/Mob-Cok-air.jpg";
-import maaDesktop from "../assets/airports/maa/Dek-Maa-air.jpg";
-import maaMobile from "../assets/airports/maa/Mob-Maa-air.jpg";
-import ixeDesktop from "../assets/airports/ixe/Dek-Ixe-air.jpg";
-import ixeMobile from "../assets/airports/ixe/Mob-Ixe-air.jpg";
-import goiDesktop from "../assets/airports/goi/Dek-Goi-air.jpg";
-import goiMobile from "../assets/airports/goi/Mob-Goi-air.jpg";
-import goxDesktop from "../assets/airports/gox/Dek-Gox-air.jpg";
-import goxMobile from "../assets/airports/gox/Mob-Gox-air.jpg";
-import bbiDesktop from "../assets/airports/bbi/Dek-Bbi-air.jpg";
-import bbiMobile from "../assets/airports/bbi/Mob-Bbi-air.jpg";
-import blrDesktop from "../assets/airports/blr/Dek-Blr-air.jpg";
-import blrMobile from "../assets/airports/blr/Mob-Blr-air.jpg";
-import ixcDesktop from "../assets/airports/ixc/Dek-Ixc-air.jpg";
-import ixcMobile from "../assets/airports/ixc/Mob-Ixc-air.jpg";
+import { ASSETS } from "./assets";
 
 const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: string }> = {
-  ixc: {
-    desktop: ixcDesktop,
-    mobile: ixcMobile,
-    tablet: ixcDesktop,
-  },
-  blr: {
-    desktop: blrDesktop,
-    mobile: blrMobile,
-    tablet: blrDesktop,
-  },
-  del: {
-    desktop: delDesktop,
-    mobile: delMobile,
-  },
-  hyd: {
-    desktop: hydDesktop,
-    mobile: hydMobile,
-  },
-  lko: {
-    desktop: lkoDesktop,
-    mobile: lkoMobile,
-    tablet: lkoTablet,
-  },
-  amd: {
-    desktop: amdDesktop,
-    mobile: amdMobile,
-  },
-  bom: {
-    desktop: bomDesktop,
-    mobile: bomMobile,
-  },
-  ixr: {
-    desktop: ixrDesktop,
-    mobile: ixrMobile,
-  },
-  jai: {
-    desktop: jaiDesktop,
-    mobile: jaiMobile,
-  },
-  atq: {
-    desktop: atqDesktop,
-    mobile: atqMobile,
-  },
-  gau: {
-    desktop: gauDesktop,
-    mobile: gauMobile,
-  },
-  vtz: {
-    desktop: vtzDesktop,
-    mobile: vtzMobile,
-  },
-  ccu: {
-    desktop: ccuDesktop,
-    mobile: ccuMobile,
-    tablet: ccuDesktop,
-  },
-  cok: {
-    desktop: cokDesktop,
-    mobile: cokMobile,
-    tablet: cokDesktop,
-  },
-  maa: {
-    desktop: maaDesktop,
-    mobile: maaMobile,
-    tablet: maaDesktop,
-  },
-  ixe: {
-    desktop: ixeDesktop,
-    mobile: ixeMobile,
-    tablet: ixeDesktop,
-  },
-  goi: {
-    desktop: goiDesktop,
-    mobile: goiMobile,
-    tablet: goiDesktop,
-  },
-  gox: {
-    desktop: goxDesktop,
-    mobile: goxMobile,
-    tablet: goxDesktop,
-  },
-  bbi: {
-    desktop: bbiDesktop,
-    mobile: bbiMobile,
-    tablet: bbiDesktop,
-  },
+  ixc: { desktop: ASSETS.ixc, mobile: ASSETS.ixc, tablet: ASSETS.ixc },
+  blr: { desktop: ASSETS.blr, mobile: ASSETS.blr, tablet: ASSETS.blr },
+  del: { desktop: ASSETS.del, mobile: ASSETS.del, tablet: ASSETS.del },
+  hyd: { desktop: ASSETS.hyd, mobile: ASSETS.hyd, tablet: ASSETS.hyd },
+  lko: { desktop: ASSETS.lko, mobile: ASSETS.lko, tablet: ASSETS.lko },
+  amd: { desktop: ASSETS.amd, mobile: ASSETS.amd, tablet: ASSETS.amd },
+  bom: { desktop: ASSETS.bom, mobile: ASSETS.bom, tablet: ASSETS.bom },
+  ixr: { desktop: ASSETS.ixr, mobile: ASSETS.ixr, tablet: ASSETS.ixr },
+  jai: { desktop: ASSETS.jai, mobile: ASSETS.jai, tablet: ASSETS.jai },
+  atq: { desktop: ASSETS.atq, mobile: ASSETS.atq, tablet: ASSETS.atq },
+  gau: { desktop: ASSETS.gau, mobile: ASSETS.gau, tablet: ASSETS.gau },
+  vtz: { desktop: ASSETS.vtz, mobile: ASSETS.vtz, tablet: ASSETS.vtz },
+  ccu: { desktop: ASSETS.ccu, mobile: ASSETS.ccu, tablet: ASSETS.ccu },
+  cok: { desktop: ASSETS.cok, mobile: ASSETS.cok, tablet: ASSETS.cok },
+  maa: { desktop: ASSETS.maa, mobile: ASSETS.maa, tablet: ASSETS.maa },
+  ixe: { desktop: ASSETS.ixe, mobile: ASSETS.ixe, tablet: ASSETS.ixe },
+  goi: { desktop: ASSETS.goi, mobile: ASSETS.goi, tablet: ASSETS.goi },
+  gox: { desktop: ASSETS.gox, mobile: ASSETS.gox, tablet: ASSETS.gox },
+  bbi: { desktop: ASSETS.bbi, mobile: ASSETS.bbi, tablet: ASSETS.bbi },
+  trv: { desktop: ASSETS.trv, mobile: ASSETS.trv, tablet: ASSETS.trv },
 };
 
 /**
@@ -154,5 +50,5 @@ export function getAirportAsset(airportCode: string, filename: string): string |
     return airportAssets.tablet || airportAssets.desktop;
   }
 
-  return undefined;
+  return airportAssets.desktop;
 }

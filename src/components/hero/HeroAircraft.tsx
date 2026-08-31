@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import planeImg from "@/assets/assets/plane.png";
+import { ASSETS } from "@/lib/assets";
+
+const planeImg = ASSETS.plane;
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
