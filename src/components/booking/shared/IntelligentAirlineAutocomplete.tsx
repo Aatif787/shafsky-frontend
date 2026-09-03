@@ -140,8 +140,28 @@ export function IntelligentAirlineAutocomplete({
               <span>Searching Airlines...</span>
             </div>
           ) : results.length === 0 ? (
-            <div className="p-4 text-center text-xs text-slate-500 font-mono" style={monoFont}>
-              No matching airlines found
+            <div className="p-2">
+              <div className="p-2 text-center text-xs text-slate-500 font-mono mb-1" style={monoFont}>
+                No standard registry match
+              </div>
+              {inputValue.trim() && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleSelection({
+                      iata: inputValue.trim().slice(0, 2).toUpperCase(),
+                      icao: "",
+                      name: inputValue.trim(),
+                      country: "Worldwide",
+                      logo: "",
+                    })
+                  }
+                  className="w-full text-left px-3 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-semibold transition flex items-center justify-between"
+                >
+                  <span>Use custom airline: <strong>"{inputValue.trim()}"</strong></span>
+                  <span className="text-[10px] font-mono text-purple-700 font-bold uppercase">Select</span>
+                </button>
+              )}
             </div>
           ) : (
             <ul className="py-1">
@@ -183,6 +203,23 @@ export function IntelligentAirlineAutocomplete({
                   </li>
                 );
               })}
+              {inputValue.trim() && !results.some((r) => r.name.toLowerCase() === inputValue.trim().toLowerCase()) && (
+                <li
+                  onClick={() =>
+                    handleSelection({
+                      iata: inputValue.trim().slice(0, 2).toUpperCase(),
+                      icao: "",
+                      name: inputValue.trim(),
+                      country: "Worldwide",
+                      logo: "",
+                    })
+                  }
+                  className="px-3.5 py-2.5 cursor-pointer text-xs border-t border-slate-100 hover:bg-purple-50 text-purple-900 font-semibold flex items-center justify-between transition"
+                >
+                  <span>Use custom airline: <strong>"{inputValue.trim()}"</strong></span>
+                  <span className="text-[9px] font-mono uppercase text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full font-bold">Custom</span>
+                </li>
+              )}
             </ul>
           )}
         </div>

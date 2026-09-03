@@ -648,7 +648,6 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
             routeMatchError: mismatch,
             isFlightValidated: false,
             validatedFlightData: flightInfo,
-            isManualMode: true,
           });
           setBusy(false);
           return false;
@@ -664,7 +663,6 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
             routeMatchError: mismatch,
             isFlightValidated: false,
             validatedFlightData: flightInfo,
-            isManualMode: true,
           });
           setBusy(false);
           return false;
@@ -682,7 +680,6 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
             routeMatchError: mismatch,
             isFlightValidated: false,
             validatedFlightData: flightInfo,
-            isManualMode: true,
           });
           setBusy(false);
           return false;
@@ -736,7 +733,18 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
 
       const rawTerm = state.direction === "arrival" ? flightInfo.arrival?.terminal : flightInfo.departure?.terminal;
       let inferredTerminal: string | undefined = undefined;
-      if (rawTerm) {
+
+      // Rule: For Delhi (DEL) International flights/services, ALWAYS Terminal 3
+      const effectiveAirportCode = (state.airportCode || targetAirportCode || "").trim().toUpperCase();
+      const depCountry = (flightInfo.origin?.country || "").toUpperCase();
+      const arrCountry = (flightInfo.destination?.country || "").toUpperCase();
+      const isDetectedIntl = state.travelType === "international" ||
+        (depCountry && depCountry !== "IN" && depCountry !== "INDIA") ||
+        (arrCountry && arrCountry !== "IN" && arrCountry !== "INDIA");
+
+      if (effectiveAirportCode === "DEL" && isDetectedIntl) {
+        inferredTerminal = "Terminal 3";
+      } else if (rawTerm) {
         const tStr = String(rawTerm).trim();
         if (tStr.includes("3") || tStr.toUpperCase().includes("T3")) {
           inferredTerminal = "Terminal 3";

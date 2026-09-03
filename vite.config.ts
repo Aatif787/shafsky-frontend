@@ -61,6 +61,8 @@ export default defineConfig(({ mode }) => {
           if (id.includes("node_modules/lucide-react")) return "vendor-icons";
           if (id.includes("node_modules/@supabase")) return "vendor-supabase";
           if (id.includes("node_modules/date-fns")) return "vendor-date";
+          if (id.includes("node_modules/pdf-lib") || id.includes("node_modules/@pdf-lib") || id.includes("node_modules/fontkit") || id.includes("node_modules/pako")) return "vendor-pdf";
+          if (id.includes("node_modules/recharts") || id.includes("node_modules/d3-") || id.includes("node_modules/react-smooth")) return "vendor-charts";
         },
       },
     },

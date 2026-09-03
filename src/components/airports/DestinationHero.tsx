@@ -48,11 +48,11 @@ export function DestinationHero({ a }: { a: Airport }) {
     !!getAirportAsset(a.code, "hero-mobile.webp") ||
     !!getAirportAsset(a.code, "hero-tablet.webp");
 
-  const heroZoom = motionReady ? { opacity: 0, scale: 1.08 } : false;
+  const heroZoom = motionReady ? { opacity: 0 } : false;
   const fadeUp = motionReady ? { opacity: 0, y: 20 } : false;
   const fadeUpSm = motionReady ? { opacity: 0, y: 15 } : false;
   const overlayGradient =
-    "linear-gradient(180deg, rgba(11,26,36,0.75) 0%, rgba(11,26,36,0.3) 45%, rgba(11,26,36,0.85) 100%)";
+    "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 18%, rgba(0,0,0,0) 78%, rgba(0,0,0,0.55) 100%)";
 
   return (
     <section
@@ -72,13 +72,13 @@ export function DestinationHero({ a }: { a: Airport }) {
 
       <div className="relative min-h-0 w-full flex-1 overflow-hidden rounded-[1.5rem] border border-white/10 shadow-2xl sm:rounded-[2.5rem]">
         <AnimatePresence mode="sync">
-          {hasDynamicHero ? (
+          {hasDynamicHero && slide === 0 ? (
             <motion.div
-              key="dynamic-hero"
+              key="dynamic-hero-0"
               initial={heroZoom}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
               className="absolute inset-0"
             >
               <ResponsiveAirportHero
@@ -94,16 +94,16 @@ export function DestinationHero({ a }: { a: Airport }) {
             </motion.div>
           ) : (
             <motion.div
-              key={slide}
+              key={`slide-${slide}`}
               initial={heroZoom}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
               className="absolute inset-0"
             >
               <img
-                src={a.slideshow[slide]}
-                alt=""
+                src={a.slideshow[slide] || a.slideshow[0]}
+                alt={`${a.city} Landmark ${slide + 1}`}
                 className="h-full w-full object-cover"
                 style={{
                   objectPosition: a.slideshow[slide]?.includes("chaarminar")
@@ -221,16 +221,19 @@ export function DestinationHero({ a }: { a: Airport }) {
       </div>
 
       {/* slide indicator */}
-      {!hasDynamicHero && (
-        <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2">
+      {a.slideshow.length > 1 && (
+        <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10">
           {a.slideshow.map((img, i) => (
-            <span
+            <button
+              type="button"
               key={`dest-hero-slide-${img}-${i}`}
-              className="h-px transition-all duration-500"
+              onClick={() => setSlide(i)}
+              className="h-1.5 rounded-full transition-all duration-500 cursor-pointer"
               style={{
-                width: i === slide ? 40 : 14,
-                backgroundColor: i === slide ? "#7c3aed" : "rgba(0,0,0,0.2)",
+                width: i === slide ? 32 : 10,
+                backgroundColor: i === slide ? "#a3e635" : "rgba(255,255,255,0.4)",
               }}
+              aria-label={`Go to slide ${i + 1}`}
             />
           ))}
         </div>

@@ -313,16 +313,16 @@ export function PassengerDetailsStep({
         <form onSubmit={handleSubmit} className="lg:col-span-8 space-y-6">
           <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/80 shadow-xs space-y-6">
             <div className="flex items-center gap-2 text-slate-900 font-serif font-bold text-lg border-b border-slate-100 pb-3">
-              <User className="w-5 h-5 text-amber-600" />
-              <span>Lead Guest Contact Details</span>
+              <User className="w-5 h-5 text-lime-600" />
+              <span>Passenger Details</span>
             </div>
 
             <div>
               <label
                 htmlFor="full_name"
-                className="block text-xs font-mono text-slate-900 uppercase tracking-wider font-bold mb-1.5"
+                className="block text-xs font-mono text-slate-700 font-bold mb-1.5"
               >
-                Lead Guest Full Name <span className="text-amber-600">*</span>
+                Name <span className="text-lime-600">*</span>
               </label>
               <div className="relative">
                 <input
@@ -334,7 +334,7 @@ export function PassengerDetailsStep({
                     onChange({ fullName: e.target.value });
                     if (localErrors.full_name) setLocalErrors((p) => ({ ...p, full_name: "" }));
                   }}
-                  placeholder="e.g. Lord Henry Sterling"
+                  placeholder="Your name"
                   aria-invalid={Boolean(getFieldError("full_name"))}
                   aria-describedby="full_name_error"
                   className={`w-full px-4 py-3.5 rounded-2xl bg-slate-50 text-slate-900 text-sm font-sans font-medium transition-all outline-none border ${
@@ -356,9 +356,9 @@ export function PassengerDetailsStep({
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-xs font-mono text-slate-900 uppercase tracking-wider font-bold mb-1.5"
+                  className="block text-xs font-mono text-slate-700 font-bold mb-1.5"
                 >
-                  Email <span className="text-amber-600">*</span>
+                  Email <span className="text-lime-600">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -370,7 +370,7 @@ export function PassengerDetailsStep({
                       onChange({ email: e.target.value });
                       if (localErrors.email) setLocalErrors((p) => ({ ...p, email: "" }));
                     }}
-                    placeholder="e.g. henry@sterling.com"
+                    placeholder="Email"
                     aria-invalid={Boolean(getFieldError("email"))}
                     aria-describedby="email_error"
                     className={`w-full px-4 py-3.5 rounded-2xl bg-slate-50 text-slate-900 text-sm font-sans font-medium transition-all outline-none border ${
@@ -391,9 +391,9 @@ export function PassengerDetailsStep({
               <div>
                 <label
                   htmlFor="phone"
-                  className="block text-xs font-mono text-slate-900 uppercase tracking-wider font-bold mb-1.5"
+                  className="block text-xs font-mono text-slate-700 font-bold mb-1.5"
                 >
-                  Mobile / WhatsApp Number <span className="text-amber-600">*</span>
+                  Phone <span className="text-lime-600">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -405,7 +405,7 @@ export function PassengerDetailsStep({
                       onChange({ phone: e.target.value });
                       if (localErrors.phone) setLocalErrors((p) => ({ ...p, phone: "" }));
                     }}
-                    placeholder="10-digit mobile, e.g. 9876543210"
+                    placeholder="Phone"
                     aria-invalid={Boolean(getFieldError("phone"))}
                     aria-describedby="phone_error"
                     className={`w-full px-4 py-3.5 rounded-2xl bg-slate-50 text-slate-900 text-sm font-sans font-medium transition-all outline-none border ${

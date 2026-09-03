@@ -36,6 +36,8 @@ export function MeetGreetPackageComparison({
   const airportEntry = getAirportRegistryEntry(airportCode);
   const cityName = airportEntry?.city || airportCode;
 
+  const isDel = airportCode.toUpperCase() === "DEL";
+
   const [flightType, setFlightType] = useState<"DOMESTIC" | "INTERNATIONAL">(
     () => flightFromSearch(bookingSearch)
   );
@@ -43,13 +45,29 @@ export function MeetGreetPackageComparison({
     () => journeyFromSearch(bookingSearch)
   );
   const [transitType, setTransitType] = useState<string>("DOMESTIC_DOMESTIC");
-  const [terminal, setTerminal] = useState<string>("Terminal 1 & 2");
+  const [terminal, setTerminal] = useState<string>(() => {
+    if (isDel && flightFromSearch(bookingSearch) === "INTERNATIONAL") {
+      return "Terminal 3";
+    }
+    return "Terminal 1 & 2";
+  });
 
   useEffect(() => {
     if (!bookingSearch?.from_hero && !bookingSearch?.direction) return;
     setJourneyType(journeyFromSearch(bookingSearch));
-    setFlightType(flightFromSearch(bookingSearch));
-  }, [bookingSearch?.from_hero, bookingSearch?.direction, bookingSearch?.travel_type, bookingSearch?.flight_type]);
+    const flType = flightFromSearch(bookingSearch);
+    setFlightType(flType);
+    if (isDel && flType === "INTERNATIONAL") {
+      setTerminal("Terminal 3");
+    }
+  }, [bookingSearch?.from_hero, bookingSearch?.direction, bookingSearch?.travel_type, bookingSearch?.flight_type, isDel]);
+
+  // Whenever flightType switches to INTERNATIONAL at DEL, redirect terminal to Terminal 3
+  useEffect(() => {
+    if (isDel && flightType === "INTERNATIONAL") {
+      setTerminal("Terminal 3");
+    }
+  }, [isDel, flightType]);
 
   // Dynamic packages loaded authoritatively from backend DB API
   const [packages, setPackages] = useState<any[]>([]);
@@ -65,9 +83,9 @@ export function MeetGreetPackageComparison({
 
     const originParam = String(bookingSearch?.origin || "").trim().toUpperCase();
     const destParam = String(bookingSearch?.destination || "").trim().toUpperCase();
-    const isDel = airportCode.toUpperCase() === "DEL";
+    const activeTerminal = isDel && flightType === "INTERNATIONAL" ? "Terminal 3" : terminal;
     const flightTypeParam = journeyType === "TRANSIT" ? transitType : flightType;
-    const terminalParam = journeyType !== "TRANSIT" && isDel && terminal ? `&terminal=${encodeURIComponent(terminal)}` : "";
+    const terminalParam = journeyType !== "TRANSIT" && isDel && activeTerminal ? `&terminal=${encodeURIComponent(activeTerminal)}` : "";
     const routeParam =
       originParam && destParam
         ? `&origin=${encodeURIComponent(originParam)}&destination=${encodeURIComponent(destParam)}`
@@ -210,7 +228,12 @@ export function MeetGreetPackageComparison({
               </button>
               <button
                 type="button"
-                onClick={() => setFlightType("INTERNATIONAL")}
+                onClick={() => {
+                  setFlightType("INTERNATIONAL");
+                  if (airportCode.toUpperCase() === "DEL") {
+                    setTerminal("Terminal 3");
+                  }
+                }}
                 className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${
                   flightType === "INTERNATIONAL"
                     ? "bg-slate-900 text-white shadow-xs"
@@ -258,28 +281,35 @@ export function MeetGreetPackageComparison({
 
           {/* Terminal Segmented Control (Only displayed for Delhi Airport Arrival/Departure) */}
           {airportCode.toUpperCase() === "DEL" && journeyType !== "TRANSIT" && (
-            <div className="p-1 rounded-2xl bg-amber-50 border border-amber-200 inline-flex items-center gap-1 text-xs font-mono font-bold">
-              <button
-                type="button"
-                onClick={() => setTerminal("Terminal 1 & 2")}
-                className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${terminal === "Terminal 1 & 2"
-                    ? "bg-amber-600 text-white shadow-xs"
-                    : "text-amber-900 hover:bg-amber-100/60"
-                  }`}
-              >
-                Terminal 1 & 2
-              </button>
-              <button
-                type="button"
-                onClick={() => setTerminal("Terminal 3")}
-                className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${terminal === "Terminal 3"
-                    ? "bg-amber-600 text-white shadow-xs"
-                    : "text-amber-900 hover:bg-amber-100/60"
-                  }`}
-              >
-                Terminal 3
-              </button>
-            </div>
+            flightType === "DOMESTIC" ? (
+              <div className="p-1 rounded-2xl bg-amber-50 border border-amber-200 inline-flex items-center gap-1 text-xs font-mono font-bold">
+                <button
+                  type="button"
+                  onClick={() => setTerminal("Terminal 1 & 2")}
+                  className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${terminal === "Terminal 1 & 2"
+                      ? "bg-amber-600 text-white shadow-xs"
+                      : "text-amber-900 hover:bg-amber-100/60"
+                    }`}
+                >
+                  Terminal 1 & 2
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTerminal("Terminal 3")}
+                  className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${terminal === "Terminal 3"
+                      ? "bg-amber-600 text-white shadow-xs"
+                      : "text-amber-900 hover:bg-amber-100/60"
+                    }`}
+                >
+                  Terminal 3
+                </button>
+              </div>
+            ) : (
+              <div className="px-3.5 py-1.5 rounded-2xl bg-amber-500/10 border border-amber-300 text-amber-950 inline-flex items-center gap-2 text-xs font-mono font-bold">
+                <span className="inline-block w-2 h-2 rounded-full bg-amber-600 animate-pulse"></span>
+                <span>Terminal 3 (International services operate exclusively from T3)</span>
+              </div>
+            )
           )}
 
           {/* Transit Type Segmented Control (Only displayed when Transit is selected) */}
@@ -516,9 +546,12 @@ export function MeetGreetPackageComparison({
                                 : "arrival",
                           travel_type: flightType.toLowerCase(),
                           flight_type: flightType.toLowerCase(),
+                          terminal: (isDel && flightType === "INTERNATIONAL") ? "Terminal 3" : terminal,
                           service_id: pkg.id,
                           booking_mode: "package",
                           package_id: pkg.id,
+                          package_name: pkg.title || pkg.name || pkg.id,
+                          package_price: pkg.price || "",
                           from_hero: "true",
                         } as any
                       }

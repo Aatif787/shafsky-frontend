@@ -330,11 +330,11 @@ export const AIRPORTS: Airport[] = [
     timezone: "Asia/Kolkata",
     cover: dekLkoAir,
     mobCover: mobLkoAir,
-    slideshow: [imambada, u("Lucknow Clock Tower"), u("Lucknow Airport")],
+    slideshow: [dekLkoAir, imambada],
     gallery: [
+      dekLkoAir,
       imambada,
       us("Lucknow Clock Tower"),
-      us("Lucknow Airport"),
       us("Lucknow market"),
       us("Awadhi food"),
       us("Lucknow chikankari"),
@@ -369,7 +369,7 @@ export const AIRPORTS: Airport[] = [
     attractions: [
       {
         name: "Bara Imambara",
-        img: us("Bara Imambara"),
+        img: imambada,
         desc: "18th-century Asafi mosque complex with the labyrinthine Bhulbhulaiya.",
         distance: "16 km",
         travel: "35 min",

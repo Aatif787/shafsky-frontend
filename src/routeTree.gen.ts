@@ -18,6 +18,7 @@ import { Route as BookRouteImport } from './routes/book'
 import { Route as CharterRouteImport } from './routes/charter'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FlightVerificationRouteImport } from './routes/flight-verification'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -111,6 +112,11 @@ const ContactRoute = ContactRouteImport.update({
 const FlightVerificationRoute = FlightVerificationRouteImport.update({
   id: '/flight-verification',
   path: '/flight-verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -402,6 +408,7 @@ export interface FileRoutesByFullPath {
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
+  '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -462,6 +469,7 @@ export interface FileRoutesByTo {
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
+  '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -522,6 +530,7 @@ export interface FileRoutesById {
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
+  '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -584,6 +593,7 @@ export interface FileRouteTypes {
     | '/charter'
     | '/contact'
     | '/flight-verification'
+    | '/gallery'
     | '/login'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -644,6 +654,7 @@ export interface FileRouteTypes {
     | '/charter'
     | '/contact'
     | '/flight-verification'
+    | '/gallery'
     | '/login'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -703,6 +714,7 @@ export interface FileRouteTypes {
     | '/charter'
     | '/contact'
     | '/flight-verification'
+    | '/gallery'
     | '/login'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -765,6 +777,7 @@ export interface RootRouteChildren {
   CharterRoute: typeof CharterRoute
   ContactRoute: typeof ContactRoute
   FlightVerificationRoute: typeof FlightVerificationRoute
+  GalleryRoute: typeof GalleryRoute
   LoginRoute: typeof LoginRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -844,6 +857,13 @@ declare module '@tanstack/react-router' {
       path: '/flight-verification'
       fullPath: '/flight-verification'
       preLoaderRoute: typeof FlightVerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1335,6 +1355,7 @@ const rootRouteChildren: RootRouteChildren = {
   CharterRoute: CharterRoute,
   ContactRoute: ContactRoute,
   FlightVerificationRoute: FlightVerificationRoute,
+  GalleryRoute: GalleryRoute,
   LoginRoute: LoginRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

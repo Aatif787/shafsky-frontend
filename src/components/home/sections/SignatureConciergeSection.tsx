@@ -184,15 +184,22 @@ export function SignatureConciergeSection() {
 
               <div className="mt-8 pt-5 border-t border-slate-100 flex items-center justify-between">
                 <span className="text-xs text-slate-500 font-mono" style={mono}>LOUNGE ACCESS INCLUDED</span>
-                <Link
-                  to="/book"
-                  className="group/btn relative overflow-hidden inline-flex items-center gap-2 rounded-xl bg-[#84cc16] px-5 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-950 shadow-sm transition-all duration-300 hover:shadow-md hover:shadow-lime-500/40 hover:-translate-y-0.5"
+                <a
+                  href="/#book"
+                  onClick={(e) => {
+                    const el = document.getElementById("book");
+                    if (el) {
+                      e.preventDefault();
+                      el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                  }}
+                  className="group/btn relative overflow-hidden inline-flex items-center gap-2 rounded-xl bg-[#84cc16] px-5 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-950 shadow-sm transition-all duration-300 hover:shadow-md hover:shadow-lime-500/40 hover:-translate-y-0.5 cursor-pointer"
                 >
                   <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
                   <div className="absolute inset-0 bg-[#a3e635] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
                   <span className="relative z-10">Book Now</span>
                   <ArrowRight size={14} className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                </Link>
+                </a>
               </div>
             </div>
           </div>

@@ -1,11 +1,11 @@
 import React, { ReactNode } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Breadcrumbs, BreadcrumbItem } from "@/components/navigation/Breadcrumbs";
-import { PrevNextNav, NavigationStep } from "@/components/navigation/PrevNextNav";
-import { RelatedServices, RelatedServiceItem } from "@/components/navigation/RelatedServices";
 import { AssistanceCTA } from "@/components/navigation/AssistanceCTA";
 import { CustomerConfidence } from "@/components/trust/TrustMasterSection";
 import { Footer } from "@/components/home/sections/Footer";
+import { NavigationStep } from "@/components/navigation/PrevNextNav";
+import { RelatedServiceItem } from "@/components/navigation/RelatedServices";
 
 interface PageJourneyWrapperProps {
   children: ReactNode;
@@ -69,16 +69,6 @@ export function PageJourneyWrapper({
 
         {/* PAGE CONTENT */}
         {children}
-
-        {/* PREVIOUS / NEXT NAVIGATION */}
-        {showPrevNext && (
-          <PrevNextNav prev={prevNav} next={nextNav} />
-        )}
-
-        {/* RELATED SERVICES */}
-        {showRelated && (
-          <RelatedServices services={relatedServices} />
-        )}
 
         {/* DISTRIBUTED TRUST STATS (Testimonials disabled globally) */}
         {category !== "Coverage" && <CustomerConfidence />}

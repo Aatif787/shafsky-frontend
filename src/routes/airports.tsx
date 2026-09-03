@@ -25,20 +25,20 @@ import { BUSINESS } from "@/lib/constants";
 export const Route = createFileRoute("/airports")({
   head: () => ({
     meta: [
-      { title: "Airports Around the World — Shafsky Aviation Services" },
+      { title: "Our Serviceable Airports — Shafsky Aviation Services" },
       {
         name: "description",
-        content: "Explore our global network of major airports and book premium concierge services. Meet & Greet, VIP lounge access, fast-track immigration and chauffeured transfers at 20+ Indian airports.",
+        content: "Explore our active airports across India and worldwide for meet & greet, passenger assistance, and terminal services.",
       },
       { name: "robots", content: "index, follow" },
-      { property: "og:title", content: "Airports Around the World — Shafsky Aviation Services" },
-      { property: "og:description", content: "Explore our global network of major airports and book premium concierge services." },
+      { property: "og:title", content: "Our Serviceable Airports — Shafsky Aviation Services" },
+      { property: "og:description", content: "Explore our active airports across India and worldwide." },
       { property: "og:url", content: `${BUSINESS.BASE_URL}/airports` },
       { property: "og:type", content: "website" },
       { property: "og:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Airports Around the World — Shafsky Aviation Services" },
-      { name: "twitter:description", content: "Explore our global network of major airports and book premium concierge services." },
+      { name: "twitter:title", content: "Our Serviceable Airports — Shafsky Aviation Services" },
+      { name: "twitter:description", content: "Explore our active airports across India and worldwide." },
       { name: "twitter:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
     ],
     links: [{ rel: "canonical", href: `${BUSINESS.BASE_URL}/airports` }],
@@ -145,18 +145,18 @@ function AirportsListingView() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 space-y-12">
         {/* 1. HEADER TITLE SECTION */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-lime-50 border border-lime-200 text-lime-800 text-xs font-medium">
             <span>✈</span>
-            <span className="font-semibold uppercase tracking-wider text-[11px]">GLOBAL AIRPORT NETWORK</span>
+            <span className="font-semibold uppercase tracking-wider text-[11px] font-mono">AIRPORT NETWORK</span>
             <span>✈</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading text-slate-900 font-bold tracking-tight">
-            Airports Around the World
+            Our Serviceable Airports
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 font-sans">
-            Explore our global network of major airports and book premium services
+            Explore our active airports across India and worldwide.
           </p>
         </div>
 

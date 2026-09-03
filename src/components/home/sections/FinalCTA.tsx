@@ -126,14 +126,21 @@ export function FinalCTA() {
 
         {/* Dual Luxury Action Buttons */}
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-          <Link
-            to="/book"
+          <a
+            href="/#book"
+            onClick={(e) => {
+              const el = document.getElementById("book");
+              if (el) {
+                e.preventDefault();
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+              }
+            }}
             className="group/btn relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-full bg-[#84cc16] px-8 py-4 text-xs font-bold uppercase tracking-[0.22em] text-slate-950 transition-all duration-300 hover:bg-[#a3e635] hover:-translate-y-0.5 cursor-pointer font-mono"
             style={mono}
           >
             <span className="relative z-10">Book Now</span>
             <ArrowRight size={15} className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
-          </Link>
+          </a>
 
           <a
             href="tel:+919599087959"
