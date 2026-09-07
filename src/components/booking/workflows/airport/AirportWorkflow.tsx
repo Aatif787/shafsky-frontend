@@ -310,16 +310,16 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
     }
 
     const originCode = (
-      state.originCode ||
       state.validatedFlightData?.origin?.code ||
+      state.originCode ||
       (state.direction === "departure" ? state.airportCode : "")
     )
       .toString()
       .trim()
       .toUpperCase();
     const destCode = (
-      state.destCode ||
       state.validatedFlightData?.destination?.code ||
+      state.destCode ||
       (state.direction === "arrival" ? state.airportCode : "")
     )
       .toString()
@@ -371,6 +371,8 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
             direction,
             flight_type: (state.travelType || "domestic").toUpperCase(),
             travel_type: (state.travelType || "domestic").toUpperCase(),
+            origin_iata: originCode,
+            destination_iata: destCode,
             transit_code: state.transitCode || undefined,
             service_airport: (state.airportCode || "").toUpperCase(),
             terminal: state.selectedTerminal || undefined,

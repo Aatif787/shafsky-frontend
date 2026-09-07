@@ -8,7 +8,7 @@ import {
   Crown,
 } from "lucide-react";
 import { AIRPORTS } from "@/data/airports";
-import { getAirportAsset } from "@/lib/airport-assets";
+import { getAirportAsset, getAirportPrimaryImage } from "@/lib/airport-assets";
 
 export function AirportShowcase() {
   const allAirports = AIRPORTS;
@@ -122,7 +122,7 @@ export function AirportShowcase() {
             const filterStyle = `blur(${blurPx}px)`;
 
             const isCenter = diff === 0;
-            const cardImage = getAirportAsset(airport.code, "hero-mobile.webp") || airport.mobCover || airport.cover;
+            const cardImage = getAirportPrimaryImage(airport.code) || airport.mobCover || airport.cover;
 
             return (
               <motion.div
@@ -211,7 +211,7 @@ export function AirportShowcase() {
         <div className="lg:hidden flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 py-4 px-2">
           {allAirports.map((airport, index) => {
             const isSelected = index === activeIndex;
-            const cardImage = getAirportAsset(airport.code, "hero-mobile.webp") || airport.mobCover || airport.cover;
+            const cardImage = getAirportPrimaryImage(airport.code) || airport.mobCover || airport.cover;
 
             return (
               <div

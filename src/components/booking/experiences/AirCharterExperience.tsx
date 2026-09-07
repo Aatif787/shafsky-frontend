@@ -52,7 +52,7 @@ const CHARTER_SUB_SERVICES: { id: AirCharterSubService; label: string; desc: str
   {
     id: "Corporate Charter",
     label: "Corporate Charter",
-    desc: "Bespoke executive aircraft itineraries for business leadership teams and roadshows.",
+    desc: "Bespoke executive aircraft itineraries for business leadership teams and business tours.",
   },
   {
     id: "Private Charter",
@@ -180,51 +180,62 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
       alert("Please provide your name and contact phone number.");
       return;
     }
+    if (!email.trim() || !email.includes("@")) {
+      alert("Please provide a valid email so our charter desk can send your quotation.");
+      return;
+    }
 
     setIsSubmitting(true);
 
-    const generatedRef = `SC-${Math.floor(100000 + Math.random() * 900000)}`;
-
     const payload: CharterRequestPayload = {
-      customer_name: customerName,
+      customer_name: customerName.trim(),
       country_code: "+91",
-      phone: phone,
-      email: email || `${phone.replace(/\D/g, "")}@shafsky.quote`,
-      company: companyName || undefined,
+      phone: phone.trim(),
+      email: email.trim().toLowerCase(),
+      company: companyName.trim() || undefined,
       preferred_contact_method: "WHATSAPP",
       trip_type: tripType === "Round Trip" ? "ROUND_TRIP" : tripType === "Multi-City" ? "MULTI_CITY" : "ONE_WAY",
-      origin: origin,
-      destination: destination,
+      origin: origin.trim(),
+      destination: destination.trim(),
       departure_date: departDate,
-      departure_time: departTime,
+      departure_time: departTime || undefined,
       return_date: tripType === "Round Trip" ? returnDate : undefined,
-      return_time: tripType === "Round Trip" ? returnTime : undefined,
+      return_time: tripType === "Round Trip" ? returnTime || undefined : undefined,
       itinerary: [
         {
-          origin: origin,
-          destination: destination,
+          origin: origin.trim(),
+          destination: destination.trim(),
           departure_date: departDate,
-          departure_time: departTime,
+          departure_time: departTime || undefined,
         },
       ],
       passengers: {
-        adults: paxCount,
+        adults: Math.max(1, paxCount),
         children: 0,
         infants: 0,
-        total: paxCount,
+        total: Math.max(1, paxCount),
       },
-      aircraft_preference: `${subService} — ${aircraftPref}`,
+      aircraft_preference: aircraftPref || "NO_PREFERENCE",
       travel_requirements: [subService],
       special_requests: specialRequirements || undefined,
     };
 
     try {
-      await charterApi.submitRequest(payload);
+      const res = await charterApi.submitRequest(payload);
+      if (res.success && res.data?.request_reference) {
+        setSubmittedRef(res.data.request_reference);
+      } else {
+        const errMsg =
+          !res.success && "error" in res
+            ? String(res.error)
+            : "Failed to submit charter request. Please try again.";
+        alert(errMsg);
+      }
     } catch (err) {
-      console.warn("Backend submit fallback:", err);
+      console.error("Backend charter submit:", err);
+      alert("Something went wrong while submitting your charter request. Please try again.");
     } finally {
       setIsSubmitting(false);
-      setSubmittedRef(generatedRef);
     }
   };
 
@@ -288,10 +299,22 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
         {/* Right Authentic Photography - Zero Cropping / Zero Text Over Photo */}
         <div className="lg:col-span-5">
           <ExperiencePhoto
-            src={HOMEPAGE_PHOTOS.privateCharter.src}
-            alt="Shafsky Private Jet and Helicopter Air Charter"
-            badge="VIP Aviation"
-            caption="Executive fleet ready for 2-hour dispatch"
+            src={
+              subService === "Air Ambulance Charter"
+                ? "/private charter/airambu.jpeg"
+                : HOMEPAGE_PHOTOS.privateCharter.src
+            }
+            alt={
+              subService === "Air Ambulance Charter"
+                ? "Shafsky Air Ambulance Dedicated Aero-Medical ICU Aircraft"
+                : "Shafsky Private Jet and Helicopter Air Charter"
+            }
+            badge={subService === "Air Ambulance Charter" ? "Aero-Medical ICU" : "VIP Aviation"}
+            caption={
+              subService === "Air Ambulance Charter"
+                ? "Certified aero-medical ICU jet with doctor and stretcher"
+                : "Executive fleet ready for 2-hour dispatch"
+            }
             aspectRatio="16 / 10"
           />
         </div>

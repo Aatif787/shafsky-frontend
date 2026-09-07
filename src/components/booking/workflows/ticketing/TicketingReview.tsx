@@ -131,7 +131,7 @@ export function TicketingReview({
                 <Crown className="w-4 h-4 text-emerald-700" />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-900 block">VIP Meet & Assist Airside</span>
+                    <span className="text-xs font-bold text-slate-900 block">VIP Meet & Greet Airside</span>
                     {(journey.cabinClass.includes("First") || journey.cabinClass.includes("Business")) && (
                       <span className="text-[9px] font-mono font-bold bg-emerald-100 text-emerald-900 px-1.5 py-0.2 rounded">Recommended</span>
                     )}

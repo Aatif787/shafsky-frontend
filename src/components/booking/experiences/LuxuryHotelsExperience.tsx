@@ -24,6 +24,7 @@ import {
   CounterField,
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
+import { enquiryApi } from "@/lib/api/enquiryApi";
 
 export type LuxuryHotelsSubService =
   | "7 Star Hotels"
@@ -141,14 +142,49 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
     setStep(3);
   };
 
-  const handleSubmitFinal = (e: React.FormEvent) => {
+  const handleSubmitFinal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!guestName.trim() || !guestPhone.trim()) {
       alert("Please provide your name and contact phone number.");
       return;
     }
-    const ref = `HT-${Math.floor(100000 + Math.random() * 900000)}`;
-    setSubmittedRef(ref);
+    if (!guestEmail.trim() || !guestEmail.includes("@")) {
+      alert("Please provide a valid email so our hospitality desk can send your quotation.");
+      return;
+    }
+
+    try {
+      const res = await enquiryApi.submit({
+        passengerName: guestName.trim(),
+        passengerEmail: guestEmail.trim().toLowerCase(),
+        passengerPhone: guestPhone.trim(),
+        serviceCategory: "Travel Support",
+        serviceType: "Hotel Booking",
+        origin: finalCity,
+        destination: finalCity,
+        serviceDate: `${checkInDate} to ${checkOutDate}`,
+        notes: specialRequests.trim() || undefined,
+        details: {
+          hotel_category: subService,
+          rooms,
+          adults,
+          children: childrenCount,
+          room_preference: roomPreference,
+        },
+      });
+      if (res.success && res.data?.bookingRef) {
+        setSubmittedRef(res.data.bookingRef);
+      } else {
+        alert(
+          !res.success && "error" in res
+            ? String(res.error)
+            : "Failed to submit hotel enquiry. Please try again.",
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while submitting your request. Please try again.");
+    }
   };
 
   const getWhatsAppLink = () => {

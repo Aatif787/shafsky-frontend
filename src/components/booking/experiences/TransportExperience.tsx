@@ -25,6 +25,7 @@ import {
   CounterField,
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
+import { enquiryApi } from "@/lib/api/enquiryApi";
 
 export type TransportSubService =
   | "Luxury Vehicles"
@@ -120,14 +121,48 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
     setStep(3);
   };
 
-  const handleSubmitFinal = (e: React.FormEvent) => {
+  const handleSubmitFinal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!guestName.trim() || !guestPhone.trim()) {
       alert("Please provide your name and contact phone number.");
       return;
     }
-    const ref = `TR-${Math.floor(100000 + Math.random() * 900000)}`;
-    setSubmittedRef(ref);
+    if (!guestEmail.trim() || !guestEmail.includes("@")) {
+      alert("Please provide a valid email so our transport desk can send your quotation.");
+      return;
+    }
+
+    try {
+      const res = await enquiryApi.submit({
+        passengerName: guestName.trim(),
+        passengerEmail: guestEmail.trim().toLowerCase(),
+        passengerPhone: guestPhone.trim(),
+        serviceCategory: "Ground Transport",
+        serviceType: subService,
+        origin: pickup.trim(),
+        destination: dropoff.trim(),
+        serviceDate: `${pickupDate}${pickupTime ? ` ${pickupTime}` : ""}`,
+        notes: specialRequests.trim() || undefined,
+        details: {
+          passengers,
+          luggage,
+          flight_number: flightNumber || undefined,
+          category: subService,
+        },
+      });
+      if (res.success && res.data?.bookingRef) {
+        setSubmittedRef(res.data.bookingRef);
+      } else {
+        alert(
+          !res.success && "error" in res
+            ? String(res.error)
+            : "Failed to submit transport enquiry. Please try again.",
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while submitting your request. Please try again.");
+    }
   };
 
   const getWhatsAppLink = () => {

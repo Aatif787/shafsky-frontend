@@ -1,28 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import {
-  Hotel,
-  ArrowLeft,
-  Calendar,
-  Users,
-  MapPin,
-  Building2,
-  Crown,
-  Sparkles,
-  Send,
-  CheckCircle2,
-  Bed,
-  Clock,
-  MessageSquare,
-  ShieldCheck,
-} from "lucide-react";
-import { display, mono } from "@/components/home/theme";
-import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
-import hotelImg from "@/assets/homepage/hotel.jpeg";
+import { ArrowLeft, MapPin, ExternalLink } from "lucide-react";
+import { display } from "@/components/home/theme";
 import hotelPageImg from "@/assets/others/hotelpage.png";
-import vvipLounge from "@/assets/homepage/lounge.jpeg";
-import vvipTerminal from "@/assets/homepage/vvip.jpeg";
-import transitImg from "@/assets/homepage/transit.jpeg";
 
 export const Route = createFileRoute("/solutions/travel")({
   head: () => ({
@@ -112,81 +92,135 @@ const HOTEL_OPTIONS: HotelOptionDef[] = [
   },
 ];
 
+export interface HotelCardItem {
+  id: string;
+  name: string;
+  badge?: string;
+  stars: number;
+  location: string;
+  capacity: string;
+  features: string[];
+  bookingTerms: string;
+  ratingLabel: string;
+  image: string;
+}
+
+export const FEATURED_HOTELS: HotelCardItem[] = [
+  {
+    id: "holiday-inn-express-t3",
+    name: "Hotel Holiday Inn Express At Terminal 3 Delhi Airport",
+    badge: "Recommends",
+    stars: 5,
+    location: "Location: IGI Airport T3, New Delhi",
+    capacity: "Fits 2 Adults",
+    features: [
+      "Free Breakfast Included",
+      "Free Cancellation till 24 hrs before check in",
+    ],
+    bookingTerms: "For 9 Hrs/ 12 Hrs/ Over Night Booking",
+    ratingLabel: "4.6 Customer Reviews",
+    image: "/images/hotels/holiday-inn-express-t3.jpg",
+  },
+  {
+    id: "classic-diplomat",
+    name: "Classic Diplomat Hotel",
+    stars: 4,
+    location: "Location: Mahipalpur, Near IGI Airport, New Delhi",
+    capacity: "Fits 2 Adults",
+    features: [
+      "Free Breakfast Included",
+      "Free Cancellation till 24 hrs before check in",
+    ],
+    bookingTerms: "For Over Night Booking",
+    ratingLabel: "4.8 Customer Reviews",
+    image: "/images/hotels/classic-diplomat.jpg",
+  },
+  {
+    id: "de-pavilion",
+    name: "De Pavilion Hotel",
+    stars: 4,
+    location: "Location: Mahipalpur, Near IGI Airport, New Delhi",
+    capacity: "Fits 2 Adults",
+    features: [
+      "Free Breakfast Included",
+      "Free Cancellation till 24 hrs before check in",
+    ],
+    bookingTerms: "For Over Night Booking",
+    ratingLabel: "4.7 Customer Reviews",
+    image: "/images/hotels/de-pavilion.jpg",
+  },
+  {
+    id: "castle-blue",
+    name: "Hotel Castle Blue",
+    stars: 3,
+    location:
+      "Location: No.A-109, Road No-5, Near Hotel Lohias, Mahipalpur Extension, Block RZ, Mahipalpur Village, Mahipalpur, New Delhi, Delhi 110037",
+    capacity: "Fits 2 Adults",
+    features: [
+      "Free Breakfast Included",
+      "Free Cancellation till 24 hrs before check in",
+    ],
+    bookingTerms: "For Over Night Booking",
+    ratingLabel: "4.7 Customer Reviews",
+    image: "/images/hotels/castle-blue.jpg",
+  },
+  {
+    id: "airport-hotel",
+    name: "Airport Hotel",
+    stars: 3,
+    location:
+      "Location: Indira Gandhi International Airport, Terminal 1, Opp, Domestic, Mehram Nagar, New Delhi, Delhi 110037",
+    capacity: "Fits 2 Adults",
+    features: [
+      "Free Breakfast Included",
+      "Free Cancellation till 24 hrs before check in",
+    ],
+    bookingTerms: "For Over Night Booking",
+    ratingLabel: "3.9 Customer Reviews",
+    image: "/images/hotels/airport-hotel.jpg",
+  },
+];
+
 function DedicatedLuxuryHotelsPage() {
   const navigate = useNavigate();
-  const [selectedOptionId, setSelectedOptionId] = useState<HotelOptionId>("7 Star Hotels");
+  const activeOption = HOTEL_OPTIONS[0];
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
-  const activeOption =
-    HOTEL_OPTIONS.find((o) => o.id === selectedOptionId) || HOTEL_OPTIONS[0];
-
-  // Request form state
-  const [destination, setDestination] = useState("Mumbai / Delhi / Udaipur");
-  const [checkInDate, setCheckInDate] = useState("");
-  const [checkOutDate, setCheckOutDate] = useState("");
-  const [roomCount, setRoomCount] = useState(1);
-  const [guestCount, setGuestCount] = useState(2);
-  const [suitePreference, setSuitePreference] = useState(activeOption.suitePreferences[0]);
-  const [specialRequests, setSpecialRequests] = useState("");
-
-  // Contact state
-  const [guestName, setGuestName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submittedRef, setSubmittedRef] = useState<string | null>(null);
-
-  const handleSelectOption = (optId: HotelOptionId) => {
-    setSelectedOptionId(optId);
-    const match = HOTEL_OPTIONS.find((o) => o.id === optId);
-    if (match) {
-      setSuitePreference(match.suitePreferences[0]);
+  React.useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {
+        // Handled silently for browser policies
+      });
     }
-  };
-
-  const handleSubmitRequest = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!destination.trim()) {
-      alert("Please enter your desired destination or city.");
-      return;
-    }
-    if (!checkInDate || !checkOutDate) {
-      alert("Please select both check-in and check-out dates.");
-      return;
-    }
-    if (!guestName.trim() || !phone.trim()) {
-      alert("Please provide your name and contact phone number.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    const quoteRef = `HT-${Math.floor(100000 + Math.random() * 900000)}`;
-
-    try {
-      // Allow slight network delay simulation for user experience
-      await new Promise((resolve) => setTimeout(resolve, 600));
-    } catch (err) {
-      console.warn("Hotel inquiry submission:", err);
-    } finally {
-      setIsSubmitting(false);
-      setSubmittedRef(quoteRef);
-    }
-  };
-
-  const getWhatsAppDirectLink = () => {
-    const text = `Hello Shafsky Hospitality Desk,%0A%0AI would like to request hotel accommodation:%0A- Category: ${selectedOptionId}%0A- Destination: ${destination}%0A- Dates: ${checkInDate} to ${checkOutDate}%0A- Rooms: ${roomCount} | Guests: ${guestCount}%0A- Room/Suite Preference: ${suitePreference}%0A- Guest Name: ${guestName}%0A- Phone: ${phone}%0A- Email: ${email || "N/A"}%0A- Special Requests: ${specialRequests || "None"}`;
-    return `https://wa.me/919599087959?text=${text}`;
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-lime-200">
       {/* ─────────────────────────────────────────────────────────────
-          1. COMPLETE HERO PHOTO & LUXURY HOTELS TITLE
+          1. FULL-WIDTH CINEMATIC HERO VIDEO BANNER (EDGE-TO-EDGE)
           ───────────────────────────────────────────────────────────── */}
-      <section className="relative px-4 pt-4 pb-8 sm:px-6 lg:px-8 border-b border-slate-100">
-        <div className="mx-auto max-w-6xl">
-          {/* Header Bar with Back Button & Breadcrumbs */}
-          <div className="flex items-center justify-between gap-4 mb-6">
+      <section className="relative w-full overflow-hidden bg-black">
+        {/* Full-Width Panoramic Video Container */}
+        <div className="relative w-full aspect-[2.4/1] sm:aspect-[2.7/1] md:aspect-[3/1] min-h-[300px] max-h-[520px] overflow-hidden">
+          {/* Native HTML5 Video in Crystal Clear 1080p Full HD */}
+          <video
+            ref={videoRef}
+            poster={hotelPageImg}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+          >
+            <source src="/videos/hotel-hero.mp4" type="video/mp4" />
+            <source src="/hotel/video.mp4" type="video/mp4" />
+          </video>
+
+          {/* Top Bar with Floating Back Button & VIP Badge */}
+          <div className="absolute top-4 left-4 right-4 sm:top-5 sm:left-6 sm:right-6 z-20 flex items-center justify-between pointer-events-none">
             <button
               onClick={() => {
                 if (window.history.length > 1) {
@@ -195,306 +229,255 @@ function DedicatedLuxuryHotelsPage() {
                   navigate({ to: "/" });
                 }
               }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-lime-500 hover:text-lime-700 hover:bg-lime-50/50 shadow-sm transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/25 text-xs font-bold transition-all cursor-pointer pointer-events-auto shadow-sm"
             >
-              <ArrowLeft size={14} className="text-lime-600" />
+              <ArrowLeft size={14} />
               <span>Back</span>
             </button>
 
-            <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-lime-700 uppercase tracking-widest bg-lime-50 px-3.5 py-1.5 rounded-full border border-lime-200">
-              <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
+            <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-lime-300 uppercase tracking-widest bg-black/50 px-3.5 py-1.5 rounded-full backdrop-blur-md border border-white/20 shadow-sm pointer-events-auto">
+              <span className="w-2 h-2 rounded-full bg-lime-400 inline-block animate-pulse" />
               <span>VIP ACCOMMODATIONS & PALACE RESORTS</span>
             </div>
           </div>
 
-          {/* Title & Description */}
-          <div className="text-center max-w-3xl mx-auto mb-6">
+          {/* Clean Overlay: COMFORT & LUXURY / HOTELS / BOOK NOW */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 sm:p-6 select-none pointer-events-none">
+            <p className="text-white font-serif font-bold text-base sm:text-2xl md:text-3xl tracking-[0.2em] uppercase mb-1 sm:mb-2 drop-shadow-md">
+              COMFORT & LUXURY
+            </p>
             <h1
-              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
+              className="text-white font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider uppercase mb-3 sm:mb-5 drop-shadow-lg"
               style={display}
             >
-              Luxury <span className="text-lime-600">Hotels</span>
+              HOTELS
             </h1>
-            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Preferred partner rates at distinguished palace resorts, 5-star executive suites, and airport transit hotels.
-            </p>
-          </div>
-
-          {/* Full Original Panoramic Palace Resort Photo (16:9 Landscape - Complete Architecture) */}
-          <div className="relative w-full overflow-hidden rounded-2xl shadow-md bg-white border border-slate-100">
-            <img
-              src={hotelPageImg}
-              alt="Shafsky Luxury 7 Star 5 Star Hotel Suites and Palace Estates"
-              className="w-full h-auto object-contain object-center select-none block"
-              loading="eager"
-            />
+            <a
+              href="#hotel-request"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("hotel-request")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="inline-block bg-[#f0de00] hover:bg-[#ffe600] text-slate-950 font-black text-xs sm:text-sm md:text-base uppercase tracking-wider px-7 sm:px-9 py-2.5 sm:py-3.5 rounded-full hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer pointer-events-auto shadow-lg"
+            >
+              BOOK NOW
+            </a>
           </div>
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. 3 LUXURY HOTEL OPTIONS SELECTOR
+          2. DISCOVER THE PERFECT STAY — GOLD BANNER & 4-IMAGE ROW
+             (Exact 1:1 match to reference design: Full-width gold banner,
+              zero shadow, sharp rectangular, crystal clear images)
           ───────────────────────────────────────────────────────────── */}
-      <section className="py-8 bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="text-center max-w-2xl mx-auto mb-6">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-lime-700 bg-lime-50 px-3 py-1 rounded-full border border-lime-200">
-              SELECT HOTEL CATEGORY
-            </span>
-          </div>
-
-          {/* 3 Option Buttons */}
-          <div className="flex items-center justify-center gap-3 flex-wrap">
-            {HOTEL_OPTIONS.map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => handleSelectOption(opt.id)}
-                className={`px-6 py-3 rounded-full text-xs sm:text-sm font-bold font-mono uppercase tracking-wider transition-all cursor-pointer ${
-                  selectedOptionId === opt.id
-                    ? "bg-lime-500 text-slate-950 shadow-md ring-2 ring-lime-400 border border-lime-600"
-                    : "bg-white text-slate-600 border border-slate-200 hover:border-lime-400 hover:bg-lime-50/50"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
+      <section className="w-full bg-white border-b border-slate-200">
+        {/* Full-Width Luxury Gold Header Banner */}
+        <div
+          className="w-full py-8 sm:py-10 md:py-12 px-4 sm:px-8 text-center select-none"
+          style={{
+            background: "linear-gradient(180deg, #d6ac35 0%, #ecd08e 100%)",
+          }}
+        >
+          <div className="max-w-5xl mx-auto">
+            <h1
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-bold text-black tracking-normal mb-3"
+              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+            >
+              Discover The Perfect Stay
+            </h1>
+            <p
+              className="text-xs sm:text-sm md:text-[15px] lg:text-[16px] text-black max-w-4xl mx-auto leading-relaxed"
+              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+            >
+              "Book Your Dream Hotel with Ease. Explore top destinations, compare rates, and secure your ideal accommodation effortlessly. From luxurious resorts to cozy retreats, find the best deals and enjoy a smooth booking experience. Your next adventure starts here—book now and make every stay unforgettable!"
+            </p>
           </div>
         </div>
+
+        {/* 4 Hotel Images in a Row — Centered, Tight Gaps, Full Ratio, Clear, No Shadow */}
+        <div className="pt-3 sm:pt-4 pb-3 sm:pb-4 px-2 sm:px-4 md:px-6 max-w-7xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1 sm:gap-1.5 md:gap-2">
+            {/* Image 1: Called directly from src/assets/others/hotelpage.png */}
+            <div className="w-full aspect-[195/247] overflow-hidden bg-white shadow-none rounded-none border-0">
+              <img
+                src={hotelPageImg}
+                alt="Palace Heritage & Luxury Hotel"
+                className="w-full h-full object-cover object-center select-none block shadow-none rounded-none border-0"
+                loading="eager"
+              />
+            </div>
+            {/* Image 2: public/hotel/hotel1.png */}
+            <div className="w-full aspect-[195/247] overflow-hidden bg-white shadow-none rounded-none border-0">
+              <img
+                src="/hotel/hotel1.png"
+                alt="Illuminated Modern Luxury Resort Hotel"
+                className="w-full h-full object-cover object-center select-none block shadow-none rounded-none border-0"
+                loading="eager"
+              />
+            </div>
+            {/* Image 3: public/hotel/hotel2.png */}
+            <div className="w-full aspect-[195/247] overflow-hidden bg-white shadow-none rounded-none border-0">
+              <img
+                src="/hotel/hotel2.png"
+                alt="Luxury Hotel Resort Swimming Pool"
+                className="w-full h-full object-cover object-center select-none block shadow-none rounded-none border-0"
+                loading="eager"
+              />
+            </div>
+            {/* Image 4: public/hotel/hotel3.png */}
+            <div className="w-full aspect-[195/247] overflow-hidden bg-white shadow-none rounded-none border-0">
+              <img
+                src="/hotel/hotel3.png"
+                alt="The Taj Mahal Palace Luxury Landmark Hotel"
+                className="w-full h-full object-cover object-center select-none block shadow-none rounded-none border-0"
+                loading="eager"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Golden Bottom Accent Line (Matching User Reference Image) */}
+        <div
+          className="w-full h-1.5 sm:h-2"
+          style={{
+            background: "linear-gradient(90deg, #d6ac35 0%, #ecd08e 50%, #d6ac35 100%)",
+          }}
+        />
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. SELECTED HOTEL REQUEST PANEL
+          2. FEATURED LUXURY AIRPORT & TRANSIT HOTELS (USER SHOWCASE)
           ───────────────────────────────────────────────────────────── */}
-      <section className="py-12 sm:py-16 bg-slate-50/60 border-b border-slate-200 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          {/* Active Option Heading */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-wider text-lime-700 mb-2">
-              <Sparkles size={13} className="text-lime-600" />
-              <span>{activeOption.badge} — ACCOMMODATION REQUEST</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
-              {activeOption.id} Request
-            </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-              {activeOption.tagline}
-            </p>
-          </div>
-
-          {/* Success State / Reference Card */}
-          {submittedRef ? (
-            <div className="bg-white rounded-3xl border border-lime-400 p-8 sm:p-12 text-center shadow-lg">
-              <div className="w-16 h-16 rounded-full bg-lime-100 border border-lime-300 flex items-center justify-center mx-auto mb-4 text-lime-700">
-                <CheckCircle2 size={32} />
+      <section id="hotel-request" className="py-12 sm:py-16 bg-white px-4 sm:px-6 lg:px-8 scroll-mt-6">
+        <div className="mx-auto max-w-4xl space-y-8 sm:space-y-10">
+          {FEATURED_HOTELS.map((hotel) => (
+            <div
+              key={hotel.id}
+              className="flex flex-col md:flex-row overflow-hidden border border-slate-100 bg-[#FDF5E6] shadow-sm transition-all hover:shadow-md"
+            >
+              {/* Left Column: Authentic Hotel Photo */}
+              <div className="w-full md:w-[48%] min-h-[240px] md:min-h-[290px] relative overflow-hidden bg-slate-100 flex-shrink-0">
+                <img
+                  src={hotel.image}
+                  alt={hotel.name}
+                  className="w-full h-full object-cover object-center select-none block"
+                  loading="lazy"
+                />
               </div>
-              <span className="text-xs font-mono font-bold uppercase tracking-widest text-lime-700">
-                HOTEL RESERVATION INQUIRY DISPATCHED
-              </span>
-              <h3 className="text-3xl font-extrabold text-slate-950 mt-1 mb-2" style={display}>
-                Reference #{submittedRef}
-              </h3>
-              <p className="text-sm text-slate-600 max-w-md mx-auto mb-6">
-                Your inquiry for <strong className="text-slate-900">{selectedOptionId}</strong> in <strong className="text-slate-900">{destination}</strong> has been received by the Shafsky Hospitality Concierge Desk.
-              </p>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <a
-                  href={getWhatsAppDirectLink()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs font-mono tracking-wider shadow-md transition-all"
-                >
-                  <MessageSquare size={15} />
-                  <span>Open WhatsApp Hospitality Desk</span>
-                </a>
-                <button
-                  onClick={() => setSubmittedRef(null)}
-                  className="w-full sm:w-auto px-6 py-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs font-mono tracking-wider transition-all"
-                >
-                  Submit Another Request
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-10 shadow-md">
-              <form onSubmit={handleSubmitRequest} className="space-y-6">
-                {/* Destination & City */}
+              {/* Right Column: Hotel Details & Actions */}
+              <div className="w-full md:w-[52%] p-6 sm:p-7 md:p-8 flex flex-col justify-between">
                 <div>
-                  <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Destination City / Preferred Hotel Property
-                  </label>
-                  <div className="relative">
-                    <MapPin size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="text"
-                      value={destination}
-                      onChange={(e) => setDestination(e.target.value)}
-                      placeholder="e.g. Mumbai (Taj Mahal Palace) / Delhi (The Leela) / Udaipur"
-                      required
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Check-in & Check-out Dates */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Check-in Date
-                    </label>
-                    <div className="relative">
-                      <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input
-                        type="date"
-                        value={checkInDate}
-                        onChange={(e) => setCheckInDate(e.target.value)}
-                        required
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500"
-                      />
+                  {/* Recommends Badge */}
+                  {hotel.badge && (
+                    <div className="mb-2">
+                      <span className="inline-block bg-[#80deea] text-[#004d40] text-xs font-semibold px-2.5 py-0.5 rounded-sm tracking-wide">
+                        {hotel.badge}
+                      </span>
                     </div>
-                  </div>
+                  )}
 
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Check-out Date
-                    </label>
-                    <div className="relative">
-                      <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input
-                        type="date"
-                        value={checkOutDate}
-                        onChange={(e) => setCheckOutDate(e.target.value)}
-                        required
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Rooms, Guests & Suite Preference */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Number of Rooms
-                    </label>
-                    <div className="relative">
-                      <Bed size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input
-                        type="number"
-                        min={1}
-                        max={50}
-                        value={roomCount}
-                        onChange={(e) => setRoomCount(parseInt(e.target.value) || 1)}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Number of Guests
-                    </label>
-                    <div className="relative">
-                      <Users size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input
-                        type="number"
-                        min={1}
-                        max={100}
-                        value={guestCount}
-                        onChange={(e) => setGuestCount(parseInt(e.target.value) || 1)}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Room / Suite Preference
-                    </label>
-                    <select
-                      value={suitePreference}
-                      onChange={(e) => setSuitePreference(e.target.value)}
-                      className="w-full px-3 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
-                    >
-                      {activeOption.suitePreferences.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Special Requests */}
-                <div>
-                  <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Special Requests (Optional)
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={specialRequests}
-                    onChange={(e) => setSpecialRequests(e.target.value)}
-                    placeholder="e.g. Airport luxury chauffeur pickup, early check-in, dietary preferences, private butler..."
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                  />
-                </div>
-
-                {/* Contact Information */}
-                <div className="pt-4 border-t border-slate-100">
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-lime-700 block mb-3">
-                    Contact Details for Reservation Confirmation
-                  </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Full Name</label>
-                      <input
-                        type="text"
-                        value={guestName}
-                        onChange={(e) => setGuestName(e.target.value)}
-                        placeholder="e.g. Sameer Verma"
-                        required
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Phone / WhatsApp</label>
-                      <input
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="e.g. +91 98765 43210"
-                        required
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Email Address</label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="e.g. guest@domain.com"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-end pt-2">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs font-mono tracking-wider shadow-md transition-all cursor-pointer disabled:opacity-50"
+                  {/* Hotel Title */}
+                  <h3
+                    className="font-serif font-bold text-slate-900 text-lg sm:text-xl md:text-[22px] leading-snug mb-2"
+                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
                   >
-                    <Send size={14} />
-                    <span>{isSubmitting ? "Submitting..." : `Request ${selectedOptionId} Quotation`}</span>
-                  </button>
+                    {hotel.name}
+                  </h3>
+
+                  {/* Gold Star Rating */}
+                  <div className="flex items-center gap-0.5 text-[#f59e0b] mb-2.5">
+                    {Array.from({ length: hotel.stars }).map((_, i) => (
+                      <span key={i} className="text-base leading-none text-[#f59e0b]">
+                        ★
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Location */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <p
+                      className="text-xs sm:text-sm text-slate-700 font-serif"
+                      style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                    >
+                      {hotel.location}
+                    </p>
+                    {hotel.id === "holiday-inn-express-t3" && (
+                      <a
+                        href="https://maps.app.goo.gl/U3wMaTbY7AC2KMWHA"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 text-[11px] font-sans font-bold text-[#1d63b8] hover:underline cursor-pointer"
+                        title="Open Hotel Location in Google Maps"
+                      >
+                        <MapPin size={12} className="text-amber-600" />
+                        <span>Google Map</span>
+                        <ExternalLink size={11} className="opacity-75" />
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Capacity */}
+                  <p
+                    className="text-xs sm:text-sm text-slate-700 font-serif mb-2"
+                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                  >
+                    {hotel.capacity}
+                  </p>
+
+                  {/* Inclusions List */}
+                  <div
+                    className="space-y-1 text-xs sm:text-sm text-slate-700 font-serif mb-2"
+                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                  >
+                    {hotel.features.map((feat, idx) => (
+                      <div key={idx} className="flex items-center gap-1.5">
+                        <span className="text-slate-800">•</span>
+                        <span>{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Booking Terms (Hours / Overnight) */}
+                  <p
+                    className="text-xs sm:text-sm text-slate-900 font-serif font-bold mb-5"
+                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                  >
+                    {hotel.bookingTerms}
+                  </p>
                 </div>
-              </form>
+
+                <div>
+                  {/* SEE DETAIL Action Button */}
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (hotel.id === "holiday-inn-express-t3") {
+                          navigate({ to: "/hotels/holiday-inn-express" });
+                        } else {
+                          alert(`Details for ${hotel.name} will be connected shortly.`);
+                        }
+                      }}
+                      className="inline-block bg-[#1d63b8] hover:bg-[#165099] text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded shadow-sm transition-colors cursor-pointer"
+                    >
+                      SEE DETAIL
+                    </button>
+                  </div>
+
+                  {/* Customer Reviews Summary */}
+                  <p
+                    className="font-serif font-bold text-slate-900 text-sm sm:text-base mt-4"
+                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                  >
+                    {hotel.ratingLabel}
+                  </p>
+                </div>
+              </div>
             </div>
-          )}
+          ))}
         </div>
       </section>
 
@@ -543,20 +526,20 @@ function DedicatedLuxuryHotelsPage() {
             <div className="lg:col-span-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  { src: hotelImg, alt: "Palace Resorts & Estates" },
-                  { src: vvipLounge, alt: "VIP Lounge & Suite Comfort" },
-                  { src: vvipTerminal, alt: "Chauffeured Ground Transfers" },
-                  { src: transitImg, alt: "Airside Transit Stays" },
+                  { src: hotelPageImg, alt: "Palace Heritage & Estates" },
+                  { src: "/hotel/hotel1.png", alt: "Premier 5-Star City & Resort Properties" },
+                  { src: "/hotel/hotel2.png", alt: "Luxury Pool & Leisure Accommodations" },
+                  { src: "/hotel/hotel3.png", alt: "Iconic Landmark Heritage Hotels" },
                 ].map((img, idx) => (
                   <div
                     key={idx}
-                    className="w-full rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 bg-white group hover:border-lime-400 transition-all"
+                    className="w-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white group hover:border-lime-400 transition-all"
                   >
-                    <div className="w-full bg-slate-50 overflow-hidden flex items-center justify-center">
+                    <div className="w-full aspect-[4/3] bg-slate-50 overflow-hidden flex items-center justify-center">
                       <img
                         src={img.src}
                         alt={img.alt}
-                        className="w-full h-auto object-contain object-center select-none block group-hover:scale-102 transition-transform duration-500"
+                        className="w-full h-full object-cover object-center select-none block group-hover:scale-102 transition-transform duration-500"
                       />
                     </div>
                     <div className="p-3 bg-white border-t border-slate-100">

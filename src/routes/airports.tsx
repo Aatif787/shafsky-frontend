@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { AIRPORTS, type Airport } from "@/data/airports";
 import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
-import { getAirportAsset } from "@/lib/airport-assets";
+import { getAirportAsset, getAirportPrimaryImage, getAirportImages } from "@/lib/airport-assets";
 import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
 import { BUSINESS } from "@/lib/constants";
 
@@ -64,7 +64,7 @@ const GLOBAL_AIRPORTS_DATA: Array<{
     stateCountry: `${a.city}, ${a.country}`,
     servicesCount: reg?.availableServiceIds?.length || 4,
     featured: reg?.featured || ["DEL", "BOM", "HYD", "BLR", "AMD", "MAA"].includes(a.code),
-    cover: a.cover,
+    cover: getAirportPrimaryImage(a.code) || a.cover,
   };
 });
 
@@ -270,7 +270,7 @@ function AirportsListingView() {
             {/* 6 Circular Nodes Single Row Grid */}
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 relative z-10 px-4 sm:px-8">
               {visibleFeatured.map((item, idx) => {
-                const img = getAirportAsset(item.code, "hero-mobile.webp") || "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=400&q=80";
+                const img = getAirportPrimaryImage(item.code) || item.cover;
 
                 // Curve Y offset matching the arc
                 const yOffset = idx === 0 || idx === 5 ? "sm:translate-y-4" : idx === 1 || idx === 4 ? "sm:translate-y-1" : "sm:translate-y-0";
@@ -362,7 +362,7 @@ function AirportsListingView() {
         {/* 5. ALL AIRPORTS COMPACT CARDS GRID (MATCHING REFERENCE IMAGE) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {filteredAirports.slice(0, displayCount).map((item) => {
-            const img = getAirportAsset(item.code, "hero-mobile.webp") || "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=300&q=80";
+            const img = getAirportPrimaryImage(item.code) || item.cover;
 
             return (
               <Link

@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { getAirportRegistryEntry } from "@/data/airportRegistry";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegistry";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { ApiClient } from "@/lib/ApiClient";
 import { airportApi } from "@/lib/api/airportApi";
@@ -437,8 +437,8 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
           state.direction,
           controller.signal,
           {
-            origin: state.originCode || state.validatedFlightData?.origin?.code || undefined,
-            destination: state.destCode || state.validatedFlightData?.destination?.code || undefined,
+            origin: state.validatedFlightData?.origin?.code || state.originCode || undefined,
+            destination: state.validatedFlightData?.destination?.code || state.destCode || undefined,
             terminal: state.selectedTerminal,
             flightType: state.travelType,
             transit: state.transitCode,
@@ -738,9 +738,9 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       const effectiveAirportCode = (state.airportCode || targetAirportCode || "").trim().toUpperCase();
       const depCountry = (flightInfo.origin?.country || "").toUpperCase();
       const arrCountry = (flightInfo.destination?.country || "").toUpperCase();
-      const isDetectedIntl = state.travelType === "international" ||
-        (depCountry && depCountry !== "IN" && depCountry !== "INDIA") ||
-        (arrCountry && arrCountry !== "IN" && arrCountry !== "INDIA");
+      const isOriginIndia = depCountry === "IN" || depCountry === "INDIA" || isIndianAirportCode(flightInfo.origin?.code);
+      const isDestIndia = arrCountry === "IN" || arrCountry === "INDIA" || isIndianAirportCode(flightInfo.destination?.code);
+      const isDetectedIntl = state.travelType === "international" || (!isOriginIndia || !isDestIndia);
 
       if (effectiveAirportCode === "DEL" && isDetectedIntl) {
         inferredTerminal = "Terminal 3";
@@ -768,8 +768,8 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
         airportName: state.bookingSource === "airport_page"
           ? (state.airportName || matchedAirportName)
           : matchedAirportName,
-        originCode: state.bookingSource === "airport_page" ? (originCode || state.originCode) : state.originCode,
-        destCode: state.bookingSource === "airport_page" ? (destCode || state.destCode) : state.destCode,
+        originCode: flightInfo.origin?.code || (state.bookingSource === "airport_page" ? (originCode || state.originCode) : state.originCode),
+        destCode: flightInfo.destination?.code || (state.bookingSource === "airport_page" ? (destCode || state.destCode) : state.destCode),
         isAirportCovered: true,
         flightStateMode: "VERIFIED",
         flightErrorMessage: undefined,

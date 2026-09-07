@@ -70,10 +70,9 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
     }
 
     setBusy(true);
-    const refCode = `SHF-HTL-${Math.floor(100000 + Math.random() * 900000)}`;
 
     try {
-      await submitBookingFn({
+      const result = await submitBookingFn({
         data: {
           contact_name: guest.fullName,
           contact_email: guest.email,
@@ -97,13 +96,18 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
           special_requests: `[Purpose: ${stay.purposeOfStay}] [Category: ${stay.hotelCategory}] [Brand: ${stay.brandPreference || "None"}] ${guest.specialRequests}`,
         },
       });
-      setBookingRef(refCode);
+      const ref =
+        (result as { booking_ref?: string })?.booking_ref ||
+        (result as { bookingRef?: string })?.bookingRef;
+      if (!ref) {
+        throw new Error("No booking reference returned from server.");
+      }
+      setBookingRef(ref);
       setSubmitted(true);
-      toast.success("Hotel proposal request submitted successfully!");
-    } catch (_) {
-      setBookingRef(refCode);
-      setSubmitted(true);
-      toast.success("Hotel proposal request submitted!");
+      toast.success(`Hotel enquiry ${ref} submitted successfully.`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to submit hotel enquiry.";
+      toast.error(message);
     } finally {
       setBusy(false);
     }
@@ -490,7 +494,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
             },
             {
               title: "VIP Airport Coordination",
-              desc: "Seamless integration with Meet & Assist tarmac transfers and terminal lounge access upon landing.",
+              desc: "Seamless integration with Meet & Greet tarmac transfers and terminal lounge access upon landing.",
               icon: Car,
             },
           ].map((card, idx) => {

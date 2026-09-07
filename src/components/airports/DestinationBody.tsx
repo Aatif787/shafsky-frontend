@@ -1,38 +1,19 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  ExternalLink,
-  X,
   ConciergeBell,
-  ArrowRight,
   Plane,
   MapPin,
   Globe,
   Clock,
   ShieldCheck,
-  Sparkles,
-  Inbox,
-  CheckCircle2,
 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 import { type Airport } from "@/data/airports";
-import { LIGHT, display, mono, SectionLabel, GridCard, StatusDot } from "./Atoms";
+import { LIGHT, display, SectionLabel } from "./Atoms";
 import { MeetGreetPackageComparison } from "./MeetGreetPackageComparison";
 import { ServicesGallery } from "./ServicesGallery";
+import { AirportMediaGallery } from "./AirportMediaGallery";
 import { AssistanceCTA } from "@/components/navigation/AssistanceCTA";
-
-const SERVICE_IMAGES: Record<string, string> = {
-  "meet-greet": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1920&q=95",
-  lounge: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=95",
-  "fast-track": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=95",
-  transfer: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1920&q=95",
-  porter: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1920&q=95",
-  baggage: "https://images.unsplash.com/photo-1553531384-cc14c8086119?auto=format&fit=crop&w=1920&q=95",
-  visa: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=1920&q=95",
-  hotel: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=95",
-  wheelchair: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1920&q=95",
-  concierge: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1920&q=95",
-};
 
 export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearch?: Record<string, unknown> }) {
   const quickInfoChips = [
@@ -84,6 +65,14 @@ export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearc
           <MeetGreetPackageComparison airportCode={a.code} bookingSearch={bookingSearch} />
         </div>
       </section>
+
+
+      {/* Multi-Image Gallery (only renders for hubs with >1 photo) */}
+      <AirportMediaGallery
+        airportCode={a.code}
+        airportCity={a.city}
+        airportName={a.airport?.name}
+      />
 
       {/* 3. Departure & Arrival Services Visual Gallery */}
       <ServicesGallery airportCity={a.city} airportCode={a.code} />

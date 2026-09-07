@@ -122,7 +122,7 @@ export function generateBookingEmailHtml(
       break;
     case "completed":
       heading = "Thank You for Flying With Us";
-      subHeading = `Your concierge journey has been marked as completed. We hope you had a seamless meet-and-assist airport experience.`;
+      subHeading = `Your concierge journey has been marked as completed. We hope you had a seamless meet-and-greet airport experience.`;
       statusThemeColor = "#3b82f6"; // Blue
       break;
     case "cancelled":
@@ -249,7 +249,7 @@ export function generateWhatsAppText(
       body = `We have received your ${serviceLabel} request.\n\n*Reference:* ${booking.booking_ref}\n*Flight:* ${flightNum}\n*Route:* ${booking.origin} to ${booking.destination}\n*Date/Time:* ${booking.depart_date}\n*Travelers:* ${totalPax} Pax\n\nOur team is currently reviewing your flight details.`;
       break;
     case "confirmed":
-      body = `Your ${serviceLabel} booking *${booking.booking_ref}* has been confirmed!\n\nAll meet-and-assist coordinators, tarmac chauffeurs, and lounge accesses are being pre-staged.`;
+      body = `Your ${serviceLabel} booking *${booking.booking_ref}* has been confirmed!\n\nAll meet-and-greet coordinators, tarmac chauffeurs, and lounge accesses are being pre-staged.`;
       break;
     case "rejected":
       body = `Notice: We regret that we are unable to accommodate your ${serviceLabel} request *${booking.booking_ref}* at this time.\n\nReason: ${booking.reject_reason || "Administrative limitations"}`;

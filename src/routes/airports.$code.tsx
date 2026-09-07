@@ -6,6 +6,7 @@ import { getAirportRegistryEntry } from "@/data/airportRegistry";
 import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
 import { DestinationHero } from "@/components/airports/DestinationHero";
 import { DestinationBody } from "@/components/airports/DestinationBody";
+import { StickyMobileBookingBar } from "@/components/ui/StickyMobileBookingBar";
 import { BUSINESS } from "@/lib/constants";
 
 const airportPageSearchSchema = z.object({
@@ -95,6 +96,15 @@ function DestinationPage() {
 
       {/* 2. DYNAMIC AIRPORT BODY */}
       <DestinationBody a={a} bookingSearch={search} />
+
+      {/* 3. STICKY MOBILE QUICK-BOOKING BAR */}
+      <StickyMobileBookingBar
+        title={`${a.city} (${a.code}) Concierge`}
+        price="From ₹5,500"
+        actionHref="#available-services"
+        buttonText="View Packages"
+        whatsappMessage={`Hi Shafsky Team, I would like to inquire about VIP airport concierge services at ${a.city} (${a.code}).`}
+      />
     </PageJourneyWrapper>
   );
 }

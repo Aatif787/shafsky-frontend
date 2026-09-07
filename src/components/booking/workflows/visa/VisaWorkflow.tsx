@@ -4,6 +4,7 @@ import { BookingProgressHeader } from "@/components/booking/shared/BookingProgre
 import { BookingCancelModal } from "@/components/booking/shared/BookingCancelModal";
 import { ContactSection } from "@/components/booking/shared/ContactSection";
 import { createBooking } from "@/lib/bookings.functions";
+import { toast } from "sonner";
 import { evaluateVisaRequest, type TravelPurpose, type VisaEvaluationResult } from "@/lib/visa/visaIntelligence";
 
 // Import Modular Step Components
@@ -136,13 +137,18 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
       };
 
       const res = await createBooking({ data: payload });
-      const ref = res?.reference_id || `SHF-VSA-${Math.floor(100000 + Math.random() * 900000)}`;
+      const ref =
+        (res as { booking_ref?: string })?.booking_ref ||
+        (res as { bookingRef?: string })?.bookingRef ||
+        (res as { reference_id?: string })?.reference_id;
+      if (!ref) {
+        throw new Error("No booking reference returned from server.");
+      }
       setBookingRef(ref);
       setCurrentStep(7);
     } catch (err) {
       console.error("Failed to submit visa booking:", err);
-      setBookingRef(`SHF-VSA-${Math.floor(100000 + Math.random() * 900000)}`);
-      setCurrentStep(7);
+      toast.error(err instanceof Error ? err.message : "Failed to submit visa enquiry.");
     } finally {
       setIsSubmitting(false);
     }

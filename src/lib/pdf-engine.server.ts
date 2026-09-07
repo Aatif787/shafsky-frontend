@@ -634,7 +634,7 @@ export async function generateServiceVoucherPdf(booking: any, title = "Service V
     "- Please scan the QR code above to verify booking status online.",
     "- Escort client through dedicated VVIP corridors.",
     "- Assist client with all luggage transfers to/from chauffeur vehicles.",
-    "- If meet & assist: Greeter must await passenger with custom name placard at gates.",
+    "- If meet & greet: Greeter must await passenger with custom name placard at gates.",
     "- If tarmac transfer: Driver must verify flight code before passenger boarding.",
     "- If lounge pass: Grant entry to the primary lounge area and private suites.",
     `- Direct any queries to Dispatch Operations at ${branding.booking_email}.`
@@ -649,7 +649,7 @@ export async function generateServiceVoucherPdf(booking: any, title = "Service V
 }
 
 export async function generateMeetAssistVoucherPdf(booking: any): Promise<Uint8Array> {
-  return generateServiceVoucherPdf(booking, "Meet & Assist Voucher", "Airport Greeter & Fast-Track Customs Escort");
+  return generateServiceVoucherPdf(booking, "Meet & Greet Voucher", "Airport Greeter & Fast-Track Customs Escort");
 }
 
 export async function generateChauffeurVoucherPdf(booking: any): Promise<Uint8Array> {

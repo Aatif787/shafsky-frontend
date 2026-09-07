@@ -62,12 +62,12 @@ function PaymentsPage() {
   return (
     <div className="space-y-6">
       <SAPageHeader
-        title="Enterprise Payment Ledger"
-        subtitle="Transactional settlements, provider gateways, and receipt audit log"
+        title="Enterprise Payment Ledger & Settlements"
+        subtitle="Live Razorpay & card transactions, settlement auditing, and signed receipt logs"
         breadcrumbs={[{ label: "Super Admin", href: "/super-admin" }, { label: "Payment Ledger" }]}
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <SAKpiCard
           label="Confirmed Revenue"
           value={`₹${totalRevenue.toLocaleString()}`}
@@ -87,6 +87,13 @@ function PaymentsPage() {
           icon={AlertCircle}
           trend="Reversed settlements"
           trendUp={false}
+        />
+        <SAKpiCard
+          label="Razorpay Gateway"
+          value="100% Active"
+          icon={ShieldCheck}
+          trend="Live & Encrypted"
+          trendUp={true}
         />
       </div>
 
@@ -162,20 +169,21 @@ function PaymentsPage() {
           },
           {
             key: "provider",
-            label: "Provider / Txn ID",
+            label: "Gateway / Txn ID",
             render: (row: any) => (
-              <div className="space-y-0.5 font-mono text-xs">
+              <div className="space-y-1 font-mono text-xs">
                 <span
-                  className={`inline-block px-1.5 py-0.5 text-[8px] uppercase tracking-wider font-bold rounded ${
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[9px] uppercase tracking-wider font-bold rounded-md ${
                     row.provider === "stripe"
                       ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                      : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                      : "bg-[#0d6efd]/20 text-[#5ed3ff] border border-[#0d6efd]/30"
                   }`}
                 >
-                  {row.provider}
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  {row.provider || "razorpay"}
                 </span>
-                <span className="text-white/40 text-[10px] block truncate max-w-[120px]">
-                  {row.provider_payment_id}
+                <span className="text-white/40 text-[10px] block truncate max-w-[130px]">
+                  {row.provider_payment_id || "—"}
                 </span>
               </div>
             ),

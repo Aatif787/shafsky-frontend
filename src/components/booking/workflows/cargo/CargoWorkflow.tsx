@@ -131,30 +131,37 @@ export function CargoWorkflow({ searchParams }: CargoWorkflowProps) {
     }
 
     setBusy(true);
-    const generatedRef = `SHF-CRG-${Math.floor(100000 + Math.random() * 900000)}`;
 
     try {
-      await submitBookingFn({
+      const result = await submitBookingFn({
         data: {
-          flight_number: `CARGO-[${shipmentType.toUpperCase()}]`,
-          departure_airport: origin,
-          arrival_airport: destination,
+          contact_name: contactName,
+          contact_email: email,
+          contact_phone: phone,
+          company: companyName || "",
+          trip_type: "one_way",
+          origin,
+          destination,
           depart_date: preferredShippingDate,
-          lead_passenger_name: contactName,
-          passenger_email: email,
-          passenger_phone: phone,
-          total_price: 0,
+          pax_adults: 1,
+          pax_children: 0,
+          pax_infants: 0,
           special_requests: `[AIR CARGO CONCIERGE] ${commodityDescription} | Entity: ${entityType} (${companyName || "N/A"}) | Weight: ${estimatedWeight} ${weightUnit} | Pkgs: ${packageCount} | Specs: ${specialHandlingNotes || "None"}`,
           service_type: "cargo",
-        } as any,
+        },
       });
-      setCreatedRef(generatedRef);
+      const ref =
+        (result as { booking_ref?: string })?.booking_ref ||
+        (result as { bookingRef?: string })?.bookingRef;
+      if (!ref) {
+        throw new Error("No booking reference returned from server.");
+      }
+      setCreatedRef(ref);
       setCurrentStep(7);
-      toast.success("Air Cargo Request dispatched successfully!");
-    } catch {
-      setCreatedRef(generatedRef);
-      setCurrentStep(7);
-      toast.success("Air Cargo Request staged successfully!");
+      toast.success(`Air Cargo enquiry ${ref} submitted.`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to submit cargo enquiry.";
+      toast.error(message);
     } finally {
       setBusy(false);
     }

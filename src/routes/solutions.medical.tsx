@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { display, mono } from "@/components/home/theme";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
+import { enquiryApi } from "@/lib/api/enquiryApi";
 import home3Img from "@/assets/homepage/home3.jpeg";
 import specialSerImg from "@/assets/others/specialser.png";
 import dutyImg from "@/assets/homepage/duty.jpeg";
@@ -202,17 +203,127 @@ function DedicatedSpecialServicesPage() {
       alert("Please provide your name and contact phone number.");
       return;
     }
+    if (!email.trim() || !email.includes("@")) {
+      alert("Please provide a valid email so our desk can send your quotation.");
+      return;
+    }
 
     setIsSubmitting(true);
-    const quoteRef = `SS-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    let origin: string | undefined;
+    let destination: string | undefined;
+    let serviceDate: string | undefined;
+    let details: Record<string, unknown> = { service: selectedOptionId };
+    let notes: string | undefined;
+    let serviceCategory: "Travel Support" | "Cargo & Logistics" = "Travel Support";
+    let serviceType = selectedOptionId;
+
+    if (selectedOptionId === "Tours & Travel") {
+      origin = tourDestination;
+      destination = tourDestination;
+      serviceDate = `${tourStartDate || "TBD"} to ${tourEndDate || "TBD"}`;
+      details = {
+        service: selectedOptionId,
+        destination: tourDestination,
+        start_date: tourStartDate,
+        end_date: tourEndDate,
+        guests: tourGuests,
+        requirements: tourRequirements,
+      };
+      notes = tourRequirements || undefined;
+      serviceType = "Travel Support";
+    } else if (selectedOptionId === "Passport & VISA") {
+      destination = visaCountry;
+      details = {
+        service: selectedOptionId,
+        country: visaCountry,
+        visa_type: visaType,
+        applicants: visaApplicants,
+        urgency: visaUrgency,
+      };
+      notes = `${visaType} — ${visaUrgency}`;
+      serviceType = "Visa Assistance";
+    } else if (selectedOptionId === "PSO (Personal Security Officer)") {
+      origin = psoLocation;
+      destination = psoLocation;
+      serviceDate = psoDates || undefined;
+      details = {
+        service: selectedOptionId,
+        dates: psoDates,
+        location: psoLocation,
+        vip_count: psoVipCount,
+        requirements: psoRequirements,
+      };
+      notes = psoRequirements || undefined;
+      serviceType = "VIP Escort";
+    } else if (selectedOptionId === "Sightseeing & Guide") {
+      origin = guideDestination;
+      destination = guideDestination;
+      serviceDate = guideDate || undefined;
+      details = {
+        service: selectedOptionId,
+        destination: guideDestination,
+        date: guideDate,
+        party_size: guidePartySize,
+        language: guideLanguage,
+      };
+      serviceType = "Travel Support";
+    } else if (selectedOptionId === "Infant Care") {
+      origin = infantAirport;
+      destination = infantAirport;
+      serviceDate = infantTravelDate || undefined;
+      details = {
+        service: selectedOptionId,
+        child_age: infantAge,
+        travel_date: infantTravelDate,
+        airport: infantAirport,
+        assistance: infantAssistance,
+      };
+      notes = infantAssistance || undefined;
+      serviceType = "Travel Support";
+    } else if (selectedOptionId === "Human Remains by Cargo") {
+      serviceCategory = "Cargo & Logistics";
+      serviceType = "Cargo & Logistics";
+      origin = humOrigin;
+      destination = humDestination;
+      serviceDate = humTimeline || undefined;
+      details = {
+        service: selectedOptionId,
+        origin: humOrigin,
+        destination: humDestination,
+        timeline: humTimeline,
+        permits: humPermits,
+      };
+      notes = humPermits || "Human remains cargo enquiry";
+    }
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      const res = await enquiryApi.submit({
+        passengerName: clientName.trim(),
+        passengerEmail: email.trim().toLowerCase(),
+        passengerPhone: phone.trim(),
+        serviceCategory,
+        serviceType,
+        origin,
+        destination,
+        serviceDate,
+        notes,
+        details,
+      });
+      if (res.success && res.data?.bookingRef) {
+        setSubmittedRef(res.data.bookingRef);
+      } else {
+        const errMsg =
+          !res.success && "error" in res
+            ? String(res.error)
+            : "Failed to submit enquiry. Please try again.";
+        alert(errMsg);
+      }
     } catch (err) {
-      console.warn("Special service inquiry submission:", err);
+      console.error("Special service inquiry submission:", err);
+      alert("Something went wrong while submitting your request. Please try again.");
     } finally {
       setIsSubmitting(false);
-      setSubmittedRef(quoteRef);
     }
   };
 

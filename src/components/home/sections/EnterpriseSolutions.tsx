@@ -52,7 +52,7 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     description: "On-demand executive private jets, twin helicopters, and specialized mission aircraft on your schedule.",
     subServices: [
       { label: "Domestic and International Charter", subParam: "Domestic and International Charter", tagline: "Long-range private jets and executive airliners" },
-      { label: "Corporate Charter", subParam: "Corporate Charter", tagline: "Executive travel for leadership teams and roadshows" },
+      { label: "Corporate Charter", subParam: "Corporate Charter", tagline: "Executive travel for leadership teams and business tours" },
       { label: "Private Charter", subParam: "Private Charter", tagline: "Exclusive point-to-point luxury jet flights" },
       { label: "Helicopter Charter", subParam: "Helicopter Charter", tagline: "Twin-turbine helicopters for rooftop and city transfers" },
       { label: "Tourism Charter", subParam: "Tourism Charter", tagline: "Scenic leisure flights & private safari air tours" },

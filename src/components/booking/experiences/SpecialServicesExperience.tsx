@@ -27,6 +27,7 @@ import {
   CounterField,
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
+import { enquiryApi } from "@/lib/api/enquiryApi";
 
 export type SpecialSubService =
   | "Tours & Travel"
@@ -154,14 +155,103 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
     setStep(2);
   };
 
-  const handleSubmitFinal = (e: React.FormEvent) => {
+  const handleSubmitFinal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!guestName.trim() || !guestPhone.trim()) {
       alert("Please provide your name and contact phone number.");
       return;
     }
-    const ref = `SS-${Math.floor(100000 + Math.random() * 900000)}`;
-    setSubmittedRef(ref);
+    if (!guestEmail.trim() || !guestEmail.includes("@")) {
+      alert("Please provide a valid email so our desk can send your quotation.");
+      return;
+    }
+
+    let origin: string | undefined;
+    let destination: string | undefined;
+    let serviceDate: string | undefined;
+    let details: Record<string, unknown> = { service: subService };
+    let notes = specialNotes.trim() || undefined;
+    let serviceCategory: "Travel Support" | "Cargo & Logistics" = "Travel Support";
+    let serviceType = "Travel Support";
+
+    if (subService === "Tours & Travel") {
+      origin = tourDest;
+      destination = tourDest;
+      serviceDate = `${tourStartDate || "TBD"} to ${tourEndDate || "TBD"}`;
+      details = { service: subService, destination: tourDest, guests: tourTravellers };
+    } else if (subService === "Passport & VISA") {
+      destination = visaCountry;
+      serviceType = "Visa Assistance";
+      details = {
+        service: subService,
+        country: visaCountry,
+        type: visaType,
+        applicants: visaApplicants,
+        urgent: visaUrgent,
+      };
+    } else if (subService === "PSO (Personal Security Officer)") {
+      origin = psoLocation;
+      destination = psoLocation;
+      serviceDate = psoStartDate || undefined;
+      serviceType = "VIP Escort";
+      details = {
+        service: subService,
+        type: psoType,
+        location: psoLocation,
+        duration_days: psoDurationDays,
+        count: psoCount,
+      };
+    } else if (subService === "Sightseeing & Guide") {
+      origin = guideCity;
+      destination = guideCity;
+      serviceDate = guideDate || undefined;
+      details = { service: subService, city: guideCity, language: guideLanguage, guests: guideGuests };
+    } else if (subService === "Infant Care") {
+      origin = infantAirport;
+      destination = infantAirport;
+      serviceDate = infantDate || undefined;
+      details = { service: subService, age: infantAge, airport: infantAirport };
+    } else if (subService === "Human Remains by Cargo") {
+      serviceCategory = "Cargo & Logistics";
+      serviceType = "Cargo & Logistics";
+      origin = cargoOrigin;
+      destination = cargoDest;
+      serviceDate = cargoDate || undefined;
+      details = {
+        service: subService,
+        origin: cargoOrigin,
+        destination: cargoDest,
+        urgency: cargoUrgency,
+      };
+      notes = notes || "Human remains cargo enquiry";
+    }
+
+    try {
+      const res = await enquiryApi.submit({
+        passengerName: guestName.trim(),
+        passengerEmail: guestEmail.trim().toLowerCase(),
+        passengerPhone: guestPhone.trim(),
+        serviceCategory,
+        serviceType,
+        origin,
+        destination,
+        serviceDate,
+        notes,
+        details,
+      });
+      if (res.success && res.data?.bookingRef) {
+        setSubmittedRef(res.data.bookingRef);
+      } else {
+        alert(
+          !res.success && "error" in res
+            ? String(res.error)
+            : "Failed to submit enquiry. Please try again.",
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while submitting your request. Please try again.");
+    }
   };
 
   const getWhatsAppLink = () => {

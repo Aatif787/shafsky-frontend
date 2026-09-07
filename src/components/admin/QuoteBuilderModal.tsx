@@ -146,7 +146,7 @@ export function QuoteBuilderModal({
       setLineItems([
         {
           id: "default-1",
-          name: isCharter ? "Private Jet Charter Services" : "VIP Concierge & Meet & Assist Package",
+          name: isCharter ? "Private Jet Charter Services" : "VIP Concierge & Meet & Greet Package",
           category: isCharter ? "charter" : "departure",
           quantity: 1,
           unitPrice: isCharter ? 185000 : 18000,

@@ -91,19 +91,41 @@ export function BookingPanel() {
   const dateValue2 =
     departDate2 && isValid(new Date(departDate2)) ? parseISO(departDate2) : undefined;
 
+  const isSameOriginDest =
+    originCode.trim().length === 3 &&
+    destCode.trim().length === 3 &&
+    originCode.trim().toUpperCase() === destCode.trim().toUpperCase();
+
+  const isSameTransit =
+    tab === "connection" &&
+    transitCode.trim().length === 3 &&
+    (transitCode.trim().toUpperCase() === originCode.trim().toUpperCase() ||
+      transitCode.trim().toUpperCase() === destCode.trim().toUpperCase());
+
   const isArrivalDepartureValid =
     originCode.trim().length === 3 &&
     destCode.trim().length === 3 &&
+    !isSameOriginDest &&
     departDate !== "";
   const isConnectionValid =
     originCode.trim().length === 3 &&
     destCode.trim().length === 3 &&
     transitCode.trim().length === 3 &&
+    !isSameOriginDest &&
+    !isSameTransit &&
     departDate !== "";
 
   const isFormValid = tab === "connection" ? isConnectionValid : isArrivalDepartureValid;
 
   const resolveAndNavigate = async (extra: Record<string, unknown> = {}) => {
+    if (isSameOriginDest) {
+      toast.error("Origin and destination airports cannot be the same. Please select distinct airports.");
+      return false;
+    }
+    if (isSameTransit) {
+      toast.error("Transit hub cannot match your origin or destination airport.");
+      return false;
+    }
     const journeyType = tab === "connection" ? "TRANSIT" : tab.toUpperCase();
     const res = await airportApi.resolveServiceAirport({
       journey_type: journeyType,
@@ -296,6 +318,11 @@ export function BookingPanel() {
                   }}
                   placeholder="Search transit hub"
                 />
+                {isSameTransit && (
+                  <span className="text-[11px] font-mono text-rose-500 font-medium">
+                    Transit hub cannot match origin or destination.
+                  </span>
+                )}
               </div>
             )}
 
@@ -317,6 +344,11 @@ export function BookingPanel() {
                 }}
                 placeholder={tab === "arrival" ? "Search arrival hub" : "Search destination airport"}
               />
+              {isSameOriginDest && (
+                <span className="text-[11px] font-mono text-rose-500 font-medium">
+                  Destination cannot be the same as departure airport.
+                </span>
+              )}
             </div>
 
             {/* Flight Date (or Inbound Date for connection) */}

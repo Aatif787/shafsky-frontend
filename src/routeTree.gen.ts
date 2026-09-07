@@ -27,6 +27,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authenticated/super-admin'
 import { Route as AirportsCodeRouteImport } from './routes/airports.$code'
 import { Route as ApiProcessQueueRouteImport } from './routes/api.process-queue'
+import { Route as HotelsHolidayInnExpressRouteImport } from './routes/hotels.holiday-inn-express'
 import { Route as ServicesGuideRouteImport } from './routes/services.guide'
 import { Route as SolutionsAviationRouteImport } from './routes/solutions.aviation'
 import { Route as SolutionsCargoRouteImport } from './routes/solutions.cargo'
@@ -157,6 +158,11 @@ const AirportsCodeRoute = AirportsCodeRouteImport.update({
 const ApiProcessQueueRoute = ApiProcessQueueRouteImport.update({
   id: '/api/process-queue',
   path: '/api/process-queue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotelsHolidayInnExpressRoute = HotelsHolidayInnExpressRouteImport.update({
+  id: '/hotels/holiday-inn-express',
+  path: '/hotels/holiday-inn-express',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesGuideRoute = ServicesGuideRouteImport.update({
@@ -417,6 +423,7 @@ export interface FileRoutesByFullPath {
   '/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
+  '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
   '/services/guide': typeof ServicesGuideRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
   '/solutions/cargo': typeof SolutionsCargoRoute
@@ -476,6 +483,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
+  '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
   '/services/guide': typeof ServicesGuideRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
   '/solutions/cargo': typeof SolutionsCargoRoute
@@ -539,6 +547,7 @@ export interface FileRoutesById {
   '/_authenticated/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
+  '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
   '/services/guide': typeof ServicesGuideRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
   '/solutions/cargo': typeof SolutionsCargoRoute
@@ -602,6 +611,7 @@ export interface FileRouteTypes {
     | '/super-admin'
     | '/airports/$code'
     | '/api/process-queue'
+    | '/hotels/holiday-inn-express'
     | '/services/guide'
     | '/solutions/aviation'
     | '/solutions/cargo'
@@ -661,6 +671,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/airports/$code'
     | '/api/process-queue'
+    | '/hotels/holiday-inn-express'
     | '/services/guide'
     | '/solutions/aviation'
     | '/solutions/cargo'
@@ -723,6 +734,7 @@ export interface FileRouteTypes {
     | '/_authenticated/super-admin'
     | '/airports/$code'
     | '/api/process-queue'
+    | '/hotels/holiday-inn-express'
     | '/services/guide'
     | '/solutions/aviation'
     | '/solutions/cargo'
@@ -782,6 +794,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiProcessQueueRoute: typeof ApiProcessQueueRoute
+  HotelsHolidayInnExpressRoute: typeof HotelsHolidayInnExpressRoute
   ServicesGuideRoute: typeof ServicesGuideRoute
   SolutionsAviationRoute: typeof SolutionsAviationRoute
   SolutionsCargoRoute: typeof SolutionsCargoRoute
@@ -920,6 +933,13 @@ declare module '@tanstack/react-router' {
       path: '/api/process-queue'
       fullPath: '/api/process-queue'
       preLoaderRoute: typeof ApiProcessQueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hotels/holiday-inn-express': {
+      id: '/hotels/holiday-inn-express'
+      path: '/hotels/holiday-inn-express'
+      fullPath: '/hotels/holiday-inn-express'
+      preLoaderRoute: typeof HotelsHolidayInnExpressRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/guide': {
@@ -1360,6 +1380,7 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiProcessQueueRoute: ApiProcessQueueRoute,
+  HotelsHolidayInnExpressRoute: HotelsHolidayInnExpressRoute,
   ServicesGuideRoute: ServicesGuideRoute,
   SolutionsAviationRoute: SolutionsAviationRoute,
   SolutionsCargoRoute: SolutionsCargoRoute,

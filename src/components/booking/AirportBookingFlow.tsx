@@ -13,14 +13,16 @@ import {
   Copy,
   ChevronDown,
   ChevronUp,
-  CreditCard,
   Lock,
   RefreshCw,
   PhoneCall,
   MessageSquare,
+  Share2,
+  Building2,
 } from "lucide-react";
 import { ApiClient } from "@/lib/ApiClient";
-import { getAirportRegistryEntry } from "@/data/airportRegistry";
+import { resolveApiUrl } from "@/lib/api/config";
+import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegistry";
 import { AirlineLogo } from "./shared/AirlineLogo";
 import { IntelligentAirlineAutocomplete } from "./shared/IntelligentAirlineAutocomplete";
 import { FlightData } from "@/services/flight/FlightTypes";
@@ -44,6 +46,42 @@ const ICAO_TO_IATA_MAP: Record<string, string> = {
   ETD: "EY", BAW: "BA", SIA: "SQ", DLH: "LH", AFR: "AF",
   KLM: "KL", THA: "TG", MAS: "MH", CXA: "CX", FDB: "FZ",
 };
+
+/**
+ * Safely anchors a flight time-of-day onto the intended calendar service date.
+ * Avoids submitting past dates from provider timetables or cached entries.
+ */
+function buildAnchoredServiceClock(
+  targetDate: string,
+  rawTimeVal: string | null | undefined,
+  fallbackTime: string,
+  isArrivalNextDay = false
+): string {
+  let timeStr = fallbackTime;
+  if (rawTimeVal && typeof rawTimeVal === "string") {
+    const match = rawTimeVal.trim().match(/(?:T|\s)?(\d{1,2}:\d{2}(?::\d{2})?)/);
+    if (match && match[1]) {
+      timeStr = match[1];
+    }
+  }
+  const parts = timeStr.split(":");
+  const hh = (parts[0] || "10").padStart(2, "0");
+  const mm = (parts[1] || "00").padStart(2, "0");
+  const ss = (parts[2] || "00").padStart(2, "0");
+  const formattedTime = `${hh}:${mm}:${ss}`;
+
+  let finalDate = targetDate;
+  if (isArrivalNextDay) {
+    try {
+      const d = new Date(`${targetDate}T00:00:00`);
+      d.setDate(d.getDate() + 1);
+      finalDate = d.toISOString().split("T")[0];
+    } catch {
+      finalDate = targetDate;
+    }
+  }
+  return `${finalDate}T${formattedTime}`;
+}
 
 export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   const navigate = useNavigate();
@@ -107,18 +145,66 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   );
   const [selectedPackagePrice, setSelectedPackagePrice] = useState<string>(searchParams?.package_price || "");
 
+  // Dynamic Database-Driven Packages
+  const [availablePackages, setAvailablePackages] = useState<Array<{
+    id: string;
+    title: string;
+    tagline?: string;
+    basePrice: number;
+    currency: string;
+    features?: string[];
+  }>>([]);
+  const [isPackagesLoading, setIsPackagesLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!airportCode) return;
+    let active = true;
+    setIsPackagesLoading(true);
+    const jt = (direction || "departure").toUpperCase();
+    const ft = (travelType || "domestic").toUpperCase();
+    const url = resolveApiUrl(`/api/airport/services?airport=${airportCode}&journey_type=${jt}&flight_type=${ft}`);
+
+    fetch(url, { headers: { "ngrok-skip-browser-warning": "true" } })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!active) return;
+        if (data?.packages && Array.isArray(data.packages) && data.packages.length > 0) {
+          setAvailablePackages(data.packages);
+          const current = data.packages.find((p: any) => p.id.toLowerCase() === (selectedPackageId || "").toLowerCase());
+          if (current) {
+            setSelectedPackagePrice(String(current.basePrice));
+            setSelectedPackageName(current.title);
+          } else {
+            setSelectedPackageId(data.packages[0].id);
+            setSelectedPackageName(data.packages[0].title);
+            setSelectedPackagePrice(String(data.packages[0].basePrice));
+          }
+        }
+      })
+      .catch((err) => console.warn("[AirportBookingFlow] Failed to fetch catalog packages:", err))
+      .finally(() => {
+        if (active) setIsPackagesLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [airportCode, direction, travelType]);
+
   // Multi-Currency State & Live Conversion
   const [selectedCurrency, setSelectedCurrency] = useState<string>(() => detectDefaultCurrency());
 
   const numericUnitPrice = useMemo(() => {
     const p = Number(String(selectedPackagePrice).replace(/[^0-9.]/g, ""));
     if (p > 0) return p;
+    const pkg = availablePackages.find((item) => item.id.toLowerCase() === (selectedPackageId || "").toLowerCase());
+    if (pkg && pkg.basePrice > 0) return pkg.basePrice;
     const id = (selectedPackageId || "").toLowerCase();
     if (id.includes("platinum") || id.includes("elite")) return 9500;
     if (id.includes("gold") || id.includes("meet")) return 5500;
     if (id.includes("silver") || id.includes("basic")) return 3500;
     return 5500;
-  }, [selectedPackagePrice, selectedPackageId]);
+  }, [selectedPackagePrice, selectedPackageId, availablePackages]);
 
   const totalPrice = numericUnitPrice * totalPax;
   const baseInrTotalPrice = totalPrice;
@@ -159,6 +245,35 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   const [email, setEmail] = useState<string>("");
   const [specialRequests, setSpecialRequests] = useState<string>("");
   const [showNotes, setShowNotes] = useState<boolean>(false);
+
+  // Corporate Invoicing & GST State (Optional)
+  const [showGst, setShowGst] = useState<boolean>(false);
+  const [gstCompanyName, setGstCompanyName] = useState<string>("");
+  const [gstNumber, setGstNumber] = useState<string>("");
+  const [gstBillingAddress, setGstBillingAddress] = useState<string>("");
+
+  // Share Quote / Itinerary on WhatsApp
+  const handleShareQuoteWhatsApp = () => {
+    const flightDisplay =
+      isFlightVerified && verifiedFlight
+        ? `${verifiedFlight.carrier.name} ${verifiedFlight.flightNum}`
+        : manualFlightNum || flightNumber || "Flight Pending";
+
+    const msg = [
+      `*Shafsky Aviation Services — VIP Booking Quote*`,
+      `📍 *Airport:* ${airportCityName} (${airportCode}) — ${direction.toUpperCase()}`,
+      `✨ *Package:* ${selectedPackageName}`,
+      `✈️ *Flight:* ${flightDisplay} (${serviceDate || "Date TBD"})`,
+      `👥 *Passengers:* ${totalPax} Pax (${paxAdults} Adults${paxChildren > 0 ? `, ${paxChildren} Children` : ""})`,
+      `💳 *Total Amount:* ${formatPrice(convertedTotalPrice, selectedCurrency)} (All Taxes Incl.)`,
+      ``,
+      `Direct Review & Pay: ${typeof window !== "undefined" ? window.location.href : ""}`,
+      `24/7 Aviation Desk: +91 9599087959`,
+    ].join("\n");
+
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+    window.open(waUrl, "_blank");
+  };
 
   // 3. Payment & Security Lifecycle (Backend-Verified Only)
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -216,6 +331,31 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
         const flightObj = Array.isArray(raw) ? raw[0] : raw;
 
         if (flightObj) {
+          const depRawSched = flightObj?.departure?.scheduled || flightObj?.departure?.scheduledTime || null;
+          const arrRawSched = flightObj?.arrival?.scheduled || flightObj?.arrival?.scheduledTime || null;
+
+          let isArrNextDay = false;
+          if (depRawSched && arrRawSched) {
+            const depDateMatch = String(depRawSched).match(/^(\d{4}-\d{2}-\d{2})/);
+            const arrDateMatch = String(arrRawSched).match(/^(\d{4}-\d{2}-\d{2})/);
+            if (depDateMatch && arrDateMatch && arrDateMatch[1] > depDateMatch[1]) {
+              isArrNextDay = true;
+            } else {
+              const depT = String(depRawSched).match(/(\d{1,2}:\d{2})/)?.[1] || "";
+              const arrT = String(arrRawSched).match(/(\d{1,2}:\d{2})/)?.[1] || "";
+              if (depT && arrT && arrT < depT) {
+                isArrNextDay = true;
+              }
+            }
+          }
+
+          const anchoredDepSched = depRawSched
+            ? buildAnchoredServiceClock(serviceDate, depRawSched, "10:00")
+            : null;
+          const anchoredArrSched = arrRawSched
+            ? buildAnchoredServiceClock(serviceDate, arrRawSched, "12:30", isArrNextDay)
+            : null;
+
           const flightData: FlightData = {
             flightNum: (flightObj?.flight?.iata || flightObj?.flightNum || cleaned).toUpperCase(),
             carrier: {
@@ -238,13 +378,13 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               timezone: flightObj?.arrival?.timezone || null,
             },
             departure: {
-              scheduledTime: flightObj?.departure?.scheduled || flightObj?.departure?.scheduledTime || null,
+              scheduledTime: anchoredDepSched,
               terminal: flightObj?.departure?.terminal || null,
               gate: flightObj?.departure?.gate || null,
               timezone: flightObj?.departure?.timezone || null,
             },
             arrival: {
-              scheduledTime: flightObj?.arrival?.scheduled || flightObj?.arrival?.scheduledTime || null,
+              scheduledTime: anchoredArrSched,
               terminal: flightObj?.arrival?.terminal || null,
               gate: flightObj?.arrival?.gate || null,
               timezone: flightObj?.arrival?.timezone || null,
@@ -255,6 +395,15 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
           const selectedServiceAirport = (airportCode || "").trim().toUpperCase();
           const flOrigin = (flightData.origin?.code || "").trim().toUpperCase();
           const flDest = (flightData.destination?.code || "").trim().toUpperCase();
+
+          if (flOrigin && flDest && flOrigin === flDest) {
+            const sameErr = `Flight route origin and destination cannot be the same airport (${flOrigin}). Please verify your flight number.`;
+            setFlightFetchError(sameErr);
+            setIsFlightVerified(false);
+            setVerifiedFlight(null);
+            setManualFlightNum(cleaned);
+            return;
+          }
 
           if (direction === "departure") {
             if (flOrigin && selectedServiceAirport && flOrigin !== selectedServiceAirport) {
@@ -276,23 +425,43 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             }
           }
 
-          // Check if flight is International:
-          // 1. Origin or destination country is not IN
-          // 2. Or flight type is INTERNATIONAL
-          // 3. Or travelType was already selected as international
-          const depCountry = (flightData.origin?.country || "").toUpperCase();
-          const arrCountry = (flightData.destination?.country || "").toUpperCase();
-          const isOriginIntl = Boolean(depCountry && depCountry !== "IN" && depCountry !== "INDIA");
-          const isDestIntl = Boolean(arrCountry && arrCountry !== "IN" && arrCountry !== "INDIA");
-          const isFlightTypeIntl = String(flightObj?.flight_type || flightObj?.travel_type || "").toUpperCase() === "INTERNATIONAL";
-          const isDetectedIntl = isOriginIntl || isDestIntl || isFlightTypeIntl || travelType === "international";
+          // Accurate Route Classification:
+          // Check if either origin or destination is outside India
+          const depCountry = (flightData.origin?.country || "").trim().toUpperCase();
+          const arrCountry = (flightData.destination?.country || "").trim().toUpperCase();
+          const depReg = getAirportRegistryEntry(flOrigin);
+          const arrReg = getAirportRegistryEntry(flDest);
 
-          if (isDetectedIntl) {
-            setTravelType("international");
+          const isOriginIndia =
+            depCountry === "IN" ||
+            depCountry === "INDIA" ||
+            depCountry === "IND" ||
+            Boolean(depReg) ||
+            isIndianAirportCode(flOrigin);
+          const isDestIndia =
+            arrCountry === "IN" ||
+            arrCountry === "INDIA" ||
+            arrCountry === "IND" ||
+            Boolean(arrReg) ||
+            isIndianAirportCode(flDest);
+
+          const isFlightTypeIntl = String(flightObj?.flight_type || flightObj?.travel_type || "").toUpperCase() === "INTERNATIONAL";
+          const isActuallyIntl = isFlightTypeIntl || (!isOriginIndia || !isDestIndia);
+
+          if (isActuallyIntl) {
+            if (travelType !== "international") {
+              setTravelType("international");
+              toast.info(`International route detected (${flOrigin} → ${flDest}). Switched to International service.`);
+            }
+          } else {
+            if (travelType !== "domestic") {
+              setTravelType("domestic");
+              toast.info(`Domestic route detected (${flOrigin} → ${flDest}). Switched to Domestic service.`);
+            }
           }
 
           // Rule: If Delhi (DEL) and International, ALWAYS Terminal 3
-          if (selectedServiceAirport === "DEL" && isDetectedIntl) {
+          if (selectedServiceAirport === "DEL" && isActuallyIntl) {
             if (flightData.departure && (flOrigin === "DEL" || direction === "departure")) {
               flightData.departure.terminal = "3";
             }
@@ -301,6 +470,14 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             }
             setManualDepTerminal("3");
             setManualArrTerminal("3");
+          }
+
+          // Keep origin and destination state synchronized with verified flight
+          if (flOrigin) {
+            setOriginCode(flOrigin);
+          }
+          if (flDest) {
+            setDestCode(flDest);
           }
 
           setVerifiedFlight(flightData);
@@ -384,16 +561,62 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     }
 
     const packageSlug = (selectedPackageId || "gold").toLowerCase();
-    const cleanOrigin = originCode || airportCode;
-    const cleanDest = destCode || airportCode;
+    const cleanOrigin = (
+      (isFlightVerified && verifiedFlight?.origin?.code) ||
+      originCode ||
+      (direction === "departure" ? airportCode : "")
+    ).trim().toUpperCase();
 
-    const depClock = isFlightVerified && verifiedFlight?.departure?.scheduledTime
+    const cleanDest = (
+      (isFlightVerified && verifiedFlight?.destination?.code) ||
+      destCode ||
+      (direction === "arrival" ? airportCode : "")
+    ).trim().toUpperCase();
+
+    if (
+      direction !== "transit" &&
+      cleanOrigin &&
+      cleanDest &&
+      cleanOrigin === cleanDest
+    ) {
+      toast.error("Departure and arrival airports cannot be the same. Please verify your flight or select a valid route.");
+      return;
+    }
+
+    const rawDepForGap = isFlightVerified && verifiedFlight?.departure?.scheduledTime
       ? verifiedFlight.departure.scheduledTime
-      : `${serviceDate}T${manualDepTime || "10:00"}:00`;
-
-    const arrClock = isFlightVerified && verifiedFlight?.arrival?.scheduledTime
+      : manualDepTime;
+    const rawArrForGap = isFlightVerified && verifiedFlight?.arrival?.scheduledTime
       ? verifiedFlight.arrival.scheduledTime
-      : `${serviceDate}T${manualArrTime || "12:30"}:00`;
+      : manualArrTime;
+
+    let isArrivalOvernight = false;
+    if (rawDepForGap && rawArrForGap) {
+      const depDateM = String(rawDepForGap).match(/^(\d{4}-\d{2}-\d{2})/);
+      const arrDateM = String(rawArrForGap).match(/^(\d{4}-\d{2}-\d{2})/);
+      if (depDateM && arrDateM && arrDateM[1] > depDateM[1]) {
+        isArrivalOvernight = true;
+      } else {
+        const depH = String(rawDepForGap).match(/(\d{1,2}:\d{2})/)?.[1] || "";
+        const arrH = String(rawArrForGap).match(/(\d{1,2}:\d{2})/)?.[1] || "";
+        if (depH && arrH && arrH < depH) {
+          isArrivalOvernight = true;
+        }
+      }
+    }
+
+    const depClock = buildAnchoredServiceClock(
+      serviceDate,
+      isFlightVerified ? verifiedFlight?.departure?.scheduledTime : null,
+      manualDepTime || "10:00"
+    );
+
+    const arrClock = buildAnchoredServiceClock(
+      serviceDate,
+      isFlightVerified ? verifiedFlight?.arrival?.scheduledTime : null,
+      manualArrTime || "12:30",
+      isArrivalOvernight
+    );
 
     let terminalVal = isFlightVerified
       ? direction === "arrival"
@@ -432,8 +655,14 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
           metadataJson: {
             journey_type: direction.toUpperCase(),
             direction,
+            service_date: serviceDate,
+            depart_date: serviceDate,
+            travel_date: serviceDate,
+            flight_date: serviceDate,
             flight_type: travelType.toUpperCase(),
             travel_type: travelType.toUpperCase(),
+            origin_iata: cleanOrigin,
+            destination_iata: cleanDest,
             service_airport: airportCode.toUpperCase(),
             terminal: terminalVal || undefined,
             pax_adults: paxAdults,
@@ -444,6 +673,9 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             unit_price: convertedUnitPrice,
             currency: selectedCurrency,
             base_inr_price: baseInrTotalPrice,
+            gst_company_name: showGst && gstCompanyName.trim() ? gstCompanyName.trim() : undefined,
+            gst_number: showGst && gstNumber.trim() ? gstNumber.trim().toUpperCase() : undefined,
+            gst_billing_address: showGst && gstBillingAddress.trim() ? gstBillingAddress.trim() : undefined,
           },
           departureTime: depClock,
           arrivalTime: arrClock,
@@ -497,7 +729,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
       const formattedContact = toRazorpayContact(cleanPhone);
 
-      // 5. Open Official Razorpay Checkout Modal (Multi-Currency & Global Cards / Apple Pay)
+      // 5. Open Official Razorpay Checkout Modal (Multi-Currency, UPI, Google Pay & Cards)
       const rzpOptions: Record<string, unknown> = {
         key: keyId,
         amount: amountPaise,
@@ -912,6 +1144,47 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             {formatPrice(convertedTotalPrice, selectedCurrency)} total
           </span>
         </div>
+
+        {isPackagesLoading ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2 pt-2.5 border-t border-slate-200/80 animate-pulse">
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">
+              Loading packages:
+            </span>
+            <div className="h-7 w-28 rounded-full bg-slate-200" />
+            <div className="h-7 w-32 rounded-full bg-slate-200" />
+            <div className="h-7 w-28 rounded-full bg-slate-200" />
+          </div>
+        ) : availablePackages.length > 1 ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2 pt-2.5 border-t border-slate-200/80">
+            <span className="text-[11px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+              Available Packages:
+            </span>
+            {availablePackages.map((pkg) => {
+              const isSelected = pkg.id.toLowerCase() === (selectedPackageId || "").toLowerCase();
+              return (
+                <button
+                  key={pkg.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedPackageId(pkg.id);
+                    setSelectedPackageName(pkg.title);
+                    setSelectedPackagePrice(String(pkg.basePrice));
+                  }}
+                  className={`px-3 py-1 rounded-full text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
+                    isSelected
+                      ? "bg-slate-900 text-lime-400 font-bold shadow-sm ring-1 ring-lime-400/40"
+                      : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  <span>{pkg.title}</span>
+                  <span className={isSelected ? "text-lime-300 font-semibold" : "text-slate-500"}>
+                    • ₹{pkg.basePrice.toLocaleString("en-IN")}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
 
       <form onSubmit={handleProceedToPayment} className="space-y-6">
@@ -1042,16 +1315,44 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 </div>
               )}
 
-              {/* Verified Flight Card */}
-              {isFlightVerified && verifiedFlight && (
-                <div className="rounded-2xl border border-lime-400 bg-lime-50/40 p-4 sm:p-5 space-y-3">
+              {/* Fetching Flight Skeleton Placeholder */}
+              {isFlightFetching && (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 sm:p-5 space-y-3 animate-pulse">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 p-1">
+                      <div className="h-9 w-9 rounded-xl bg-slate-200" />
+                      <div className="space-y-1.5">
+                        <div className="h-3.5 w-28 bg-slate-200 rounded" />
+                        <div className="h-3 w-16 bg-slate-200 rounded" />
+                      </div>
+                    </div>
+                    <div className="h-6 w-20 bg-slate-200 rounded-full" />
+                  </div>
+                  <div className="rounded-xl bg-white/60 p-3 flex items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="h-2.5 w-12 bg-slate-200 rounded" />
+                      <div className="h-5 w-16 bg-slate-200 rounded" />
+                    </div>
+                    <div className="h-1 flex-1 bg-slate-200 rounded" />
+                    <div className="space-y-1 text-right">
+                      <div className="h-2.5 w-12 bg-slate-200 rounded ml-auto" />
+                      <div className="h-5 w-16 bg-slate-200 rounded ml-auto" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Verified Flight Card with Visual Flight Trajectory Strip */}
+              {isFlightVerified && verifiedFlight && (
+                <div className="rounded-2xl border border-lime-400 bg-lime-50/40 p-4 sm:p-5 space-y-4 shadow-xs">
+                  {/* Carrier & Verification Badge */}
+                  <div className="flex flex-wrap items-center justify-between gap-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white border border-slate-200 p-1 shadow-2xs">
                         <AirlineLogo iata={verifiedFlight.carrier.iata} />
                       </div>
                       <div>
-                        <span className="font-bold text-slate-950 font-sans block text-sm">
+                        <span className="font-bold text-slate-950 font-sans block text-sm leading-tight">
                           {verifiedFlight.carrier.name} ({verifiedFlight.carrier.iata})
                         </span>
                         <span className="font-mono text-xs font-extrabold text-slate-900">
@@ -1059,49 +1360,81 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                         </span>
                       </div>
                     </div>
-                    <span className="rounded-full bg-lime-500 px-2.5 py-0.5 font-mono text-[9.5px] font-bold uppercase tracking-wider text-slate-950 flex items-center gap-1">
-                      <Check size={12} />
-                      Verified
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="rounded-full bg-slate-900 text-lime-400 px-2.5 py-0.5 font-mono text-[9.5px] font-bold uppercase tracking-wider">
+                        {travelType === "international" ? "International" : "Domestic"}
+                      </span>
+                      <span className="rounded-full bg-lime-500 px-2.5 py-0.5 font-mono text-[9.5px] font-bold uppercase tracking-wider text-slate-950 flex items-center gap-1">
+                        <Check size={12} />
+                        Verified
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 border-t border-lime-200/80 pt-3 text-xs">
-                    <div>
-                      <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block">
-                        Departure
-                      </span>
-                      <span className="font-mono font-bold text-slate-900">
-                        {verifiedFlight.origin.code || originCode}
-                      </span>
-                      {verifiedFlight.departure.scheduledTime && (
-                        <span className="text-[11px] text-slate-600 block font-mono">
-                          {verifiedFlight.departure.scheduledTime.slice(11, 16) || verifiedFlight.departure.scheduledTime}
+                  {/* VISUAL FLIGHT TRAJECTORY STRIP (Origin ─── ✈️ ───▶ Destination) */}
+                  <div className="relative rounded-xl bg-white/90 border border-lime-200/80 p-3 sm:p-4">
+                    <div className="flex items-center justify-between gap-2 sm:gap-4">
+                      {/* Origin Airport */}
+                      <div className="text-left min-w-[75px] sm:min-w-[110px]">
+                        <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold block">
+                          DEPARTURE
                         </span>
-                      )}
-                      {verifiedFlight.departure.terminal && (
-                        <span className="text-[10px] text-slate-500 block font-mono">
-                          Terminal {verifiedFlight.departure.terminal}
+                        <span className="font-mono text-base sm:text-lg font-black text-slate-950 block">
+                          {verifiedFlight.origin.code || originCode}
                         </span>
-                      )}
-                    </div>
+                        <span className="text-[11px] font-semibold text-slate-700 truncate block">
+                          {verifiedFlight.origin.city || "Origin"}
+                        </span>
+                        {verifiedFlight.departure.scheduledTime && (
+                          <span className="text-[11px] text-slate-600 block font-mono font-bold mt-0.5">
+                            {verifiedFlight.departure.scheduledTime.slice(11, 16) || verifiedFlight.departure.scheduledTime}
+                          </span>
+                        )}
+                        {verifiedFlight.departure.terminal && (
+                          <span className="inline-block mt-1 text-[9.5px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                            T{verifiedFlight.departure.terminal.replace(/^[Tt]/, "")}
+                          </span>
+                        )}
+                      </div>
 
-                    <div>
-                      <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block">
-                        Arrival
-                      </span>
-                      <span className="font-mono font-bold text-slate-900">
-                        {verifiedFlight.destination.code || destCode}
-                      </span>
-                      {verifiedFlight.arrival.scheduledTime && (
-                        <span className="text-[11px] text-slate-600 block font-mono">
-                          {verifiedFlight.arrival.scheduledTime.slice(11, 16) || verifiedFlight.arrival.scheduledTime}
+                      {/* Flight Path Graphic with Center Plane Icon */}
+                      <div className="flex-1 flex flex-col items-center justify-center px-1 sm:px-2">
+                        <span className="text-[9px] font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full uppercase tracking-wider mb-1">
+                          Live Tracked
                         </span>
-                      )}
-                      {verifiedFlight.arrival.terminal && (
-                        <span className="text-[10px] text-slate-500 block font-mono">
-                          Terminal {verifiedFlight.arrival.terminal}
+                        <div className="relative w-full flex items-center justify-center">
+                          <div className="w-full border-t-2 border-dashed border-lime-400" />
+                          <div className="absolute flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-lime-400 shadow-sm">
+                            <Plane size={12} className="rotate-45" />
+                          </div>
+                        </div>
+                        <span className="text-[9.5px] font-mono text-slate-400 mt-1">
+                          Direct Schedule
                         </span>
-                      )}
+                      </div>
+
+                      {/* Destination Airport */}
+                      <div className="text-right min-w-[75px] sm:min-w-[110px]">
+                        <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-500 font-bold block">
+                          ARRIVAL
+                        </span>
+                        <span className="font-mono text-base sm:text-lg font-black text-slate-950 block">
+                          {verifiedFlight.destination.code || destCode}
+                        </span>
+                        <span className="text-[11px] font-semibold text-slate-700 truncate block">
+                          {verifiedFlight.destination.city || "Destination"}
+                        </span>
+                        {verifiedFlight.arrival.scheduledTime && (
+                          <span className="text-[11px] text-slate-600 block font-mono font-bold mt-0.5">
+                            {verifiedFlight.arrival.scheduledTime.slice(11, 16) || verifiedFlight.arrival.scheduledTime}
+                          </span>
+                        )}
+                        {verifiedFlight.arrival.terminal && (
+                          <span className="inline-block mt-1 text-[9.5px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                            T{verifiedFlight.arrival.terminal.replace(/^[Tt]/, "")}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1326,130 +1659,182 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               />
             )}
           </div>
+
+          {/* Corporate Invoicing & GST Toggle (Optional) */}
+          <div className="pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => setShowGst(!showGst)}
+              className="flex items-center gap-2 text-xs font-mono font-bold text-slate-700 hover:text-slate-950 transition cursor-pointer"
+            >
+              <div
+                className={`flex h-4 w-4 items-center justify-center rounded border transition ${
+                  showGst
+                    ? "bg-slate-900 border-slate-900 text-lime-400"
+                    : "border-slate-300 bg-white"
+                }`}
+              >
+                {showGst && <Check size={11} strokeWidth={3} />}
+              </div>
+              <Building2 size={13} className="text-slate-500" />
+              <span>Add Corporate Details & GSTIN for Tax Invoicing (Optional)</span>
+            </button>
+
+            {showGst && (
+              <div className="mt-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold text-slate-700 mb-1">
+                      Company Legal Name
+                    </label>
+                    <input
+                      type="text"
+                      value={gstCompanyName}
+                      onChange={(e) => setGstCompanyName(e.target.value)}
+                      placeholder="e.g. Acme Corp Private Limited"
+                      className="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 font-sans text-xs font-medium text-slate-900 focus:border-lime-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold text-slate-700 mb-1">
+                      GSTIN (15 Characters)
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={15}
+                      value={gstNumber}
+                      onChange={(e) => setGstNumber(e.target.value.toUpperCase().trim())}
+                      placeholder="e.g. 07AAAAA0000A1Z5"
+                      className="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 font-mono text-xs font-bold text-slate-900 uppercase focus:border-lime-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-mono font-bold text-slate-700 mb-1">
+                    Registered Company Billing Address
+                  </label>
+                  <input
+                    type="text"
+                    value={gstBillingAddress}
+                    onChange={(e) => setGstBillingAddress(e.target.value)}
+                    placeholder="e.g. 402 Business Tower, Sector 44, Gurugram, Haryana"
+                    className="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 font-sans text-xs text-slate-900 focus:border-lime-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ========================================================================= */}
         {/* 3. BOOKING SUMMARY & PAYMENT ACTION (RAZORPAY MULTI-CURRENCY INTEGRATION) */}
         {/* ========================================================================= */}
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 sm:p-8 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
-            <div className="flex items-center gap-2">
-              <h3 className="font-serif text-base font-bold text-slate-900">Booking & Price Summary</h3>
-              <span className="font-mono text-[10px] uppercase tracking-wider text-lime-700 font-bold bg-lime-100 px-2.5 py-0.5 rounded-md flex items-center gap-1">
-                <Lock size={11} />
-                Secure Checkout
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
+
+          {/* Header row */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-600">
+                <ShieldCheck size={18} />
+              </div>
+              <h3 className="font-serif text-lg font-bold text-slate-900">Booking Summary</h3>
+              <span className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider text-lime-700 font-bold bg-lime-50 border border-lime-200 px-2 py-0.5 rounded-full">
+                <Lock size={10} /> Secure
               </span>
             </div>
 
-            {/* Luxury Multi-Currency Switcher */}
-            <div className="flex items-center gap-1.5">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-bold">
-                Currency:
+            {/* Currency switcher */}
+            <select
+              value={selectedCurrency}
+              onChange={(e) => setSelectedCurrency(e.target.value)}
+              className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-mono font-bold text-slate-800 focus:border-sky-400 focus:outline-none cursor-pointer"
+            >
+              {Object.values(SUPPORTED_CURRENCIES).map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.flag} {c.code} ({c.symbol.trim()})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Compact booking details grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+            <div>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-sky-500 font-bold block">Package</span>
+              <span className="font-bold text-slate-900 block truncate mt-0.5">{selectedPackageName}</span>
+            </div>
+            <div>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-sky-500 font-bold block">Airport</span>
+              <span className="font-bold text-slate-900 block truncate mt-0.5">{airportCode} • <span className="capitalize font-normal text-slate-600">{direction}</span></span>
+            </div>
+            <div>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-sky-500 font-bold block">Flight</span>
+              <span className="font-mono font-bold text-slate-900 block truncate mt-0.5">
+                {isFlightVerified && verifiedFlight ? verifiedFlight.flightNum : manualFlightNum || flightNumber || "—"}
               </span>
-              <select
-                value={selectedCurrency}
-                onChange={(e) => setSelectedCurrency(e.target.value)}
-                className="rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-mono font-bold text-slate-900 focus:border-lime-500 focus:outline-none cursor-pointer shadow-2xs"
-              >
-                {Object.values(SUPPORTED_CURRENCIES).map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.flag} {c.code} ({c.symbol.trim()})
-                  </option>
-                ))}
-              </select>
+              <span className="font-mono text-[10px] text-slate-400">{serviceDate}</span>
+            </div>
+            <div>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-sky-500 font-bold block">Guest</span>
+              <span className="font-bold text-slate-900 block truncate mt-0.5">{fullName || "—"}</span>
+              <span className="text-[10px] text-slate-400">{totalPax} pax</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          {/* Price + payment row */}
+          <div className="rounded-2xl bg-sky-50/60 border border-sky-100 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block">
-                Service Package
-              </span>
-              <span className="font-bold text-slate-900 block truncate">
-                {selectedPackageName}
-              </span>
-            </div>
-
-            <div>
-              <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block">
-                Airport & Type
-              </span>
-              <span className="font-bold text-slate-900 block truncate">
-                {airportCode} • {direction}
-              </span>
-            </div>
-
-            <div>
-              <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block">
-                Flight & Date
-              </span>
-              <span className="font-mono font-bold text-slate-900 block truncate">
-                {isFlightVerified && verifiedFlight
-                  ? verifiedFlight.flightNum
-                  : manualFlightNum || flightNumber || "—"}
-              </span>
-              <span className="font-mono text-[10px] text-slate-500 block">
-                {serviceDate}
-              </span>
-            </div>
-
-            <div>
-              <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block">
-                Name
-              </span>
-              <span className="font-bold text-slate-900 block truncate">
-                {fullName || "—"}
-              </span>
-              <span className="text-[10px] font-mono text-slate-500 block">
-                {totalPax} Passenger{totalPax > 1 ? "s" : ""}
-              </span>
-            </div>
-          </div>
-
-          {/* Pricing Row */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-bold block">
-                Payable Amount
-              </span>
-              <div className="font-mono text-xl sm:text-2xl font-black text-slate-950">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-sky-600 font-bold block">Total Payable</span>
+              <div className="font-mono text-2xl sm:text-3xl font-black text-slate-950 mt-0.5">
                 {formatPrice(convertedTotalPrice, selectedCurrency)}
               </div>
-              <span className="text-[11px] text-slate-500 font-medium">
-                ({formatPrice(convertedUnitPrice, selectedCurrency)} × {totalPax} Passenger{totalPax > 1 ? "s" : ""}, all taxes included)
+              <span className="text-[11px] text-slate-500">
+                {formatPrice(convertedUnitPrice, selectedCurrency)} × {totalPax} pax, taxes included
               </span>
             </div>
 
-            <div className="flex items-center gap-2 text-slate-600 text-xs font-mono">
-              <CreditCard size={16} className="text-lime-700" />
-              <span>UPI • Global Cards • Apple Pay</span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {["UPI", "Google Pay", "Cards", "NetBanking"].map((m) => (
+                <span key={m} className="rounded-lg border border-sky-200 bg-white px-2.5 py-1 font-mono text-[10px] font-bold text-sky-700">
+                  {m}
+                </span>
+              ))}
             </div>
           </div>
 
-          {/* Payment CTA Banner & Buttons */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-xs text-slate-500 font-medium flex items-center gap-1.5">
-              <ShieldCheck size={16} className="text-lime-600 shrink-0" />
-              <span>Instant confirmation & 256-bit encrypted payment via Razorpay.</span>
+          {/* Action buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+            <div className="text-xs text-slate-400 flex items-center gap-1.5">
+              <ShieldCheck size={14} className="text-lime-500" />
+              <span>Encrypted payment via Razorpay</span>
             </div>
 
-            <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2.5">
+            <div className="w-full sm:w-auto flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={handleShareQuoteWhatsApp}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-mono font-bold uppercase tracking-wider text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+              >
+                <MessageSquare size={14} className="text-emerald-500" />
+                Share
+              </button>
+
               {paymentStatus === "DISMISSED" || paymentStatus === "FAILED" ? (
                 <button
                   type="button"
                   onClick={handleRetryPayment}
                   disabled={submitting}
-                  className="w-full sm:w-auto min-w-[220px] inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 px-8 py-3.5 text-xs font-mono font-extrabold uppercase tracking-widest text-slate-950 shadow-md hover:shadow-lg transition-all disabled:opacity-50 cursor-pointer"
+                  className="flex-1 sm:flex-none min-w-[200px] inline-flex items-center justify-center gap-2 rounded-2xl bg-sky-500 hover:bg-sky-400 px-6 py-3 text-xs font-mono font-extrabold uppercase tracking-widest text-white shadow-md transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {submitting ? (
                     <>
-                      <Loader2 size={16} className="animate-spin text-slate-950" />
-                      <span>Opening Payment...</span>
+                      <Loader2 size={15} className="animate-spin" />
+                      <span>Processing...</span>
                     </>
                   ) : (
                     <>
-                      <RefreshCw size={15} />
-                      <span>Retry Payment ({formatPrice(convertedTotalPrice, selectedCurrency)})</span>
+                      <RefreshCw size={14} />
+                      <span>Retry {formatPrice(convertedTotalPrice, selectedCurrency)}</span>
                     </>
                   )}
                 </button>
@@ -1457,18 +1842,18 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full sm:w-auto min-w-[220px] inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-lime-500 via-lime-400 to-lime-500 px-8 py-3.5 text-xs font-mono font-extrabold uppercase tracking-widest text-slate-950 shadow-md hover:shadow-lg transition-all disabled:opacity-50 cursor-pointer"
+                  className="flex-1 sm:flex-none min-w-[200px] inline-flex items-center justify-center gap-2 rounded-2xl bg-lime-500 hover:bg-lime-400 px-6 py-3 text-xs font-mono font-extrabold uppercase tracking-widest text-slate-950 shadow-md shadow-lime-500/25 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {submitting ? (
                     <>
-                      <Loader2 size={16} className="animate-spin text-slate-950" />
-                      <span>Opening Payment...</span>
+                      <Loader2 size={15} className="animate-spin" />
+                      <span>Processing...</span>
                     </>
                   ) : (
                     <>
-                      <Lock size={15} />
-                      <span>Pay {formatPrice(convertedTotalPrice, selectedCurrency)} & Confirm</span>
-                      <ArrowRight size={16} />
+                      <Lock size={14} />
+                      <span>Pay {formatPrice(convertedTotalPrice, selectedCurrency)}</span>
+                      <ArrowRight size={15} />
                     </>
                   )}
                 </button>

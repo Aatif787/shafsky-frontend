@@ -6,6 +6,7 @@ const depWheelchair = ASSETS.depWheelchair;
 const depLounge = ASSETS.depLounge;
 const depSpa = ASSETS.depSpa;
 const depBuggy = ASSETS.depBuggy;
+const arrFamily = ASSETS.arrFamily;
 const arrBaggage = ASSETS.arrBaggage;
 const arrChauffeur = ASSETS.arrChauffeur;
 const arrDutyFree = ASSETS.arrDutyFree;
@@ -39,6 +40,12 @@ const DEPARTURE_IMAGES = [
 ];
 
 const ARRIVAL_IMAGES = [
+  {
+    src: arrFamily,
+    srcSet: "/arrival%20departure%20services/family-arrival-400.webp 400w, /arrival%20departure%20services/family-arrival-800.webp 800w, /arrival%20departure%20services/family-arrival.webp 1200w",
+    title: "Family & VIP Arrival Meet & Escort",
+    alt: "Family airport arrival concierge escort with luggage assistance",
+  },
   {
     src: arrBaggage,
     title: "Baggage Reclaim & Belt Assistance",
@@ -79,14 +86,20 @@ export function ServicesGallery({ airportCity, airportCode }: ServicesGalleryPro
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.08 }}
-              className="group overflow-hidden rounded-2xl bg-slate-100 shadow-sm border border-slate-200/80 transition-all duration-300 hover:shadow-md"
+              className="group overflow-hidden rounded-2xl bg-slate-100 shadow-none border border-slate-200/80 transition-all duration-300"
             >
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200">
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200 shadow-none">
                 <img
                   src={img.src}
                   alt={img.alt}
                   loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 shadow-none"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src.includes("arrival%20departure%20services") || target.src.includes("arrival departure services")) {
+                      target.src = target.src.replace(/arrival(%20|\s)departure(%20|\s)services/, "images/services-gallery");
+                    }
+                  }}
                 />
               </div>
             </motion.div>
@@ -106,7 +119,7 @@ export function ServicesGallery({ airportCity, airportCode }: ServicesGalleryPro
           <div className="mt-2.5 h-[3px] w-20 rounded-full bg-[#1e293b]" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {ARRIVAL_IMAGES.map((img, idx) => (
             <motion.div
               key={`arr-gal-${idx}`}
@@ -114,14 +127,22 @@ export function ServicesGallery({ airportCity, airportCode }: ServicesGalleryPro
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.08 }}
-              className="group overflow-hidden rounded-2xl bg-slate-100 shadow-sm border border-slate-200/80 transition-all duration-300 hover:shadow-md"
+              className="group overflow-hidden rounded-2xl bg-slate-100 shadow-none border border-slate-200/80 transition-all duration-300"
             >
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200">
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200 shadow-none">
                 <img
                   src={img.src}
+                  srcSet={(img as any).srcSet}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   alt={img.alt}
                   loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 shadow-none"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src.includes("arrival%20departure%20services") || target.src.includes("arrival departure services")) {
+                      target.src = target.src.replace(/arrival(%20|\s)departure(%20|\s)services/, "images/services-gallery");
+                    }
+                  }}
                 />
               </div>
             </motion.div>

@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import type { Airport } from "@/data/airports";
 import { display, mono } from "./Atoms";
-import { getAirportAsset } from "@/lib/airport-assets";
+import { getAirportAsset, getAirportPrimaryImage } from "@/lib/airport-assets";
 
 export function ShowcaseCard({ a, idx }: { a: Airport; idx: number }) {
-  const cardImage = getAirportAsset(a.code, "hero-mobile.webp") || a.mobCover || a.cover;
+  const cardImage = getAirportPrimaryImage(a.code) || a.mobCover || a.cover;
   const serviceCount = (a as any).availableServiceIds?.length || 4;
   const isFeatured = a.code === "DEL" || a.code === "BOM" || a.code === "AMD" || a.code === "BLR";
 

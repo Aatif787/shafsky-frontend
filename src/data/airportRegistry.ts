@@ -15,7 +15,7 @@ const mobLkoAir = ASSETS.lko;
 const dekJaiAir = ASSETS.jai;
 const mobJaiAir = ASSETS.jai;
 const dekAtqAir = ASSETS.atq;
-const mobAtqAir = ASSETS.atq;
+const mobAtqAir = "/images/airports/atq/hero-mobile.webp";
 const dekGauAir = ASSETS.gau;
 const mobGauAir = ASSETS.gau;
 const dekVtzAir = ASSETS.vtz;
@@ -32,6 +32,12 @@ const dekGoxAir = ASSETS.gox;
 const mobGoxAir = ASSETS.gox;
 const dekBbiAir = ASSETS.bbi;
 const mobBbiAir = ASSETS.bbi;
+const dekBlrAir = ASSETS.blr;
+const dekCcuAir = ASSETS.ccu;
+const dekIxcAir = ASSETS.ixc;
+const dekIxrAir = ASSETS.ixr;
+const dekTrvAir = ASSETS.trv;
+import { getAirportImages, getAirportPrimaryImage } from "@/lib/airport-assets";
 
 export interface MeetGreetPackage {
   id: string;
@@ -443,12 +449,13 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     countryCode: "IN",
     timezone: "Asia/Kolkata",
     heroTitle: "Amritsar Airport Concierge",
-    heroSubtitle: "Sri Guru Ram Dass Jee International Airport (ATQ) — Airport Concierge & Meet & Assist",
+    heroSubtitle: "Sri Guru Ram Dass Jee International Airport (ATQ) — Airport Concierge & Meet & Greet",
     shortDescription: "Gateway to the Golden Temple city. Enjoy dedicated airside escort, luggage assistance, and executive transfers.",
     coverImage: dekAtqAir,
     mobCoverImage: mobAtqAir,
     galleryImages: [
       dekAtqAir,
+      "/images/airports/atq/clean-2.webp",
     ],
     coordinates: { lat: 31.7096, lng: 74.7973 },
     airportType: "International Hub",
@@ -753,11 +760,25 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
 export function getAirportRegistryEntry(code: string): AirportRegistryEntry {
   const upper = (code || "").toUpperCase().trim();
   if (upper && AIRPORT_REGISTRY[upper]) {
-    return AIRPORT_REGISTRY[upper];
+    const entry = AIRPORT_REGISTRY[upper];
+    const hubImgs = getAirportImages(upper);
+    if (hubImgs.length > 0) {
+      return {
+        ...entry,
+        coverImage: hubImgs[0],
+        mobCoverImage: hubImgs[0],
+        galleryImages: hubImgs,
+      };
+    }
+    return entry;
   }
 
   const city = upper || "Selected Airport";
   const name = city !== "Selected Airport" ? `${city} International Airport` : "Selected Airport";
+  const hubImgs = getAirportImages(upper);
+  const fallbackCover =
+    hubImgs[0] ||
+    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80";
 
   return {
     code: upper || "—",
@@ -770,10 +791,9 @@ export function getAirportRegistryEntry(code: string): AirportRegistryEntry {
     heroTitle: `${city} Airport Concierge`,
     heroSubtitle: `${name} — Airside Escort & Airport Services`,
     shortDescription: `Premium airport concierge experience for ${city}.`,
-    coverImage: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
-    ],
+    coverImage: fallbackCover,
+    mobCoverImage: fallbackCover,
+    galleryImages: hubImgs.length > 0 ? hubImgs : [fallbackCover],
     coordinates: { lat: 20.5937, lng: 78.9629 },
     airportType: "International Hub",
     terminals: "Integrated Terminal",
@@ -829,4 +849,42 @@ export function getAirportBusinessPrice(
  */
 export function getAirportCurrencySymbol(_airportCode?: string): string {
   return "₹";
+}
+
+/**
+ * Authoritative set of all Indian commercial and regional airport IATA codes.
+ * Ensures routes between Indian airports are accurately recognized as DOMESTIC.
+ */
+export const INDIAN_AIRPORT_CODES = new Set<string>([
+  "AGR", "AGX", "AHA", "AIP", "AJL", "AKD", "AMD", "ATQ", "AVR", "AYJ",
+  "AZH", "BBI", "BDQ", "BEK", "BEP", "BHJ", "BHO", "BHU", "BKB", "BLR",
+  "BOM", "BPM", "BUP", "CBD", "CCJ", "CCU", "CDP", "CJB", "CNN", "COH",
+  "COK", "CWK", "DBD", "DBR", "DED", "DEL", "DEP", "DGH", "DHM", "DIB",
+  "DIU", "DMU", "DXN", "GAU", "GAY", "GBI", "GDB", "GOI", "GOP", "GOX",
+  "GUX", "GWL", "HBX", "HDO", "HGI", "HJR", "HRH", "HSR", "HSS", "HWR",
+  "HYD", "IDR", "IMF", "ISK", "IXA", "IXB", "IXC", "IXD", "IXE", "IXG",
+  "IXH", "IXI", "IXJ", "IXK", "IXL", "IXM", "IXN", "IXP", "IXQ", "IXR",
+  "IXS", "IXT", "IXU", "IXV", "IXW", "IXX", "IXY", "IXZ", "JAI", "JDH",
+  "JGA", "JGB", "JLG", "JLR", "JRG", "JRH", "JSA", "KBK", "KJB", "KLH",
+  "KNU", "KQH", "KTU", "KUU", "LDA", "LKO", "LTU", "LUH", "MAA", "MYQ",
+  "MZS", "MZU", "NAG", "NDC", "NMB", "NMI", "NVY", "PAB", "PAT", "PBD",
+  "PGH", "PNQ", "PNY", "PUT", "PYB", "PYG", "RAJ", "RDP", "REW", "RGH",
+  "RJA", "RJI", "RMD", "RPR", "RQY", "RRK", "RTC", "RUP", "SAG", "SDW",
+  "SHL", "SLV", "SSE", "STV", "SWN", "SXR", "SXV", "TCR", "TEI", "TEZ",
+  "TIR", "TJV", "TNI", "TRV", "TRZ", "UDR", "UKE", "VDY", "VGA", "VNS",
+  "VSV", "VTZ", "WGC", "ZER"
+]);
+
+/**
+ * Returns true if an IATA airport code belongs to India.
+ */
+export function isIndianAirportCode(code?: string | null): boolean {
+  if (!code) return false;
+  const clean = code.trim().toUpperCase();
+  if (INDIAN_AIRPORT_CODES.has(clean)) return true;
+  const entry = getAirportRegistryEntry(clean);
+  if (entry && (entry.countryCode === "IN" || entry.country.toUpperCase() === "INDIA")) {
+    return true;
+  }
+  return false;
 }

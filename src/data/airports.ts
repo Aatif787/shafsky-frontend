@@ -36,7 +36,7 @@ const mobLkoAir = ASSETS.lko;
 const dekJaiAir = ASSETS.jai;
 const mobJaiAir = ASSETS.jai;
 const dekAtqAir = ASSETS.atq;
-const mobAtqAir = ASSETS.atq;
+const mobAtqAir = "/images/airports/atq/hero-mobile.webp";
 const dekGauAir = ASSETS.gau;
 const mobGauAir = ASSETS.gau;
 const dekCokAir = ASSETS.cok;
@@ -53,7 +53,7 @@ const dekBlrAir = ASSETS.blr;
 const mobBlrAir = ASSETS.blr;
 const dekIxcAir = ASSETS.ixc;
 const mobIxcAir = ASSETS.ixc;
-
+import { getAirportImages, getAirportPrimaryImage } from "@/lib/airport-assets";
 import { AIRPORT_REGISTRY, getAirportRegistryEntry } from "./airportRegistry";
 
 export type Facility = { name: string; status: "live" | "24x7" | "limited" };
@@ -876,8 +876,8 @@ export const AIRPORTS: Airport[] = [
     ...a,
     cover: dekAtqAir,
     mobCover: mobAtqAir,
-    slideshow: [dekAtqAir],
-    gallery: [dekAtqAir, a.gallery[0]],
+    slideshow: [dekAtqAir, "/images/airports/atq/clean-2.webp"],
+    gallery: [dekAtqAir, "/images/airports/atq/clean-2.webp", a.gallery[0]],
   })),
   ...buildCity({
     code: "AMD",
@@ -1318,7 +1318,19 @@ function buildCity(a: CityArgs): Airport[] {
 export function getAirport(code: string): Airport {
   const upperCode = (code || "").toUpperCase().trim();
   const found = AIRPORTS.find((a) => a.code.toUpperCase() === upperCode);
-  if (found) return found;
+  if (found) {
+    const hubImgs = getAirportImages(found.code);
+    if (hubImgs && hubImgs.length > 0) {
+      return {
+        ...found,
+        cover: hubImgs[0],
+        mobCover: hubImgs[0],
+        slideshow: hubImgs,
+        gallery: [...hubImgs, ...found.gallery.filter((g) => !hubImgs.includes(g))],
+      };
+    }
+    return found;
+  }
 
   // Check AIRPORT_REGISTRY or fallback lookup for all 200+ global airports
   const reg = AIRPORT_REGISTRY[upperCode];
@@ -1326,7 +1338,18 @@ export function getAirport(code: string): Airport {
   const countryName = reg?.country || "International";
   const airportName = reg?.name || `${cityName} International Airport`;
 
-  const fallbackCover = "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1920&q=95";
+  const hubImgs = getAirportImages(upperCode);
+  const fallbackCover =
+    hubImgs[0] ||
+    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1920&q=95";
+  const effectiveSlideshow =
+    hubImgs.length > 0
+      ? hubImgs
+      : [
+          fallbackCover,
+          "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=95",
+          "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=95",
+        ];
 
   return {
     code: upperCode,
@@ -1339,16 +1362,8 @@ export function getAirport(code: string): Airport {
     timezone: reg?.timezone || "Asia/Kolkata",
     cover: fallbackCover,
     mobCover: fallbackCover,
-    slideshow: [
-      fallbackCover,
-      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=95",
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=95",
-    ],
-    gallery: [
-      fallbackCover,
-      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=95",
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=95",
-    ],
+    slideshow: effectiveSlideshow,
+    gallery: effectiveSlideshow,
     videoId: "5qap5aO4i9A",
     about: `${airportName} (${upperCode}) serves as a primary aviation hub connecting ${cityName}, ${countryName} with major domestic and international destinations. Shafsky Aviation Services provides full VVIP airside escorts, Meet & Greet, fast-track customs clearance, and chauffeured transit at this hub.`,
     bestTime: "Year-Round",

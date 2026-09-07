@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { display, mono } from "@/components/home/theme";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
+import { enquiryApi } from "@/lib/api/enquiryApi";
 import home5Img from "@/assets/homepage/home5.jpeg";
 import vvipImg from "@/assets/homepage/vvip.jpeg";
 import buggyImg from "@/assets/homepage/buggy.jpeg";
@@ -159,17 +160,47 @@ function DedicatedTransportServicePage() {
       alert("Please provide your name and contact phone number.");
       return;
     }
+    if (!email.trim() || !email.includes("@")) {
+      alert("Please provide a valid email so our transport desk can send your quotation.");
+      return;
+    }
 
     setIsSubmitting(true);
-    const quoteRef = `TR-${Math.floor(100000 + Math.random() * 900000)}`;
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      const res = await enquiryApi.submit({
+        passengerName: clientName.trim(),
+        passengerEmail: email.trim().toLowerCase(),
+        passengerPhone: phone.trim(),
+        serviceCategory: "Ground Transport",
+        serviceType: selectedOptionId,
+        origin: pickupLocation.trim(),
+        destination: dropLocation.trim(),
+        serviceDate: `${serviceDate}${serviceTime ? ` ${serviceTime}` : ""}`,
+        notes: specialRequests.trim() || undefined,
+        details: {
+          trip_type: tripType,
+          vehicle_model: vehicleModel,
+          flight_number: flightNumber || undefined,
+          passengers: paxCount,
+          luggage: luggageCount,
+          category: selectedOptionId,
+        },
+      });
+      if (res.success && res.data?.bookingRef) {
+        setSubmittedRef(res.data.bookingRef);
+      } else {
+        const errMsg =
+          !res.success && "error" in res
+            ? String(res.error)
+            : "Failed to submit transport enquiry. Please try again.";
+        alert(errMsg);
+      }
     } catch (err) {
-      console.warn("Transport inquiry submission:", err);
+      console.error("Transport inquiry submission:", err);
+      alert("Something went wrong while submitting your request. Please try again.");
     } finally {
       setIsSubmitting(false);
-      setSubmittedRef(quoteRef);
     }
   };
 

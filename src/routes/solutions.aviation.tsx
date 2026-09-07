@@ -84,7 +84,7 @@ const CHARTER_OPTIONS: CharterOptionDef[] = [
     id: "Corporate Charter",
     label: "Corporate Charter",
     badge: "EXECUTIVE SUITE",
-    tagline: "Executive travel for leadership teams, corporate boards, and roadshows.",
+    tagline: "Executive travel for leadership teams, corporate boards, and multi-city business tours.",
     aircraftTypes: [
       "Super Midsize Jet (8 - 10 Seats)",
       "Heavy Executive Jet (12 - 14 Seats)",
@@ -92,7 +92,7 @@ const CHARTER_OPTIONS: CharterOptionDef[] = [
     ],
     inclusions: [
       "Executive Business Travel for Leadership Teams, C-Suite & Delegations",
-      "Multi-City Roadshow Flight Management & On-Demand Route Flexibility",
+      "Multi-City Business Tour Flight Management & On-Demand Route Flexibility",
       "High-Speed Inflight Connectivity & Private Airborne Meeting Environment",
       "Custom Airport Check-in Fast-Track & Ground Logistics",
       "Confidential Passenger Manifests & Corporate Account Management",
@@ -253,6 +253,27 @@ const CHARTER_OPTIONS: CharterOptionDef[] = [
   },
 ];
 
+const CHARTER_HERO_SLIDES = [
+  {
+    src: HOMEPAGE_PHOTOS.privateCharter.src,
+    alt: "Shafsky Private Jet and Helicopter Air Charter Fleet",
+    badge: "1/3 • Shafsky Air Charter Fleet",
+    label: "Air Charter Fleet",
+  },
+  {
+    src: jetTarmac,
+    alt: "Shafsky Executive Private Jet on Tarmac at Sunset",
+    badge: "2/3 • Executive Private Jet on Tarmac at Sunset",
+    label: "Private Jet Tarmac",
+  },
+  {
+    src: "/private charter/airambu.jpeg",
+    alt: "Shafsky Air Ambulance Dedicated Aero-Medical ICU Aircraft",
+    badge: "3/3 • Air Ambulance Dedicated Aero-Medical ICU Aircraft",
+    label: "Air Ambulance ICU",
+  },
+];
+
 function DedicatedAirCharterPage() {
   const navigate = useNavigate();
   const [selectedOptionId, setSelectedOptionId] = useState<CharterOptionId>(
@@ -298,6 +319,8 @@ function DedicatedAirCharterPage() {
     setSelectedOptionId(optId);
     if (optId === "Private Charter") {
       setHeroSlideIndex(1);
+    } else if (optId === "Air Ambulance Charter") {
+      setHeroSlideIndex(2);
     }
     const match = CHARTER_OPTIONS.find((o) => o.id === optId);
     if (match) {
@@ -333,9 +356,12 @@ function DedicatedAirCharterPage() {
       alert("Please provide your name and contact phone number.");
       return;
     }
+    if (!email.trim() || !email.includes("@")) {
+      alert("Please provide a valid email so our charter desk can send your quotation.");
+      return;
+    }
 
     setIsSubmitting(true);
-    const quoteRef = `AC-${Math.floor(100000 + Math.random() * 900000)}`;
 
     const detailsSummary = [
       `Charter Option: ${selectedOptionId}`,
@@ -351,45 +377,54 @@ function DedicatedAirCharterPage() {
       .join(" | ");
 
     const payload: CharterRequestPayload = {
-      customer_name: clientName,
+      customer_name: clientName.trim(),
       country_code: "+91",
-      phone: phone,
-      email: email || `${phone.replace(/\D/g, "")}@shafsky.charter`,
-      company: companyName || undefined,
+      phone: phone.trim(),
+      email: email.trim().toLowerCase(),
+      company: companyName.trim() || undefined,
       preferred_contact_method: "WHATSAPP",
       trip_type: tripType === "Round Trip" ? "ROUND_TRIP" : tripType === "Multi-City" ? "MULTI_CITY" : "ONE_WAY",
-      origin: origin,
-      destination: destination,
+      origin: origin.trim(),
+      destination: destination.trim(),
       departure_date: departDate,
-      departure_time: departTime,
+      departure_time: departTime || undefined,
       return_date: tripType === "Round Trip" ? returnDate : undefined,
-      return_time: tripType === "Round Trip" ? returnTime : undefined,
+      return_time: tripType === "Round Trip" ? returnTime || undefined : undefined,
       itinerary: [
         {
-          origin: origin,
-          destination: destination,
+          origin: origin.trim(),
+          destination: destination.trim(),
           departure_date: departDate,
-          departure_time: departTime,
+          departure_time: departTime || undefined,
         },
       ],
       passengers: {
-        adults: paxCount,
+        adults: Math.max(1, paxCount),
         children: 0,
         infants: 0,
-        total: paxCount,
+        total: Math.max(1, paxCount),
       },
-      aircraft_preference: `${selectedOptionId} — ${aircraftPreference}`,
+      aircraft_preference: aircraftPreference || "NO_PREFERENCE",
       travel_requirements: [selectedOptionId],
-      special_requests: detailsSummary,
+      special_requests: detailsSummary.slice(0, 2000),
     };
 
     try {
-      await charterApi.submitRequest(payload);
+      const res = await charterApi.submitRequest(payload);
+      if (res.success && res.data?.request_reference) {
+        setSubmittedRef(res.data.request_reference);
+      } else {
+        const errMsg =
+          !res.success && "error" in res
+            ? String(res.error)
+            : "Failed to submit charter request. Please try again.";
+        alert(errMsg);
+      }
     } catch (err) {
-      console.warn("Backend charter quotation submit:", err);
+      console.error("Backend charter quotation submit:", err);
+      alert("Something went wrong while submitting your charter request. Please try again.");
     } finally {
       setIsSubmitting(false);
-      setSubmittedRef(quoteRef);
     }
   };
 
@@ -440,16 +475,12 @@ function DedicatedAirCharterPage() {
             </p>
           </div>
 
-          {/* Uncropped Landscape Hero Image Gallery: Slide 1 (Charter Fleet) & Slide 2 (home2.jpeg) */}
+          {/* Uncropped Landscape Hero Image Gallery: Slide 1 (Charter Fleet), Slide 2 (Private Jet), Slide 3 (Air Ambulance) */}
           <div className="space-y-3">
             <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center min-h-[260px] sm:min-h-[400px]">
               <img
-                src={heroSlideIndex === 0 ? HOMEPAGE_PHOTOS.privateCharter.src : jetTarmac}
-                alt={
-                  heroSlideIndex === 0
-                    ? "Shafsky Private Jet and Helicopter Air Charter Fleet"
-                    : "Shafsky Executive Private Jet on Tarmac at Sunset (home2)"
-                }
+                src={CHARTER_HERO_SLIDES[heroSlideIndex]?.src || CHARTER_HERO_SLIDES[0].src}
+                alt={CHARTER_HERO_SLIDES[heroSlideIndex]?.alt || "Shafsky Air Charter"}
                 className="w-full h-auto object-contain object-center select-none block transition-opacity duration-300"
                 loading="eager"
               />
@@ -458,7 +489,9 @@ function DedicatedAirCharterPage() {
               <div className="absolute inset-y-0 left-3 right-3 flex items-center justify-between pointer-events-none">
                 <button
                   type="button"
-                  onClick={() => setHeroSlideIndex((prev) => (prev === 0 ? 1 : 0))}
+                  onClick={() =>
+                    setHeroSlideIndex((prev) => (prev - 1 + CHARTER_HERO_SLIDES.length) % CHARTER_HERO_SLIDES.length)
+                  }
                   className="pointer-events-auto p-2 rounded-full bg-slate-900/60 hover:bg-slate-900/90 text-white backdrop-blur-md transition shadow-md cursor-pointer"
                   aria-label="Previous photo"
                 >
@@ -466,7 +499,7 @@ function DedicatedAirCharterPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setHeroSlideIndex((prev) => (prev === 1 ? 0 : 1))}
+                  onClick={() => setHeroSlideIndex((prev) => (prev + 1) % CHARTER_HERO_SLIDES.length)}
                   className="pointer-events-auto p-2 rounded-full bg-slate-900/60 hover:bg-slate-900/90 text-white backdrop-blur-md transition shadow-md cursor-pointer"
                   aria-label="Next photo"
                 >
@@ -476,16 +509,13 @@ function DedicatedAirCharterPage() {
 
               {/* Photo Caption Badge */}
               <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md text-white text-[11px] font-mono px-3 py-1 rounded-full border border-white/10 shadow-sm">
-                {heroSlideIndex === 0 ? "1/2 • Shafsky Air Charter Fleet" : "2/2 • Executive Private Jet on Tarmac at Sunset"}
+                {CHARTER_HERO_SLIDES[heroSlideIndex]?.badge}
               </div>
             </div>
 
-            {/* 2-Slide Thumbnail / Pill Selectors */}
-            <div className="flex items-center justify-center gap-3 pt-1">
-              {[
-                { label: "Air Charter Fleet" },
-                { label: "Private Jet Tarmac (home2)" },
-              ].map((item, idx) => (
+            {/* 3-Slide Thumbnail / Pill Selectors */}
+            <div className="flex items-center justify-center gap-3 pt-1 flex-wrap">
+              {CHARTER_HERO_SLIDES.map((item, idx) => (
                 <button
                   key={idx}
                   type="button"
@@ -836,13 +866,13 @@ function DedicatedAirCharterPage() {
                   {selectedOptionId === "Corporate Charter" && (
                     <div>
                       <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                        Company Name & Roadshow Details
+                        Company Name & Purpose of Travel
                       </label>
                       <input
                         type="text"
                         value={companyName}
                         onChange={(e) => setCompanyName(e.target.value)}
-                        placeholder="e.g. Goldman Sachs India / Multi-City Delegation"
+                        placeholder="e.g. Company name, business meetings, corporate event, or tour details"
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                       />
                     </div>
@@ -850,6 +880,22 @@ function DedicatedAirCharterPage() {
 
                   {selectedOptionId === "Air Ambulance Charter" && (
                     <div className="space-y-4 p-4 rounded-xl bg-red-50/50 border border-red-200">
+                      {/* Air Ambulance Dedicated Visual */}
+                      <div className="relative rounded-xl overflow-hidden border border-red-200 shadow-xs bg-slate-900">
+                        <img
+                          src="/private charter/airambu.jpeg"
+                          alt="Shafsky Air Ambulance Dedicated Aero-Medical ICU Aircraft"
+                          className="w-full h-44 sm:h-52 object-cover object-center"
+                        />
+                        <div className="p-2.5 bg-red-900/90 backdrop-blur-xs text-white flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px] font-mono">
+                          <span className="font-bold flex items-center gap-1.5">
+                            <span>🚑</span>
+                            <span>Aero-Medical Critical Care ICU Aircraft</span>
+                          </span>
+                          <span className="text-red-200">Certified Stretcher & Aviation Doctor</span>
+                        </div>
+                      </div>
+
                       <div>
                         <label className="block text-xs font-mono font-bold text-red-900 uppercase tracking-wider mb-1.5">
                           Patient Medical Condition / Diagnosis
@@ -1056,6 +1102,16 @@ function DedicatedAirCharterPage() {
                 {activeOption.inclusions.length} Inclusions Verified
               </span>
             </div>
+
+            {activeOption.id === "Air Ambulance Charter" && (
+              <div className="mb-6 rounded-2xl overflow-hidden border border-red-200 shadow-sm bg-slate-900">
+                <img
+                  src="/private charter/airambu.jpeg"
+                  alt="Shafsky Air Ambulance Dedicated Aero-Medical ICU Aircraft"
+                  className="w-full h-56 sm:h-72 object-cover object-center"
+                />
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {activeOption.inclusions.map((inc, i) => (

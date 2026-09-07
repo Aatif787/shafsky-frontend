@@ -77,15 +77,138 @@ export const createBooking = createServerFn({ method: "POST" })
       "jet_charter",
       "private_jet",
       "private_charter",
+      "ground_transport",
+      "transport",
+      "cargo",
+      "medical",
+      "visa",
+      "visa_assistance",
+      "special_services",
     ].includes(enquiryService);
 
     if (isEnquiryOnly) {
-      const booking_ref = `SHF-ENQ-${Math.floor(100000 + Math.random() * 900000)}`;
+      const charterTypes = ["charter", "jet_charter", "private_jet", "private_charter"];
+      if (charterTypes.includes(enquiryService)) {
+        const depart = String(data.depart_date || "").slice(0, 10);
+        const charterPayload = {
+          customer_name: data.contact_name,
+          country_code: "+91",
+          phone: data.contact_phone,
+          email: data.contact_email,
+          company: data.company || undefined,
+          preferred_contact_method: "EMAIL_WHATSAPP",
+          trip_type:
+            data.trip_type === "round_trip"
+              ? "ROUND_TRIP"
+              : data.trip_type === "multi_city"
+                ? "MULTI_CITY"
+                : "ONE_WAY",
+          origin: data.origin,
+          destination: data.destination,
+          departure_date: depart,
+          return_date: data.return_date ? String(data.return_date).slice(0, 10) : undefined,
+          itinerary: [
+            {
+              origin: data.origin,
+              destination: data.destination,
+              departure_date: depart,
+            },
+          ],
+          passengers: {
+            adults: data.pax_adults || 1,
+            children: data.pax_children || 0,
+            infants: data.pax_infants || 0,
+            total: (data.pax_adults || 1) + (data.pax_children || 0) + (data.pax_infants || 0),
+          },
+          aircraft_preference: data.aircraft_preference || "NO_PREFERENCE",
+          travel_requirements: [],
+          special_requests: data.special_requests || data.notes || undefined,
+        };
+        const charterRes = await apiPost<any>("/api/v1/charter/requests", charterPayload, token);
+        const charterData = charterRes?.data || charterRes;
+        const ref =
+          charterData?.request_reference ||
+          charterData?.requestReference ||
+          charterRes?.request_reference;
+        if (!ref) {
+          throw new Error(charterRes?.error || charterRes?.detail || "Failed to submit charter enquiry.");
+        }
+        return {
+          id: charterData?.id || crypto.randomUUID(),
+          booking_ref: ref,
+          status: charterData?.status || "REQUESTED",
+          created_at: charterData?.created_at || new Date().toISOString(),
+          service_type: enquiryService,
+        };
+      }
+
+      let serviceCategory:
+        | "Travel Support"
+        | "Ground Transport"
+        | "Cargo & Logistics"
+        | "Medical Assistance" = "Travel Support";
+      let serviceType = "Travel Support";
+      if (enquiryService === "hotel" || enquiryService === "hotel_booking") {
+        serviceCategory = "Travel Support";
+        serviceType = "Hotel Booking";
+      } else if (enquiryService === "air_ticketing" || enquiryService === "ticketing") {
+        serviceCategory = "Travel Support";
+        serviceType = "Travel Support";
+      } else if (enquiryService === "ground_transport" || enquiryService === "transport") {
+        serviceCategory = "Ground Transport";
+        serviceType = "Ground Transport";
+      } else if (enquiryService === "cargo") {
+        serviceCategory = "Cargo & Logistics";
+        serviceType = "Cargo & Logistics";
+      } else if (enquiryService === "medical") {
+        serviceCategory = "Medical Assistance";
+        serviceType = "Medical Assistance";
+      } else if (enquiryService === "visa" || enquiryService === "visa_assistance") {
+        serviceCategory = "Travel Support";
+        serviceType = "Visa Assistance";
+      } else if (enquiryService === "special_services") {
+        serviceCategory = "Travel Support";
+        serviceType = "Travel Support";
+      }
+
+      const enquiryPayload = {
+        passengerName: data.contact_name,
+        passengerEmail: data.contact_email,
+        passengerPhone: data.contact_phone,
+        serviceCategory,
+        serviceType,
+        origin: data.origin,
+        destination: data.destination,
+        serviceDate:
+          data.check_in && data.check_out
+            ? `${data.check_in} to ${data.check_out}`
+            : data.depart_date || undefined,
+        notes: data.special_requests || data.notes || undefined,
+        details: {
+          company: data.company || undefined,
+          room_type: data.room_type || undefined,
+          guests_count: data.guests_count || undefined,
+          room_count: data.room_count || undefined,
+          meal_plan: data.meal_plan || undefined,
+          cabin_class: data.cabin_class || undefined,
+          ancillaries: data.ancillaries || undefined,
+        },
+      };
+
+      const enquiryRes = await apiPost<any>("/api/bookings/enquiries", enquiryPayload, token);
+      const enquiryData = enquiryRes?.data || enquiryRes;
+      const bookingRef =
+        enquiryData?.bookingRef || enquiryData?.booking_ref || enquiryRes?.bookingRef;
+      if (!bookingRef) {
+        throw new Error(
+          enquiryRes?.error || enquiryRes?.detail || "Failed to submit service enquiry.",
+        );
+      }
       return {
-        id: crypto.randomUUID(),
-        booking_ref,
-        status: "pending",
-        created_at: new Date().toISOString(),
+        id: enquiryData?.id || crypto.randomUUID(),
+        booking_ref: bookingRef,
+        status: enquiryData?.status || "PENDING",
+        created_at: enquiryData?.createdAt || enquiryData?.created_at || new Date().toISOString(),
         service_type: enquiryService,
       };
     }

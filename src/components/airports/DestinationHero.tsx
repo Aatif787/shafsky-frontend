@@ -1,26 +1,53 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDown, ArrowLeft, MapPin } from "lucide-react";
+import { ArrowDown, ArrowLeft, MapPin, ChevronLeft, ChevronRight, Camera } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Airport } from "@/data/airports";
 import { DARK, mono, MagneticButton } from "./Atoms";
-import { getAirportAsset } from "@/lib/airport-assets";
+import { getAirportAsset, getAirportImages, getAirportHeroImages } from "@/lib/airport-assets";
 import { ResponsiveAirportHero } from "./ResponsiveAirportHero";
 
 export function DestinationHero({ a }: { a: Airport }) {
   const [slide, setSlide] = useState(0);
   const [time, setTime] = useState("");
-  // Defer Framer Motion entrance styles until after hydration so SSR HTML matches the first client paint.
   const [motionReady, setMotionReady] = useState(false);
+  const lastWheelTime = useRef(0);
+
+  // Resolved list of images for this airport hero (terminal-only, excluding city attractions)
+  const hubImages = getAirportHeroImages(a.code);
+  const images = hubImages.length > 0 ? hubImages : a.slideshow?.length ? a.slideshow : [a.cover];
 
   useEffect(() => {
     setMotionReady(true);
   }, []);
 
+  const handleNext = useCallback(() => {
+    setSlide((s) => (s + 1) % images.length);
+  }, [images.length]);
+
+  const handlePrev = useCallback(() => {
+    setSlide((s) => (s - 1 + images.length) % images.length);
+  }, [images.length]);
+
+  // Auto-advance if multiple images exist
   useEffect(() => {
-    const id = setInterval(() => setSlide((s) => (s + 1) % a.slideshow.length), 5000);
+    if (images.length <= 1) return;
+    const id = setInterval(handleNext, 6000);
     return () => clearInterval(id);
-  }, [a.slideshow.length]);
+  }, [images.length, handleNext]);
+
+  // Scroll / Wheel navigation across multiple images
+  const handleWheel = (e: React.WheelEvent) => {
+    if (images.length <= 1) return;
+    const now = Date.now();
+    if (now - lastWheelTime.current < 400) return;
+
+    if (Math.abs(e.deltaX) > 25) {
+      lastWheelTime.current = now;
+      if (e.deltaX > 0) handleNext();
+      else handlePrev();
+    }
+  };
 
   useEffect(() => {
     const tick = () => {
@@ -51,16 +78,15 @@ export function DestinationHero({ a }: { a: Airport }) {
   const heroZoom = motionReady ? { opacity: 0 } : false;
   const fadeUp = motionReady ? { opacity: 0, y: 20 } : false;
   const fadeUpSm = motionReady ? { opacity: 0, y: 15 } : false;
-  const overlayGradient =
-    "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 18%, rgba(0,0,0,0) 78%, rgba(0,0,0,0.55) 100%)";
 
   return (
     <section
-      className="relative flex h-[100svh] min-h-[560px] w-full flex-col overflow-hidden p-2 sm:p-4 md:p-6"
+      onWheel={handleWheel}
+      className="relative flex h-[100svh] min-h-[560px] w-full flex-col overflow-hidden p-2 sm:p-4 md:p-6 select-none"
       style={{ backgroundColor: DARK.bg }}
     >
-      {/* Outside the hero image, still inside the same <section> so SSR and client trees match */}
-      <div className="relative z-20 mb-3 shrink-0 sm:mb-4">
+      {/* Top Header Bar */}
+      <div className="relative z-20 mb-3 shrink-0 sm:mb-4 flex items-center justify-between">
         <Link
           to="/airports"
           className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white border border-slate-200/90 text-slate-700 hover:text-[#7c3aed] hover:border-[#7c3aed]/40 hover:bg-purple-50/40 shadow-xs hover:shadow-md transition-all duration-300 text-xs sm:text-sm font-medium group cursor-pointer"
@@ -68,9 +94,19 @@ export function DestinationHero({ a }: { a: Airport }) {
           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 text-slate-500 group-hover:text-[#7c3aed]" />
           <span>Back to All Airports</span>
         </Link>
+
+        {/* Multi-Image Indicator Counter */}
+        {images.length > 1 && (
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur-md border border-slate-200/90 text-slate-800 shadow-xs text-xs font-mono font-bold">
+            <span>
+              {slide + 1} / {images.length}
+            </span>
+          </div>
+        )}
       </div>
 
-      <div className="relative min-h-0 w-full flex-1 overflow-hidden rounded-[1.5rem] border border-white/10 shadow-2xl sm:rounded-[2.5rem]">
+      <div className="relative min-h-0 w-full flex-1 overflow-hidden rounded-[1.5rem] border border-white/10 shadow-2xl sm:rounded-[2.5rem] bg-slate-900">
+        {/* PURE CRYSTAL-CLEAR IMAGE (ZERO DARK SHADOWS OR HEAVY BLACK GRADIENTS) */}
         <AnimatePresence mode="sync">
           {hasDynamicHero && slide === 0 ? (
             <motion.div
@@ -78,18 +114,14 @@ export function DestinationHero({ a }: { a: Airport }) {
               initial={heroZoom}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
               className="absolute inset-0"
             >
               <ResponsiveAirportHero
                 code={a.code}
                 alt={`${a.city} Airport Cover`}
                 className="h-full w-full object-cover"
-                fallbackImage={a.slideshow[0]}
-              />
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{ backgroundImage: overlayGradient }}
+                fallbackImage={images[0]}
               />
             </motion.div>
           ) : (
@@ -98,38 +130,52 @@ export function DestinationHero({ a }: { a: Airport }) {
               initial={heroZoom}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
               className="absolute inset-0"
             >
               <img
-                src={a.slideshow[slide] || a.slideshow[0]}
-                alt={`${a.city} Landmark ${slide + 1}`}
+                src={images[slide] || images[0]}
+                alt={`${a.city} Airport View ${slide + 1}`}
                 className="h-full w-full object-cover"
                 style={{
-                  objectPosition: a.slideshow[slide]?.includes("chaarminar")
-                    ? "center 30%"
-                    : a.slideshow[slide]?.includes("golkunda")
-                      ? "center 40%"
-                      : "center",
+                  objectPosition: "center center",
                 }}
-              />
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{ backgroundImage: overlayGradient }}
               />
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Content Rendered Directly OVER the Image Inside the Card */}
-        <div className="absolute inset-0 z-10 flex flex-col justify-between p-4 sm:p-10 md:p-14 text-white">
+        {/* MULTI-IMAGE PREVIOUS / NEXT ARROWS */}
+        {images.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={handlePrev}
+              aria-label="Previous airport image"
+              className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg hover:scale-105 active:scale-95"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              type="button"
+              onClick={handleNext}
+              aria-label="Next airport image"
+              className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg hover:scale-105 active:scale-95"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </>
+        )}
+
+        {/* Content Rendered Directly OVER the Image with Discrete Frosted Backdrops */}
+        <div className="absolute inset-0 z-10 flex flex-col justify-between p-4 sm:p-10 md:p-14 text-white pointer-events-none">
           {/* Top Info & Airport Name */}
-          <div className="max-w-4xl pt-safe">
+          <div className="max-w-4xl pt-safe pointer-events-auto">
             <motion.div
               initial={fadeUp}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex flex-wrap items-center gap-2 sm:gap-3 text-[9.5px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] font-bold text-amber-300/90"
+              className="inline-flex flex-wrap items-center gap-2 sm:gap-3 px-3.5 py-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[9.5px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] font-bold text-amber-300 shadow-md"
               style={mono}
             >
               <span className="text-xl sm:text-2xl leading-none">🇮🇳</span>
@@ -138,55 +184,7 @@ export function DestinationHero({ a }: { a: Airport }) {
               <span>IATA: {a.code} · ICAO: {a.icao}</span>
             </motion.div>
 
-            {/* Official Airport Name Rendered on Hero Section for GAU and IXC */}
-            {(a.code === "GAU" || a.code === "IXC") && (
-              <>
-                <motion.h1
-                  initial={fadeUp}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                  className="mt-3 text-3xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight text-white drop-shadow-xl leading-tight"
-                  style={{
-                    fontFamily: "'Cinzel', 'Playfair Display', Georgia, serif",
-                    textShadow: "0 4px 20px rgba(0,0,0,0.8)",
-                  }}
-                >
-                  {a.airport?.name || `${a.city} International Airport`}
-                </motion.h1>
 
-                {/* Tagline */}
-                <motion.p
-                  initial={fadeUpSm}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.6 }}
-                  className="mt-2 text-lg sm:text-xl font-serif italic text-amber-200/90 drop-shadow-md"
-                >
-                  "{a.tagline}"
-                </motion.p>
-
-                {/* Basic Key Details Badges */}
-                <motion.div
-                  initial={fadeUpSm}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.8 }}
-                  className="mt-4 flex flex-wrap items-center gap-2.5 text-xs font-semibold"
-                >
-                  {a.landmark && (
-                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 font-mono text-[11px] tracking-wider uppercase backdrop-blur-md shadow-lg">
-                      📍 Gateway to {a.landmark}
-                    </span>
-                  )}
-                  {a.airport?.terminals && (
-                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/40 border border-white/20 text-slate-100 font-mono text-[11px] tracking-wider backdrop-blur-md shadow-lg">
-                      🏛️ Terminals: {a.airport.terminals}
-                    </span>
-                  )}
-                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-200 font-mono text-[11px] tracking-wider uppercase backdrop-blur-md shadow-lg">
-                    ✨ 24x7 VIP Concierge Active
-                  </span>
-                </motion.div>
-              </>
-            )}
           </div>
 
           {/* Bottom Area: Local Time, Weather & Actions */}
@@ -194,44 +192,44 @@ export function DestinationHero({ a }: { a: Airport }) {
             initial={fadeUp}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1 }}
-            className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end pt-6"
+            className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end pt-6 pointer-events-auto"
           >
             <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6" style={mono}>
-              <div className="bg-black/50 border border-white/20 px-4 py-3 rounded-2xl backdrop-blur-md shadow-xl text-white">
-                <div className="truncate text-[9px] uppercase tracking-[0.3em] text-amber-300/80 font-bold">Local Time</div>
+              <div className="bg-black/55 border border-white/20 px-4 py-3 rounded-2xl backdrop-blur-md shadow-xl text-white">
+                <div className="truncate text-[9px] uppercase tracking-[0.3em] text-amber-300/90 font-bold">Local Time</div>
                 <div className="mt-1 text-lg sm:text-xl font-bold tracking-wider">{time || "—"}</div>
               </div>
-              <div className="bg-black/50 border border-white/20 px-4 py-3 rounded-2xl backdrop-blur-md shadow-xl text-white">
-                <div className="truncate text-[9px] uppercase tracking-[0.3em] text-amber-300/80 font-bold">Weather</div>
+              <div className="bg-black/55 border border-white/20 px-4 py-3 rounded-2xl backdrop-blur-md shadow-xl text-white">
+                <div className="truncate text-[9px] uppercase tracking-[0.3em] text-amber-300/90 font-bold">Weather</div>
                 <div className="mt-1 text-lg sm:text-xl font-bold tracking-wider">{a.weather.temp + " · Clear"}</div>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-3 lg:justify-end">
               <MagneticButton href="#book">Book Concierge</MagneticButton>
               <a
-                href="#guide"
-                className="inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-3.5 text-[10px] uppercase tracking-[0.24em] font-bold text-white bg-black/50 border border-white/30 shadow-lg backdrop-blur-md transition hover:bg-black/70 hover:border-amber-400/60 sm:text-[11px] sm:tracking-[0.3em]"
+                href="#available-services"
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-3.5 text-[10px] uppercase tracking-[0.24em] font-bold text-white bg-black/55 border border-white/30 shadow-lg backdrop-blur-md transition hover:bg-black/75 hover:border-amber-400/60 sm:text-[11px] sm:tracking-[0.3em] cursor-pointer"
                 style={mono}
               >
-                <MapPin className="h-3.5 w-3.5 text-amber-400" /> Explore
+                <MapPin className="h-3.5 w-3.5 text-amber-400" /> Explore Hub
               </a>
             </div>
           </motion.div>
         </div>
       </div>
 
-      {/* slide indicator */}
-      {a.slideshow.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10">
-          {a.slideshow.map((img, i) => (
+      {/* Slide Indicator Bar for Multiple Images */}
+      {images.length > 1 && (
+        <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 bg-black/60 px-3.5 py-2 rounded-full backdrop-blur-md border border-white/20 shadow-lg">
+          {images.map((img, i) => (
             <button
               type="button"
               key={`dest-hero-slide-${img}-${i}`}
               onClick={() => setSlide(i)}
-              className="h-1.5 rounded-full transition-all duration-500 cursor-pointer"
+              className="h-2 rounded-full transition-all duration-500 cursor-pointer"
               style={{
                 width: i === slide ? 32 : 10,
-                backgroundColor: i === slide ? "#a3e635" : "rgba(255,255,255,0.4)",
+                backgroundColor: i === slide ? "#a3e635" : "rgba(255,255,255,0.45)",
               }}
               aria-label={`Go to slide ${i + 1}`}
             />
@@ -252,3 +250,4 @@ export function DestinationHero({ a }: { a: Airport }) {
     </section>
   );
 }
+
