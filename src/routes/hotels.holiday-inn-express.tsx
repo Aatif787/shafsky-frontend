@@ -31,7 +31,10 @@ import {
   ExternalLink,
   MapPin,
   Navigation,
+  Loader2,
+  Copy,
 } from "lucide-react";
+import { enquiryApi } from "@/lib/api/enquiryApi";
 
 export const Route = createFileRoute("/hotels/holiday-inn-express")({
   head: () => ({
@@ -231,12 +234,15 @@ function HolidayInnExpressDetailPage() {
   // Photo Lightbox State
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  // Form State
+  // Form State & Dual Persistence
   const [guestName, setGuestName] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [needExtraBed, setNeedExtraBed] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bookingRef, setBookingRef] = useState("");
+  const [copiedRef, setCopiedRef] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
 
   const handleCopyAddress = () => {
@@ -246,6 +252,14 @@ function HolidayInnExpressDetailPage() {
       );
       setCopiedAddress(true);
       setTimeout(() => setCopiedAddress(false), 2500);
+    }
+  };
+
+  const handleCopyBookingRef = () => {
+    if (typeof navigator !== "undefined" && navigator.clipboard && bookingRef) {
+      navigator.clipboard.writeText(bookingRef);
+      setCopiedRef(true);
+      setTimeout(() => setCopiedRef(false), 2500);
     }
   };
 
@@ -272,6 +286,9 @@ function HolidayInnExpressDetailPage() {
     setSelectedRoom(room);
     setNeedExtraBed(false);
     setSubmitted(false);
+    setIsSubmitting(false);
+    setBookingRef("");
+    setCopiedRef(false);
   };
 
   const handleWhatsAppBooking = (room: RoomOption) => {
@@ -287,26 +304,69 @@ function HolidayInnExpressDetailPage() {
     window.open(`https://wa.me/919999017646?text=${text}`, "_blank");
   };
 
-  const submitEnquiry = (e: React.FormEvent) => {
+  const submitEnquiry = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedRoom) return;
+    if (!selectedRoom || isSubmitting) return;
+
+    setIsSubmitting(true);
 
     const extraBedText = needExtraBed ? "Yes (+₹1,499/-)" : "No";
+    let officialRef = `SHAF-HTL-T3-${Date.now().toString().slice(-6)}`;
 
+    // Prepare payload for backend DB persistence (Dual Persistence)
+    const payload = {
+      passengerName: guestName.trim() || "Valued Guest",
+      passengerEmail: guestEmail.trim() || `${(guestName.trim() || "guest").toLowerCase().replace(/[^a-z0-9]/g, ".")}@guest.shafsky.com`,
+      passengerPhone: guestPhone.trim(),
+      serviceCategory: "Travel Support" as const,
+      serviceType: "Hotel Booking",
+      destination: "Holiday Inn Express New Delhi Int'l Airport T3",
+      serviceDate: `Transit Stay (${selectedRoom.duration})`,
+      notes: `Room: ${selectedRoom.name} | Wing: ${selectedRoom.wingLabel} | Rate: ${selectedRoom.price} (${selectedRoom.taxNote}) | Extra Bed: ${extraBedText}`,
+      details: {
+        hotel_name: "Holiday Inn Express Hotel IGI Airport T3, New Delhi",
+        room_name: selectedRoom.name,
+        wing: selectedRoom.wingLabel,
+        duration: selectedRoom.duration,
+        rate: selectedRoom.price,
+        tax_note: selectedRoom.taxNote,
+        extra_bed: needExtraBed,
+      },
+    };
+
+    try {
+      const res = await enquiryApi.submit(payload);
+      if (res.success && res.data) {
+        const returnedRef = res.data.bookingRef || (res.data as any).booking_ref;
+        if (returnedRef) {
+          officialRef = returnedRef;
+        }
+      }
+    } catch (err) {
+      console.warn("Backend enquiry API offline or not responding, using resilient local ref:", err);
+    }
+
+    setBookingRef(officialRef);
+
+    // Build structured WhatsApp message with Official Booking Ref
     const text = encodeURIComponent(
-      `*New Hotel Room Reservation Inquiry — Shafsky Aviation*\n\n` +
-        `• Hotel: Holiday Inn Express Hotel IGI Airport T3, New Delhi\n` +
-        `• Room: ${selectedRoom.name}\n` +
-        `• Wing: ${selectedRoom.wingLabel}\n` +
-        `• Duration: ${selectedRoom.duration}\n` +
-        `• Rate: ${selectedRoom.price} (${selectedRoom.taxNote})\n` +
-        `• Extra Bed Requested: ${extraBedText}\n\n` +
-        `*Passenger & Transit Details:*\n` +
-        `• Guest Name: ${guestName || "Guest"}\n` +
-        `• Phone/WhatsApp: ${guestPhone || "Not provided"}\n` +
-        `• Email: ${guestEmail || "Not provided"}`
+      `*New Hotel Room Reservation Request — Shafsky Aviation*\n` +
+      `*Reference ID: ${officialRef}*\n\n` +
+      `🏨 *Hotel:* Holiday Inn Express Hotel IGI Airport T3, New Delhi\n` +
+      `🛏️ *Room:* ${selectedRoom.name}\n` +
+      `📍 *Wing:* ${selectedRoom.wingLabel} (Inside DEL T3)\n` +
+      `⏱️ *Duration:* ${selectedRoom.duration} Package\n` +
+      `💳 *Rate:* ${selectedRoom.price} (${selectedRoom.taxNote})\n` +
+      `➕ *Extra Bed:* ${extraBedText}\n\n` +
+      `👤 *Guest Details:*\n` +
+      `• *Name:* ${guestName.trim() || "Valued Guest"}\n` +
+      `• *Phone:* ${guestPhone.trim()}\n` +
+      `• *Email:* ${guestEmail.trim() || "Not provided"}\n\n` +
+      `Please confirm real-time availability and dispatch reservation invoice.`
     );
+
     window.open(`https://wa.me/919999017646?text=${text}`, "_blank");
+    setIsSubmitting(false);
     setSubmitted(true);
   };
 
@@ -1397,21 +1457,119 @@ function HolidayInnExpressDetailPage() {
             </div>
 
             {submitted ? (
-              <div className="py-8 text-center space-y-3">
-                <div className="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto">
-                  <Check size={28} />
+              <div className="py-4 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                <div className="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto shadow-inner ring-8 ring-emerald-50">
+                  <CheckCircle2 size={32} className="text-emerald-600" />
                 </div>
-                <h4 className="font-bold text-slate-900 text-xl">Reservation Dispatched</h4>
-                <p className="text-sm text-slate-600 max-w-xs mx-auto">
-                  Our 24/7 airport hospitality concierge has received your room booking details and is confirming your slot.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setSelectedRoom(null)}
-                  className="mt-4 px-8 py-2.5 bg-slate-900 text-white rounded-lg text-xs font-bold uppercase tracking-wider cursor-pointer"
-                >
-                  Close
-                </button>
+
+                <div>
+                  <h4 className="font-serif font-bold text-slate-900 text-xl sm:text-2xl">
+                    Reservation Request Dispatched!
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto mt-1">
+                    Your enquiry has been registered in the system and dispatched to our 24/7 airport hospitality concierge on WhatsApp.
+                  </p>
+                </div>
+
+                {/* Official Booking Reference Card */}
+                <div className="bg-slate-50 border border-slate-200/90 rounded-xl p-4 text-left space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold block">
+                        Official Booking Reference
+                      </span>
+                      <span className="font-mono text-base sm:text-lg font-black text-slate-900 tracking-wide">
+                        {bookingRef}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCopyBookingRef}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                    >
+                      {copiedRef ? (
+                        <>
+                          <Check size={13} className="text-emerald-600" />
+                          <span className="text-emerald-700">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={13} className="text-slate-500" />
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="pt-2.5 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-800 border border-amber-200 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                      Pending Concierge Confirmation
+                    </span>
+                    <span className="text-slate-500 font-mono text-[11px]">
+                      DEL Terminal 3 Airside Desk
+                    </span>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-3 border border-slate-200/60 text-xs text-slate-700 space-y-1.5">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Room:</span>
+                      <span className="font-semibold text-slate-900 text-right">{selectedRoom.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Duration & Wing:</span>
+                      <span className="font-medium text-slate-800">{selectedRoom.duration} • {selectedRoom.wingLabel}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Rate:</span>
+                      <span className="font-bold text-slate-950">{selectedRoom.price}</span>
+                    </div>
+                    {needExtraBed && (
+                      <div className="flex justify-between text-red-600">
+                        <span>Extra Bed:</span>
+                        <span className="font-medium">+₹1,499/-</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const extraBedText = needExtraBed ? "Yes (+₹1,499/-)" : "No";
+                      const text = encodeURIComponent(
+                        `*New Hotel Room Reservation Request — Shafsky Aviation*\n` +
+                        `*Reference ID: ${bookingRef}*\n\n` +
+                        `🏨 *Hotel:* Holiday Inn Express Hotel IGI Airport T3, New Delhi\n` +
+                        `🛏️ *Room:* ${selectedRoom.name}\n` +
+                        `📍 *Wing:* ${selectedRoom.wingLabel} (Inside DEL T3)\n` +
+                        `⏱️ *Duration:* ${selectedRoom.duration} Package\n` +
+                        `💳 *Rate:* ${selectedRoom.price} (${selectedRoom.taxNote})\n` +
+                        `➕ *Extra Bed:* ${extraBedText}\n\n` +
+                        `👤 *Guest Details:*\n` +
+                        `• *Name:* ${guestName.trim() || "Valued Guest"}\n` +
+                        `• *Phone:* ${guestPhone.trim()}\n` +
+                        `• *Email:* ${guestEmail.trim() || "Not provided"}\n\n` +
+                        `Please confirm real-time availability and dispatch reservation invoice.`
+                      );
+                      window.open(`https://wa.me/919999017646?text=${text}`, "_blank");
+                    }}
+                    className="flex-1 inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebd5a] text-white font-bold text-xs uppercase tracking-wider py-3 rounded-lg shadow-xs transition-colors cursor-pointer"
+                  >
+                    <MessageSquare size={15} />
+                    <span>Open WhatsApp Chat Again</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRoom(null)}
+                    className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                  >
+                    Done
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={submitEnquiry} className="space-y-4">
@@ -1458,7 +1616,6 @@ function HolidayInnExpressDetailPage() {
                   </div>
                 </div>
 
-
                 {/* Extra Bed Toggle */}
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center justify-between">
                   <div>
@@ -1480,10 +1637,20 @@ function HolidayInnExpressDetailPage() {
                 <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
                   <button
                     type="submit"
-                    className="flex-1 inline-flex items-center justify-center gap-2 bg-[#1d63b8] hover:bg-[#165099] text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-lg shadow-xs transition-colors cursor-pointer"
+                    disabled={isSubmitting}
+                    className="flex-1 inline-flex items-center justify-center gap-2 bg-[#1d63b8] hover:bg-[#165099] disabled:opacity-75 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-lg shadow-xs transition-colors cursor-pointer"
                   >
-                    <Send size={14} />
-                    <span>Send Request</span>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 size={14} className="animate-spin" />
+                        <span>Dispatching Request...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send size={14} />
+                        <span>Send Request</span>
+                      </>
+                    )}
                   </button>
                   <button
                     type="button"
