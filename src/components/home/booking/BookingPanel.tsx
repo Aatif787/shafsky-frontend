@@ -214,7 +214,7 @@ export function BookingPanel() {
             className="text-center text-lg sm:text-xl font-bold text-slate-950 tracking-tight"
             style={display}
           >
-            Book your seamless VIP airport experience.
+            Book your seamless airport experience.
           </h2>
         </div>
 
@@ -419,7 +419,7 @@ export function BookingPanel() {
             {/* Passengers & Luggage */}
             <div className="flex flex-col gap-1.5">
               <label className={LABEL}>
-                <span>Party & Luggage</span>
+                <span>Passengers & Luggage</span>
               </label>
               <Popover open={showPassengerModal} onOpenChange={setShowPassengerModal}>
                 <PopoverTrigger asChild>
@@ -430,7 +430,7 @@ export function BookingPanel() {
                     <span className="truncate flex items-center gap-2">
                       <Users size={15} className="text-lime-600" />
                       <span>
-                        {totalPax} {totalPax === 1 ? "Guest" : "Guests"}
+                        {totalPax} {totalPax === 1 ? "Passenger" : "Passengers"}
                       </span>
                       <span className="text-slate-300">•</span>
                       <Package size={15} className="text-lime-600" />
@@ -448,7 +448,7 @@ export function BookingPanel() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                       <span className="text-xs font-bold uppercase tracking-wider text-slate-900" style={mono}>
-                        Party & Luggage Details
+                        Passengers & Luggage Details
                       </span>
                       <button
                         type="button"

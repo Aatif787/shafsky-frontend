@@ -1,15 +1,14 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDown, ArrowLeft, MapPin, ChevronLeft, ChevronRight, Camera } from "lucide-react";
+import { ArrowDown, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Airport } from "@/data/airports";
-import { DARK, mono, MagneticButton } from "./Atoms";
+import { DARK, mono } from "./Atoms";
 import { getAirportAsset, getAirportImages, getAirportHeroImages } from "@/lib/airport-assets";
 import { ResponsiveAirportHero } from "./ResponsiveAirportHero";
 
 export function DestinationHero({ a }: { a: Airport }) {
   const [slide, setSlide] = useState(0);
-  const [time, setTime] = useState("");
   const [motionReady, setMotionReady] = useState(false);
   const lastWheelTime = useRef(0);
 
@@ -49,26 +48,6 @@ export function DestinationHero({ a }: { a: Airport }) {
     }
   };
 
-  useEffect(() => {
-    const tick = () => {
-      try {
-        setTime(
-          new Intl.DateTimeFormat("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false,
-            timeZone: a.timezone,
-          }).format(new Date()),
-        );
-      } catch {
-        setTime("");
-      }
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [a.timezone]);
 
   const hasDynamicHero =
     !!getAirportAsset(a.code, "hero-desktop.webp") ||
@@ -183,38 +162,7 @@ export function DestinationHero({ a }: { a: Airport }) {
               <span className="h-px w-6 sm:w-10 bg-amber-400/40" />
               <span>IATA: {a.code} · ICAO: {a.icao}</span>
             </motion.div>
-
-
           </div>
-
-          {/* Bottom Area: Local Time, Weather & Actions */}
-          <motion.div
-            initial={fadeUp}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
-            className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end pt-6 pointer-events-auto"
-          >
-            <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6" style={mono}>
-              <div className="bg-black/55 border border-white/20 px-4 py-3 rounded-2xl backdrop-blur-md shadow-xl text-white">
-                <div className="truncate text-[9px] uppercase tracking-[0.3em] text-amber-300/90 font-bold">Local Time</div>
-                <div className="mt-1 text-lg sm:text-xl font-bold tracking-wider">{time || "—"}</div>
-              </div>
-              <div className="bg-black/55 border border-white/20 px-4 py-3 rounded-2xl backdrop-blur-md shadow-xl text-white">
-                <div className="truncate text-[9px] uppercase tracking-[0.3em] text-amber-300/90 font-bold">Weather</div>
-                <div className="mt-1 text-lg sm:text-xl font-bold tracking-wider">{a.weather.temp + " · Clear"}</div>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-3 lg:justify-end">
-              <MagneticButton href="#book">Book Concierge</MagneticButton>
-              <a
-                href="#available-services"
-                className="inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-3.5 text-[10px] uppercase tracking-[0.24em] font-bold text-white bg-black/55 border border-white/30 shadow-lg backdrop-blur-md transition hover:bg-black/75 hover:border-amber-400/60 sm:text-[11px] sm:tracking-[0.3em] cursor-pointer"
-                style={mono}
-              >
-                <MapPin className="h-3.5 w-3.5 text-amber-400" /> Explore Hub
-              </a>
-            </div>
-          </motion.div>
         </div>
       </div>
 

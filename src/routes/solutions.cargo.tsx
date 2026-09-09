@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Car,
   ArrowLeft,
+  ArrowRight,
   Calendar,
   Clock,
   Users,
@@ -13,6 +14,7 @@ import {
   CheckCircle2,
   MessageSquare,
   ShieldCheck,
+  Crown,
 } from "lucide-react";
 import { display, mono } from "@/components/home/theme";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
@@ -66,7 +68,7 @@ const TRANSPORT_OPTIONS: TransportOptionDef[] = [
       "Complimentary High-Speed Onboard Wi-Fi, Water & Amenities",
       "Flight Radar Live Tracking for Dynamic Landing Adjustments",
       "60 Minutes Complimentary Waiting Time at Airport Arrivals",
-      "VIP Sanitized Leather Cabin with Dual Rear Reclining Seats",
+      "Sanitized Leather Cabin with Dual Rear Reclining Seats",
     ],
   },
   {
@@ -111,17 +113,39 @@ const TRANSPORT_OPTIONS: TransportOptionDef[] = [
   },
 ];
 
+const TRANSPORT_HERO_SLIDES = [
+  {
+    src: "/images/transport/tarmac-chauffeur.webp",
+    alt: "Shafsky Airside Tarmac Mercedes-Benz S-Class Chauffeur Transfer",
+    badge: "1/3 • Tarmac Chauffeur Transfer",
+    label: "Tarmac Transfer",
+  },
+  {
+    src: "/images/transport/fleet-skyline.webp",
+    alt: "Shafsky Chauffeured Executive Sedans and Passenger Vans",
+    badge: "2/3 • Chauffeured Executive Fleet",
+    label: "Executive Fleet",
+  },
+  {
+    src: "/images/transport/curbside-chauffeur.webp",
+    alt: "Shafsky Curbside Executive Chauffeur Reception & City Transfer",
+    badge: "3/3 • Curbside Arrival",
+    label: "Curbside Arrival",
+  },
+];
+
 function DedicatedTransportServicePage() {
   const navigate = useNavigate();
   const [selectedOptionId, setSelectedOptionId] = useState<TransportOptionId>("Luxury Vehicles");
+  const [heroSlideIndex, setHeroSlideIndex] = useState(0);
 
   const activeOption =
     TRANSPORT_OPTIONS.find((o) => o.id === selectedOptionId) || TRANSPORT_OPTIONS[0];
 
   // Request form state
   const [tripType, setTripType] = useState<"Airport Pickup" | "Airport Drop" | "Point to Point" | "Hourly Disposal">("Airport Pickup");
-  const [pickupLocation, setPickupLocation] = useState("Mumbai Airport (BOM) Terminal 2");
-  const [dropLocation, setDropLocation] = useState("The Taj Mahal Palace, Colaba");
+  const [pickupLocation, setPickupLocation] = useState("");
+  const [dropLocation, setDropLocation] = useState("");
   const [serviceDate, setServiceDate] = useState("");
   const [serviceTime, setServiceTime] = useState("14:30");
   const [paxCount, setPaxCount] = useState(2);
@@ -140,6 +164,13 @@ function DedicatedTransportServicePage() {
 
   const handleSelectOption = (optId: TransportOptionId) => {
     setSelectedOptionId(optId);
+    if (optId === "Luxury Vehicles") {
+      setHeroSlideIndex(0);
+    } else if (optId === "MUV / Large Vehicles") {
+      setHeroSlideIndex(1);
+    } else if (optId === "Economy / Standard") {
+      setHeroSlideIndex(2);
+    }
     const match = TRANSPORT_OPTIONS.find((o) => o.id === optId);
     if (match) {
       setVehicleModel(match.vehicleModels[0]);
@@ -205,7 +236,7 @@ function DedicatedTransportServicePage() {
   };
 
   const getWhatsAppDirectLink = () => {
-    const text = `Hello Shafsky Chauffeur & Transport Desk,%0A%0AI would like to request luxury transport:%0A- Category: ${selectedOptionId}%0A- Vehicle Model: ${vehicleModel}%0A- Service: ${tripType}%0A- Pickup: ${pickupLocation}%0A- Drop: ${dropLocation}%0A- Date & Time: ${serviceDate} at ${serviceTime}%0A- Flight Number: ${flightNumber || "N/A"}%0A- Passengers: ${paxCount} | Luggage: ${luggageCount} Bags%0A- Client Name: ${clientName}%0A- Phone: ${phone}%0A- Email: ${email || "N/A"}%0A- Special Requests: ${specialRequests || "None"}`;
+    const text = `Hello Shafsky Chauffeur & Transport Desk,%0A%0AI would like to request vehicle transport:%0A- Category: ${selectedOptionId}%0A- Vehicle Model: ${vehicleModel}%0A- Service: ${tripType}%0A- Pickup: ${pickupLocation}%0A- Drop: ${dropLocation}%0A- Date & Time: ${serviceDate} at ${serviceTime}%0A- Flight Number: ${flightNumber || "N/A"}%0A- Passengers: ${paxCount} | Luggage: ${luggageCount} Bags%0A- Client Name: ${clientName}%0A- Phone: ${phone}%0A- Email: ${email || "N/A"}%0A- Special Requests: ${specialRequests || "None"}`;
     return `https://wa.me/919599087959?text=${text}`;
   };
 
@@ -251,14 +282,62 @@ function DedicatedTransportServicePage() {
             </p>
           </div>
 
-          {/* Uncropped Landscape Hero Image Container */}
-          <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center">
-            <img
-              src={transportImg}
-              alt="Shafsky Luxury Transport Fleet and Tarmac Sedans"
-              className="w-full h-auto object-contain object-center select-none block"
-              loading="eager"
-            />
+          {/* Uncropped Responsive Hero Image Slider */}
+          <div className="space-y-3">
+            <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center min-h-[260px] sm:min-h-[400px]">
+              <img
+                src={TRANSPORT_HERO_SLIDES[heroSlideIndex]?.src || TRANSPORT_HERO_SLIDES[0].src}
+                alt={TRANSPORT_HERO_SLIDES[heroSlideIndex]?.alt || "Shafsky Luxury Transport Fleet"}
+                className="w-full h-auto object-contain object-center select-none block transition-opacity duration-300"
+                loading="eager"
+              />
+
+              {/* Slide Navigation Overlay Buttons */}
+              <div className="absolute inset-y-0 left-3 right-3 flex items-center justify-between pointer-events-none">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setHeroSlideIndex((prev) => (prev - 1 + TRANSPORT_HERO_SLIDES.length) % TRANSPORT_HERO_SLIDES.length)
+                  }
+                  className="pointer-events-auto p-2 rounded-full bg-slate-900/60 hover:bg-slate-900/90 text-white backdrop-blur-md transition shadow-md cursor-pointer"
+                  aria-label="Previous photo"
+                >
+                  <ArrowLeft size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHeroSlideIndex((prev) => (prev + 1) % TRANSPORT_HERO_SLIDES.length)}
+                  className="pointer-events-auto p-2 rounded-full bg-slate-900/60 hover:bg-slate-900/90 text-white backdrop-blur-md transition shadow-md cursor-pointer"
+                  aria-label="Next photo"
+                >
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+
+              {/* Photo Caption Badge */}
+              <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md text-white text-[11px] font-mono px-3 py-1 rounded-full border border-white/10 shadow-sm">
+                {TRANSPORT_HERO_SLIDES[heroSlideIndex]?.badge}
+              </div>
+            </div>
+
+            {/* 3-Slide Thumbnail / Pill Selectors */}
+            <div className="flex items-center justify-center gap-3 pt-1 flex-wrap">
+              {TRANSPORT_HERO_SLIDES.map((item, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setHeroSlideIndex(idx)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-mono font-bold transition cursor-pointer ${
+                    heroSlideIndex === idx
+                      ? "bg-lime-500 text-slate-950 border-lime-600 shadow-sm"
+                      : "bg-white text-slate-600 border-slate-200 hover:border-lime-400 hover:bg-lime-50/50"
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full ${heroSlideIndex === idx ? "bg-slate-950" : "bg-slate-300"}`} />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -302,13 +381,13 @@ function DedicatedTransportServicePage() {
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-wider text-lime-700 mb-2">
               <Sparkles size={13} className="text-lime-600" />
-              <span>{activeOption.badge} — CHAUFFEUR BOOKING DISPATCH</span>
+              <span>VEHICLE BOOKING</span>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
-              {activeOption.id} Request
+              Request for Vehicle
             </h2>
             <p className="mt-1 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-              {activeOption.tagline}
+              Book your airport pickup, drop-off, point-to-point, or hourly transfer service.
             </p>
           </div>
 
@@ -319,13 +398,13 @@ function DedicatedTransportServicePage() {
                 <CheckCircle2 size={32} />
               </div>
               <span className="text-xs font-mono font-bold uppercase tracking-widest text-lime-700">
-                CHAUFFEUR RESERVATION DISPATCHED
+                VEHICLE REQUEST SUBMITTED
               </span>
               <h3 className="text-3xl font-extrabold text-slate-950 mt-1 mb-2" style={display}>
                 Reference #{submittedRef}
               </h3>
               <p className="text-sm text-slate-600 max-w-md mx-auto mb-6">
-                Your dispatch request for <strong className="text-slate-900">{selectedOptionId} ({vehicleModel})</strong> has been received by the Shafsky Ground Fleet Desk.
+                Your request for <strong className="text-slate-900">{selectedOptionId} ({vehicleModel})</strong> has been received by our transport desk.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -530,7 +609,7 @@ function DedicatedTransportServicePage() {
                 {/* Contact Information */}
                 <div className="pt-4 border-t border-slate-100">
                   <span className="text-xs font-mono font-bold uppercase tracking-wider text-lime-700 block mb-3">
-                    Contact Details for Dispatch Confirmation
+                    Contact Details for Confirmation
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
@@ -577,7 +656,7 @@ function DedicatedTransportServicePage() {
                     className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs font-mono tracking-wider shadow-md transition-all cursor-pointer disabled:opacity-50"
                   >
                     <Send size={14} />
-                    <span>{isSubmitting ? "Dispatching..." : `Request ${selectedOptionId} Dispatch`}</span>
+                    <span>{isSubmitting ? "Submitting..." : "Request for Vehicle"}</span>
                   </button>
                 </div>
               </form>
@@ -589,17 +668,18 @@ function DedicatedTransportServicePage() {
       {/* ─────────────────────────────────────────────────────────────
           4. COMPANY CATALOG CONTENT & UNCOPPED GALLERY
           ───────────────────────────────────────────────────────────── */}
-      <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-8">
+      <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-8 border-t border-slate-100">
         <div className="mx-auto max-w-6xl">
           {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.4em] text-lime-700 font-bold font-mono bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200">
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <div className="inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.35em] text-lime-700 font-bold font-mono bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200 mb-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-lime-500 inline-block" />
               <span>COMPANY CATALOG SPECIFICATIONS</span>
             </div>
-            <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
               Transport Inclusions & Fleet.
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+            <p className="mt-3 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
               Authoritative chauffeured tarmac, executive MPV, and inter-city fleet specifications.
             </p>
           </div>
@@ -610,18 +690,25 @@ function DedicatedTransportServicePage() {
             <div className="lg:col-span-6 flex flex-col justify-start">
               <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-lime-700 font-mono font-bold mb-3">
                 <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
-                {activeOption.badge}
+                <span>{activeOption.badge}</span>
               </div>
 
               <h3 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0a196f] tracking-tight mb-6" style={display}>
                 {activeOption.id}
               </h3>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {activeOption.inclusions.map((inc, i) => (
-                  <div key={i} className="flex items-start gap-3.5 text-sm sm:text-[15px] text-slate-900 leading-snug">
-                    <span className="text-slate-900 font-bold text-xl leading-none mt-0.5">•</span>
-                    <span className="font-semibold text-slate-900">{inc}</span>
+                  <div
+                    key={i}
+                    className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50/80 border border-slate-200/70 hover:border-slate-300 hover:bg-white hover:shadow-xs transition-all duration-200"
+                  >
+                    <div className="w-5 h-5 rounded-full bg-slate-900 text-lime-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <CheckCircle2 size={12} className="stroke-[2.5]" />
+                    </div>
+                    <span className="text-sm font-medium text-slate-900 leading-snug">
+                      {inc}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -631,24 +718,37 @@ function DedicatedTransportServicePage() {
             <div className="lg:col-span-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  { src: home5Img, alt: "Luxury Chauffeured Fleet & Jet Apron" },
-                  { src: vvipImg, alt: "VIP Tarmac Sedan Arrival Reception" },
-                  { src: buggyImg, alt: "Airside Passenger Terminal Buggy" },
-                  { src: home2Img, alt: "Dedicated Airport Porterage & Baggage" },
+                  {
+                    src: "/images/transport/tarmac-chauffeur.webp",
+                    alt: "Tarmac Sedan Arrival Reception",
+                  },
+                  {
+                    src: "/images/transport/fleet-skyline.webp",
+                    alt: "Chauffeured Executive Fleet & Sedans",
+                  },
+                  {
+                    src: "/images/transport/curbside-chauffeur.webp",
+                    alt: "Curbside Executive Arrival",
+                  },
+                  {
+                    src: home5Img,
+                    alt: "Dedicated Airport Porterage & Fleet Apron",
+                  },
                 ].map((img, idx) => (
                   <div
                     key={idx}
-                    className="w-full rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 bg-white group hover:border-lime-400 transition-all"
+                    className="w-full rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 bg-white group hover:border-lime-400 hover:shadow-md transition-all duration-300 flex flex-col"
                   >
-                    <div className="w-full bg-slate-50 overflow-hidden flex items-center justify-center">
+                    <div className="relative aspect-[16/10] w-full bg-slate-50 overflow-hidden flex items-center justify-center">
                       <img
                         src={img.src}
                         alt={img.alt}
-                        className="w-full h-auto object-contain object-center select-none block group-hover:scale-102 transition-transform duration-500"
+                        className="w-full h-full object-cover object-center select-none block group-hover:scale-103 transition-transform duration-500"
+                        loading="lazy"
                       />
                     </div>
-                    <div className="p-3 bg-white border-t border-slate-100">
-                      <span className="text-[11px] font-mono font-bold text-slate-800 tracking-wide block">
+                    <div className="p-3.5 bg-white border-t border-slate-100">
+                      <span className="text-xs font-semibold text-slate-900 tracking-tight font-sans block group-hover:text-[#0a196f] transition-colors">
                         {img.alt}
                       </span>
                     </div>

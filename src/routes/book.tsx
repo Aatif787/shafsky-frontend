@@ -51,7 +51,7 @@ export const Route = createFileRoute("/book")({
 function BookRoutePage() {
   const search = Route.useSearch();
 
-  // If explicitly Air Charter requested
+  // If explicitly Private Charter requested
   const s = (search.service || search.service_id || "").toLowerCase();
   if (s.includes("charter") || s.includes("aviation") || s.includes("jet")) {
     return <Navigate to="/solutions/aviation" />;

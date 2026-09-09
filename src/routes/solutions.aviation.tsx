@@ -27,7 +27,7 @@ import jetTarmac from "@/assets/homepage/home2.jpeg";
 export const Route = createFileRoute("/solutions/aviation")({
   head: () => ({
     meta: [
-      { title: "Air Charter Services — Shafsky Aviation" },
+      { title: "Private Charter Services — Shafsky Aviation" },
       {
         name: "description",
         content:
@@ -256,20 +256,26 @@ const CHARTER_OPTIONS: CharterOptionDef[] = [
 const CHARTER_HERO_SLIDES = [
   {
     src: HOMEPAGE_PHOTOS.privateCharter.src,
-    alt: "Shafsky Private Jet and Helicopter Air Charter Fleet",
-    badge: "1/3 • Shafsky Air Charter Fleet",
-    label: "Air Charter Fleet",
+    alt: "Shafsky Private Jet and Helicopter Private Charter Fleet",
+    badge: "1/4 • Shafsky Private Charter Fleet",
+    label: "Private Charter Fleet",
   },
   {
     src: jetTarmac,
     alt: "Shafsky Executive Private Jet on Tarmac at Sunset",
-    badge: "2/3 • Executive Private Jet on Tarmac at Sunset",
+    badge: "2/4 • Executive Private Jet on Tarmac at Sunset",
     label: "Private Jet Tarmac",
+  },
+  {
+    src: "/images/charter/luxury-cabin.webp",
+    alt: "Shafsky Ultra-Luxury Private Jet Executive VIP Cabin",
+    badge: "3/4 • Ultra-Luxury Executive VIP Cabin",
+    label: "VIP Luxury Cabin",
   },
   {
     src: "/private charter/airambu.jpeg",
     alt: "Shafsky Air Ambulance Dedicated Aero-Medical ICU Aircraft",
-    badge: "3/3 • Air Ambulance Dedicated Aero-Medical ICU Aircraft",
+    badge: "4/4 • Air Ambulance Dedicated Aero-Medical ICU Aircraft",
     label: "Air Ambulance ICU",
   },
 ];
@@ -291,8 +297,8 @@ function DedicatedAirCharterPage() {
 
   // Step 1: Route & Schedule
   const [tripType, setTripType] = useState<"One Way" | "Round Trip" | "Multi-City">("One Way");
-  const [origin, setOrigin] = useState("Delhi (DEL)");
-  const [destination, setDestination] = useState("Mumbai (BOM)");
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
   const [departDate, setDepartDate] = useState("");
   const [departTime, setDepartTime] = useState("10:00");
   const [returnDate, setReturnDate] = useState("");
@@ -317,10 +323,14 @@ function DedicatedAirCharterPage() {
   // When changing option, update aircraft preference to first matching
   const handleSelectOption = (optId: CharterOptionId) => {
     setSelectedOptionId(optId);
-    if (optId === "Private Charter") {
+    if (optId === "Domestic and International Charter") {
+      setHeroSlideIndex(0);
+    } else if (optId === "Corporate Charter") {
       setHeroSlideIndex(1);
-    } else if (optId === "Air Ambulance Charter") {
+    } else if (optId === "Private Charter") {
       setHeroSlideIndex(2);
+    } else if (optId === "Air Ambulance Charter") {
+      setHeroSlideIndex(3);
     }
     const match = CHARTER_OPTIONS.find((o) => o.id === optId);
     if (match) {
@@ -429,14 +439,14 @@ function DedicatedAirCharterPage() {
   };
 
   const getWhatsAppDirectLink = () => {
-    const text = `Hello Shafsky Aviation Charter Desk,%0A%0AI would like a quotation for Air Charter:%0A- Charter Option: ${selectedOptionId}%0A- Route: ${tripType} (${origin} -> ${destination})%0A- Departure: ${departDate} at ${departTime}${tripType === "Round Trip" ? `%0A- Return: ${returnDate} at ${returnTime}` : ""}%0A- Passengers: ${paxCount} Pax%0A- Aircraft Preference: ${aircraftPreference}%0A- Client Name: ${clientName}%0A- Phone: ${phone}%0A- Email: ${email || "N/A"}`;
+    const text = `Hello Shafsky Aviation Charter Desk,%0A%0AI would like a quotation for Private Charter:%0A- Charter Option: ${selectedOptionId}%0A- Route: ${tripType} (${origin} -> ${destination})%0A- Departure: ${departDate} at ${departTime}${tripType === "Round Trip" ? `%0A- Return: ${returnDate} at ${returnTime}` : ""}%0A- Passengers: ${paxCount} Pax%0A- Aircraft Preference: ${aircraftPreference}%0A- Client Name: ${clientName}%0A- Phone: ${phone}%0A- Email: ${email || "N/A"}`;
     return `https://wa.me/919599087959?text=${text}`;
   };
 
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-lime-200">
       {/* ─────────────────────────────────────────────────────────────
-          1. COMPLETE HERO PHOTO & AIR CHARTER TITLE
+          1. COMPLETE HERO PHOTO & PRIVATE CHARTER TITLE
           ───────────────────────────────────────────────────────────── */}
       <section className="relative px-4 pt-4 pb-8 sm:px-6 lg:px-8 border-b border-slate-100">
         <div className="mx-auto max-w-6xl">
@@ -468,7 +478,7 @@ function DedicatedAirCharterPage() {
               className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
               style={display}
             >
-              Air <span className="text-lime-600">Charter</span>
+              Private <span className="text-lime-600">Charter</span>
             </h1>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
               On-demand executive private jets, twin helicopters, and specialized mission aircraft on your schedule.
@@ -480,7 +490,7 @@ function DedicatedAirCharterPage() {
             <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center min-h-[260px] sm:min-h-[400px]">
               <img
                 src={CHARTER_HERO_SLIDES[heroSlideIndex]?.src || CHARTER_HERO_SLIDES[0].src}
-                alt={CHARTER_HERO_SLIDES[heroSlideIndex]?.alt || "Shafsky Air Charter"}
+                alt={CHARTER_HERO_SLIDES[heroSlideIndex]?.alt || "Shafsky Private Charter"}
                 className="w-full h-auto object-contain object-center select-none block transition-opacity duration-300"
                 loading="eager"
               />
@@ -536,7 +546,7 @@ function DedicatedAirCharterPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. 10 AIR CHARTER OPTIONS SELECTOR
+          2. 10 PRIVATE CHARTER OPTIONS SELECTOR
           ───────────────────────────────────────────────────────────── */}
       <section className="py-8 bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
@@ -1079,7 +1089,7 @@ function DedicatedAirCharterPage() {
               <span>COMPANY CATALOG SPECIFICATIONS</span>
             </div>
             <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
-              Air Charter Inclusions.
+              Private Charter Inclusions.
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
               Authoritative aircraft capabilities, airside handling, and flight protocol.
@@ -1102,6 +1112,16 @@ function DedicatedAirCharterPage() {
                 {activeOption.inclusions.length} Inclusions Verified
               </span>
             </div>
+
+            {activeOption.id === "Private Charter" && (
+              <div className="mb-6 rounded-2xl overflow-hidden border border-amber-200/80 shadow-sm bg-slate-900">
+                <img
+                  src="/images/charter/luxury-cabin.webp"
+                  alt="Shafsky Ultra-Luxury Private Jet Executive VIP Cabin"
+                  className="w-full h-56 sm:h-72 object-cover object-center"
+                />
+              </div>
+            )}
 
             {activeOption.id === "Air Ambulance Charter" && (
               <div className="mb-6 rounded-2xl overflow-hidden border border-red-200 shadow-sm bg-slate-900">

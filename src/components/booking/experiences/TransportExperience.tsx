@@ -72,8 +72,8 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
   // Step 1: Route & Schedule
-  const [pickup, setPickup] = useState("IGI Airport Terminal 3, New Delhi");
-  const [dropoff, setDropoff] = useState("The Oberoi / Aerocity, New Delhi");
+  const [pickup, setPickup] = useState("");
+  const [dropoff, setDropoff] = useState("");
   const [pickupDate, setPickupDate] = useState("");
   const [pickupTime, setPickupTime] = useState("12:00");
 
@@ -224,10 +224,34 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
         {/* Right Authentic Photography - Zero Cropping / Zero Text Over Photo */}
         <div className="lg:col-span-5">
           <ExperiencePhoto
-            src={HOMEPAGE_PHOTOS.luxuryFleet.src}
-            alt="Chauffeured Airport and Tarmac Luxury Transport Vehicles"
-            badge="Luxury Ground Fleet"
-            caption="Chauffeured luxury sedans and premium passenger vans"
+            src={
+              subService === "Luxury Vehicles"
+                ? "/images/transport/tarmac-chauffeur.webp"
+                : subService === "MUV / Large Vehicles"
+                ? "/images/transport/fleet-skyline.webp"
+                : "/images/transport/curbside-chauffeur.webp"
+            }
+            alt={
+              subService === "Luxury Vehicles"
+                ? "VIP Airside Tarmac Mercedes-Benz S-Class Chauffeur Transfer"
+                : subService === "MUV / Large Vehicles"
+                ? "Chauffeured Executive MPV & Passenger Vans"
+                : "Curbside VIP Executive Chauffeur Transfer"
+            }
+            badge={
+              subService === "Luxury Vehicles"
+                ? "VIP Tarmac Sedan"
+                : subService === "MUV / Large Vehicles"
+                ? "Executive MPV"
+                : "City Chauffeur"
+            }
+            caption={
+              subService === "Luxury Vehicles"
+                ? "Direct tarmac pickup to aircraft airstairs with security-cleared driver"
+                : subService === "MUV / Large Vehicles"
+                ? "Spacious executive group vans and luxury MPV with captain recliners"
+                : "Punctual airport transfers and hourly city disposal"
+            }
             aspectRatio="16 / 10"
           />
         </div>
@@ -516,7 +540,7 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:shadow-xl transition-all font-mono cursor-pointer"
               >
                 <CheckCircle2 size={16} className="text-[#d4af37]" />
-                <span>Submit Transport Request</span>
+                <span>Request for Vehicle</span>
               </button>
             </div>
           </form>

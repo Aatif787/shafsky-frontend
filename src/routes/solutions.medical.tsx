@@ -153,40 +153,40 @@ function DedicatedSpecialServicesPage() {
 
   // Option-specific form states
   // Tours & Travel
-  const [tourDestination, setTourDestination] = useState("Rajasthan Heritage Circuit");
+  const [tourDestination, setTourDestination] = useState("");
   const [tourStartDate, setTourStartDate] = useState("");
   const [tourEndDate, setTourEndDate] = useState("");
   const [tourGuests, setTourGuests] = useState(2);
   const [tourRequirements, setTourRequirements] = useState("");
 
   // Passport & VISA
-  const [visaCountry, setVisaCountry] = useState("United States (US B1/B2) / UK / Schengen");
+  const [visaCountry, setVisaCountry] = useState("");
   const [visaType, setVisaType] = useState("Tourist / Business Visa");
   const [visaApplicants, setVisaApplicants] = useState(1);
   const [visaUrgency, setVisaUrgency] = useState<"Standard" | "Express (3 - 5 Days)" | "Emergency (24 - 48 Hours)">("Standard");
 
   // PSO
   const [psoDates, setPsoDates] = useState("");
-  const [psoLocation, setPsoLocation] = useState("New Delhi / Mumbai");
+  const [psoLocation, setPsoLocation] = useState("");
   const [psoVipCount, setPsoVipCount] = useState(1);
   const [psoRequirements, setPsoRequirements] = useState("Armed Close Protection Officer (Ex-Special Forces)");
 
   // Sightseeing & Guide
-  const [guideDestination, setGuideDestination] = useState("Agra (Taj Mahal) / Delhi / Jaipur");
+  const [guideDestination, setGuideDestination] = useState("");
   const [guideDate, setGuideDate] = useState("");
   const [guidePartySize, setGuidePartySize] = useState(2);
   const [guideLanguage, setGuideLanguage] = useState("English");
 
   // Infant Care
-  const [infantAge, setInfantAge] = useState("6 Months");
+  const [infantAge, setInfantAge] = useState("");
   const [infantTravelDate, setInfantTravelDate] = useState("");
-  const [infantAirport, setInfantAirport] = useState("Delhi Airport (DEL) T3");
-  const [infantAssistance, setInfantAssistance] = useState("Stroller + Aerobridge Escort + Boarding Priority");
+  const [infantAirport, setInfantAirport] = useState("");
+  const [infantAssistance, setInfantAssistance] = useState("");
 
   // Human Remains by Cargo
-  const [humOrigin, setHumOrigin] = useState("Mumbai (BOM)");
-  const [humDestination, setHumDestination] = useState("London (LHR) / Dubai (DXB)");
-  const [humTimeline, setHumTimeline] = useState("Immediate Next Available Flight");
+  const [humOrigin, setHumOrigin] = useState("");
+  const [humDestination, setHumDestination] = useState("");
+  const [humTimeline, setHumTimeline] = useState("");
   const [humPermits, setHumPermits] = useState("Complete documentation required (Embalming, Embassy NOC, Cargo booking)");
 
   // Contact details
@@ -216,7 +216,7 @@ function DedicatedSpecialServicesPage() {
     let details: Record<string, unknown> = { service: selectedOptionId };
     let notes: string | undefined;
     let serviceCategory: "Travel Support" | "Cargo & Logistics" = "Travel Support";
-    let serviceType = selectedOptionId;
+    let serviceType: string = selectedOptionId;
 
     if (selectedOptionId === "Tours & Travel") {
       origin = tourDestination;

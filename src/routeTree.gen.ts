@@ -27,6 +27,10 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authenticated/super-admin'
 import { Route as AirportsCodeRouteImport } from './routes/airports.$code'
 import { Route as ApiProcessQueueRouteImport } from './routes/api.process-queue'
+import { Route as HotelsAirportHotelRouteImport } from './routes/hotels.airport-hotel'
+import { Route as HotelsCastleBlueRouteImport } from './routes/hotels.castle-blue'
+import { Route as HotelsClassicDiplomatRouteImport } from './routes/hotels.classic-diplomat'
+import { Route as HotelsDePavilionRouteImport } from './routes/hotels.de-pavilion'
 import { Route as HotelsHolidayInnExpressRouteImport } from './routes/hotels.holiday-inn-express'
 import { Route as ServicesGuideRouteImport } from './routes/services.guide'
 import { Route as SolutionsAviationRouteImport } from './routes/solutions.aviation'
@@ -158,6 +162,26 @@ const AirportsCodeRoute = AirportsCodeRouteImport.update({
 const ApiProcessQueueRoute = ApiProcessQueueRouteImport.update({
   id: '/api/process-queue',
   path: '/api/process-queue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotelsAirportHotelRoute = HotelsAirportHotelRouteImport.update({
+  id: '/hotels/airport-hotel',
+  path: '/hotels/airport-hotel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotelsCastleBlueRoute = HotelsCastleBlueRouteImport.update({
+  id: '/hotels/castle-blue',
+  path: '/hotels/castle-blue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotelsClassicDiplomatRoute = HotelsClassicDiplomatRouteImport.update({
+  id: '/hotels/classic-diplomat',
+  path: '/hotels/classic-diplomat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotelsDePavilionRoute = HotelsDePavilionRouteImport.update({
+  id: '/hotels/de-pavilion',
+  path: '/hotels/de-pavilion',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HotelsHolidayInnExpressRoute = HotelsHolidayInnExpressRouteImport.update({
@@ -423,6 +447,10 @@ export interface FileRoutesByFullPath {
   '/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
+  '/hotels/airport-hotel': typeof HotelsAirportHotelRoute
+  '/hotels/castle-blue': typeof HotelsCastleBlueRoute
+  '/hotels/classic-diplomat': typeof HotelsClassicDiplomatRoute
+  '/hotels/de-pavilion': typeof HotelsDePavilionRoute
   '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
   '/services/guide': typeof ServicesGuideRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
@@ -483,6 +511,10 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
+  '/hotels/airport-hotel': typeof HotelsAirportHotelRoute
+  '/hotels/castle-blue': typeof HotelsCastleBlueRoute
+  '/hotels/classic-diplomat': typeof HotelsClassicDiplomatRoute
+  '/hotels/de-pavilion': typeof HotelsDePavilionRoute
   '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
   '/services/guide': typeof ServicesGuideRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
@@ -547,6 +579,10 @@ export interface FileRoutesById {
   '/_authenticated/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
+  '/hotels/airport-hotel': typeof HotelsAirportHotelRoute
+  '/hotels/castle-blue': typeof HotelsCastleBlueRoute
+  '/hotels/classic-diplomat': typeof HotelsClassicDiplomatRoute
+  '/hotels/de-pavilion': typeof HotelsDePavilionRoute
   '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
   '/services/guide': typeof ServicesGuideRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
@@ -611,6 +647,10 @@ export interface FileRouteTypes {
     | '/super-admin'
     | '/airports/$code'
     | '/api/process-queue'
+    | '/hotels/airport-hotel'
+    | '/hotels/castle-blue'
+    | '/hotels/classic-diplomat'
+    | '/hotels/de-pavilion'
     | '/hotels/holiday-inn-express'
     | '/services/guide'
     | '/solutions/aviation'
@@ -671,6 +711,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/airports/$code'
     | '/api/process-queue'
+    | '/hotels/airport-hotel'
+    | '/hotels/castle-blue'
+    | '/hotels/classic-diplomat'
+    | '/hotels/de-pavilion'
     | '/hotels/holiday-inn-express'
     | '/services/guide'
     | '/solutions/aviation'
@@ -734,6 +778,10 @@ export interface FileRouteTypes {
     | '/_authenticated/super-admin'
     | '/airports/$code'
     | '/api/process-queue'
+    | '/hotels/airport-hotel'
+    | '/hotels/castle-blue'
+    | '/hotels/classic-diplomat'
+    | '/hotels/de-pavilion'
     | '/hotels/holiday-inn-express'
     | '/services/guide'
     | '/solutions/aviation'
@@ -794,6 +842,10 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiProcessQueueRoute: typeof ApiProcessQueueRoute
+  HotelsAirportHotelRoute: typeof HotelsAirportHotelRoute
+  HotelsCastleBlueRoute: typeof HotelsCastleBlueRoute
+  HotelsClassicDiplomatRoute: typeof HotelsClassicDiplomatRoute
+  HotelsDePavilionRoute: typeof HotelsDePavilionRoute
   HotelsHolidayInnExpressRoute: typeof HotelsHolidayInnExpressRoute
   ServicesGuideRoute: typeof ServicesGuideRoute
   SolutionsAviationRoute: typeof SolutionsAviationRoute
@@ -933,6 +985,34 @@ declare module '@tanstack/react-router' {
       path: '/api/process-queue'
       fullPath: '/api/process-queue'
       preLoaderRoute: typeof ApiProcessQueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hotels/airport-hotel': {
+      id: '/hotels/airport-hotel'
+      path: '/hotels/airport-hotel'
+      fullPath: '/hotels/airport-hotel'
+      preLoaderRoute: typeof HotelsAirportHotelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hotels/castle-blue': {
+      id: '/hotels/castle-blue'
+      path: '/hotels/castle-blue'
+      fullPath: '/hotels/castle-blue'
+      preLoaderRoute: typeof HotelsCastleBlueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hotels/classic-diplomat': {
+      id: '/hotels/classic-diplomat'
+      path: '/hotels/classic-diplomat'
+      fullPath: '/hotels/classic-diplomat'
+      preLoaderRoute: typeof HotelsClassicDiplomatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hotels/de-pavilion': {
+      id: '/hotels/de-pavilion'
+      path: '/hotels/de-pavilion'
+      fullPath: '/hotels/de-pavilion'
+      preLoaderRoute: typeof HotelsDePavilionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hotels/holiday-inn-express': {
@@ -1380,6 +1460,10 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiProcessQueueRoute: ApiProcessQueueRoute,
+  HotelsAirportHotelRoute: HotelsAirportHotelRoute,
+  HotelsCastleBlueRoute: HotelsCastleBlueRoute,
+  HotelsClassicDiplomatRoute: HotelsClassicDiplomatRoute,
+  HotelsDePavilionRoute: HotelsDePavilionRoute,
   HotelsHolidayInnExpressRoute: HotelsHolidayInnExpressRoute,
   ServicesGuideRoute: ServicesGuideRoute,
   SolutionsAviationRoute: SolutionsAviationRoute,

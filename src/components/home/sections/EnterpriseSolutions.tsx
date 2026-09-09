@@ -45,9 +45,9 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
   {
     id: "air-charter",
     serviceParam: "charter",
-    title: "Air Charter",
+    title: "Private Charter",
     photo: HOMEPAGE_PHOTOS.privateCharter.src,
-    alt: "Shafsky Private Jet and Helicopter Air Charter",
+    alt: "Shafsky Private Jet and Helicopter Private Charter",
     badge: "VIP Aviation",
     description: "On-demand executive private jets, twin helicopters, and specialized mission aircraft on your schedule.",
     subServices: [

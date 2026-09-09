@@ -131,21 +131,21 @@ export const FEATURED_HOTELS: HotelCardItem[] = [
       "Free Breakfast Included",
       "Free Cancellation till 24 hrs before check in",
     ],
-    bookingTerms: "For Over Night Booking",
+    bookingTerms: "Deluxe & Suite Rooms From ₹ 4,100 / Night (+ 5% GST)",
     ratingLabel: "4.8 Customer Reviews",
     image: "/images/hotels/classic-diplomat.jpg",
   },
   {
     id: "de-pavilion",
-    name: "De Pavilion Hotel",
+    name: "Hotel De Pavilion",
     stars: 4,
     location: "Location: Mahipalpur, Near IGI Airport, New Delhi",
-    capacity: "Fits 2 Adults",
+    capacity: "Fits 2-4 Adults",
     features: [
-      "Free Breakfast Included",
-      "Free Cancellation till 24 hrs before check in",
+      "Delux, Premium & Family Rooms",
+      "Flexible – OTA RO",
     ],
-    bookingTerms: "For Over Night Booking",
+    bookingTerms: "Delux, Premium & Family Rooms From ₹ 3,000 / Night (Including 12% GST)",
     ratingLabel: "4.7 Customer Reviews",
     image: "/images/hotels/de-pavilion.jpg",
   },
@@ -157,10 +157,10 @@ export const FEATURED_HOTELS: HotelCardItem[] = [
       "Location: No.A-109, Road No-5, Near Hotel Lohias, Mahipalpur Extension, Block RZ, Mahipalpur Village, Mahipalpur, New Delhi, Delhi 110037",
     capacity: "Fits 2 Adults",
     features: [
-      "Free Breakfast Included",
-      "Free Cancellation till 24 hrs before check in",
+      "Delux & Premium Rooms (EPAI, CPAI, MAP)",
+      "Flexible – OTA RO",
     ],
-    bookingTerms: "For Over Night Booking",
+    bookingTerms: "Delux & Premium Rooms From ₹ 3,000 / Night (Including 12% GST)",
     ratingLabel: "4.7 Customer Reviews",
     image: "/images/hotels/castle-blue.jpg",
   },
@@ -177,14 +177,17 @@ export const FEATURED_HOTELS: HotelCardItem[] = [
     ],
     bookingTerms: "For Over Night Booking",
     ratingLabel: "3.9 Customer Reviews",
-    image: "/images/hotels/airport-hotel.jpg",
+    image: "/images/hotels/airport-hotel-building.jpg",
   },
 ];
+
+
 
 function DedicatedLuxuryHotelsPage() {
   const navigate = useNavigate();
   const activeOption = HOTEL_OPTIONS[0];
   const videoRef = React.useRef<HTMLVideoElement>(null);
+
 
   React.useEffect(() => {
     if (videoRef.current) {
@@ -350,18 +353,38 @@ function DedicatedLuxuryHotelsPage() {
           2. FEATURED LUXURY AIRPORT & TRANSIT HOTELS (USER SHOWCASE)
           ───────────────────────────────────────────────────────────── */}
       <section id="hotel-request" className="py-12 sm:py-16 bg-white px-4 sm:px-6 lg:px-8 scroll-mt-6">
-        <div className="mx-auto max-w-4xl space-y-8 sm:space-y-10">
+        <div className="mx-auto max-w-7xl space-y-8 sm:space-y-10">
           {FEATURED_HOTELS.map((hotel) => (
             <div
               key={hotel.id}
               className="flex flex-col md:flex-row overflow-hidden border border-slate-100 bg-[#FDF5E6] shadow-sm transition-all hover:shadow-md"
             >
               {/* Left Column: Authentic Hotel Photo */}
-              <div className="w-full md:w-[48%] min-h-[240px] md:min-h-[290px] relative overflow-hidden bg-slate-100 flex-shrink-0">
+              <div
+                onClick={() => {
+                  if (hotel.id === "classic-diplomat") {
+                    navigate({ to: "/hotels/classic-diplomat" });
+                  } else if (hotel.id === "holiday-inn-express-t3") {
+                    navigate({ to: "/hotels/holiday-inn-express" });
+                  } else if (hotel.id === "de-pavilion") {
+                    navigate({ to: "/hotels/de-pavilion" });
+                  } else if (hotel.id === "castle-blue") {
+                    navigate({ to: "/hotels/castle-blue" });
+                  } else if (hotel.id === "airport-hotel") {
+                    navigate({ to: "/hotels/airport-hotel" });
+                  }
+                }}
+                className="w-full md:w-[48%] min-h-[240px] md:min-h-[290px] relative overflow-hidden bg-[#FDF5E6] flex-shrink-0 cursor-pointer group"
+                title="Click to view full hotel details"
+              >
                 <img
                   src={hotel.image}
                   alt={hotel.name}
-                  className="w-full h-full object-cover object-center select-none block"
+                  className={`w-full h-full ${
+                    hotel.id === "castle-blue"
+                      ? "object-contain object-center"
+                      : "object-cover object-left md:object-center"
+                  } select-none block transition-transform duration-300 group-hover:scale-102`}
                   loading="lazy"
                 />
               </div>
@@ -457,6 +480,14 @@ function DedicatedLuxuryHotelsPage() {
                       onClick={() => {
                         if (hotel.id === "holiday-inn-express-t3") {
                           navigate({ to: "/hotels/holiday-inn-express" });
+                        } else if (hotel.id === "classic-diplomat") {
+                          navigate({ to: "/hotels/classic-diplomat" });
+                        } else if (hotel.id === "de-pavilion") {
+                          navigate({ to: "/hotels/de-pavilion" });
+                        } else if (hotel.id === "castle-blue") {
+                          navigate({ to: "/hotels/castle-blue" });
+                        } else if (hotel.id === "airport-hotel") {
+                          navigate({ to: "/hotels/airport-hotel" });
                         } else {
                           alert(`Details for ${hotel.name} will be connected shortly.`);
                         }
@@ -554,6 +585,8 @@ function DedicatedLuxuryHotelsPage() {
           </div>
         </div>
       </section>
+
+
     </div>
   );
 }

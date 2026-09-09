@@ -10,13 +10,18 @@ node_modules/
 dist/
 build/
 .vercel/
+.output/
+.wrangler/
+.nitro/
 
 # Scratch
 scratch/
 
 
 *.log
+*.bak
+*.part
 
 # OS
 .DS_Store
-Thumbs.db
+Thumbs.db

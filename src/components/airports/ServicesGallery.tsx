@@ -6,10 +6,10 @@ const depWheelchair = ASSETS.depWheelchair;
 const depLounge = ASSETS.depLounge;
 const depSpa = ASSETS.depSpa;
 const depBuggy = ASSETS.depBuggy;
+const arrWelcome = ASSETS.arrWelcome;
 const arrFamily = ASSETS.arrFamily;
-const arrBaggage = ASSETS.arrBaggage;
+const arrWheelchair = ASSETS.arrWheelchair || ASSETS.arrBaggage;
 const arrChauffeur = ASSETS.arrChauffeur;
-const arrDutyFree = ASSETS.arrDutyFree;
 
 interface ServicesGalleryProps {
   airportCity?: string;
@@ -19,18 +19,18 @@ interface ServicesGalleryProps {
 const DEPARTURE_IMAGES = [
   {
     src: depWheelchair,
-    title: "Special Assistance & Wheelchair Escort",
-    alt: "Dedicated wheelchair assistance and gate escort",
+    title: "Curbside Greeting & VVIP Terminal Welcome",
+    alt: "VVIP Terminal curbside greeting with luxury chauffeur, luggage porter, and red carpet reception",
   },
   {
     src: depLounge,
-    title: "VIP Lounge Sanctuary & Recliners",
-    alt: "Exclusive VIP lounge comfort and workspaces",
+    title: "VVIP Lounge Sanctuary & Runway Apron Views",
+    alt: "Exclusive VVIP lounge reception with flight display board and apron runway views",
   },
   {
     src: depSpa,
-    title: "Lounge Wellness & Relaxation Spa",
-    alt: "Airport wellness and rejuvenation services",
+    title: "Dedicated Check-in & Baggage Assistance",
+    alt: "Airport priority check-in and dedicated luggage drop assistance",
   },
   {
     src: depBuggy,
@@ -41,25 +41,26 @@ const DEPARTURE_IMAGES = [
 
 const ARRIVAL_IMAGES = [
   {
+    src: arrWelcome,
+    srcSet: "/images/services-gallery/aerobridge-welcome-400.webp 400w, /images/services-gallery/aerobridge-welcome-800.webp 800w, /images/services-gallery/aerobridge-welcome.webp 1200w",
+    title: "Aerobridge Placard Greeting & Welcome",
+    alt: "Dedicated guest relations officer welcoming arriving family at aerobridge exit with personalized name placard",
+  },
+  {
     src: arrFamily,
-    srcSet: "/arrival%20departure%20services/family-arrival-400.webp 400w, /arrival%20departure%20services/family-arrival-800.webp 800w, /arrival%20departure%20services/family-arrival.webp 1200w",
+    srcSet: "/images/services-gallery/family-arrival-400.webp 400w, /images/services-gallery/family-arrival-800.webp 800w, /images/services-gallery/family-arrival.webp 1200w",
     title: "Family & VIP Arrival Meet & Escort",
     alt: "Family airport arrival concierge escort with luggage assistance",
   },
   {
-    src: arrBaggage,
-    title: "Baggage Reclaim & Belt Assistance",
-    alt: "Baggage claim assist and dedicated porter support",
+    src: arrWheelchair,
+    title: "Special Care & Wheelchair Assistance Escort",
+    alt: "Personal concierge hostess providing wheelchair assistance and dedicated escort through arrival concourse",
   },
   {
     src: arrChauffeur,
-    title: "Chauffeur & Tarmac Car Transfer",
-    alt: "Chauffeured vehicle luggage loading and curb-side escort",
-  },
-  {
-    src: arrDutyFree,
-    title: "Duty Free Shopping & Retail Concierge",
-    alt: "Airside shopping concierge and duty free assist",
+    title: "Chauffeur Baggage Loading & Curbside Transfer",
+    alt: "Shafsky hostess in saree and uniformed chauffeur loading luggage trolley into vehicle trunk for arriving family outside terminal",
   },
 ];
 

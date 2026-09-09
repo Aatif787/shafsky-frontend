@@ -25,14 +25,16 @@ export const ASSETS = {
   world: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
 
   // Gallery - Authentic Airport Departure & Arrival Services Gallery
-  depWheelchair: "/arrival%20departure%20services/10.webp",
-  depLounge: "/arrival%20departure%20services/9.webp",
-  depSpa: "/arrival%20departure%20services/7.webp",
-  depBuggy: "/arrival%20departure%20services/8-scaled.webp",
-  arrFamily: "/arrival%20departure%20services/family-arrival.webp",
-  arrBaggage: "/arrival%20departure%20services/11.webp",
-  arrChauffeur: "/arrival%20departure%20services/13-scaled.webp",
-  arrDutyFree: "/arrival%20departure%20services/14jpeg.jpeg",
+  depWheelchair: "/images/services-gallery/10.webp",
+  depLounge: "/images/services-gallery/9.webp",
+  depSpa: "/images/services-gallery/7.webp",
+  depBuggy: "/images/services-gallery/8-scaled.webp",
+  arrWelcome: "/images/services-gallery/aerobridge-welcome.webp",
+  arrFamily: "/images/services-gallery/family-arrival.webp",
+  arrBaggage: "/images/services-gallery/11.webp",
+  arrWheelchair: "/images/services-gallery/11.webp",
+  arrChauffeur: "/images/services-gallery/13-scaled.webp",
+  arrDutyFree: "/images/services-gallery/14jpeg.jpeg",
 
   // Landmarks & Cities
   charminar: "https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=1200&q=80",
@@ -42,7 +44,7 @@ export const ASSETS = {
   redfort: "https://images.unsplash.com/photo-1598598795009-f80c5072e665?auto=format&fit=crop&w=1200&q=80",
 
   // Airport Hubs
-  del: "/images/airports/del/clean-2.webp",
+  del: "/images/airports/del/clean-1.webp",
   bom: "/images/airports/bom/clean-1.webp",
   blr: "/images/airports/blr/clean-1.webp",
   hyd: "/images/airports/hyd/clean-1.webp",

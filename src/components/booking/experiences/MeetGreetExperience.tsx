@@ -169,7 +169,7 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
   const [step, setStep] = useState<1 | 2>(1);
 
   // Form State
-  const [airport, setAirport] = useState("DEL");
+  const [airport, setAirport] = useState("");
   const [travelDate, setTravelDate] = useState("");
   const [adults, setAdults] = useState(1);
   const [childrenCount, setChildrenCount] = useState(0);
@@ -194,10 +194,18 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
   }, [initialSubService]);
 
   const activeCatalog = MEET_GREET_CATALOG.find((s) => s.id === subService) || MEET_GREET_CATALOG[0];
-  const selectedAirportObj = AIRPORTS.find((a) => a.code === airport) || AIRPORTS[0];
+  const selectedAirportObj = AIRPORTS.find((a) => a.code === airport) || {
+    code: "",
+    name: "Airport Pending Selection",
+    city: "TBD",
+  };
 
   const handleSubmitFinal = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!airport) {
+      alert("Please select your airport hub.");
+      return;
+    }
     if (!travelDate) {
       alert("Please select your travel date.");
       return;
@@ -382,7 +390,11 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
                 value={airport}
                 onChange={(e) => setAirport(e.target.value)}
                 className={SELECT_CLASSES}
+                required
               >
+                <option value="" disabled>
+                  Select Airport Hub...
+                </option>
                 {AIRPORTS.map((a) => (
                   <option key={a.code} value={a.code}>
                     {a.name}

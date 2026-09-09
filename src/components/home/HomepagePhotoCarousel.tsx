@@ -21,6 +21,10 @@ const ALL_HOMEPAGE_PHOTOS = [
     photo: HOMEPAGE_PHOTOS.transitComfort,
   },
   {
+    id: "transport",
+    photo: HOMEPAGE_PHOTOS.luxuryFleet,
+  },
+  {
     id: "vvip",
     photo: HOMEPAGE_PHOTOS.vvipTerminal,
   },
@@ -31,10 +35,6 @@ const ALL_HOMEPAGE_PHOTOS = [
   {
     id: "lounge",
     photo: HOMEPAGE_PHOTOS.vvipLounge,
-  },
-  {
-    id: "transport",
-    photo: HOMEPAGE_PHOTOS.luxuryFleet,
   },
   {
     id: "buggy",

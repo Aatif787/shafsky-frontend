@@ -1,4 +1,4 @@
-# Multi-Stage Production Dockerfile for Shafsky Frontend Presentation App
+# Multi-Stage Production Dockerfile for Shafsky Frontend (TanStack Start SSR)
 FROM node:20-alpine AS builder
 
 WORKDIR /app
@@ -10,18 +10,24 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-# Build Vite static assets
+# Build with Nitro node-server preset for production container
+ENV NITRO_PRESET=node-server
+ENV NODE_ENV=production
 RUN pnpm build
 
-# Serve Stage
-FROM nginx:1.25-alpine AS runner
+# Serve Stage (Node.js SSR Server)
+FROM node:20-alpine AS runner
 
-# Copy built static assets
-COPY --from=builder /app/dist /usr/share/nginx/html
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOST=0.0.0.0
 
-# Copy custom nginx config with security headers
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy built server and public client assets
+COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/public ./public
 
-EXPOSE 80
+EXPOSE 3000
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", ".output/server/index.mjs"]
+

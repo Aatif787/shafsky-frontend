@@ -47,8 +47,8 @@ export const PRIMARY_SERVICES: ServiceCategoryMeta[] = [
   },
   {
     id: "charter",
-    title: "Air Charter",
-    shortTitle: "Air Charter",
+    title: "Private Charter",
+    shortTitle: "Private Charter",
     icon: Crown,
     subtitle: "Private Jets & Helicopters",
     badge: "VIP Aviation",

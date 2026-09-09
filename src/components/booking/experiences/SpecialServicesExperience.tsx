@@ -95,38 +95,38 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
   const [step, setStep] = useState<1 | 2>(1);
 
   // Tours & Travel fields
-  const [tourDest, setTourDest] = useState("Rajasthan Royal Palace Circuit");
+  const [tourDest, setTourDest] = useState("");
   const [tourStartDate, setTourStartDate] = useState("");
   const [tourEndDate, setTourEndDate] = useState("");
   const [tourTravellers, setTourTravellers] = useState(2);
 
   // Passport & VISA fields
-  const [visaCountry, setVisaCountry] = useState("United Arab Emirates (UAE)");
+  const [visaCountry, setVisaCountry] = useState("");
   const [visaType, setVisaType] = useState("Tourist / Business Expedited");
   const [visaApplicants, setVisaApplicants] = useState(1);
   const [visaUrgent, setVisaUrgent] = useState(false);
 
   // PSO Security fields
   const [psoType, setPsoType] = useState("Armed Close Protection Officer");
-  const [psoLocation, setPsoLocation] = useState("Delhi NCR & Inter-State Movement");
+  const [psoLocation, setPsoLocation] = useState("");
   const [psoStartDate, setPsoStartDate] = useState("");
   const [psoDurationDays, setPsoDurationDays] = useState(3);
   const [psoCount, setPsoCount] = useState(1);
 
   // Sightseeing & Guide fields
-  const [guideCity, setGuideCity] = useState("Agra & Taj Mahal Circuit");
+  const [guideCity, setGuideCity] = useState("");
   const [guideDate, setGuideDate] = useState("");
   const [guideLanguage, setGuideLanguage] = useState("English");
   const [guideGuests, setGuideGuests] = useState(2);
 
   // Infant Care fields
-  const [infantAge, setInfantAge] = useState("8 Months");
+  const [infantAge, setInfantAge] = useState("");
   const [infantDate, setInfantDate] = useState("");
-  const [infantAirport, setInfantAirport] = useState("Delhi Airport (DEL)");
+  const [infantAirport, setInfantAirport] = useState("");
 
   // Human Remains by Cargo fields
-  const [cargoOrigin, setCargoOrigin] = useState("New Delhi (DEL)");
-  const [cargoDest, setCargoDest] = useState("London (LHR)");
+  const [cargoOrigin, setCargoOrigin] = useState("");
+  const [cargoDest, setCargoDest] = useState("");
   const [cargoDate, setCargoDate] = useState("");
   const [cargoUrgency, setCargoUrgency] = useState("Immediate Next-Flight Repatriation");
 
@@ -590,7 +590,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                   </div>
                   <CounterField
                     label="Number of Guests"
-                    sublabel="Party size for tour"
+                    sublabel="Number of guests for tour"
                     value={guideGuests}
                     onChange={setGuideGuests}
                     min={1}

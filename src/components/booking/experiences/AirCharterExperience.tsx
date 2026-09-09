@@ -102,8 +102,8 @@ const AIRCRAFT_PREFERENCES = [
   "Super Midsize Jet (7 - 9 Seats)",
   "Heavy Long-Range Jet (10 - 16 Seats)",
   "Twin-Engine Helicopter (4 - 6 Seats)",
-  "Air Ambulance ICU Aircraft (Patient + Medical Team)",
   "VIP Turboprop Aircraft (6 - 9 Seats)",
+  "Air Ambulance ICU Aircraft (Patient + Medical Team)",
 ];
 
 interface AirCharterExperienceProps {
@@ -122,8 +122,8 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
 
   // Step 1: Routing & Dates
   const [tripType, setTripType] = useState<"One Way" | "Round Trip" | "Multi-City">("One Way");
-  const [origin, setOrigin] = useState("Delhi (DEL)");
-  const [destination, setDestination] = useState("Mumbai (BOM)");
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
   const [departDate, setDepartDate] = useState("");
   const [departTime, setDepartTime] = useState("10:00");
   const [returnDate, setReturnDate] = useState("");
@@ -240,7 +240,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
   };
 
   const getWhatsAppLink = () => {
-    const summary = `Service: Air Charter Quotation%0ACharter Type: ${subService}%0AJourney: ${tripType} (${origin} -> ${destination})%0ADeparture: ${departDate} at ${departTime}${tripType === "Round Trip" ? `%0AReturn: ${returnDate} at ${returnTime}` : ""}%0APassengers: ${paxCount} Pax%0AAircraft Preference: ${aircraftPref}%0A%0AClient: ${customerName}%0ACompany: ${companyName || "Private"}%0APhone: ${phone}%0AEmail: ${email || "N/A"}%0ARequests: ${specialRequirements || "None"}`;
+    const summary = `Service: Private Charter Quotation%0ACharter Type: ${subService}%0AJourney: ${tripType} (${origin} -> ${destination})%0ADeparture: ${departDate} at ${departTime}${tripType === "Round Trip" ? `%0AReturn: ${returnDate} at ${returnTime}` : ""}%0APassengers: ${paxCount} Pax%0AAircraft Preference: ${aircraftPref}%0A%0AClient: ${customerName}%0ACompany: ${companyName || "Private"}%0APhone: ${phone}%0AEmail: ${email || "N/A"}%0ARequests: ${specialRequirements || "None"}`;
     return `https://wa.me/919599087959?text=Hello%20Shafsky%20Charter%20Desk,%20I%20would%20like%20a%20quotation%20for%20private%20charter:%0A%0A${summary}`;
   };
 
@@ -259,14 +259,14 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
             className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold text-slate-950 tracking-tight leading-tight"
             style={display}
           >
-            Air <span className="text-[#b38a2e]">Charter.</span>
+            Private <span className="text-[#b38a2e]">Charter.</span>
           </h1>
 
           <p className="mt-3 text-sm text-slate-600 max-w-xl leading-relaxed">
             On-demand executive private jets, twin helicopters, and medical evacuation aircraft on your schedule. Receive a customized quotation directly from our flight command desk.
           </p>
 
-          {/* Sub-Service Tabs INSIDE Air Charter Parent Experience */}
+          {/* Sub-Service Tabs INSIDE Private Charter Parent Experience */}
           <div className="mt-6">
             <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 mb-2.5">
               Choose Charter Mission:
@@ -302,17 +302,29 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
             src={
               subService === "Air Ambulance Charter"
                 ? "/private charter/airambu.jpeg"
+                : subService === "Private Charter"
+                ? "/images/charter/luxury-cabin.webp"
                 : HOMEPAGE_PHOTOS.privateCharter.src
             }
             alt={
               subService === "Air Ambulance Charter"
                 ? "Shafsky Air Ambulance Dedicated Aero-Medical ICU Aircraft"
-                : "Shafsky Private Jet and Helicopter Air Charter"
+                : subService === "Private Charter"
+                ? "Shafsky Ultra-Luxury Private Jet Executive VIP Cabin"
+                : "Shafsky Private Jet and Helicopter Private Charter"
             }
-            badge={subService === "Air Ambulance Charter" ? "Aero-Medical ICU" : "VIP Aviation"}
+            badge={
+              subService === "Air Ambulance Charter"
+                ? "Aero-Medical ICU"
+                : subService === "Private Charter"
+                ? "Ultra-Luxury VIP Cabin"
+                : "VIP Aviation"
+            }
             caption={
               subService === "Air Ambulance Charter"
                 ? "Certified aero-medical ICU jet with doctor and stretcher"
+                : subService === "Private Charter"
+                ? "Bespoke executive cabin with luxury amenities & personalized service"
                 : "Executive fleet ready for 2-hour dispatch"
             }
             aspectRatio="16 / 10"
@@ -685,7 +697,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
           setStep(1);
         }}
         referenceId={submittedRef || ""}
-        serviceTitle="Air Charter Request"
+        serviceTitle="Private Charter Request"
         subServiceTitle={subService}
         customerName={customerName}
         customerPhone={phone}

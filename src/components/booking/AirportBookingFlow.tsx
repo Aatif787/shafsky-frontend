@@ -206,7 +206,9 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     return 5500;
   }, [selectedPackagePrice, selectedPackageId, availablePackages]);
 
-  const totalPrice = numericUnitPrice * totalPax;
+  // Policy: Children & Infants are complimentary / free. Only Adults are billable.
+  const billablePax = paxAdults;
+  const totalPrice = numericUnitPrice * billablePax;
   const baseInrTotalPrice = totalPrice;
   const convertedUnitPrice = useMemo(() => convertFromINR(numericUnitPrice, selectedCurrency), [numericUnitPrice, selectedCurrency]);
   const convertedTotalPrice = useMemo(() => convertFromINR(totalPrice, selectedCurrency), [totalPrice, selectedCurrency]);
@@ -1789,7 +1791,16 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 {formatPrice(convertedTotalPrice, selectedCurrency)}
               </div>
               <span className="text-[11px] text-slate-500">
-                {formatPrice(convertedUnitPrice, selectedCurrency)} × {totalPax} pax, taxes included
+                {formatPrice(convertedUnitPrice, selectedCurrency)} × {paxAdults} adult{paxAdults > 1 ? "s" : ""}
+                {paxChildren + paxInfants > 0 && (
+                  <span className="text-emerald-600 font-medium ml-1">
+                    ({[
+                      paxChildren > 0 ? `${paxChildren} child${paxChildren > 1 ? "ren" : ""} free` : "",
+                      paxInfants > 0 ? `${paxInfants} infant${paxInfants > 1 ? "s" : ""} free` : "",
+                    ].filter(Boolean).join(", ")})
+                  </span>
+                )}
+                , taxes included
               </span>
             </div>
 

@@ -35,7 +35,7 @@ export const PRIMARY_SERVICES: ServiceMenuItem[] = [
     icon: Crown,
   },
   {
-    title: "Air Charter",
+    title: "Private Charter",
     href: "/solutions/aviation",
     descriptor: "Private • Corporate • Helicopter • Charter services",
     icon: Plane,
@@ -80,7 +80,7 @@ const NAV_STRUCTURE: NavCategory[] = [
     href: "/airports",
   },
   {
-    label: "Air Charter",
+    label: "Private Charter",
     href: "/solutions/aviation",
   },
   {
