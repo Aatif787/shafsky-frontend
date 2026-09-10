@@ -11,13 +11,9 @@ import {
   PhoneCall,
   MessageSquare,
   Globe,
-  FileCheck,
-  Compass,
-  Baby,
-  Package,
+  Heart,
 } from "lucide-react";
 import { display, mono } from "@/components/home/theme";
-import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { ExperiencePhoto } from "../shared/ExperiencePhoto";
 import {
   INPUT_CLASSES,
@@ -28,58 +24,44 @@ import {
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
+import toursTravelImg from "@/assets/others/tours-travel.jpg";
+import psoSecurityImg from "@/assets/others/pso-security.jpg";
 
 export type SpecialSubService =
-  | "Tours & Travel"
-  | "Passport & VISA"
-  | "PSO (Personal Security Officer)"
-  | "Sightseeing & Guide"
-  | "Infant Care"
-  | "Human Remains by Cargo";
+  | "Spa & Wellness"
+  | "Tours & Travel (Honeymoon/Couples)"
+  | "PSO (Personal Security Officer / VIP Shopping)";
 
 const SPECIAL_SUB_SERVICES: {
   id: SpecialSubService;
   label: string;
   desc: string;
+  photo: string;
   icon: any;
 }[] = [
-    {
-      id: "Tours & Travel",
-      label: "Tours & Travel",
-      desc: "Curated luxury vacations, bespoke family holiday itineraries, and VIP travel circuits.",
-      icon: Globe,
-    },
-    {
-      id: "Passport & VISA",
-      label: "Passport & VISA",
-      desc: "Expedited diplomatic visa facilitation, passport renewal support & embassy clearance.",
-      icon: FileCheck,
-    },
-    {
-      id: "PSO (Personal Security Officer)",
-      label: "PSO (Personal Security)",
-      desc: "Armed and unarmed close protection security officers for executives, celebrities & VIPs.",
-      icon: Shield,
-    },
-    {
-      id: "Sightseeing & Guide",
-      label: "Sightseeing & Guide",
-      desc: "Private licensed heritage guides, multi-lingual historical experts & city excursions.",
-      icon: Compass,
-    },
-    {
-      id: "Infant Care",
-      label: "Infant Care",
-      desc: "Dedicated child and mother airport assistance, stroller handling & priority transit care.",
-      icon: Baby,
-    },
-    {
-      id: "Human Remains by Cargo",
-      label: "Human Remains by Cargo",
-      desc: "Dignified, discreet repatriation logistics, embassy documentation & airport cargo clearance.",
-      icon: Package,
-    },
-  ];
+  {
+    id: "Spa & Wellness",
+    label: "Spa & Wellness",
+    desc: "Bespoke couple spa sanctuaries, therapeutic hot stone rituals, and 5-star wellness retreats.",
+    photo: spaWellnessImg,
+    icon: Sparkles,
+  },
+  {
+    id: "Tours & Travel (Honeymoon/Couples)",
+    label: "Tours & Travel (Honeymoon)",
+    desc: "Bespoke romantic itineraries, Paris honeymoons, private yacht charters, and luxury circuits.",
+    photo: toursTravelImg,
+    icon: Globe,
+  },
+  {
+    id: "PSO (Personal Security Officer / VIP Shopping)",
+    label: "PSO & VIP Shopping Escort",
+    desc: "Armed close protection officers for VIPs, executive security, and private luxury boutique shopping.",
+    photo: psoSecurityImg,
+    icon: Shield,
+  },
+];
 
 interface SpecialServicesExperienceProps {
   initialSubService?: string;
@@ -88,47 +70,32 @@ interface SpecialServicesExperienceProps {
 export function SpecialServicesExperience({ initialSubService }: SpecialServicesExperienceProps) {
   const defaultSub: SpecialSubService = (
     SPECIAL_SUB_SERVICES.find((s) => s.id.toLowerCase() === (initialSubService || "").toLowerCase())?.id ||
-    "Tours & Travel"
+    "Spa & Wellness"
   );
 
   const [subService, setSubService] = useState<SpecialSubService>(defaultSub);
   const [step, setStep] = useState<1 | 2>(1);
 
-  // Tours & Travel fields
+  // 1. Spa & Wellness fields
+  const [spaLocation, setSpaLocation] = useState("");
+  const [spaDate, setSpaDate] = useState("");
+  const [spaGuests, setSpaGuests] = useState(2);
+  const [spaTreatment, setSpaTreatment] = useState("Couple Hot Stone Therapy & Aromatherapy");
+
+  // 2. Tours & Travel fields
   const [tourDest, setTourDest] = useState("");
   const [tourStartDate, setTourStartDate] = useState("");
   const [tourEndDate, setTourEndDate] = useState("");
   const [tourTravellers, setTourTravellers] = useState(2);
+  const [tourStyle, setTourStyle] = useState("Romantic Luxury Honeymoon Circuit");
 
-  // Passport & VISA fields
-  const [visaCountry, setVisaCountry] = useState("");
-  const [visaType, setVisaType] = useState("Tourist / Business Expedited");
-  const [visaApplicants, setVisaApplicants] = useState(1);
-  const [visaUrgent, setVisaUrgent] = useState(false);
-
-  // PSO Security fields
-  const [psoType, setPsoType] = useState("Armed Close Protection Officer");
+  // 3. PSO Security fields
+  const [psoType, setPsoType] = useState("VIP Luxury Shopping Escort & Close Protection");
   const [psoLocation, setPsoLocation] = useState("");
   const [psoStartDate, setPsoStartDate] = useState("");
   const [psoDurationDays, setPsoDurationDays] = useState(3);
-  const [psoCount, setPsoCount] = useState(1);
-
-  // Sightseeing & Guide fields
-  const [guideCity, setGuideCity] = useState("");
-  const [guideDate, setGuideDate] = useState("");
-  const [guideLanguage, setGuideLanguage] = useState("English");
-  const [guideGuests, setGuideGuests] = useState(2);
-
-  // Infant Care fields
-  const [infantAge, setInfantAge] = useState("");
-  const [infantDate, setInfantDate] = useState("");
-  const [infantAirport, setInfantAirport] = useState("");
-
-  // Human Remains by Cargo fields
-  const [cargoOrigin, setCargoOrigin] = useState("");
-  const [cargoDest, setCargoDest] = useState("");
-  const [cargoDate, setCargoDate] = useState("");
-  const [cargoUrgency, setCargoUrgency] = useState("Immediate Next-Flight Repatriation");
+  const [psoCount, setPsoCount] = useState(2);
+  const [psoVipCount, setPsoVipCount] = useState(1);
 
   // Common Contact Info
   const [guestName, setGuestName] = useState("");
@@ -170,60 +137,48 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
     let destination: string | undefined;
     let serviceDate: string | undefined;
     let details: Record<string, unknown> = { service: subService };
-    let notes = specialNotes.trim() || undefined;
-    let serviceCategory: "Travel Support" | "Cargo & Logistics" = "Travel Support";
+    const notes = specialNotes.trim() || undefined;
+    const serviceCategory: "Travel Support" | "Cargo & Logistics" = "Travel Support";
     let serviceType = "Travel Support";
 
-    if (subService === "Tours & Travel") {
+    if (subService === "Spa & Wellness") {
+      origin = spaLocation;
+      destination = spaLocation;
+      serviceDate = spaDate || undefined;
+      serviceType = "Spa & Wellness";
+      details = {
+        service: subService,
+        location: spaLocation,
+        date: spaDate,
+        guests: spaGuests,
+        treatment: spaTreatment,
+      };
+    } else if (subService === "Tours & Travel (Honeymoon/Couples)") {
       origin = tourDest;
       destination = tourDest;
       serviceDate = `${tourStartDate || "TBD"} to ${tourEndDate || "TBD"}`;
-      details = { service: subService, destination: tourDest, guests: tourTravellers };
-    } else if (subService === "Passport & VISA") {
-      destination = visaCountry;
-      serviceType = "Visa Assistance";
+      serviceType = "Travel Support";
       details = {
         service: subService,
-        country: visaCountry,
-        type: visaType,
-        applicants: visaApplicants,
-        urgent: visaUrgent,
+        destination: tourDest,
+        start_date: tourStartDate,
+        end_date: tourEndDate,
+        guests: tourTravellers,
+        style: tourStyle,
       };
-    } else if (subService === "PSO (Personal Security Officer)") {
+    } else if (subService === "PSO (Personal Security Officer / VIP Shopping)") {
       origin = psoLocation;
       destination = psoLocation;
       serviceDate = psoStartDate || undefined;
       serviceType = "VIP Escort";
       details = {
         service: subService,
-        type: psoType,
+        scope: psoType,
         location: psoLocation,
         duration_days: psoDurationDays,
-        count: psoCount,
+        officers_count: psoCount,
+        vip_count: psoVipCount,
       };
-    } else if (subService === "Sightseeing & Guide") {
-      origin = guideCity;
-      destination = guideCity;
-      serviceDate = guideDate || undefined;
-      details = { service: subService, city: guideCity, language: guideLanguage, guests: guideGuests };
-    } else if (subService === "Infant Care") {
-      origin = infantAirport;
-      destination = infantAirport;
-      serviceDate = infantDate || undefined;
-      details = { service: subService, age: infantAge, airport: infantAirport };
-    } else if (subService === "Human Remains by Cargo") {
-      serviceCategory = "Cargo & Logistics";
-      serviceType = "Cargo & Logistics";
-      origin = cargoOrigin;
-      destination = cargoDest;
-      serviceDate = cargoDate || undefined;
-      details = {
-        service: subService,
-        origin: cargoOrigin,
-        destination: cargoDest,
-        urgency: cargoUrgency,
-      };
-      notes = notes || "Human remains cargo enquiry";
     }
 
     try {
@@ -256,18 +211,12 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
 
   const getWhatsAppLink = () => {
     let serviceDetails = "";
-    if (subService === "Tours & Travel") {
-      serviceDetails = `Destination: ${tourDest}%0ADates: ${tourStartDate} to ${tourEndDate}%0ATravellers: ${tourTravellers}`;
-    } else if (subService === "Passport & VISA") {
-      serviceDetails = `Country: ${visaCountry}%0AType: ${visaType}%0AApplicants: ${visaApplicants}%0AUrgent: ${visaUrgent ? "YES" : "Standard"}`;
-    } else if (subService === "PSO (Personal Security Officer)") {
-      serviceDetails = `Security Type: ${psoType}%0ALocation: ${psoLocation}%0AStart Date: ${psoStartDate}%0ADuration: ${psoDurationDays} Days%0APSOs Required: ${psoCount}`;
-    } else if (subService === "Sightseeing & Guide") {
-      serviceDetails = `Location: ${guideCity}%0ADate: ${guideDate}%0ALanguage: ${guideLanguage}%0AGuests: ${guideGuests}`;
-    } else if (subService === "Infant Care") {
-      serviceDetails = `Child Age: ${infantAge}%0ATravel Date: ${infantDate}%0AAirport: ${infantAirport}`;
-    } else if (subService === "Human Remains by Cargo") {
-      serviceDetails = `Origin: ${cargoOrigin}%0ADestination: ${cargoDest}%0ATimeline: ${cargoDate}%0AUrgency: ${cargoUrgency}`;
+    if (subService === "Spa & Wellness") {
+      serviceDetails = `Location: ${spaLocation}%0ADate: ${spaDate}%0AGuests: ${spaGuests}%0ATreatment: ${spaTreatment}`;
+    } else if (subService === "Tours & Travel (Honeymoon/Couples)") {
+      serviceDetails = `Destination: ${tourDest}%0ADates: ${tourStartDate} to ${tourEndDate}%0AGuests: ${tourTravellers}%0AStyle: ${tourStyle}`;
+    } else if (subService === "PSO (Personal Security Officer / VIP Shopping)") {
+      serviceDetails = `Scope: ${psoType}%0ALocation: ${psoLocation}%0AStart Date: ${psoStartDate}%0ADuration: ${psoDurationDays} Days%0AOfficers: ${psoCount}%0AVIPs: ${psoVipCount}`;
     }
 
     const summary = `Service: Special Services%0ASub-Service: ${subService}%0A${serviceDetails}%0A%0AContact: ${guestName}%0APhone: ${guestPhone}%0AEmail: ${guestEmail || "N/A"}%0ANotes: ${specialNotes || "None"}`;
@@ -328,10 +277,10 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
         {/* Right Authentic Photography - Zero Cropping / Zero Text Over Photo */}
         <div className="lg:col-span-5">
           <ExperiencePhoto
-            src={HOMEPAGE_PHOTOS.destinationCelebration.src}
-            alt="Specialized Tours, Armed PSO, Medical and Destination Services"
-            badge="Bespoke Concierge"
-            caption="Customized itineraries and mission logistics"
+            src={activeSubObj.photo}
+            alt={activeSubObj.label}
+            badge="12K Ultra-HD"
+            caption={activeSubObj.desc}
             aspectRatio="16 / 10"
           />
         </div>
@@ -383,14 +332,66 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
               <p className="text-xs text-slate-500 mt-1">{activeSubObj.desc}</p>
             </div>
 
-            {/* 1. TOURS & TRAVEL SPECIFIC FIELDS */}
-            {subService === "Tours & Travel" && (
+            {/* 1. SPA & WELLNESS SPECIFIC FIELDS */}
+            {subService === "Spa & Wellness" && (
               <div className="space-y-4">
                 <div>
-                  <FieldLabel required>Tour Destination / Itinerary Idea</FieldLabel>
+                  <FieldLabel required>Location / Hotel & City</FieldLabel>
                   <input
                     type="text"
-                    placeholder="e.g. Golden Triangle (Delhi, Agra, Jaipur) / Kashmir Valley / Kerala Backwaters"
+                    placeholder="e.g. The Oberoi Udaivilas, Udaipur / Taj Palace, Delhi / Dubai"
+                    value={spaLocation}
+                    onChange={(e) => setSpaLocation(e.target.value)}
+                    className={INPUT_CLASSES}
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <FieldLabel required>Preferred Date & Time</FieldLabel>
+                    <input
+                      type="text"
+                      placeholder="e.g. 25 Oct 2026, 4:00 PM"
+                      value={spaDate}
+                      onChange={(e) => setSpaDate(e.target.value)}
+                      className={INPUT_CLASSES}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <FieldLabel required>Treatment Ritual</FieldLabel>
+                    <select
+                      value={spaTreatment}
+                      onChange={(e) => setSpaTreatment(e.target.value)}
+                      className={SELECT_CLASSES}
+                    >
+                      <option value="Couple Hot Stone Therapy & Aromatherapy">Couple Hot Stone Therapy & Aromatherapy</option>
+                      <option value="Deep Tissue & Herbal Body Wrap">Deep Tissue & Herbal Body Wrap</option>
+                      <option value="Signature Ayurvedic Shirodhara & Healing">Signature Ayurvedic Shirodhara & Healing</option>
+                      <option value="VIP Airport Transit Express Rejuvenation">VIP Airport Transit Express Rejuvenation</option>
+                      <option value="Full Day Couple Sanctuary Retreat">Full Day Couple Sanctuary Retreat</option>
+                    </select>
+                  </div>
+                </div>
+                <CounterField
+                  label="Number of Guests"
+                  sublabel="Spa suite participants"
+                  value={spaGuests}
+                  onChange={setSpaGuests}
+                  min={1}
+                  max={10}
+                />
+              </div>
+            )}
+
+            {/* 2. TOURS & TRAVEL (HONEYMOON/COUPLES) SPECIFIC FIELDS */}
+            {subService === "Tours & Travel (Honeymoon/Couples)" && (
+              <div className="space-y-4">
+                <div>
+                  <FieldLabel required>Destination / Honeymoon Circuit</FieldLabel>
+                  <input
+                    type="text"
+                    placeholder="e.g. Paris & Swiss Alps / Venice & Amalfi Coast / Maldives / Udaipur"
                     value={tourDest}
                     onChange={(e) => setTourDest(e.target.value)}
                     className={INPUT_CLASSES}
@@ -420,90 +421,54 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                     />
                   </div>
                 </div>
-                <CounterField
-                  label="Number of Travellers"
-                  sublabel="Adults and children"
-                  value={tourTravellers}
-                  onChange={setTourTravellers}
-                  min={1}
-                />
-              </div>
-            )}
-
-            {/* 2. PASSPORT & VISA SPECIFIC FIELDS */}
-            {subService === "Passport & VISA" && (
-              <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <CounterField
+                    label="Number of Travellers"
+                    sublabel="Guests travelling"
+                    value={tourTravellers}
+                    onChange={setTourTravellers}
+                    min={1}
+                    max={20}
+                  />
                   <div>
-                    <FieldLabel required>Destination Country</FieldLabel>
-                    <input
-                      type="text"
-                      placeholder="e.g. United Kingdom, USA, UAE, Schengen Zone, Saudi Arabia"
-                      value={visaCountry}
-                      onChange={(e) => setVisaCountry(e.target.value)}
-                      className={INPUT_CLASSES}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <FieldLabel required>Visa Category</FieldLabel>
+                    <FieldLabel required>Travel & Honeymoon Style</FieldLabel>
                     <select
-                      value={visaType}
-                      onChange={(e) => setVisaType(e.target.value)}
+                      value={tourStyle}
+                      onChange={(e) => setTourStyle(e.target.value)}
                       className={SELECT_CLASSES}
                     >
-                      <option value="Tourist Visa">Tourist Visa (Express Processing)</option>
-                      <option value="Business / Executive Visa">Business / Executive Visa</option>
-                      <option value="Diplomatic / Official Visa">Diplomatic / Official Visa</option>
-                      <option value="Emergency Transit Visa">Emergency Transit Visa</option>
-                      <option value="Passport Renewal Assistance">Passport Renewal Assistance</option>
+                      <option value="Romantic Luxury Honeymoon Circuit">Romantic Luxury Honeymoon Circuit</option>
+                      <option value="Couples Milestone & Anniversary Tour">Couples Milestone & Anniversary Tour</option>
+                      <option value="Private Jet & Luxury Villa Expedition">Private Jet & Luxury Villa Expedition</option>
+                      <option value="Curated Heritage & Cultural Journey">Curated Heritage & Cultural Journey</option>
                     </select>
                   </div>
                 </div>
-                <CounterField
-                  label="Number of Applicants"
-                  sublabel="Passports requiring processing"
-                  value={visaApplicants}
-                  onChange={setVisaApplicants}
-                  min={1}
-                />
-                <div className="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-amber-50/30">
-                  <input
-                    type="checkbox"
-                    id="urgentVisa"
-                    checked={visaUrgent}
-                    onChange={(e) => setVisaUrgent(e.target.checked)}
-                    className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 cursor-pointer"
-                  />
-                  <label htmlFor="urgentVisa" className="text-xs font-semibold text-slate-800 cursor-pointer">
-                    Urgent / Express Diplomatic Dispatch Required (Travel within 72 hours)
-                  </label>
-                </div>
               </div>
             )}
 
-            {/* 3. PSO (PERSONAL SECURITY OFFICER) SPECIFIC FIELDS */}
-            {subService === "PSO (Personal Security Officer)" && (
+            {/* 3. PSO (PERSONAL SECURITY OFFICER / VIP SHOPPING) SPECIFIC FIELDS */}
+            {subService === "PSO (Personal Security Officer / VIP Shopping)" && (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <FieldLabel required>Security Level Required</FieldLabel>
+                    <FieldLabel required>Security Scope & Service</FieldLabel>
                     <select
                       value={psoType}
                       onChange={(e) => setPsoType(e.target.value)}
                       className={SELECT_CLASSES}
                     >
-                      <option value="Armed Close Protection Officer">Armed Close Protection Officer (PSO)</option>
-                      <option value="Unarmed Executive Security Escort">Unarmed Executive Security Escort</option>
-                      <option value="Armed Motorcade & Convoy Security">Armed Motorcade & Convoy Security</option>
-                      <option value="VIP Event Close Protection Team">VIP Event Close Protection Team</option>
+                      <option value="VIP Luxury Shopping Escort & Close Protection">VIP Luxury Shopping Escort & Close Protection</option>
+                      <option value="Armed Close Protection Officer (Ex-Special Forces)">Armed Close Protection Officer (Ex-Special Forces)</option>
+                      <option value="Armored Convoy & Airport Tarmac Motorcade">Armored Convoy & Airport Tarmac Motorcade</option>
+                      <option value="Celebrity & High-Profile Event Security Detail">Celebrity & High-Profile Event Security Detail</option>
                     </select>
                   </div>
                   <div>
-                    <FieldLabel required>Deployment Location / Route</FieldLabel>
+                    <FieldLabel required>Deployment City / Location</FieldLabel>
                     <input
                       type="text"
-                      placeholder="e.g. Delhi NCR, Mumbai, Inter-State Movement"
+                      placeholder="e.g. Beverly Hills / Paris / Dubai / London / Delhi / Mumbai"
                       value={psoLocation}
                       onChange={(e) => setPsoLocation(e.target.value)}
                       className={INPUT_CLASSES}
@@ -511,9 +476,9 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <FieldLabel required>Protection Start Date</FieldLabel>
+                    <FieldLabel required>Start Date</FieldLabel>
                     <input
                       type="date"
                       value={psoStartDate}
@@ -531,167 +496,14 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                     min={1}
                     max={60}
                   />
-                </div>
-                <CounterField
-                  label="Number of Security Officers (PSOs)"
-                  sublabel="Officers assigned to detail"
-                  value={psoCount}
-                  onChange={setPsoCount}
-                  min={1}
-                  max={10}
-                />
-              </div>
-            )}
-
-            {/* 4. SIGHTSEEING & GUIDE SPECIFIC FIELDS */}
-            {subService === "Sightseeing & Guide" && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <FieldLabel required>City / Historical Site</FieldLabel>
-                    <input
-                      type="text"
-                      placeholder="e.g. Delhi Old City & Red Fort / Taj Mahal Agra / Jaipur Forts"
-                      value={guideCity}
-                      onChange={(e) => setGuideCity(e.target.value)}
-                      className={INPUT_CLASSES}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <FieldLabel required>Guide Date</FieldLabel>
-                    <input
-                      type="date"
-                      value={guideDate}
-                      min={new Date().toISOString().split("T")[0]}
-                      onChange={(e) => setGuideDate(e.target.value)}
-                      className={INPUT_CLASSES}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <FieldLabel required>Preferred Language</FieldLabel>
-                    <select
-                      value={guideLanguage}
-                      onChange={(e) => setGuideLanguage(e.target.value)}
-                      className={SELECT_CLASSES}
-                    >
-                      <option value="English">English</option>
-                      <option value="Hindi">Hindi</option>
-                      <option value="French">French</option>
-                      <option value="German">German</option>
-                      <option value="Spanish">Spanish</option>
-                      <option value="Arabic">Arabic</option>
-                      <option value="Russian">Russian</option>
-                      <option value="Japanese">Japanese</option>
-                    </select>
-                  </div>
                   <CounterField
-                    label="Number of Guests"
-                    sublabel="Number of guests for tour"
-                    value={guideGuests}
-                    onChange={setGuideGuests}
+                    label="Officers (PSOs)"
+                    sublabel="Guards assigned"
+                    value={psoCount}
+                    onChange={setPsoCount}
                     min={1}
-                    max={30}
+                    max={10}
                   />
-                </div>
-              </div>
-            )}
-
-            {/* 5. INFANT CARE SPECIFIC FIELDS */}
-            {subService === "Infant Care" && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <FieldLabel required>Child Age</FieldLabel>
-                    <input
-                      type="text"
-                      placeholder="e.g. 6 Months / 2 Years"
-                      value={infantAge}
-                      onChange={(e) => setInfantAge(e.target.value)}
-                      className={INPUT_CLASSES}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <FieldLabel required>Travel Date</FieldLabel>
-                    <input
-                      type="date"
-                      value={infantDate}
-                      min={new Date().toISOString().split("T")[0]}
-                      onChange={(e) => setInfantDate(e.target.value)}
-                      className={INPUT_CLASSES}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <FieldLabel required>Airport</FieldLabel>
-                    <input
-                      type="text"
-                      placeholder="e.g. Delhi (DEL)"
-                      value={infantAirport}
-                      onChange={(e) => setInfantAirport(e.target.value)}
-                      className={INPUT_CLASSES}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 6. HUMAN REMAINS BY CARGO SPECIFIC FIELDS */}
-            {subService === "Human Remains by Cargo" && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <FieldLabel required>Departure Origin (Airport/City)</FieldLabel>
-                    <input
-                      type="text"
-                      placeholder="e.g. New Delhi (DEL) / Dubai (DXB)"
-                      value={cargoOrigin}
-                      onChange={(e) => setCargoOrigin(e.target.value)}
-                      className={INPUT_CLASSES}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <FieldLabel required>Final Destination (Airport/City)</FieldLabel>
-                    <input
-                      type="text"
-                      placeholder="e.g. London (LHR) / Toronto (YYZ)"
-                      value={cargoDest}
-                      onChange={(e) => setCargoDest(e.target.value)}
-                      className={INPUT_CLASSES}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <FieldLabel required>Required Repatriation Timeline</FieldLabel>
-                    <input
-                      type="date"
-                      value={cargoDate}
-                      min={new Date().toISOString().split("T")[0]}
-                      onChange={(e) => setCargoDate(e.target.value)}
-                      className={INPUT_CLASSES}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <FieldLabel required>Urgency Protocol</FieldLabel>
-                    <select
-                      value={cargoUrgency}
-                      onChange={(e) => setCargoUrgency(e.target.value)}
-                      className={SELECT_CLASSES}
-                    >
-                      <option value="Immediate Next-Flight Repatriation">Immediate Next-Flight Repatriation</option>
-                      <option value="Standard Scheduled Air Cargo">Standard Scheduled Air Cargo</option>
-                      <option value="Direct Private Aircraft Repatriation">Direct Private Aircraft Repatriation</option>
-                    </select>
-                  </div>
                 </div>
               </div>
             )}
@@ -777,40 +589,22 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                 <span>Specialized Service:</span>
                 <span className="font-semibold text-slate-900">{subService}</span>
               </div>
-              {subService === "Tours & Travel" && (
+              {subService === "Spa & Wellness" && (
+                <div className="flex justify-between text-slate-600">
+                  <span>Spa Details:</span>
+                  <span className="font-semibold text-slate-900">{spaLocation} ({spaGuests} Guests) • {spaTreatment}</span>
+                </div>
+              )}
+              {subService === "Tours & Travel (Honeymoon/Couples)" && (
                 <div className="flex justify-between text-slate-600">
                   <span>Destination:</span>
-                  <span className="font-semibold text-slate-900">{tourDest} ({tourTravellers} Travellers)</span>
+                  <span className="font-semibold text-slate-900">{tourDest} ({tourTravellers} Travellers) • {tourStyle}</span>
                 </div>
               )}
-              {subService === "Passport & VISA" && (
-                <div className="flex justify-between text-slate-600">
-                  <span>Visa Country & Type:</span>
-                  <span className="font-semibold text-slate-900">{visaCountry} • {visaType}</span>
-                </div>
-              )}
-              {subService === "PSO (Personal Security Officer)" && (
+              {subService === "PSO (Personal Security Officer / VIP Shopping)" && (
                 <div className="flex justify-between text-slate-600">
                   <span>Protection:</span>
-                  <span className="font-semibold text-slate-900">{psoCount} PSO ({psoType}) in {psoLocation}</span>
-                </div>
-              )}
-              {subService === "Sightseeing & Guide" && (
-                <div className="flex justify-between text-slate-600">
-                  <span>Guide Tour:</span>
-                  <span className="font-semibold text-slate-900">{guideCity} ({guideLanguage} Language)</span>
-                </div>
-              )}
-              {subService === "Infant Care" && (
-                <div className="flex justify-between text-slate-600">
-                  <span>Assistance:</span>
-                  <span className="font-semibold text-slate-900">Child ({infantAge}) at {infantAirport}</span>
-                </div>
-              )}
-              {subService === "Human Remains by Cargo" && (
-                <div className="flex justify-between text-slate-600">
-                  <span>Repatriation:</span>
-                  <span className="font-semibold text-slate-900">{cargoOrigin} → {cargoDest}</span>
+                  <span className="font-semibold text-slate-900">{psoCount} PSOs in {psoLocation} • {psoType}</span>
                 </div>
               )}
             </div>

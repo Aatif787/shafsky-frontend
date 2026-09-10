@@ -11,20 +11,16 @@ import {
   CheckCircle2,
   MessageSquare,
   FileText,
-  Compass,
-  Baby,
-  HeartHandshake,
   Clock,
+  Heart,
+  Shield,
+  Plane,
 } from "lucide-react";
 import { display, mono } from "@/components/home/theme";
-import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { enquiryApi } from "@/lib/api/enquiryApi";
-import home3Img from "@/assets/homepage/home3.jpeg";
-import specialSerImg from "@/assets/others/specialser.png";
-import dutyImg from "@/assets/homepage/duty.jpeg";
-import wheelImg from "@/assets/homepage/wheel.jpeg";
-import vvipImg from "@/assets/homepage/vvip.jpeg";
-import greetImg from "@/assets/homepage/greet.jpeg";
+import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
+import toursTravelImg from "@/assets/others/tours-travel.jpg";
+import psoSecurityImg from "@/assets/others/pso-security.jpg";
 
 export const Route = createFileRoute("/solutions/medical")({
   head: () => ({
@@ -33,7 +29,7 @@ export const Route = createFileRoute("/solutions/medical")({
       {
         name: "description",
         content:
-          "Specialized passenger care, armed close protection officers, visa facilitation, sightseeing guides, infant care, and dignified cargo repatriation.",
+          "Ultra-luxury couple spa and wellness sanctuaries, curated romantic honeymoons, and armed PSO close protection with VIP luxury shopping escorts.",
       },
     ],
   }),
@@ -41,153 +37,97 @@ export const Route = createFileRoute("/solutions/medical")({
 });
 
 export type SpecialServiceOptionId =
-  | "Tours & Travel"
-  | "Passport & VISA"
-  | "PSO (Personal Security Officer)"
-  | "Sightseeing & Guide"
-  | "Infant Care"
-  | "Human Remains by Cargo";
+  | "Spa & Wellness"
+  | "Tours & Travel (Honeymoon/Couples)"
+  | "PSO (Personal Security Officer / VIP Shopping)";
 
 interface SpecialServiceOptionDef {
   id: SpecialServiceOptionId;
   label: string;
   badge: string;
   tagline: string;
+  photo: string;
   inclusions: string[];
 }
 
 const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
   {
-    id: "Tours & Travel",
-    label: "Tours & Travel",
-    badge: "CURATED EXPEDITIONS & VACATIONS",
-    tagline: "Curated luxury vacations, bespoke holiday circuits, and private destination itineraries.",
+    id: "Spa & Wellness",
+    label: "Spa & Wellness",
+    badge: "LUXURY SPA, HYDROTHERAPY & REJUVENATION",
+    tagline: "Bespoke couple spa sanctuaries, therapeutic hot stone rituals, and 5-star wellness retreats.",
+    photo: spaWellnessImg,
     inclusions: [
-      "Tailored Luxury Tour Circuits & Private Itinerary Curation",
-      "Dedicated Destination Concierge & On-Ground Support",
-      "Private Aircraft & Luxury Ground Fleet Harmonization",
-      "Exclusive Access to Heritage Sites, Private Islands & Reserves",
-      "5-Star & Heritage Palace Accommodations Coordination",
-      "24/7 Global Travel Concierge Desk Assistance",
+      "Private Couple Spa Suites with Jacuzzi & Aromatherapy Steam Sanctuary",
+      "Certified Ayurvedic Doctors & International Holistic Wellness Therapists",
+      "Signature Volcanic Hot Stone Therapy & Deep Tissue Rejuvenation",
+      "Cold-Pressed Organic Essential Oils & Customized Herbal Infusions",
+      "VIP Airport Layover Express Rejuvenation & Hydro-Massage Access",
+      "24/7 Dedicated Wellness Concierge Booking & Private Suite Reservations",
     ],
   },
   {
-    id: "Passport & VISA",
-    label: "Passport & VISA",
-    badge: "EMBASSY CLEARANCE & DOCUMENTATION",
-    tagline: "Expedited visa facilitation, diplomatic consular liaison, and emergency passport assistance.",
+    id: "Tours & Travel (Honeymoon/Couples)",
+    label: "Tours & Travel (Honeymoon/Couples)",
+    badge: "CURATED ROMANTIC EXPEDITIONS & BESPOKE HONEYMOONS",
+    tagline: "Bespoke romantic itineraries, Paris honeymoons, private yacht charters, and luxury circuits.",
+    photo: toursTravelImg,
     inclusions: [
-      "Priority Diplomatic & Commercial Visa Application Processing",
-      "Consular Liaison & Embassy Clearance Assistance",
-      "Expedited Tourist, Business, and Medical Visa Filings",
-      "Comprehensive Documentation Audit & Biometric Appointment Scheduling",
-      "Fast-Track International Passport Services & Renewal Support",
-      "Confidential Document Handling & Direct Courier Dispatch",
+      "Tailored Luxury Honeymoon Circuits & Private Romantic Escapes (Paris, Venice, Amalfi, Switzerland)",
+      "Private Aircraft Charter & Chauffeured Luxury Ground Fleet Synchronization",
+      "5-Star Heritage Palace & Signature Eiffel / Presidential Suite Reservations",
+      "VIP Fast-Track Monument Access, Private Seine Dinner Cruises & Curated Moments",
+      "Dedicated On-Ground Destination Concierge & Local Cultural Experts",
+      "24/7 Global Travel Concierge Desk & Flexible Schedule Coordination",
     ],
   },
   {
-    id: "PSO (Personal Security Officer)",
-    label: "PSO (Personal Security Officer)",
-    badge: "CLOSE PROTECTION & ARMED ESCORT",
-    tagline: "Armed and unarmed close protection security details for high-profile VIPs, dignitaries, and families.",
+    id: "PSO (Personal Security Officer / VIP Shopping)",
+    label: "PSO (Personal Security / VIP Shopping)",
+    badge: "CLOSE PROTECTION & LUXURY RETAIL ESCORT",
+    tagline: "Armed and unarmed close protection officers for high-profile VIPs, executive escorts, and private luxury boutique shopping.",
+    photo: psoSecurityImg,
     inclusions: [
-      "Ex-Military & Special Forces Certified Security Personnel",
-      "Armed and Unarmed Close Protection Officers (PSO)",
-      "Discreet VIP Route Reconnaissance & Threat Assessment",
-      "Secure Airport Tarmac & Hotel Convoy Coordination",
-      "Crowd Management & Confidential Manifest Protection",
-      "24/7 Command Control Center Monitoring",
-    ],
-  },
-  {
-    id: "Sightseeing & Guide",
-    label: "Sightseeing & Guide",
-    badge: "HERITAGE & MULTI-LINGUAL EXPERTS",
-    tagline: "Private licensed heritage guides, multi-lingual interpreters, and VIP cultural experiences.",
-    inclusions: [
-      "Licensed National Heritage & Monument Tour Experts",
-      "Multi-Lingual Guides (English, French, German, Russian, Arabic, Japanese, Spanish)",
-      "Priority Queue Skipping & VIP Entry to World Heritage Sites",
-      "Private Chauffeured Sightseeing Fleet with Knowledgeable Driver",
-      "Customized Educational & Cultural Immersion Programs",
-      "Curated Culinary & Artisan City Walks",
-    ],
-  },
-  {
-    id: "Infant Care",
-    label: "Infant Care",
-    badge: "MOTHER & INFANT TRANSIT CARE",
-    tagline: "Dedicated infant transit care, stroller management, and specialized assistance for traveling mothers.",
-    inclusions: [
-      "Dedicated Airside Assistant for Traveling Mothers with Infants",
-      "Complimentary Airport Stroller & Pram Coordination",
-      "Priority Family Security Screening & Boarding Assistance",
-      "Access to Airport Baby Care Rooms & Nursing Sanctuaries",
-      "Infant Luggage, Diaper Bag & Stroller Porterage Service",
-      "Direct Aerobridge and Curbside Seamless Escort",
-    ],
-  },
-  {
-    id: "Human Remains by Cargo",
-    label: "Human Remains by Cargo",
-    badge: "DIGNIFIED REPATRIATION LOGISTICS",
-    tagline: "Dignified, discreet repatriation logistics, embalming certification, embassy clearances, and air cargo transit.",
-    inclusions: [
-      "Complete Repatriation Logistics & Coordination with Airlines",
-      "Embalming Certification & Hermetically Sealed Zinc Casket Management",
-      "Embassy NOC, Municipal Death Certificate & Police Clearance Support",
-      "Air Cargo Space Booking on Priority International & Domestic Flights",
-      "Dignified Airside Transfer & Ground Ambulance Escort",
-      "Compassionate 24/7 Family Liaison & Customs Clearance Desk",
+      "Ex-Military & Special Forces Certified Close Protection Officers (Armed / Unarmed)",
+      "Private Luxury Shopping Escorts across Premier Fashion Districts (Chanel, LV, Gucci, Rolex)",
+      "Armored Luxury Convoy Fleet, Tarmac-to-Boutique Secure Transit & Motorcade",
+      "Discreet High-Net-Worth Crowd Management & Confidential Route Reconnaissance",
+      "Personal Luggage & High-Value Asset Security Handling from Airside to Hotel",
+      "24/7 Command Control Center Monitoring & Dedicated Executive Detail",
     ],
   },
 ];
 
 function DedicatedSpecialServicesPage() {
   const navigate = useNavigate();
-  const [selectedOptionId, setSelectedOptionId] = useState<SpecialServiceOptionId>("Tours & Travel");
+  const [selectedOptionId, setSelectedOptionId] = useState<SpecialServiceOptionId>("Spa & Wellness");
 
   const activeOption =
     SPECIAL_SERVICES_OPTIONS.find((o) => o.id === selectedOptionId) ||
     SPECIAL_SERVICES_OPTIONS[0];
 
-  // Option-specific form states
-  // Tours & Travel
+  // 1. Spa & Wellness form states
+  const [spaLocation, setSpaLocation] = useState("");
+  const [spaDate, setSpaDate] = useState("");
+  const [spaGuests, setSpaGuests] = useState(2);
+  const [spaTreatment, setSpaTreatment] = useState("Couple Hot Stone Therapy & Aromatherapy");
+  const [spaRequirements, setSpaRequirements] = useState("");
+
+  // 2. Tours & Travel (Honeymoon/Couples) states
   const [tourDestination, setTourDestination] = useState("");
   const [tourStartDate, setTourStartDate] = useState("");
   const [tourEndDate, setTourEndDate] = useState("");
   const [tourGuests, setTourGuests] = useState(2);
+  const [tourStyle, setTourStyle] = useState("Romantic Luxury Honeymoon Circuit");
   const [tourRequirements, setTourRequirements] = useState("");
 
-  // Passport & VISA
-  const [visaCountry, setVisaCountry] = useState("");
-  const [visaType, setVisaType] = useState("Tourist / Business Visa");
-  const [visaApplicants, setVisaApplicants] = useState(1);
-  const [visaUrgency, setVisaUrgency] = useState<"Standard" | "Express (3 - 5 Days)" | "Emergency (24 - 48 Hours)">("Standard");
-
-  // PSO
+  // 3. PSO (Personal Security Officer / VIP Shopping) states
   const [psoDates, setPsoDates] = useState("");
   const [psoLocation, setPsoLocation] = useState("");
   const [psoVipCount, setPsoVipCount] = useState(1);
-  const [psoRequirements, setPsoRequirements] = useState("Armed Close Protection Officer (Ex-Special Forces)");
-
-  // Sightseeing & Guide
-  const [guideDestination, setGuideDestination] = useState("");
-  const [guideDate, setGuideDate] = useState("");
-  const [guidePartySize, setGuidePartySize] = useState(2);
-  const [guideLanguage, setGuideLanguage] = useState("English");
-
-  // Infant Care
-  const [infantAge, setInfantAge] = useState("");
-  const [infantTravelDate, setInfantTravelDate] = useState("");
-  const [infantAirport, setInfantAirport] = useState("");
-  const [infantAssistance, setInfantAssistance] = useState("");
-
-  // Human Remains by Cargo
-  const [humOrigin, setHumOrigin] = useState("");
-  const [humDestination, setHumDestination] = useState("");
-  const [humTimeline, setHumTimeline] = useState("");
-  const [humPermits, setHumPermits] = useState("Complete documentation required (Embalming, Embassy NOC, Cargo booking)");
+  const [psoOfficersCount, setPsoOfficersCount] = useState(2);
+  const [psoScope, setPsoScope] = useState("VIP Luxury Shopping Escort & Close Protection");
+  const [psoRequirements, setPsoRequirements] = useState("");
 
   // Contact details
   const [clientName, setClientName] = useState("");
@@ -215,10 +155,24 @@ function DedicatedSpecialServicesPage() {
     let serviceDate: string | undefined;
     let details: Record<string, unknown> = { service: selectedOptionId };
     let notes: string | undefined;
-    let serviceCategory: "Travel Support" | "Cargo & Logistics" = "Travel Support";
+    const serviceCategory: "Travel Support" | "Cargo & Logistics" = "Travel Support";
     let serviceType: string = selectedOptionId;
 
-    if (selectedOptionId === "Tours & Travel") {
+    if (selectedOptionId === "Spa & Wellness") {
+      origin = spaLocation;
+      destination = spaLocation;
+      serviceDate = spaDate || undefined;
+      details = {
+        service: selectedOptionId,
+        location: spaLocation,
+        date: spaDate,
+        guests: spaGuests,
+        treatment: spaTreatment,
+        requirements: spaRequirements,
+      };
+      notes = `${spaTreatment} — ${spaRequirements || "None"}`;
+      serviceType = "Spa & Wellness";
+    } else if (selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
       origin = tourDestination;
       destination = tourDestination;
       serviceDate = `${tourStartDate || "TBD"} to ${tourEndDate || "TBD"}`;
@@ -228,22 +182,12 @@ function DedicatedSpecialServicesPage() {
         start_date: tourStartDate,
         end_date: tourEndDate,
         guests: tourGuests,
+        style: tourStyle,
         requirements: tourRequirements,
       };
-      notes = tourRequirements || undefined;
+      notes = `${tourStyle} — ${tourRequirements || "None"}`;
       serviceType = "Travel Support";
-    } else if (selectedOptionId === "Passport & VISA") {
-      destination = visaCountry;
-      details = {
-        service: selectedOptionId,
-        country: visaCountry,
-        visa_type: visaType,
-        applicants: visaApplicants,
-        urgency: visaUrgency,
-      };
-      notes = `${visaType} — ${visaUrgency}`;
-      serviceType = "Visa Assistance";
-    } else if (selectedOptionId === "PSO (Personal Security Officer)") {
+    } else if (selectedOptionId === "PSO (Personal Security Officer / VIP Shopping)") {
       origin = psoLocation;
       destination = psoLocation;
       serviceDate = psoDates || undefined;
@@ -252,49 +196,12 @@ function DedicatedSpecialServicesPage() {
         dates: psoDates,
         location: psoLocation,
         vip_count: psoVipCount,
+        officers_count: psoOfficersCount,
+        scope: psoScope,
         requirements: psoRequirements,
       };
-      notes = psoRequirements || undefined;
+      notes = `${psoScope} — ${psoRequirements || "None"}`;
       serviceType = "VIP Escort";
-    } else if (selectedOptionId === "Sightseeing & Guide") {
-      origin = guideDestination;
-      destination = guideDestination;
-      serviceDate = guideDate || undefined;
-      details = {
-        service: selectedOptionId,
-        destination: guideDestination,
-        date: guideDate,
-        party_size: guidePartySize,
-        language: guideLanguage,
-      };
-      serviceType = "Travel Support";
-    } else if (selectedOptionId === "Infant Care") {
-      origin = infantAirport;
-      destination = infantAirport;
-      serviceDate = infantTravelDate || undefined;
-      details = {
-        service: selectedOptionId,
-        child_age: infantAge,
-        travel_date: infantTravelDate,
-        airport: infantAirport,
-        assistance: infantAssistance,
-      };
-      notes = infantAssistance || undefined;
-      serviceType = "Travel Support";
-    } else if (selectedOptionId === "Human Remains by Cargo") {
-      serviceCategory = "Cargo & Logistics";
-      serviceType = "Cargo & Logistics";
-      origin = humOrigin;
-      destination = humDestination;
-      serviceDate = humTimeline || undefined;
-      details = {
-        service: selectedOptionId,
-        origin: humOrigin,
-        destination: humDestination,
-        timeline: humTimeline,
-        permits: humPermits,
-      };
-      notes = humPermits || "Human remains cargo enquiry";
     }
 
     try {
@@ -329,18 +236,12 @@ function DedicatedSpecialServicesPage() {
 
   const getWhatsAppDirectLink = () => {
     let details = "";
-    if (selectedOptionId === "Tours & Travel") {
-      details = `Destination: ${tourDestination}%0ADates: ${tourStartDate} to ${tourEndDate}%0AGuests: ${tourGuests}%0ARequirements: ${tourRequirements || "None"}`;
-    } else if (selectedOptionId === "Passport & VISA") {
-      details = `Country: ${visaCountry}%0AVisa Type: ${visaType}%0AApplicants: ${visaApplicants}%0AUrgency: ${visaUrgency}`;
-    } else if (selectedOptionId === "PSO (Personal Security Officer)") {
-      details = `Duration/Dates: ${psoDates}%0ALocation: ${psoLocation}%0AVIPs: ${psoVipCount}%0ARequirements: ${psoRequirements}`;
-    } else if (selectedOptionId === "Sightseeing & Guide") {
-      details = `Destination: ${guideDestination}%0ADate: ${guideDate}%0AParty Size: ${guidePartySize}%0ALanguage: ${guideLanguage}`;
-    } else if (selectedOptionId === "Infant Care") {
-      details = `Child Age: ${infantAge}%0ATravel Date: ${infantTravelDate}%0AAirport: ${infantAirport}%0AAssistance: ${infantAssistance}`;
-    } else if (selectedOptionId === "Human Remains by Cargo") {
-      details = `Origin: ${humOrigin}%0ADestination: ${humDestination}%0ATimeline: ${humTimeline}%0APermits: ${humPermits}`;
+    if (selectedOptionId === "Spa & Wellness") {
+      details = `Location: ${spaLocation}%0ADate: ${spaDate}%0AGuests: ${spaGuests}%0ATreatment: ${spaTreatment}%0ANotes: ${spaRequirements || "None"}`;
+    } else if (selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
+      details = `Destination: ${tourDestination}%0ADates: ${tourStartDate} to ${tourEndDate}%0AGuests: ${tourGuests}%0AStyle: ${tourStyle}%0ANotes: ${tourRequirements || "None"}`;
+    } else if (selectedOptionId === "PSO (Personal Security Officer / VIP Shopping)") {
+      details = `Location: ${psoLocation}%0ADates: ${psoDates}%0AVIPs: ${psoVipCount}%0AOfficers: ${psoOfficersCount}%0AScope: ${psoScope}%0ANotes: ${psoRequirements || "None"}`;
     }
 
     const text = `Hello Shafsky Special Services Desk,%0A%0AI would like to request assistance for:%0A- Service: ${selectedOptionId}%0A${details}%0A- Client Name: ${clientName}%0A- Phone: ${phone}%0A- Email: ${email || "N/A"}`;
@@ -350,12 +251,12 @@ function DedicatedSpecialServicesPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-lime-200">
       {/* ─────────────────────────────────────────────────────────────
-          1. COMPLETE HERO PHOTO & SPECIAL SERVICES TITLE
+          1. HERO HEADER & 3 SEPARATE 12K SERVICE CARDS
           ───────────────────────────────────────────────────────────── */}
-      <section className="relative px-4 pt-4 pb-8 sm:px-6 lg:px-8 border-b border-slate-100">
+      <section className="relative px-4 pt-6 pb-12 sm:px-6 lg:px-8 border-b border-slate-100 bg-gradient-to-b from-slate-50/70 to-white">
         <div className="mx-auto max-w-6xl">
           {/* Header Bar with Back Button & Breadcrumbs */}
-          <div className="flex items-center justify-between gap-4 mb-6">
+          <div className="flex items-center justify-between gap-4 mb-8">
             <button
               onClick={() => {
                 if (window.history.length > 1) {
@@ -372,53 +273,115 @@ function DedicatedSpecialServicesPage() {
 
             <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-lime-700 uppercase tracking-widest bg-lime-50 px-3.5 py-1.5 rounded-full border border-lime-200">
               <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
-              <span>SPECIAL CONCIERGE & SECURITY MISSIONS</span>
+              <span>SPECIAL CONCIERGE & BESPOKE MISSIONS</span>
             </div>
           </div>
 
           {/* Title & Description */}
-          <div className="text-center max-w-3xl mx-auto mb-6">
+          <div className="text-center max-w-3xl mx-auto mb-10">
             <h1
               className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
               style={display}
             >
               Special <span className="text-lime-600">Services</span>
             </h1>
-            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Specialized passenger care, armed close protection officers, bespoke destination planning, and cargo repatriation.
+            <p className="mt-3 text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              Curated luxury spa retreats, bespoke romantic honeymoon tours, and certified armed close protection with private boutique shopping escorts.
             </p>
           </div>
 
-          {/* Full Original Special Services Photo (16:9 Landscape - Zero Cropping) */}
-          <div className="relative w-full overflow-hidden rounded-2xl shadow-md bg-white border border-slate-100">
-            <img
-              src={specialSerImg}
-              alt="Shafsky Special Services Destination & Milestone Celebration"
-              className="w-full h-auto object-contain object-center select-none block"
-              loading="eager"
-            />
+          {/* 3 SEPARATE 12K SERVICE SHOWCASE CARDS */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {SPECIAL_SERVICES_OPTIONS.map((opt) => {
+              const isSelected = selectedOptionId === opt.id;
+              return (
+                <div
+                  key={opt.id}
+                  onClick={() => {
+                    setSelectedOptionId(opt.id);
+                    const el = document.getElementById("request-form");
+                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                  className={`group relative rounded-2xl overflow-hidden bg-white border-2 transition-all duration-300 cursor-pointer shadow-md hover:shadow-xl hover:-translate-y-1 flex flex-col ${
+                    isSelected
+                      ? "border-lime-500 ring-2 ring-lime-400/50 shadow-lime-500/10"
+                      : "border-slate-200 hover:border-slate-300"
+                  }`}
+                >
+                  {/* 12K Photo Container */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-900">
+                    <img
+                      src={opt.photo}
+                      alt={opt.label}
+                      className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105 select-none"
+                      loading="eager"
+                    />
+                    {/* Gradient Overlay for Crisp Text Legibility */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+
+                    {/* 12K Ultra-HD Badge */}
+                    <div className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/25 text-[9px] font-mono font-bold tracking-wider text-lime-400">
+                      <Sparkles size={10} className="text-lime-400" />
+                      <span>12K ULTRA-HD</span>
+                    </div>
+
+                    {/* Badge & Title on Image Bottom */}
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <span className="inline-block px-2 py-0.5 rounded text-[8.5px] font-mono font-bold tracking-wider uppercase text-lime-300 bg-black/65 backdrop-blur-xs border border-lime-400/40 mb-1">
+                        {opt.badge}
+                      </span>
+                      <h3 className="text-lg font-bold text-white drop-shadow-md leading-snug">
+                        {opt.label}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between bg-white">
+                    <p className="text-xs text-slate-600 leading-relaxed line-clamp-2 mb-4 font-normal">
+                      {opt.tagline}
+                    </p>
+
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-semibold">
+                        {isSelected ? "Active Service" : "Click to Configure"}
+                      </span>
+                      <span
+                        className={`text-xs font-mono font-bold uppercase tracking-wider px-3.5 py-1 rounded-full transition-all ${
+                          isSelected
+                            ? "bg-lime-500 text-slate-950 font-extrabold shadow-xs"
+                            : "bg-slate-100 text-slate-700 group-hover:bg-lime-100 group-hover:text-lime-800"
+                        }`}
+                      >
+                        {isSelected ? "Selected ✓" : "Select"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. 6 SPECIAL SERVICES OPTIONS SELECTOR
+          2. 3 SPECIAL SERVICES PILL SELECTOR
           ───────────────────────────────────────────────────────────── */}
       <section className="py-8 bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
-          <div className="text-center max-w-2xl mx-auto mb-6">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-lime-700 bg-lime-50 px-3 py-1 rounded-full border border-lime-200">
-              SELECT SPECIALIZED SERVICE
+          <div className="text-center max-w-2xl mx-auto mb-5">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-lime-700 bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200">
+              CUSTOMIZE YOUR SPECIAL MISSION
             </span>
           </div>
 
-          {/* 6 Option Buttons */}
-          <div className="flex items-center justify-center gap-2.5 flex-wrap">
+          {/* 3 Option Buttons */}
+          <div className="flex items-center justify-center gap-3 flex-wrap">
             {SPECIAL_SERVICES_OPTIONS.map((opt) => (
               <button
                 key={opt.id}
                 onClick={() => setSelectedOptionId(opt.id)}
-                className={`px-5 py-2.5 rounded-full text-xs font-bold font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                className={`px-6 py-3 rounded-full text-xs font-bold font-mono uppercase tracking-wider transition-all cursor-pointer ${
                   selectedOptionId === opt.id
                     ? "bg-lime-500 text-slate-950 shadow-md ring-2 ring-lime-400 border border-lime-600"
                     : "bg-white text-slate-600 border border-slate-200 hover:border-lime-400 hover:bg-lime-50/50"
@@ -434,7 +397,7 @@ function DedicatedSpecialServicesPage() {
       {/* ─────────────────────────────────────────────────────────────
           3. OPTION-SPECIFIC REQUEST PANEL
           ───────────────────────────────────────────────────────────── */}
-      <section className="py-12 sm:py-16 bg-slate-50/60 border-b border-slate-200 px-4 sm:px-6 lg:px-8">
+      <section id="request-form" className="py-12 sm:py-16 bg-slate-50/70 border-b border-slate-200 px-4 sm:px-6 lg:px-8 scroll-mt-6">
         <div className="mx-auto max-w-4xl">
           {/* Active Option Heading */}
           <div className="text-center mb-8">
@@ -443,7 +406,7 @@ function DedicatedSpecialServicesPage() {
               <span>{activeOption.badge}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
-              {activeOption.id} Request
+              {activeOption.label} Request
             </h2>
             <p className="mt-1 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
               {activeOption.tagline}
@@ -463,7 +426,7 @@ function DedicatedSpecialServicesPage() {
                 Reference #{submittedRef}
               </h3>
               <p className="text-sm text-slate-600 max-w-md mx-auto mb-6">
-                Your request for <strong className="text-slate-900">{selectedOptionId}</strong> has been received by the Shafsky Special Missions Desk.
+                Your request for <strong className="text-slate-900">{selectedOptionId}</strong> has been received by the Shafsky Special Concierge Desk.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -474,7 +437,7 @@ function DedicatedSpecialServicesPage() {
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs font-mono tracking-wider shadow-md transition-all"
                 >
                   <MessageSquare size={15} />
-                  <span>Open WhatsApp Missions Desk</span>
+                  <span>Open WhatsApp Concierge Desk</span>
                 </a>
                 <button
                   onClick={() => setSubmittedRef(null)}
@@ -487,18 +450,99 @@ function DedicatedSpecialServicesPage() {
           ) : (
             <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-10 shadow-md">
               <form onSubmit={handleSubmitRequest} className="space-y-6">
-                {/* 1. Tours & Travel Form */}
-                {selectedOptionId === "Tours & Travel" && (
+                {/* 1. Spa & Wellness Form */}
+                {selectedOptionId === "Spa & Wellness" && (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Location / Preferred Hotel & City
+                        </label>
+                        <input
+                          type="text"
+                          value={spaLocation}
+                          onChange={(e) => setSpaLocation(e.target.value)}
+                          placeholder="e.g. The Oberoi Udaivilas, Udaipur / Taj Palace, Delhi / Dubai"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Preferred Date & Time
+                        </label>
+                        <input
+                          type="text"
+                          value={spaDate}
+                          onChange={(e) => setSpaDate(e.target.value)}
+                          placeholder="e.g. 24 Oct 2026, 4:00 PM"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Number of Guests
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={10}
+                          value={spaGuests}
+                          onChange={(e) => setSpaGuests(parseInt(e.target.value) || 1)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Treatment Ritual Preference
+                        </label>
+                        <select
+                          value={spaTreatment}
+                          onChange={(e) => setSpaTreatment(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                        >
+                          <option value="Couple Hot Stone Therapy & Aromatherapy">Couple Hot Stone Therapy & Aromatherapy</option>
+                          <option value="Deep Tissue & Herbal Body Wrap">Deep Tissue & Herbal Body Wrap</option>
+                          <option value="Signature Ayurvedic Shirodhara & Healing">Signature Ayurvedic Shirodhara & Healing</option>
+                          <option value="VIP Airport Transit Express Rejuvenation">VIP Airport Transit Express Rejuvenation</option>
+                          <option value="Full Day Couple Sanctuary Retreat">Full Day Couple Sanctuary Retreat</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Special Wellness Preferences & Requests
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={spaRequirements}
+                        onChange={(e) => setSpaRequirements(e.target.value)}
+                        placeholder="e.g. Organic essential oil preferences, champagne and floral bath arrangement, specific therapist gender..."
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* 2. Tours & Travel (Honeymoon/Couples) Form */}
+                {selectedOptionId === "Tours & Travel (Honeymoon/Couples)" && (
                   <>
                     <div>
                       <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                        Destination / Desired Vacation Circuit
+                        Destination / Honeymoon Circuit
                       </label>
                       <input
                         type="text"
                         value={tourDestination}
                         onChange={(e) => setTourDestination(e.target.value)}
-                        placeholder="e.g. Rajasthan Heritage Palaces / Kashmir Mountain Circuit / Kerala Backwaters"
+                        placeholder="e.g. Paris & Swiss Alps / Venice & Amalfi Coast / Maldives Private Atoll / Udaipur & Jaipur"
                         required
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                       />
@@ -536,102 +580,68 @@ function DedicatedSpecialServicesPage() {
                         <input
                           type="number"
                           min={1}
-                          max={50}
-                          value={tourGuests}
-                          onChange={(e) => setTourGuests(parseInt(e.target.value) || 1)}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                        Tour Requirements & Preferences
-                      </label>
-                      <textarea
-                        rows={2}
-                        value={tourRequirements}
-                        onChange={(e) => setTourRequirements(e.target.value)}
-                        placeholder="e.g. Private jet connections, palace villa bookings, private chef, licensed multi-lingual guide..."
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                      />
-                    </div>
-                  </>
-                )}
-
-                {/* 2. Passport & VISA Form */}
-                {selectedOptionId === "Passport & VISA" && (
-                  <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Destination Country
-                        </label>
-                        <input
-                          type="text"
-                          value={visaCountry}
-                          onChange={(e) => setVisaCountry(e.target.value)}
-                          placeholder="e.g. USA / United Kingdom / Schengen (France, Germany) / UAE"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Visa Category
-                        </label>
-                        <input
-                          type="text"
-                          value={visaType}
-                          onChange={(e) => setVisaType(e.target.value)}
-                          placeholder="e.g. Tourist Visa / Business Visa / Diplomatic / Medical Visa"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Number of Applicants
-                        </label>
-                        <input
-                          type="number"
-                          min={1}
                           max={20}
-                          value={visaApplicants}
-                          onChange={(e) => setVisaApplicants(parseInt(e.target.value) || 1)}
+                          value={tourGuests}
+                          onChange={(e) => setTourGuests(parseInt(e.target.value) || 2)}
                           className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
+                    </div>
 
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Processing Urgency
+                          Vacation & Travel Style
                         </label>
                         <select
-                          value={visaUrgency}
-                          onChange={(e: any) => setVisaUrgency(e.target.value)}
+                          value={tourStyle}
+                          onChange={(e) => setTourStyle(e.target.value)}
                           className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
                         >
-                          <option value="Standard">Standard Submission</option>
-                          <option value="Express (3 - 5 Days)">Express Facilitation (3 - 5 Days)</option>
-                          <option value="Emergency (24 - 48 Hours)">Emergency Expedited (24 - 48 Hours)</option>
+                          <option value="Romantic Luxury Honeymoon Circuit">Romantic Luxury Honeymoon Circuit</option>
+                          <option value="Couples Milestone & Anniversary Tour">Couples Milestone & Anniversary Tour</option>
+                          <option value="Private Jet & Luxury Villa Expedition">Private Jet & Luxury Villa Expedition</option>
+                          <option value="Curated Heritage & Architectural Journey">Curated Heritage & Architectural Journey</option>
                         </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Special Requirements & Requests
+                        </label>
+                        <input
+                          type="text"
+                          value={tourRequirements}
+                          onChange={(e) => setTourRequirements(e.target.value)}
+                          placeholder="e.g. Private Eiffel Tower dinner cruise, private helicopter transfers, photographer..."
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
                       </div>
                     </div>
                   </>
                 )}
 
-                {/* 3. PSO (Personal Security Officer) Form */}
-                {selectedOptionId === "PSO (Personal Security Officer)" && (
+                {/* 3. PSO (Personal Security Officer / VIP Shopping) Form */}
+                {selectedOptionId === "PSO (Personal Security Officer / VIP Shopping)" && (
                   <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Required Dates / Duration
+                          City / Deployment Location
+                        </label>
+                        <input
+                          type="text"
+                          value={psoLocation}
+                          onChange={(e) => setPsoLocation(e.target.value)}
+                          placeholder="e.g. Beverly Hills / Paris / Dubai / London / Mumbai / Delhi"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Dates / Duration of Detail
                         </label>
                         <input
                           type="text"
@@ -642,31 +652,17 @@ function DedicatedSpecialServicesPage() {
                           className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
-
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Deployment Location & City
-                        </label>
-                        <input
-                          type="text"
-                          value={psoLocation}
-                          onChange={(e) => setPsoLocation(e.target.value)}
-                          placeholder="e.g. New Delhi & Airport Escort / Mumbai / International"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Number of Protected VIPs / Family
+                          VIPs Protected
                         </label>
                         <input
                           type="number"
                           min={1}
-                          max={20}
+                          max={15}
                           value={psoVipCount}
                           onChange={(e) => setPsoVipCount(parseInt(e.target.value) || 1)}
                           className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
@@ -675,207 +671,46 @@ function DedicatedSpecialServicesPage() {
 
                       <div>
                         <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Security Escort Requirement
-                        </label>
-                        <input
-                          type="text"
-                          value={psoRequirements}
-                          onChange={(e) => setPsoRequirements(e.target.value)}
-                          placeholder="e.g. Armed PSO (Ex-Special Forces), Armored Convoy, Airport Airside Escort"
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {/* 4. Sightseeing & Guide Form */}
-                {selectedOptionId === "Sightseeing & Guide" && (
-                  <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Sightseeing Destination / Monuments
-                        </label>
-                        <input
-                          type="text"
-                          value={guideDestination}
-                          onChange={(e) => setGuideDestination(e.target.value)}
-                          placeholder="e.g. Agra (Taj Mahal & Agra Fort) / Delhi Heritage Sites / Jaipur"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Sightseeing Date
-                        </label>
-                        <input
-                          type="date"
-                          value={guideDate}
-                          onChange={(e) => setGuideDate(e.target.value)}
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Party Size (Guests)
+                          Security Officers Needed
                         </label>
                         <input
                           type="number"
                           min={1}
-                          max={40}
-                          value={guidePartySize}
-                          onChange={(e) => setGuidePartySize(parseInt(e.target.value) || 1)}
+                          max={20}
+                          value={psoOfficersCount}
+                          onChange={(e) => setPsoOfficersCount(parseInt(e.target.value) || 2)}
                           className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
 
                       <div>
                         <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Guide Language Preference
+                          Security Scope
                         </label>
-                        <input
-                          type="text"
-                          value={guideLanguage}
-                          onChange={(e) => setGuideLanguage(e.target.value)}
-                          placeholder="e.g. English / French / German / Russian / Arabic / Spanish"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {/* 5. Infant Care Form */}
-                {selectedOptionId === "Infant Care" && (
-                  <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Child Age / Details
-                        </label>
-                        <input
-                          type="text"
-                          value={infantAge}
-                          onChange={(e) => setInfantAge(e.target.value)}
-                          placeholder="e.g. 6 Months (Infant) / 2 Years (Toddler)"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Date of Travel
-                        </label>
-                        <input
-                          type="date"
-                          value={infantTravelDate}
-                          onChange={(e) => setInfantTravelDate(e.target.value)}
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
+                        <select
+                          value={psoScope}
+                          onChange={(e) => setPsoScope(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                        >
+                          <option value="VIP Luxury Shopping Escort & Close Protection">VIP Luxury Shopping Escort</option>
+                          <option value="24/7 Armed Close Protection Detail">24/7 Armed Close Protection Detail</option>
+                          <option value="Armored Convoy & Airport Tarmac Escort">Armored Convoy & Tarmac Escort</option>
+                          <option value="Celebrity & High-Profile Event Security">Celebrity & Event Security</option>
+                        </select>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Airport & Terminal
-                        </label>
-                        <input
-                          type="text"
-                          value={infantAirport}
-                          onChange={(e) => setInfantAirport(e.target.value)}
-                          placeholder="e.g. Delhi (DEL) T3 / Mumbai (BOM) T2"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Required Care Assistance
-                        </label>
-                        <input
-                          type="text"
-                          value={infantAssistance}
-                          onChange={(e) => setInfantAssistance(e.target.value)}
-                          placeholder="e.g. Stroller loan, airside porter, baby lounge access, aerobridge escort"
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {/* 6. Human Remains by Cargo Form */}
-                {selectedOptionId === "Human Remains by Cargo" && (
-                  <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Departure City & Airport (Origin)
-                        </label>
-                        <input
-                          type="text"
-                          value={humOrigin}
-                          onChange={(e) => setHumOrigin(e.target.value)}
-                          placeholder="e.g. Mumbai (BOM) / New Delhi (DEL)"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Destination City & Country
-                        </label>
-                        <input
-                          type="text"
-                          value={humDestination}
-                          onChange={(e) => setHumDestination(e.target.value)}
-                          placeholder="e.g. London (LHR), UK / Dubai (DXB), UAE"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Required Timeline
-                        </label>
-                        <input
-                          type="text"
-                          value={humTimeline}
-                          onChange={(e) => setHumTimeline(e.target.value)}
-                          placeholder="e.g. Immediate next available flight / Within 24-48 hours"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                          Permits & Documentation Status
-                        </label>
-                        <input
-                          type="text"
-                          value={humPermits}
-                          onChange={(e) => setHumPermits(e.target.value)}
-                          placeholder="e.g. Embalming required, Embassy NOC assistance needed"
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Confidential Security & Shopping Preferences
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={psoRequirements}
+                        onChange={(e) => setPsoRequirements(e.target.value)}
+                        placeholder="e.g. Chanel & LV private boutique room coordination, armored Rolls Royce transfer, covert surveillance..."
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                      />
                     </div>
                   </>
                 )}
@@ -930,7 +765,7 @@ function DedicatedSpecialServicesPage() {
                     className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs font-mono tracking-wider shadow-md transition-all cursor-pointer disabled:opacity-50"
                   >
                     <Send size={14} />
-                    <span>{isSubmitting ? "Dispatching..." : `Request ${selectedOptionId}`}</span>
+                    <span>{isSubmitting ? "Dispatching..." : `Request ${activeOption.label}`}</span>
                   </button>
                 </div>
               </form>
@@ -940,7 +775,7 @@ function DedicatedSpecialServicesPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          4. COMPANY CATALOG CONTENT & UNCOPPED GALLERY
+          4. COMPANY CATALOG CONTENT & 12K PHOTO SPECIFICATIONS
           ───────────────────────────────────────────────────────────── */}
       <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
@@ -953,7 +788,7 @@ function DedicatedSpecialServicesPage() {
               Mission Specifications & Inclusions.
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-              Authoritative close protection, visa facilitation, curated tours, and cargo repatriation protocols.
+              Luxury couple wellness, curated honeymoon circuits, and high-profile armed close protection escorts.
             </p>
           </div>
 
@@ -967,47 +802,54 @@ function DedicatedSpecialServicesPage() {
               </div>
 
               <h3 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0a196f] tracking-tight mb-6" style={display}>
-                {activeOption.id}
+                {activeOption.label}
               </h3>
 
               <div className="space-y-4">
                 {activeOption.inclusions.map((inc, i) => (
                   <div key={i} className="flex items-start gap-3.5 text-sm sm:text-[15px] text-slate-900 leading-snug">
-                    <span className="text-slate-900 font-bold text-xl leading-none mt-0.5">•</span>
+                    <span className="text-lime-600 font-bold text-xl leading-none mt-0.5">•</span>
                     <span className="font-semibold text-slate-900">{inc}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Right Column: Original Aspect Ratio Uncropped Gallery */}
-            <div className="lg:col-span-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  { src: home3Img, alt: "Destination & Occasion VIP Concierge" },
-                  { src: dutyImg, alt: "Personal Duty Free & Shopping Assistant" },
-                  { src: wheelImg, alt: "Special Care & Infant Assistance Escort" },
-                  { src: vvipImg, alt: "VVIP Protocol & Armed Escort Reception" },
-                ].map((img, idx) => (
-                  <div
-                    key={idx}
-                    className="w-full rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 bg-white group hover:border-lime-400 transition-all"
-                  >
-                    <div className="w-full bg-slate-50 overflow-hidden flex items-center justify-center">
-                      <img
-                        src={img.src}
-                        alt={img.alt}
-                        className="w-full h-auto object-contain object-center select-none block group-hover:scale-102 transition-transform duration-500"
-                      />
-                    </div>
-                    <div className="p-3 bg-white border-t border-slate-100">
-                      <span className="text-[11px] font-mono font-bold text-slate-800 tracking-wide block">
-                        {img.alt}
-                      </span>
+            {/* Right Column: 3 Separate 12K Visual Cards */}
+            <div className="lg:col-span-6 space-y-4">
+              {SPECIAL_SERVICES_OPTIONS.map((item, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => setSelectedOptionId(item.id)}
+                  className={`w-full rounded-2xl overflow-hidden shadow-sm border transition-all cursor-pointer flex flex-col sm:flex-row bg-white ${
+                    selectedOptionId === item.id
+                      ? "border-lime-500 ring-2 ring-lime-400/50 shadow-md"
+                      : "border-slate-200/80 hover:border-lime-300"
+                  }`}
+                >
+                  <div className="w-full sm:w-48 h-36 relative overflow-hidden bg-slate-900 shrink-0">
+                    <img
+                      src={item.photo}
+                      alt={item.label}
+                      className="w-full h-full object-cover object-center select-none"
+                    />
+                    <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-[8.5px] font-mono font-bold text-lime-400">
+                      12K HD
                     </div>
                   </div>
-                ))}
-              </div>
+                  <div className="p-4 flex-1 flex flex-col justify-center">
+                    <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider text-lime-700 mb-1">
+                      {item.badge}
+                    </span>
+                    <h4 className="text-base font-bold text-slate-950 mb-1">
+                      {item.label}
+                    </h4>
+                    <p className="text-xs text-slate-600 line-clamp-2">
+                      {item.tagline}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

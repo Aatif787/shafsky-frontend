@@ -8,6 +8,8 @@ import planeImg from "@/assets/others/plane.png";
 import meetGreetImg from "@/assets/others/meetgreet.jpeg";
 import servicesImg from "@/assets/others/services.png";
 
+import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
+
 interface SubServiceOption {
   label: string;
   subParam: string;
@@ -95,17 +97,14 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     id: "special-services",
     serviceParam: "special",
     title: "Special Services",
-    photo: HOMEPAGE_PHOTOS.destinationCelebration.src,
-    alt: "Specialized Tours, Armed PSO, Medical and Destination Services",
+    photo: spaWellnessImg,
+    alt: "Luxury Couple Spa & Wellness, Romantic Honeymoon Tours, and Armed PSO Close Protection",
     badge: "Specialized Missions",
-    description: "Specialized passenger care, armed close protection officers, bespoke destination planning, and cargo repatriation.",
+    description: "Ultra-luxury couple spa sanctuaries, bespoke romantic honeymoon expeditions, and certified armed PSO close protection escorts.",
     subServices: [
-      { label: "Tours & Travel", subParam: "Tours & Travel", tagline: "Curated luxury vacations & bespoke holiday circuits" },
-      { label: "Passport & VISA", subParam: "Passport & VISA", tagline: "Expedited visa facilitation & embassy clearance" },
-      { label: "PSO (Personal Security Officer)", subParam: "PSO (Personal Security Officer)", tagline: "Armed & unarmed close protection security details" },
-      { label: "Sightseeing & Guide", subParam: "Sightseeing & Guide", tagline: "Private licensed heritage guides & multi-lingual experts" },
-      { label: "Infant Care", subParam: "Infant Care", tagline: "Dedicated mother & child airport transit care" },
-      { label: "Human Remains by Cargo", subParam: "Human Remains by Cargo", tagline: "Dignified, discreet repatriation logistics & permits" },
+      { label: "Spa & Wellness", subParam: "Spa & Wellness", tagline: "Luxury couple spa sanctuaries, hydrotherapy & rejuvenating retreats" },
+      { label: "Tours & Travel (Honeymoon/Couples)", subParam: "Tours & Travel (Honeymoon/Couples)", tagline: "Bespoke romantic itineraries, Paris honeymoons & private circuits" },
+      { label: "PSO (Personal Security / VIP Shopping)", subParam: "PSO (Personal Security Officer / VIP Shopping)", tagline: "Armed VIP close protection & private luxury boutique shopping escort" },
     ],
   },
 ];
