@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { getSessionInfo } from "@/lib/session";
+import { AuthContext } from "@/auth-system/AuthProvider";
 import {
   Menu,
   X,
@@ -15,6 +16,7 @@ import {
   ArrowRight,
   ArrowLeft,
   User,
+  LogIn,
   ShieldCheck,
 } from "lucide-react";
 import { useBranding } from "@/lib/branding/branding.context";
@@ -103,18 +105,23 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
   const [roles, setRoles] = useState<string[]>([]);
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null);
 
+  const auth = useContext(AuthContext);
+  const authUser = auth?.user;
+  const authRole = auth?.profile?.role;
+  const isLoggedIn = Boolean(authUser || roles.length > 0);
+
   const getDashboardPath = (): any => {
-    if (roles.includes("super_admin")) return "/super-admin/dashboard";
-    if (roles.includes("staff")) return "/staff/dashboard";
-    if (roles.includes("admin")) return "/admin/dashboard";
+    if (authRole === "super_admin" || roles.includes("super_admin")) return "/super-admin/dashboard";
+    if (authRole === "staff" || roles.includes("staff")) return "/staff/dashboard";
+    if (authRole === "admin" || roles.includes("admin")) return "/admin/dashboard";
     return "/account";
   };
 
   const getDashboardLabel = () => {
-    if (roles.includes("super_admin")) return "Super Admin";
-    if (roles.includes("staff")) return "Operations";
-    if (roles.includes("admin")) return "Admin Portal";
-    return "VIP Account";
+    if (authRole === "super_admin" || roles.includes("super_admin")) return "Super Admin";
+    if (authRole === "staff" || roles.includes("staff")) return "Operations";
+    if (authRole === "admin" || roles.includes("admin")) return "Admin Portal";
+    return "My Account";
   };
 
   useEffect(() => {
@@ -308,7 +315,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               <span className="tracking-wide">24/7: +91 9599087959</span>
             </a>
 
-            {roles.length > 0 ? (
+            {isLoggedIn ? (
               <Link
                 to={getDashboardPath()}
                 className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-100 border border-slate-300 text-xs font-semibold text-slate-900 hover:border-lime-500 transition-colors"
@@ -320,10 +327,11 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
             ) : (
               <Link
                 to="/login"
-                className="text-xs font-semibold text-slate-700 hover:text-slate-950 px-2 py-1 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-950 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
                 style={mono}
               >
-                VIP Portal
+                <LogIn size={13} className="text-slate-500" />
+                <span>Sign In</span>
               </Link>
             )}
 
@@ -434,6 +442,28 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
           {/* Mobile Bottom Quick Actions */}
           <div className="pt-6 border-t border-slate-200 space-y-3">
+            {isLoggedIn ? (
+              <Link
+                to={getDashboardPath()}
+                onClick={() => setMobileOpen(false)}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-lime-500 transition-colors"
+                style={mono}
+              >
+                <User size={14} className="text-lime-700" />
+                <span>{getDashboardLabel()}</span>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setMobileOpen(false)}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-lime-500 transition-colors"
+                style={mono}
+              >
+                <LogIn size={14} className="text-slate-600" />
+                <span>Sign In</span>
+              </Link>
+            )}
+
             <a
               href="tel:+919599087959"
               className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-lime-50 border border-lime-300 text-xs font-bold text-slate-900 tracking-wider uppercase"

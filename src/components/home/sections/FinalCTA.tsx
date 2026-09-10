@@ -101,28 +101,62 @@ export function FinalCTA() {
         </div>
 
         {/* Eyebrow */}
-        <div className="inline-flex items-center gap-3 text-[9.5px] sm:text-[11px] uppercase tracking-[0.35em] sm:tracking-[0.45em] text-lime-400 font-bold mb-6" style={mono}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="inline-flex items-center gap-3 text-[9.5px] sm:text-[11px] uppercase tracking-[0.35em] sm:tracking-[0.45em] text-lime-400 font-bold mb-6"
+          style={mono}
+        >
           <span className="h-px w-8 bg-lime-400" />
-          <Sparkles size={12} className="text-lime-400" />
-          <span>ENGINEERING THE EDGE OF FLIGHT</span>
+          <Sparkles size={12} className="text-lime-400 animate-pulse" />
+          <span className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">ENGINEERING THE EDGE OF FLIGHT</span>
           <span className="h-px w-8 bg-lime-400" />
-        </div>
+        </motion.div>
 
-        {/* Main Headline with Clean High-Contrast Text */}
-        <h2
-          className="text-[clamp(2.4rem,5.5vw,4.8rem)] leading-[1.05] text-white font-bold tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]"
+        {/* Main Headline — crystal transparent text, no container */}
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.85, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="text-[clamp(2.4rem,5.5vw,4.8rem)] leading-[1.05] font-bold tracking-tight"
           style={display}
         >
-          Your Journey Deserves{" "}
-          <span className="text-lime-400">
+          <motion.span
+            animate={{ opacity: [0.92, 1, 0.92] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="inline-block text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]"
+            style={{ WebkitTextStroke: "0.3px rgba(255,255,255,0.15)" }}
+          >
+            Your Journey Deserves{" "}
+          </motion.span>
+          <motion.span
+            animate={{
+              textShadow: [
+                "0 0 20px rgba(163,230,53,0.3), 0 0 40px rgba(163,230,53,0.15), 0 2px 10px rgba(0,0,0,0.8)",
+                "0 0 35px rgba(163,230,53,0.6), 0 0 70px rgba(163,230,53,0.3), 0 2px 10px rgba(0,0,0,0.8)",
+                "0 0 20px rgba(163,230,53,0.3), 0 0 40px rgba(163,230,53,0.15), 0 2px 10px rgba(0,0,0,0.8)",
+              ],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="inline-block text-lime-400"
+          >
             Flawless Execution.
-          </span>
-        </h2>
+          </motion.span>
+        </motion.h2>
 
-        {/* Description */}
-        <p className="mt-6 text-sm sm:text-base md:text-lg text-white font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]">
+        {/* Description — clean transparent text, no container */}
+        <motion.p
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-6 text-sm sm:text-base md:text-lg text-white font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]"
+        >
           Experience personal airside escorts, priority customs clearance, and bespoke private jet charter across 20+ Indian hubs and global destinations.
-        </p>
+        </motion.p>
 
         {/* Dual Luxury Action Buttons */}
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
