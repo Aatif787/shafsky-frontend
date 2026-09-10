@@ -17,12 +17,12 @@ const ALL_HOMEPAGE_PHOTOS = [
     photo: HOMEPAGE_PHOTOS.privateCharter,
   },
   {
-    id: "transit",
-    photo: HOMEPAGE_PHOTOS.transitComfort,
-  },
-  {
     id: "transport",
     photo: HOMEPAGE_PHOTOS.luxuryFleet,
+  },
+  {
+    id: "transit",
+    photo: HOMEPAGE_PHOTOS.transitComfort,
   },
   {
     id: "vvip",

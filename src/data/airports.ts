@@ -254,6 +254,9 @@ const getPhotoUrl = (q: string, size: string) => {
   if (query.includes("gobindgarh")) return "/images/airports/atq/clean-5.webp";
   if (query.includes("durgiana")) return "/images/airports/atq/clean-6.webp";
   if (query.includes("wagah")) return "/images/airports/atq/clean-7.webp";
+  if (query.includes("parliament")) return "/images/airports/del/clean-8.webp";
+  if (query.includes("lal kila") || query.includes("lal qila")) return "/images/airports/del/clean-4.webp";
+  if (query.includes("jama masjid")) return "/images/airports/del/clean-7.webp";
 
   // Check PHOTO_MAP keys for exact match
   let id = "";
@@ -491,14 +494,19 @@ export const AIRPORTS: Airport[] = [
     timezone: "Asia/Kolkata",
     cover: dekDelAir,
     mobCover: mobDelAir,
-    slideshow: [u("India Gate"), u("Rashtrapati Bhavan"), u("Qutub Minar"), u("Humayun Tomb")],
+    slideshow: [
+      "/images/airports/del/clean-8.webp",
+      "/images/airports/del/clean-3.webp",
+      "/images/airports/del/clean-4.webp",
+      "/images/airports/del/clean-7.webp",
+    ],
     gallery: [
-      us("Delhi street"),
-      us("Red Fort"),
-      us("Lotus Temple"),
-      us("Chandni Chowk"),
-      us("Delhi metro"),
-      us("India Gate night"),
+      "/images/airports/del/clean-8.webp",
+      "/images/airports/del/clean-3.webp",
+      "/images/airports/del/clean-4.webp",
+      "/images/airports/del/clean-7.webp",
+      "/images/airports/del/clean-1.webp",
+      "/images/airports/del/clean-2.webp",
     ],
     videoId: "jfKfPfyJRdk",
     about:
@@ -529,9 +537,20 @@ export const AIRPORTS: Airport[] = [
     },
     attractions: [
       {
+        name: "Parliament House (Samvidhan Sadan)",
+        img: "/images/airports/del/clean-8.webp",
+        desc: "The monumental architectural seat of Indian democracy and national heritage.",
+        distance: "14 km",
+        travel: "25 min",
+        hours: "09:00 – 17:00",
+        fee: "Guided Tour",
+        photo: "Illuminated colonnade & facade",
+        maps: "https://maps.google.com/?q=Parliament+House+New+Delhi",
+      },
+      {
         name: "India Gate",
-        img: us("India Gate"),
-        desc: "42-m war memorial arch on Rajpath honouring 84,000 soldiers.",
+        img: "/images/airports/del/clean-3.webp",
+        desc: "42-m war memorial arch on Kartavya Path honouring soldiers of the Indian Army.",
         distance: "16 km",
         travel: "30 min",
         hours: "Open 24h",
@@ -540,26 +559,26 @@ export const AIRPORTS: Airport[] = [
         maps: "https://maps.google.com/?q=India+Gate",
       },
       {
-        name: "Qutub Minar",
-        img: us("Qutub Minar"),
-        desc: "73-m UNESCO minaret, tallest brick tower in the world.",
-        distance: "12 km",
-        travel: "25 min",
-        hours: "07:00 – 17:00",
+        name: "Red Fort (Lal Qila)",
+        img: "/images/airports/del/clean-4.webp",
+        desc: "Historic 17th-century Mughal red sandstone citadel and imperial palace complex.",
+        distance: "20 km",
+        travel: "35 min",
+        hours: "09:30 – 16:30",
         fee: "Standard Entry Fee",
-        photo: "Looking up from base",
-        maps: "https://maps.google.com/?q=Qutub+Minar",
+        photo: "Lahori Gate & red sandstone ramparts",
+        maps: "https://maps.google.com/?q=Red+Fort+Delhi",
       },
       {
-        name: "Humayun's Tomb",
-        img: us("Humayun Tomb"),
-        desc: "Garden tomb that inspired the Taj Mahal — Mughal architecture peak.",
-        distance: "20 km",
-        travel: "40 min",
-        hours: "06:00 – 18:00",
-        fee: "Standard Entry Fee",
-        photo: "Charbagh symmetry",
-        maps: "https://maps.google.com/?q=Humayun+Tomb",
+        name: "Jama Masjid",
+        img: "/images/airports/del/clean-7.webp",
+        desc: "Magnificent 17th-century Mughal congregational mosque with vast courtyard and marble minarets.",
+        distance: "19 km",
+        travel: "35 min",
+        hours: "07:00 – 18:30",
+        fee: "Free",
+        photo: "Grand courtyard & sandstone domes",
+        maps: "https://maps.google.com/?q=Jama+Masjid+Delhi",
       },
     ],
     facilities: baseFacilities,

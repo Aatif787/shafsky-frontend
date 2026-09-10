@@ -38,14 +38,12 @@ export const AIRPORT_IMAGES_MAP: Record<string, string[]> = {
   ccu: ["/images/airports/ccu/clean-1.webp"],
   cok: ["/images/airports/cok/clean-1.webp"],
   del: [
-    "/images/airports/del/clean-1.webp",
-    "/images/airports/del/clean-2.webp",
+    "/images/airports/del/clean-8.webp",
     "/images/airports/del/clean-3.webp",
     "/images/airports/del/clean-4.webp",
-    "/images/airports/del/clean-5.webp",
-    "/images/airports/del/clean-6.webp",
     "/images/airports/del/clean-7.webp",
-    "/images/airports/del/clean-8.webp",
+    "/images/airports/del/clean-1.webp",
+    "/images/airports/del/clean-2.webp",
   ],
   gau: ["/images/airports/gau/clean-1.webp"],
   goi: ["/images/airports/goi/clean-1.webp"],
@@ -135,15 +133,15 @@ export function getAirportHeroImages(airportCode: string): string[] {
     return allImages.filter((img) => !img.includes("clean-3") && !img.includes("clean-4"));
   }
   if (normalized === "del") {
-    // Exclude tourist landmarks (clean-3 India Gate, clean-4 Red Fort, clean-5 Qutub Minar, clean-6 Lotus Temple, clean-7 Jama Masjid, clean-8 Parliament House) from DEL airport hero banner
+    // Exclude tourist landmarks (clean-8 Parliament House, clean-3 India Gate, clean-4 Red Fort, clean-7 Jama Masjid) from DEL airport hero banner
     return allImages.filter(
       (img) =>
+        !img.includes("clean-8") &&
         !img.includes("clean-3") &&
         !img.includes("clean-4") &&
-        !img.includes("clean-5") &&
-        !img.includes("clean-6") &&
         !img.includes("clean-7") &&
-        !img.includes("clean-8")
+        !img.includes("clean-5") &&
+        !img.includes("clean-6")
     );
   }
   if (normalized === "lko") {
