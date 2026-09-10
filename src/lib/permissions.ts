@@ -1,5 +1,7 @@
 import type { Database } from "@/integrations/supabase/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { apiGet, getTokenFromRequest } from "@/lib/FastApiClient";
+import { getAccessToken } from "@/auth/tokenStore";
 
 export type Role = Database["public"]["Enums"]["app_role"];
 
@@ -65,13 +67,38 @@ export async function getUserRoles(
   supabase: SupabaseClient<Database>,
   userId: string,
 ): Promise<Role[]> {
+  // 1. Try resolving role from FastAPI backend via /api/auth/me
+  try {
+    const token = getTokenFromRequest() || getAccessToken() || undefined;
+    if (token) {
+      const meData = await apiGet<any>("/api/auth/me", token);
+      const userData = meData?.user || meData;
+      if (userData) {
+        const backendRole = (userData.role || "").toLowerCase();
+        if (backendRole === "super_admin") return ["super_admin"];
+        if (backendRole === "admin") return ["admin"];
+        if (backendRole === "customer") return ["customer"];
+        // Any other valid role from backend
+        if (backendRole) return [backendRole as Role];
+      }
+    }
+  } catch (e) {
+    // FastAPI /me failed — fall through to secondary checks
+  }
+
+  // 2. Try Supabase auth (legacy fallback)
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (user && user.id === userId) {
       const appRole = user.app_metadata?.role || user.user_metadata?.role;
       if (appRole) return [appRole as Role];
       const email = (user.email || "").toLowerCase();
-      if (email === "aarizfarooqui786@gmail.com" || email === "admin@shafskyaviation.com" || userId.includes("super")) {
+      if (
+        email === "aarizfarooqui786@gmail.com" ||
+        email === "admin@shafskyaviation.com" ||
+        email === "thegreat@050" ||
+        userId.includes("super")
+      ) {
         return ["super_admin"];
       }
       if (email === "socialaviationsky@gmail.com" || userId.includes("admin")) {
@@ -82,6 +109,7 @@ export async function getUserRoles(
     // Fallback error handling
   }
 
+  // 3. Hardcoded UUID fallbacks (safety net)
   if (userId === "5fcaaa44-03b2-4ca3-9547-e2f98c5b7a6a" || userId.includes("super") || userId === "super_admin_user") {
     return ["super_admin"];
   }

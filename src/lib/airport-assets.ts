@@ -12,7 +12,15 @@ export const AIRPORT_IMAGES_MAP: Record<string, string[]> = {
     "/images/airports/amd/clean-4.webp",
     "/images/airports/amd/clean-5.webp",
   ],
-  atq: ["/images/airports/atq/clean-1.webp", "/images/airports/atq/clean-2.webp"],
+  atq: [
+    "/images/airports/atq/clean-1.webp",
+    "/images/airports/atq/clean-2.webp",
+    "/images/airports/atq/clean-3.webp",
+    "/images/airports/atq/clean-4.webp",
+    "/images/airports/atq/clean-5.webp",
+    "/images/airports/atq/clean-6.webp",
+    "/images/airports/atq/clean-7.webp",
+  ],
   bbi: ["/images/airports/bbi/clean-1.webp", "/images/airports/bbi/clean-2.webp"],
   blr: [
     "/images/airports/blr/clean-1.webp",
@@ -176,6 +184,17 @@ export function getAirportHeroImages(airportCode: string): string[] {
         !img.includes("clean-3") &&
         !img.includes("clean-4") &&
         !img.includes("clean-5")
+    );
+  }
+  if (normalized === "atq") {
+    // Exclude tourist landmarks (clean-3 Golden Temple, clean-4 Ram Bagh Palace, clean-5 Gobindgarh Fort, clean-6 Durgiana Temple, clean-7 Wagah Border) from ATQ airport hero banner
+    return allImages.filter(
+      (img) =>
+        !img.includes("clean-3") &&
+        !img.includes("clean-4") &&
+        !img.includes("clean-5") &&
+        !img.includes("clean-6") &&
+        !img.includes("clean-7")
     );
   }
   return allImages;

@@ -223,9 +223,13 @@ export async function fetchAirportServices(
           .map((pkg: any) => {
             const id = String(pkg?.id || pkg?.slug || "").toLowerCase();
             if (!id || addonIds.includes(id)) return null;
+            let pkgTitle = pkg.title || pkg.name || id.replace(/_/g, " ");
+            if (cleanCode === "ATQ") {
+              pkgTitle = pkgTitle.replace(/\bEscort\b/gi, "").trim();
+            }
             return {
               id,
-              title: pkg.title || pkg.name || id.replace(/_/g, " "),
+              title: pkgTitle,
               tagline: pkg.tagline || pkg.short_description || pkg.description || "",
               basePrice: Number(pkg.basePrice ?? pkg.base_price ?? pkg.price ?? 0),
               price: Number(pkg.price ?? pkg.basePrice ?? pkg.base_price ?? 0),

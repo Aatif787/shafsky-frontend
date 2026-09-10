@@ -7,7 +7,6 @@ import {
   Calendar,
   Clock,
   Users,
-  Luggage,
   MapPin,
   Sparkles,
   Send,
@@ -149,10 +148,7 @@ function DedicatedTransportServicePage() {
   const [serviceDate, setServiceDate] = useState("");
   const [serviceTime, setServiceTime] = useState("14:30");
   const [paxCount, setPaxCount] = useState(2);
-  const [luggageCount, setLuggageCount] = useState(2);
   const [vehicleModel, setVehicleModel] = useState(activeOption.vehicleModels[0]);
-  const [flightNumber, setFlightNumber] = useState("");
-  const [specialRequests, setSpecialRequests] = useState("");
 
   // Contact state
   const [clientName, setClientName] = useState("");
@@ -191,30 +187,24 @@ function DedicatedTransportServicePage() {
       alert("Please provide your name and contact phone number.");
       return;
     }
-    if (!email.trim() || !email.includes("@")) {
-      alert("Please provide a valid email so our transport desk can send your quotation.");
-      return;
-    }
 
     setIsSubmitting(true);
 
     try {
+      const guestEmail = email.trim() ? email.trim().toLowerCase() : `${phone.replace(/\D/g, "") || "guest"}@shafskyaviation.com`;
       const res = await enquiryApi.submit({
         passengerName: clientName.trim(),
-        passengerEmail: email.trim().toLowerCase(),
+        passengerEmail: guestEmail,
         passengerPhone: phone.trim(),
         serviceCategory: "Ground Transport",
         serviceType: selectedOptionId,
         origin: pickupLocation.trim(),
         destination: dropLocation.trim(),
         serviceDate: `${serviceDate}${serviceTime ? ` ${serviceTime}` : ""}`,
-        notes: specialRequests.trim() || undefined,
         details: {
           trip_type: tripType,
           vehicle_model: vehicleModel,
-          flight_number: flightNumber || undefined,
           passengers: paxCount,
-          luggage: luggageCount,
           category: selectedOptionId,
         },
       });
@@ -236,9 +226,10 @@ function DedicatedTransportServicePage() {
   };
 
   const getWhatsAppDirectLink = () => {
-    const text = `Hello Shafsky Chauffeur & Transport Desk,%0A%0AI would like to request vehicle transport:%0A- Category: ${selectedOptionId}%0A- Vehicle Model: ${vehicleModel}%0A- Service: ${tripType}%0A- Pickup: ${pickupLocation}%0A- Drop: ${dropLocation}%0A- Date & Time: ${serviceDate} at ${serviceTime}%0A- Flight Number: ${flightNumber || "N/A"}%0A- Passengers: ${paxCount} | Luggage: ${luggageCount} Bags%0A- Client Name: ${clientName}%0A- Phone: ${phone}%0A- Email: ${email || "N/A"}%0A- Special Requests: ${specialRequests || "None"}`;
+    const text = `Hello Shafsky Chauffeur & Transport Desk,%0A%0AI would like to request vehicle transport:%0A- Category: ${selectedOptionId}%0A- Vehicle: ${vehicleModel}%0A- Service: ${tripType}%0A- Pickup: ${pickupLocation}%0A- Drop: ${dropLocation}%0A- Date & Time: ${serviceDate} at ${serviceTime}%0A- Passengers: ${paxCount} Guests%0A- Name: ${clientName}%0A- Phone: ${phone}${email.trim() ? `%0A- Email: ${email.trim()}` : ""}`;
     return `https://wa.me/919599087959?text=${text}`;
   };
+
 
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-lime-200">
@@ -523,8 +514,25 @@ function DedicatedTransportServicePage() {
                   </div>
                 </div>
 
-                {/* Passengers, Luggage & Vehicle Model */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* Vehicle Model & Passengers */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      Vehicle Preference
+                    </label>
+                    <select
+                      value={vehicleModel}
+                      onChange={(e) => setVehicleModel(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                    >
+                      {activeOption.vehicleModels.map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div>
                     <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                       Passengers
@@ -541,70 +549,8 @@ function DedicatedTransportServicePage() {
                       />
                     </div>
                   </div>
-
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Luggage Pieces
-                    </label>
-                    <div className="relative">
-                      <Luggage size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input
-                        type="number"
-                        min={0}
-                        max={30}
-                        value={luggageCount}
-                        onChange={(e) => setLuggageCount(parseInt(e.target.value) || 0)}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Vehicle Preference
-                    </label>
-                    <select
-                      value={vehicleModel}
-                      onChange={(e) => setVehicleModel(e.target.value)}
-                      className="w-full px-3 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
-                    >
-                      {activeOption.vehicleModels.map((m) => (
-                        <option key={m} value={m}>
-                          {m}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
                 </div>
 
-                {/* Flight Number & Special Requests */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Flight Number (For Dynamic Tracking)
-                    </label>
-                    <input
-                      type="text"
-                      value={flightNumber}
-                      onChange={(e) => setFlightNumber(e.target.value)}
-                      placeholder="e.g. AI 102 / EK 504 / 6E 214"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Special Requests (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={specialRequests}
-                      onChange={(e) => setSpecialRequests(e.target.value)}
-                      placeholder="e.g. Child car seat, tarmac escort, English speaking chauffeur"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
-                    />
-                  </div>
-                </div>
 
                 {/* Contact Information */}
                 <div className="pt-4 border-t border-slate-100">

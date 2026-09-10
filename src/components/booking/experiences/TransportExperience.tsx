@@ -398,22 +398,6 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
               />
             </div>
 
-            {/* Conditional Flight Number (Only shown if airport pickup context) */}
-            {isAirportPickup && (
-              <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-200/60">
-                <FieldLabel optional>Arriving Flight Number (for Chauffeur Tracking)</FieldLabel>
-                <input
-                  type="text"
-                  placeholder="e.g. AI-102 / 6E-501 (Optional)"
-                  value={flightNumber}
-                  onChange={(e) => setFlightNumber(e.target.value.toUpperCase())}
-                  className={INPUT_CLASSES}
-                />
-                <p className="text-[11px] text-slate-500 mt-1.5">
-                  Your chauffeur tracks your flight status and adjusts pickup time automatically in case of flight delays.
-                </p>
-              </div>
-            )}
 
             <div>
               <FieldLabel optional>Special Chauffeur Instructions / Notes</FieldLabel>

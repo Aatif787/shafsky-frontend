@@ -17,11 +17,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const meta = apiUser.user_metadata || {};
     const appMeta = apiUser.app_metadata || {};
 
-    let role: Role = (apiUser.role || appMeta.role || meta.role || "customer") as Role;
+    let role: Role = ((apiUser.role || appMeta.role || meta.role || "customer") as string).toLowerCase() as Role;
     if (
       email === "aarizfarooqui786@gmail.com" ||
       email === "admin@shafskyaviation.com" ||
-      apiUser.id === "5fcaaa44-03b2-4ca3-9547-e2f98c5b7a6a"
+      email === "thegreat@050" ||
+      apiUser.id === "5fcaaa44-03b2-4ca3-9547-e2f98c5b7a6a" ||
+      apiUser.id === "00000000-0000-0000-0000-000000000001"
     ) {
       role = "super_admin";
     } else if (

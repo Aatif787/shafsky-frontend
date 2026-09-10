@@ -249,6 +249,11 @@ const getPhotoUrl = (q: string, size: string) => {
   if (query.includes("imambara") || query.includes("imambada") || query.includes("rumi darwaza")) return imambada;
   if (query.includes("india gate")) return indiagate;
   if (query.includes("red fort")) return redfort;
+  if (query.includes("golden temple")) return "/images/airports/atq/clean-3.webp";
+  if (query.includes("ram bagh") || query.includes("ranjit singh")) return "/images/airports/atq/clean-4.webp";
+  if (query.includes("gobindgarh")) return "/images/airports/atq/clean-5.webp";
+  if (query.includes("durgiana")) return "/images/airports/atq/clean-6.webp";
+  if (query.includes("wagah")) return "/images/airports/atq/clean-7.webp";
 
   // Check PHOTO_MAP keys for exact match
   let id = "";
@@ -860,24 +865,42 @@ export const AIRPORTS: Airport[] = [
     icao: "VIAR",
     city: "Amritsar",
     landmark: "Golden Temple",
-    tagline: "The City of Gold",
+    tagline: "The City of Gold & Historic Palaces",
     q1: "Golden Temple",
-    q2: "Wagah Border",
-    q3: "Jallianwala Bagh",
+    q2: "Ram Bagh Palace",
+    q3: "Gobindgarh Fort",
     airportName: "Sri Guru Ram Dass Jee International Airport",
     terminals: "1",
     annual: "2.5M",
     attr: [
-      ["Golden Temple", "Golden Temple Amritsar", "Holiest Sikh gurdwara, gold-leaf sanctum."],
-      ["Wagah Border", "Wagah Border ceremony", "Daily flag-lowering parade."],
-      ["Jallianwala Bagh", "Jallianwala Bagh", "1919 memorial garden."],
+      ["Golden Temple", "Golden Temple Amritsar", "Holiest Sikh gurdwara, 24-karat gold-leaf sanctum in the sacred Amrit Sarovar."],
+      ["Ram Bagh Palace", "Maharaja Ranjit Singh Summer Palace", "Historic 19th-century royal Sikh palace set within lush Mughal charbagh gardens."],
+      ["Gobindgarh Fort", "Gobindgarh Fort & Toshakhana", "18th-century grand royal citadel and Koh-i-Noor diamond treasury palace."],
+      ["Durgiana Temple", "Durgiana Temple Lake Palace", "Silver and gold adorned marble sanctum rising from sacred waters."],
+      ["Wagah Border", "Wagah Border ceremony", "Daily flag-lowering parade at the Indo-Pak Swarna Jayanti border."],
     ],
   }).map((a) => ({
     ...a,
     cover: dekAtqAir,
     mobCover: mobAtqAir,
-    slideshow: [dekAtqAir, "/images/airports/atq/clean-2.webp"],
-    gallery: [dekAtqAir, "/images/airports/atq/clean-2.webp", a.gallery[0]],
+    slideshow: [
+      dekAtqAir,
+      "/images/airports/atq/clean-2.webp",
+      "/images/airports/atq/clean-3.webp",
+      "/images/airports/atq/clean-4.webp",
+      "/images/airports/atq/clean-5.webp",
+      "/images/airports/atq/clean-6.webp",
+      "/images/airports/atq/clean-7.webp",
+    ],
+    gallery: [
+      dekAtqAir,
+      "/images/airports/atq/clean-2.webp",
+      "/images/airports/atq/clean-3.webp",
+      "/images/airports/atq/clean-4.webp",
+      "/images/airports/atq/clean-5.webp",
+      "/images/airports/atq/clean-6.webp",
+      "/images/airports/atq/clean-7.webp",
+    ],
   })),
   ...buildCity({
     code: "AMD",

@@ -139,20 +139,28 @@ export function MeetGreetPackageComparison({
                 let title = item.service?.name || "Service Package";
                 if (item.journey_type === "TRANSIT" && item.flight_type && titleMap[item.flight_type]) {
                   title = titleMap[item.flight_type];
+                } else if (airportCode.toUpperCase() === "ATQ") {
+                  title = title.replace(/\bEscort\b/gi, "").trim();
                 }
 
-                const cleanPackageText = (txt: string) =>
-                  typeof txt === "string"
-                    ? txt
-                        .replace(/\bAssistance\b/g, "Assist")
-                        .replace(/\bassistance\b/g, "assist")
-                        .replace(/\bPersonalized Placard\b/gi, "Placard")
-                        .replace(/\bPersonalized Name Badge\b/gi, "Name Badge")
-                        .replace(/\bPersonalized Name Placard\b/gi, "Name Placard")
-                        .replace(/\bPersonalized\s+/gi, "")
-                        .replace(/\s+personalized\b/gi, "")
-                        .replace(/\bpersonalized\b/gi, "")
-                    : txt;
+                const cleanPackageText = (txt: string) => {
+                  if (typeof txt !== "string") return txt;
+                  let cleaned = txt
+                    .replace(/\bAssistance\b/g, "Assist")
+                    .replace(/\bassistance\b/g, "assist")
+                    .replace(/\bPersonalized Placard\b/gi, "Placard")
+                    .replace(/\bPersonalized Name Badge\b/gi, "Name Badge")
+                    .replace(/\bPersonalized Name Placard\b/gi, "Name Placard")
+                    .replace(/\bPersonalized\s+/gi, "")
+                    .replace(/\s+personalized\b/gi, "")
+                    .replace(/\bpersonalized\b/gi, "");
+
+                  if (airportCode.toUpperCase() === "ATQ") {
+                    cleaned = cleaned.replace(/Meet\s*&\s*Greet\s+Escort/gi, "Meet & Greet");
+                    cleaned = cleaned.replace(/\bEscort\b/gi, "").replace(/\s{2,}/g, " ").trim();
+                  }
+                  return cleaned;
+                };
 
                 return {
                   id: slug,
