@@ -1588,7 +1588,12 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
         {/* ========================================================================= */}
         <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
-            <h2 className="font-serif text-lg font-bold text-slate-900">Passenger Information</h2>
+            <div>
+              <h2 className="font-serif text-lg font-bold text-slate-900">Passenger Information</h2>
+              <p className="text-[11px] font-mono text-slate-500 mt-0.5">
+                Enter name as per government ID.
+              </p>
+            </div>
             <span className="rounded-full bg-slate-100 px-3 py-1 font-mono text-[10px] font-bold text-slate-700">
               {totalPax} Passenger{totalPax > 1 ? "s" : ""}
             </span>
@@ -1605,7 +1610,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="Your name"
+                placeholder="Name as per government ID"
                 className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
               />
             </div>

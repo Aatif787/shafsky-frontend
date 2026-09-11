@@ -312,9 +312,14 @@ export function PassengerDetailsStep({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <form onSubmit={handleSubmit} className="lg:col-span-8 space-y-6">
           <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/80 shadow-xs space-y-6">
-            <div className="flex items-center gap-2 text-slate-900 font-serif font-bold text-lg border-b border-slate-100 pb-3">
-              <User className="w-5 h-5 text-lime-600" />
-              <span>Passenger Details</span>
+            <div className="border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2 text-slate-900 font-serif font-bold text-lg">
+                <User className="w-5 h-5 text-lime-600" />
+                <span>Passenger Details</span>
+              </div>
+              <p className="text-[11px] font-mono text-slate-500 mt-0.5">
+                Enter name as per government ID.
+              </p>
             </div>
 
             <div>
@@ -334,7 +339,7 @@ export function PassengerDetailsStep({
                     onChange({ fullName: e.target.value });
                     if (localErrors.full_name) setLocalErrors((p) => ({ ...p, full_name: "" }));
                   }}
-                  placeholder="Your name"
+                  placeholder="Name as per government ID"
                   aria-invalid={Boolean(getFieldError("full_name"))}
                   aria-describedby="full_name_error"
                   className={`w-full px-4 py-3.5 rounded-2xl bg-slate-50 text-slate-900 text-sm font-sans font-medium transition-all outline-none border ${
