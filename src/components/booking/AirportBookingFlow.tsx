@@ -244,11 +244,73 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     return searchParams?.terminal || "";
   });
 
-  // Passenger & Contact State
-  const [fullName, setFullName] = useState<string>("");
-  const [age, setAge] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
+  // Dynamic Multi-Passenger State
+  interface PassengerDetail {
+    fullName: string;
+    age: string;
+    phone: string;
+    email: string;
+  }
+
+  const [passengers, setPassengers] = useState<PassengerDetail[]>(() => {
+    const count = Math.max(1, Number(searchParams?.pax_adults) || 1);
+    return Array.from({ length: count }, () => ({
+      fullName: "",
+      age: "",
+      phone: "",
+      email: "",
+    }));
+  });
+
+  const handlePaxChange = (newCount: number) => {
+    const count = Math.max(1, newCount);
+    setPaxAdults(count);
+    setPassengers((prev) => {
+      if (prev.length === count) return prev;
+      if (prev.length < count) {
+        const added = Array.from({ length: count - prev.length }, () => ({
+          fullName: "",
+          age: "",
+          phone: "",
+          email: "",
+        }));
+        return [...prev, ...added];
+      }
+      return prev.slice(0, count);
+    });
+  };
+
+  const updatePassenger = (index: number, field: keyof PassengerDetail, value: string) => {
+    setPassengers((prev) => {
+      const updated = [...prev];
+      if (!updated[index]) {
+        updated[index] = { fullName: "", age: "", phone: "", email: "" };
+      }
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const copyFromPassenger1 = (index: number) => {
+    setPassengers((prev) => {
+      const p1 = prev[0] || { phone: "", email: "" };
+      const updated = [...prev];
+      if (updated[index]) {
+        updated[index] = {
+          ...updated[index],
+          phone: p1.phone || "",
+          email: p1.email || "",
+        };
+      }
+      return updated;
+    });
+  };
+
+  const primaryPassenger = passengers[0] || { fullName: "", age: "", phone: "", email: "" };
+  const fullName = primaryPassenger.fullName;
+  const age = primaryPassenger.age;
+  const phone = primaryPassenger.phone;
+  const email = primaryPassenger.email;
   const [specialRequests, setSpecialRequests] = useState<string>("");
   const [showNotes, setShowNotes] = useState<boolean>(false);
 
@@ -534,28 +596,31 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   const handleProceedToPayment = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
-    // 1. Validate Passenger Info
-    const cleanName = fullName.trim();
-    if (!cleanName || cleanName.length < 2) {
-      toast.error("Please enter the lead passenger's full name.");
-      return;
+    // 1. Validate All Passenger Details
+    for (let i = 0; i < passengers.length; i++) {
+      const p = passengers[i];
+      const pName = (p.fullName || "").trim();
+      if (!pName || pName.length < 2) {
+        toast.error(`Please enter the full name for Passenger ${i + 1}.`);
+        return;
+      }
+      if (p.age && (Number(p.age) < 1 || Number(p.age) > 120)) {
+        toast.error(`Please enter a valid age for Passenger ${i + 1}.`);
+        return;
+      }
     }
 
+    const cleanName = fullName.trim();
     const cleanEmail = email.trim();
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!cleanEmail || !emailPattern.test(cleanEmail)) {
-      toast.error("Please enter a valid email address for booking confirmation.");
+      toast.error("Please enter a valid email address for Passenger 1.");
       return;
     }
 
     const cleanPhone = phone.trim().replace(/\D/g, "");
     if (!cleanPhone || cleanPhone.length < 10) {
-      toast.error("Please enter a valid contact mobile number.");
-      return;
-    }
-
-    if (age && (Number(age) < 1 || Number(age) > 120)) {
-      toast.error("Please enter a valid age.");
+      toast.error("Please enter a valid contact mobile number for Passenger 1.");
       return;
     }
 
@@ -681,6 +746,13 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             pax_infants: paxInfants,
             guest_count: totalPax,
             passenger_age: age ? Number(age) : undefined,
+            passengers: passengers.map((p, idx) => ({
+              passenger_number: idx + 1,
+              name: p.fullName.trim(),
+              age: p.age ? Number(p.age) : undefined,
+              phone: p.phone.trim() || cleanPhone,
+              email: p.email.trim() || cleanEmail,
+            })),
             package: packageSlug,
             unit_price: convertedUnitPrice,
             currency: selectedCurrency,
@@ -693,7 +765,9 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
           arrivalTime: arrClock,
           totalAmount: convertedTotalPrice,
           currency: selectedCurrency,
-          notes: specialRequests || `Airport: ${airportCode}, Direction: ${direction}`,
+          notes: specialRequests
+            ? `${specialRequests} | Passengers: ${passengers.map((p, idx) => `P${idx + 1}: ${p.fullName.trim()}${p.age ? ` (${p.age}y)` : ""}`).join(", ")}`
+            : `Airport: ${airportCode}, Direction: ${direction} | Passengers: ${passengers.map((p, idx) => `P${idx + 1}: ${p.fullName.trim()}${p.age ? ` (${p.age}y)` : ""}`).join(", ")}`,
         }),
       });
 
@@ -1606,7 +1680,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 p-1 shadow-2xs">
               <button
                 type="button"
-                onClick={() => setPaxAdults((prev) => Math.max(1, prev - 1))}
+                onClick={() => handlePaxChange(paxAdults - 1)}
                 disabled={paxAdults <= 1}
                 className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                 aria-label="Decrease passenger count"
@@ -1618,7 +1692,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               </span>
               <button
                 type="button"
-                onClick={() => setPaxAdults((prev) => prev + 1)}
+                onClick={() => handlePaxChange(paxAdults + 1)}
                 className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition cursor-pointer"
                 aria-label="Increase passenger count"
               >
@@ -1627,67 +1701,97 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Full Name */}
-            <div>
-              <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
-                Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Name as per government ID"
-                className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
-              />
-            </div>
+          <div className="space-y-6">
+            {passengers.map((p, idx) => (
+              <div
+                key={idx}
+                className={idx > 0 ? "pt-5 border-t border-slate-100 space-y-3" : "space-y-3"}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-lime-100 text-[10px] font-bold text-lime-800">
+                      {idx + 1}
+                    </span>
+                    Passenger {idx + 1}
+                  </span>
 
-            {/* Age */}
-            <div>
-              <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
-                Age
-              </label>
-              <input
-                type="number"
-                min={1}
-                max={120}
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                placeholder="Age (Years)"
-                className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 font-mono text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
-              />
-            </div>
+                  {idx > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => copyFromPassenger1(idx)}
+                      className="text-[11px] font-mono text-lime-700 hover:text-lime-800 hover:underline flex items-center gap-1 cursor-pointer font-semibold bg-lime-50 hover:bg-lime-100/70 px-2.5 py-1 rounded-lg border border-lime-200/60 transition"
+                      title="Copy phone and email from Passenger 1"
+                    >
+                      <Copy className="h-3 w-3" />
+                      Same contact as Passenger 1
+                    </button>
+                  )}
+                </div>
 
-            {/* Mobile Number */}
-            <div>
-              <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
-                Phone <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="tel"
-                required
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Phone"
-                className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 font-mono text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
-              />
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Full Name */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
+                      Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={p.fullName}
+                      onChange={(e) => updatePassenger(idx, "fullName", e.target.value)}
+                      placeholder="Name as per government ID"
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                    />
+                  </div>
 
-            {/* Email Address */}
-            <div>
-              <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
-                Email <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
-              />
-            </div>
+                  {/* Age */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
+                      Age
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={120}
+                      value={p.age}
+                      onChange={(e) => updatePassenger(idx, "age", e.target.value)}
+                      placeholder="Age (Years)"
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 font-mono text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Mobile Number */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
+                      Phone {idx === 0 ? <span className="text-red-500">*</span> : <span className="text-slate-400 font-normal">(optional)</span>}
+                    </label>
+                    <input
+                      type="tel"
+                      required={idx === 0}
+                      value={p.phone}
+                      onChange={(e) => updatePassenger(idx, "phone", e.target.value)}
+                      placeholder={idx === 0 ? "Phone" : "Phone (or same as P1)"}
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 font-mono text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Email Address */}
+                  <div>
+                    <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
+                      Email {idx === 0 ? <span className="text-red-500">*</span> : <span className="text-slate-400 font-normal">(optional)</span>}
+                    </label>
+                    <input
+                      type="email"
+                      required={idx === 0}
+                      value={p.email}
+                      onChange={(e) => updatePassenger(idx, "email", e.target.value)}
+                      placeholder={idx === 0 ? "Email" : "Email (or same as P1)"}
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Optional Special Requests */}
@@ -1828,7 +1932,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             </div>
             <div>
               <span className="font-mono text-[10px] uppercase tracking-wider text-sky-500 font-bold block">Guest</span>
-              <span className="font-bold text-slate-900 block truncate mt-0.5">{fullName || "—"}{age ? ` (${age} yrs)` : ""}</span>
+              <span className="font-bold text-slate-900 block truncate mt-0.5">
+                {passengers.map((p) => p.fullName.trim()).filter(Boolean).join(", ") || fullName || "—"}
+                {passengers.length === 1 && age ? ` (${age} yrs)` : ""}
+              </span>
               <span className="text-[10px] text-slate-400">{totalPax} pax</span>
             </div>
           </div>
