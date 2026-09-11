@@ -322,39 +322,64 @@ export function PassengerDetailsStep({
               </p>
             </div>
 
-            <div>
-              <label
-                htmlFor="full_name"
-                className="block text-xs font-mono text-slate-700 font-bold mb-1.5"
-              >
-                Name <span className="text-lime-600">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  id="full_name"
-                  type="text"
-                  required
-                  value={state.fullName}
-                  onChange={(e) => {
-                    onChange({ fullName: e.target.value });
-                    if (localErrors.full_name) setLocalErrors((p) => ({ ...p, full_name: "" }));
-                  }}
-                  placeholder="Name as per government ID"
-                  aria-invalid={Boolean(getFieldError("full_name"))}
-                  aria-describedby="full_name_error"
-                  className={`w-full px-4 py-3.5 rounded-2xl bg-slate-50 text-slate-900 text-sm font-sans font-medium transition-all outline-none border ${
-                    getFieldError("full_name")
-                      ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-500"
-                      : "border-slate-200 hover:border-slate-300 focus:border-amber-600 focus:bg-white focus:ring-2 focus:ring-amber-500/20"
-                  }`}
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="full_name"
+                  className="block text-xs font-mono text-slate-700 font-bold mb-1.5"
+                >
+                  Name <span className="text-lime-600">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    id="full_name"
+                    type="text"
+                    required
+                    value={state.fullName}
+                    onChange={(e) => {
+                      onChange({ fullName: e.target.value });
+                      if (localErrors.full_name) setLocalErrors((p) => ({ ...p, full_name: "" }));
+                    }}
+                    placeholder="Name as per government ID"
+                    aria-invalid={Boolean(getFieldError("full_name"))}
+                    aria-describedby="full_name_error"
+                    className={`w-full px-4 py-3.5 rounded-2xl bg-slate-50 text-slate-900 text-sm font-sans font-medium transition-all outline-none border ${
+                      getFieldError("full_name")
+                        ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-500"
+                        : "border-slate-200 hover:border-slate-300 focus:border-amber-600 focus:bg-white focus:ring-2 focus:ring-amber-500/20"
+                    }`}
+                  />
+                </div>
+                {getFieldError("full_name") && (
+                  <p id="full_name_error" className="text-xs text-rose-600 font-sans mt-1 flex items-center gap-1 font-medium">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    <span>{getFieldError("full_name")}</span>
+                  </p>
+                )}
               </div>
-              {getFieldError("full_name") && (
-                <p id="full_name_error" className="text-xs text-rose-600 font-sans mt-1 flex items-center gap-1 font-medium">
-                  <AlertCircle className="w-3.5 h-3.5" />
-                  <span>{getFieldError("full_name")}</span>
-                </p>
-              )}
+
+              <div>
+                <label
+                  htmlFor="passenger_age"
+                  className="block text-xs font-mono text-slate-700 font-bold mb-1.5"
+                >
+                  Age
+                </label>
+                <div className="relative">
+                  <input
+                    id="passenger_age"
+                    type="number"
+                    min={1}
+                    max={120}
+                    value={state.age || ""}
+                    onChange={(e) => {
+                      onChange({ age: e.target.value });
+                    }}
+                    placeholder="Age (Years)"
+                    className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 text-slate-900 text-sm font-mono font-medium transition-all outline-none border border-slate-200 hover:border-slate-300 focus:border-amber-600 focus:bg-white focus:ring-2 focus:ring-amber-500/20"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

@@ -244,6 +244,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
   // Passenger & Contact State
   const [fullName, setFullName] = useState<string>("");
+  const [age, setAge] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [specialRequests, setSpecialRequests] = useState<string>("");
@@ -551,6 +552,14 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       return;
     }
 
+    if (age.trim()) {
+      const parsedAge = parseInt(age.trim(), 10);
+      if (isNaN(parsedAge) || parsedAge < 1 || parsedAge > 120) {
+        toast.error("Please enter a valid passenger age between 1 and 120.");
+        return;
+      }
+    }
+
     // 2. Validate Flight Number
     const activeFlightNum = isFlightVerified && verifiedFlight
       ? verifiedFlight.flightNum
@@ -672,6 +681,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             pax_children: paxChildren,
             pax_infants: paxInfants,
             guest_count: totalPax,
+            passenger_age: age.trim() ? parseInt(age.trim(), 10) || age.trim() : undefined,
             package: packageSlug,
             unit_price: convertedUnitPrice,
             currency: selectedCurrency,
@@ -1599,7 +1609,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Full Name */}
             <div>
               <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
@@ -1612,6 +1622,22 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Name as per government ID"
                 className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+              />
+            </div>
+
+            {/* Age */}
+            <div>
+              <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
+                Age
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={120}
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                placeholder="Age (Years)"
+                className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 font-mono text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
               />
             </div>
 
@@ -1784,7 +1810,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             </div>
             <div>
               <span className="font-mono text-[10px] uppercase tracking-wider text-sky-500 font-bold block">Guest</span>
-              <span className="font-bold text-slate-900 block truncate mt-0.5">{fullName || "—"}</span>
+              <span className="font-bold text-slate-900 block truncate mt-0.5">{fullName || "—"}{age.trim() ? ` (${age.trim()} yrs)` : ""}</span>
               <span className="text-[10px] text-slate-400">{totalPax} pax</span>
             </div>
           </div>
