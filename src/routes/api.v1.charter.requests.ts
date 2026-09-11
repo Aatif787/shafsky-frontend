@@ -13,7 +13,6 @@ export const Route = createFileRoute("/api/v1/charter/requests")({
             headers: {
               "Content-Type": "application/json",
               Accept: "application/json",
-              "ngrok-skip-browser-warning": "true",
             },
             body: bodyText,
           });

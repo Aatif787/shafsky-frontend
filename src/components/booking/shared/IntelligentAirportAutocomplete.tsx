@@ -50,6 +50,9 @@ export async function searchAirports(
   const searchTerm = iata && q.length <= 5 ? iata : q;
 
   const res = await airportApi.search(searchTerm, mode, journeyType);
+  if (res && (res as any).success === false && (res as any).error) {
+    console.warn(`[IntelligentAirportAutocomplete] Failed to search airports (${mode}):`, (res as any).error);
+  }
   const rows = (res as any)?.data || [];
   return Array.isArray(rows) ? rows : [];
 }
@@ -127,7 +130,8 @@ export function IntelligentAirportAutocomplete({
         const matches = await searchAirports(text, mode, journeyType);
         setResults(matches);
         setSelectedIndex(-1);
-      } catch {
+      } catch (err) {
+        console.warn("[IntelligentAirportAutocomplete] Error during airport search:", err);
         setResults([]);
       } finally {
         setLoading(false);

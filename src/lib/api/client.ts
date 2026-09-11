@@ -33,12 +33,20 @@ export async function apiFetch<T = unknown>(
   const { timeoutMs = 15000, token, headers = {}, ...fetchOptions } = options;
   const url = resolveApiUrl(path);
 
+  const method = (fetchOptions.method || "GET").toUpperCase();
   const defaultHeaders: Record<string, string> = {
-    "Content-Type": "application/json",
     Accept: "application/json",
-    "ngrok-skip-browser-warning": "true",
     ...(headers as Record<string, string>),
   };
+
+  const isFormData = typeof FormData !== "undefined" && fetchOptions.body instanceof FormData;
+  if (!isFormData && !defaultHeaders["Content-Type"]) {
+    if (method !== "GET" && method !== "HEAD") {
+      defaultHeaders["Content-Type"] = "application/json";
+    } else if (fetchOptions.body) {
+      defaultHeaders["Content-Type"] = "application/json";
+    }
+  }
 
   if (token) {
     defaultHeaders["Authorization"] = `Bearer ${token}`;

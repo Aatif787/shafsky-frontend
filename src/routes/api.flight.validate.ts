@@ -45,7 +45,6 @@ export const Route = createFileRoute("/api/flight/validate")({
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "X-Forwarded-For": ip,
-                "ngrok-skip-browser-warning": "true",
                 ...(request.headers.get("authorization")
                   ? { "Authorization": request.headers.get("authorization")! }
                   : {}),

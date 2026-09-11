@@ -65,12 +65,21 @@ export class ApiClient {
     const authHeaders = await ApiClient.getAuthHeaders();
     const primaryUrl = resolveApiUrl(endpoint);
     
-    const headers = {
-      "Content-Type": "application/json",
-      "ngrok-skip-browser-warning": "true",
+    const method = (options.method || "GET").toUpperCase();
+    const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
+    const headers: Record<string, string> = {
+      Accept: "application/json",
       ...authHeaders,
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
+
+    if (!isFormData && !headers["Content-Type"]) {
+      if (method !== "GET" && method !== "HEAD") {
+        headers["Content-Type"] = "application/json";
+      } else if (options.body) {
+        headers["Content-Type"] = "application/json";
+      }
+    }
 
     let controller: AbortController | null = null;
     let timeoutId: NodeJS.Timeout | null = null;

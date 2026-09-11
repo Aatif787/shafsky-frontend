@@ -164,7 +164,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     const ft = (travelType || "domestic").toUpperCase();
     const url = resolveApiUrl(`/api/airport/services?airport=${airportCode}&journey_type=${jt}&flight_type=${ft}`);
 
-    fetch(url, { headers: { "ngrok-skip-browser-warning": "true" } })
+    fetch(url, { headers: { "Accept": "application/json" } })
       .then((res) => res.json())
       .then((data) => {
         if (!active) return;

@@ -445,7 +445,6 @@ export async function fetchServiceCatalog(): Promise<ServiceCatalogItem[]> {
     const res = await fetch(url, {
       headers: {
         "Accept": "application/json",
-        "ngrok-skip-browser-warning": "true",
       },
     });
     if (!res.ok) {
@@ -453,28 +452,42 @@ export async function fetchServiceCatalog(): Promise<ServiceCatalogItem[]> {
     }
     const json = await res.json();
     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
-      // Map API payload to ServiceCatalogItem
-      return json.data.map((item: any, idx: number) => ({
-        id: item.id || `service_${idx}`,
-        slug: item.slug || item.id?.replace(/_/g, "-") || "service",
-        name: item.title || item.name || "Shafsky Service",
-        categoryId: (item.category_id || item.categoryId || "airport_assistance") as ServiceCategoryId,
-        categoryName: item.category || item.categoryName || "Airport Assist",
-        bookingServiceId: item.booking_service_id || item.bookingServiceId || "meet_greet",
-        icon: Users,
-        oneLiner: item.one_liner || item.description || "Official Shafsky Aviation Services Service",
-        estTime: item.est_time || "1 min booking",
-        startingPrice: item.base_price ? `Starting ₹${item.base_price}` : "On Request",
-        badge: item.badge || "Official Service",
-        overview: item.description || "Official Shafsky Aviation Services Service.",
-        includedFeatures: Array.isArray(item.features) ? item.features : ["Official Shafsky Service"],
-        whoIsThisFor: item.who_is_this_for || "All Shafsky passengers.",
-        requirements: ["Flight Number", "Date"],
-        imageUrl: item.image_url || meetGreetImg,
-        sortOrder: item.sort_order || idx,
-        isActive: item.is_active !== false,
-        isHidden: item.is_hidden === true,
-      }));
+      // Backend may return categories with nested services array: [{ category, services: [...] }] or a flat array
+      const rawList: any[] = [];
+      for (const item of json.data) {
+        if (Array.isArray(item.services)) {
+          for (const s of item.services) {
+            rawList.push({ ...s, category: s.category || item.category });
+          }
+        } else {
+          rawList.push(item);
+        }
+      }
+
+      if (rawList.length > 0) {
+        // Map API payload to ServiceCatalogItem
+        return rawList.map((item: any, idx: number) => ({
+          id: item.id || `service_${idx}`,
+          slug: item.slug || item.id?.replace(/_/g, "-") || "service",
+          name: item.title || item.name || "Shafsky Service",
+          categoryId: (item.category_id || item.categoryId || "airport_assistance") as ServiceCategoryId,
+          categoryName: item.category || item.categoryName || "Airport Assist",
+          bookingServiceId: item.booking_service_id || item.bookingServiceId || "meet_greet",
+          icon: Users,
+          oneLiner: item.one_liner || item.description || "Official Shafsky Aviation Services Service",
+          estTime: item.est_time || "1 min booking",
+          startingPrice: item.base_price ? `Starting ₹${item.base_price}` : "On Request",
+          badge: item.badge || "Official Service",
+          overview: item.description || "Official Shafsky Aviation Services Service.",
+          includedFeatures: Array.isArray(item.features) ? item.features : ["Official Shafsky Service"],
+          whoIsThisFor: item.who_is_this_for || "All Shafsky passengers.",
+          requirements: ["Flight Number", "Date"],
+          imageUrl: item.image_url || meetGreetImg,
+          sortOrder: item.sort_order || idx,
+          isActive: item.is_active !== false,
+          isHidden: item.is_hidden === true,
+        }));
+      }
     }
   } catch {
     // Fallback to static official catalog

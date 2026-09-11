@@ -21,7 +21,6 @@ async function authFetch(
 ): Promise<Response> {
   const primaryUrl = resolveApiUrl(path);
   const headers = new Headers(init.headers || {});
-  headers.set("ngrok-skip-browser-warning", "true");
   return fetch(primaryUrl, { ...init, headers });
 }
 
