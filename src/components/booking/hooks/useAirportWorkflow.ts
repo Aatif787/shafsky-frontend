@@ -26,7 +26,6 @@ export interface AirportWorkflowState {
   serviceTime: string;
   guestCount: number;
   fullName: string;
-  age?: string;
   phone: string;
   email: string;
   flightNumber: string;

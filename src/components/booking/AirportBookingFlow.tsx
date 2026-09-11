@@ -552,12 +552,9 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       return;
     }
 
-    if (age.trim()) {
-      const parsedAge = parseInt(age.trim(), 10);
-      if (isNaN(parsedAge) || parsedAge < 1 || parsedAge > 120) {
-        toast.error("Please enter a valid passenger age between 1 and 120.");
-        return;
-      }
+    if (age && (Number(age) < 1 || Number(age) > 120)) {
+      toast.error("Please enter a valid age.");
+      return;
     }
 
     // 2. Validate Flight Number
@@ -681,7 +678,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             pax_children: paxChildren,
             pax_infants: paxInfants,
             guest_count: totalPax,
-            passenger_age: age.trim() ? parseInt(age.trim(), 10) || age.trim() : undefined,
+            passenger_age: age ? Number(age) : undefined,
             package: packageSlug,
             unit_price: convertedUnitPrice,
             currency: selectedCurrency,
@@ -1810,7 +1807,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             </div>
             <div>
               <span className="font-mono text-[10px] uppercase tracking-wider text-sky-500 font-bold block">Guest</span>
-              <span className="font-bold text-slate-900 block truncate mt-0.5">{fullName || "—"}{age.trim() ? ` (${age.trim()} yrs)` : ""}</span>
+              <span className="font-bold text-slate-900 block truncate mt-0.5">{fullName || "—"}{age ? ` (${age} yrs)` : ""}</span>
               <span className="text-[10px] text-slate-400">{totalPax} pax</span>
             </div>
           </div>
