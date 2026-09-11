@@ -19,6 +19,8 @@ import {
   MessageSquare,
   Share2,
   Building2,
+  Minus,
+  Plus,
 } from "lucide-react";
 import { ApiClient } from "@/lib/ApiClient";
 import { resolveApiUrl } from "@/lib/api/config";
@@ -1601,18 +1603,28 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 Enter name as per government ID.
               </p>
             </div>
-            <select
-              value={paxAdults}
-              onChange={(e) => setPaxAdults(Number(e.target.value))}
-              className="rounded-full bg-slate-100 hover:bg-slate-200 transition-colors px-3 py-1 font-mono text-[11px] font-bold text-slate-800 border border-slate-300 focus:outline-none focus:ring-1 focus:ring-lime-500 cursor-pointer"
-              aria-label="Select number of passengers"
-            >
-              {Array.from({ length: Math.max(10, paxAdults) }, (_, i) => i + 1).map((num) => (
-                <option key={num} value={num}>
-                  {num} {num === 1 ? "Passenger" : "Passengers"}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 p-1 shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setPaxAdults((prev) => Math.max(1, prev - 1))}
+                disabled={paxAdults <= 1}
+                className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                aria-label="Decrease passenger count"
+              >
+                <Minus className="h-3 w-3" />
+              </button>
+              <span className="font-mono text-[11px] font-bold text-slate-800 min-w-[76px] text-center select-none px-1">
+                {paxAdults} {paxAdults === 1 ? "Passenger" : "Passengers"}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPaxAdults((prev) => prev + 1)}
+                className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition cursor-pointer"
+                aria-label="Increase passenger count"
+              >
+                <Plus className="h-3 w-3" />
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
