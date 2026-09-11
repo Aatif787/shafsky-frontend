@@ -133,7 +133,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
   const serviceDate = searchParams?.depart_date || searchParams?.service_date || new Date().toISOString().split("T")[0];
 
-  const paxAdults = Math.max(1, Number(searchParams?.pax_adults) || 1);
+  const [paxAdults, setPaxAdults] = useState<number>(() => Math.max(1, Number(searchParams?.pax_adults) || 1));
   const paxChildren = Math.max(0, Number(searchParams?.pax_children) || 0);
   const paxInfants = Math.max(0, Number(searchParams?.pax_infants) || 0);
   const totalPax = paxAdults + paxChildren + paxInfants;
@@ -1601,9 +1601,18 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 Enter name as per government ID.
               </p>
             </div>
-            <span className="rounded-full bg-slate-100 px-3 py-1 font-mono text-[10px] font-bold text-slate-700">
-              {totalPax} Passenger{totalPax > 1 ? "s" : ""}
-            </span>
+            <select
+              value={paxAdults}
+              onChange={(e) => setPaxAdults(Number(e.target.value))}
+              className="rounded-full bg-slate-100 hover:bg-slate-200 transition-colors px-3 py-1 font-mono text-[11px] font-bold text-slate-800 border border-slate-300 focus:outline-none focus:ring-1 focus:ring-lime-500 cursor-pointer"
+              aria-label="Select number of passengers"
+            >
+              {Array.from({ length: Math.max(10, paxAdults) }, (_, i) => i + 1).map((num) => (
+                <option key={num} value={num}>
+                  {num} {num === 1 ? "Passenger" : "Passengers"}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
