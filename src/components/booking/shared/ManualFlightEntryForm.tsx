@@ -6,6 +6,7 @@ import { IntelligentAirlineAutocomplete } from "./IntelligentAirlineAutocomplete
 import { IntelligentAirportAutocomplete } from "./IntelligentAirportAutocomplete";
 import { IntelligentFlightNumberAutocomplete } from "./IntelligentFlightNumberAutocomplete";
 import { airlineLogoUrl } from "@/data/airlineRegistry";
+import { FlightTimePicker } from "./FlightTimePicker";
 
 export interface ManualFlightDetails {
   airlineName: string;
@@ -284,16 +285,13 @@ export function ManualFlightEntryForm({
             <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1" style={monoFont}>
               Departure Time <span className="text-red-500">*</span>
             </label>
-            <div className="relative">
-              <Clock className="absolute left-3 top-3 h-3.5 w-3.5 text-slate-400" />
-              <input
-                type="time"
-                value={details.depTime}
-                onChange={(e) => handleChange("depTime", e.target.value)}
-                className="w-full rounded-xl border border-gray-300 bg-white/80 pl-9 pr-3.5 py-2 text-xs font-semibold text-slate-900 focus:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-                style={monoFont}
-              />
-            </div>
+            <FlightTimePicker
+              value={details.depTime}
+              onChange={(val) => handleChange("depTime", val)}
+              error={errors.depTime}
+              required
+              placeholder="Select departure time"
+            />
           </div>
 
           <div>
@@ -333,12 +331,10 @@ export function ManualFlightEntryForm({
             <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1" style={monoFont}>
               Arrival Time (Optional)
             </label>
-            <input
-              type="time"
+            <FlightTimePicker
               value={details.arrTime}
-              onChange={(e) => handleChange("arrTime", e.target.value)}
-              className="w-full rounded-xl border border-gray-300 bg-white/80 px-3.5 py-2 text-xs font-semibold text-slate-900 focus:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-              style={monoFont}
+              onChange={(val) => handleChange("arrTime", val)}
+              placeholder="Select arrival time"
             />
           </div>
         </div>

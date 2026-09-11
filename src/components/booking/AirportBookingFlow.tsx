@@ -25,6 +25,7 @@ import { resolveApiUrl } from "@/lib/api/config";
 import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegistry";
 import { AirlineLogo } from "./shared/AirlineLogo";
 import { IntelligentAirlineAutocomplete } from "./shared/IntelligentAirlineAutocomplete";
+import { FlightTimePicker } from "./shared/FlightTimePicker";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { formatFlightLookupError } from "./hooks/useAirportWorkflow";
 import { loadRazorpayScript } from "@/lib/razorpay";
@@ -1531,11 +1532,11 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <span className="text-[9.5px] font-mono text-slate-500 block mb-0.5">Time</span>
-                      <input
-                        type="time"
+                      <FlightTimePicker
                         value={manualDepTime}
-                        onChange={(e) => setManualDepTime(e.target.value)}
-                        className="w-full rounded-lg border border-slate-200 px-2 py-1.5 font-mono text-xs font-bold text-slate-900"
+                        onChange={(val) => setManualDepTime(val)}
+                        placeholder="Select time"
+                        inputClassName="w-full rounded-lg border border-slate-200 pl-8 pr-7 py-1.5 font-mono text-xs font-bold text-slate-900 bg-white"
                       />
                     </div>
                     <div>
@@ -1558,11 +1559,11 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <span className="text-[9.5px] font-mono text-slate-500 block mb-0.5">Time</span>
-                      <input
-                        type="time"
+                      <FlightTimePicker
                         value={manualArrTime}
-                        onChange={(e) => setManualArrTime(e.target.value)}
-                        className="w-full rounded-lg border border-slate-200 px-2 py-1.5 font-mono text-xs font-bold text-slate-900"
+                        onChange={(val) => setManualArrTime(val)}
+                        placeholder="Select time"
+                        inputClassName="w-full rounded-lg border border-slate-200 pl-8 pr-7 py-1.5 font-mono text-xs font-bold text-slate-900 bg-white"
                       />
                     </div>
                     <div>

@@ -5,6 +5,7 @@ import { FlightData } from "@/services/flight/FlightTypes";
 import { IntelligentAirlineAutocomplete } from "./IntelligentAirlineAutocomplete";
 import { IntelligentAirportAutocomplete } from "./IntelligentAirportAutocomplete";
 import { IntelligentFlightNumberAutocomplete } from "./IntelligentFlightNumberAutocomplete";
+import { FlightTimePicker } from "./FlightTimePicker";
 
 interface EditJourneyDrawerProps {
   isOpen: boolean;
@@ -164,11 +165,10 @@ export function EditJourneyDrawer({
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1" style={monoFont}>
                       Time
                     </label>
-                    <input
-                      type="time"
+                    <FlightTimePicker
                       value={time}
-                      onChange={(e) => setTime(e.target.value)}
-                      className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-slate-900"
+                      onChange={(val) => setTime(val)}
+                      placeholder="Select time"
                     />
                   </div>
                 </div>

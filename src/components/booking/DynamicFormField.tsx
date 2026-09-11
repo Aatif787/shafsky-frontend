@@ -2,6 +2,7 @@ import React from "react";
 import { type FieldConfig } from "@/data/bookingConfigurations";
 import { AIRPORTS } from "@/data/airports";
 import { Plus, Minus, Check } from "lucide-react";
+import { FlightTimePicker } from "./shared/FlightTimePicker";
 
 interface DynamicFormFieldProps {
   field: FieldConfig;
@@ -64,12 +65,13 @@ export function DynamicFormField({ field, value, onChange, error }: DynamicFormF
         <label htmlFor={id} className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-1.5 font-bold">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
-        <input
+        <FlightTimePicker
           id={id}
-          type="time"
-          value={value || "14:30"}
-          onChange={(e) => onChange(e.target.value)}
-          className={`w-full px-4 py-3.5 rounded-2xl bg-white border text-sm text-slate-900 focus:outline-none transition-all font-mono ${
+          value={value || ""}
+          onChange={(val) => onChange(val)}
+          error={error}
+          placeholder={placeholder || "Select time"}
+          inputClassName={`w-full px-4 py-3.5 rounded-2xl bg-white border text-sm text-slate-900 focus:outline-none transition-all font-mono ${
             error ? "border-red-400 focus:border-red-500" : "border-slate-200 focus:border-[#7c3aed]"
           }`}
         />
