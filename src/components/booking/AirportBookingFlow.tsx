@@ -135,7 +135,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
   const serviceDate = searchParams?.depart_date || searchParams?.service_date || new Date().toISOString().split("T")[0];
 
-  const [paxAdults, setPaxAdults] = useState<number>(() => Math.max(1, Number(searchParams?.pax_adults) || 1));
+  const [paxAdults, setPaxAdults] = useState<number>(() => Math.min(10, Math.max(1, Number(searchParams?.pax_adults) || 1)));
   const paxChildren = Math.max(0, Number(searchParams?.pax_children) || 0);
   const paxInfants = Math.max(0, Number(searchParams?.pax_infants) || 0);
   const totalPax = paxAdults + paxChildren + paxInfants;
@@ -253,7 +253,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   }
 
   const [passengers, setPassengers] = useState<PassengerDetail[]>(() => {
-    const count = Math.max(1, Number(searchParams?.pax_adults) || 1);
+    const count = Math.min(10, Math.max(1, Number(searchParams?.pax_adults) || 1));
     return Array.from({ length: count }, () => ({
       fullName: "",
       age: "",
@@ -263,7 +263,11 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   });
 
   const handlePaxChange = (newCount: number) => {
-    const count = Math.max(1, newCount);
+    if (newCount > 10) {
+      toast.info("Maximum 10 passengers allowed per booking. For larger groups, please contact our VIP desk.");
+      return;
+    }
+    const count = Math.min(10, Math.max(1, newCount));
     setPaxAdults(count);
     setPassengers((prev) => {
       if (prev.length === count) return prev;
@@ -1693,7 +1697,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               <button
                 type="button"
                 onClick={() => handlePaxChange(paxAdults + 1)}
-                className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition cursor-pointer"
+                disabled={paxAdults >= 10}
+                className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                 aria-label="Increase passenger count"
               >
                 <Plus className="h-3 w-3" />
