@@ -1,6 +1,11 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
+import { setupChunkRecovery } from "./lib/chunk-recovery";
+
+if (typeof window !== "undefined") {
+  setupChunkRecovery();
+}
 
 export const getRouter = () => {
   const queryClient = new QueryClient({

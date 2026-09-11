@@ -16,6 +16,11 @@ import { BrandingHead } from "../lib/branding/BrandingHead";
 import { Toaster } from "../components/ui/sonner";
 import { AuthProvider } from "../auth-system/AuthProvider";
 import { AppErrorBoundary } from "../components/ui/AppErrorBoundary";
+import {
+  isChunkLoadError,
+  handleChunkReload,
+  setupChunkRecovery,
+} from "../lib/chunk-recovery";
 
 const WhatsAppWidget = lazy(() =>
   import("../components/ui/WhatsAppWidget").then((m) => ({ default: m.WhatsAppWidget })),
@@ -72,26 +77,37 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    if (isChunkLoadError(error)) {
+      handleChunkReload("tanstack_root_error_component");
+    }
   }, [error]);
+
+  const isChunk = isChunkLoadError(error);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          {isChunk ? "Application Update Available" : "This page didn't load"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          {isChunk
+            ? "A newer version of the application is available. Click below to refresh and load the latest updates."
+            : "Something went wrong on our end. You can try refreshing or head back home."}
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
-              router.invalidate();
-              reset();
+              if (isChunk) {
+                window.location.reload();
+              } else {
+                router.invalidate();
+                reset();
+              }
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
           >
-            Try again
+            {isChunk ? "Refresh Application" : "Try again"}
           </button>
           <a
             href="/"
@@ -174,6 +190,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    return setupChunkRecovery();
+  }, []);
 
   return (
     <AppErrorBoundary name="RootApplication">

@@ -29,15 +29,29 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
   };
 }
 
+export function isSupabaseConfigured(): boolean {
+  const url =
+    (typeof import.meta !== "undefined" && import.meta.env?.VITE_SUPABASE_URL) ||
+    (typeof process !== "undefined" && process.env?.SUPABASE_URL);
+  const key =
+    (typeof import.meta !== "undefined" &&
+      (import.meta.env?.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env?.VITE_SUPABASE_ANON_KEY)) ||
+    (typeof process !== "undefined" &&
+      (process.env?.SUPABASE_PUBLISHABLE_KEY || process.env?.SUPABASE_ANON_KEY));
+  return Boolean(url && key);
+}
+
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering)
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+  const SUPABASE_URL =
+    (typeof import.meta !== "undefined" && import.meta.env?.VITE_SUPABASE_URL) ||
+    (typeof process !== "undefined" && process.env?.SUPABASE_URL);
   const SUPABASE_PUBLISHABLE_KEY =
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    import.meta.env.VITE_SUPABASE_ANON_KEY ||
-    process.env.SUPABASE_PUBLISHABLE_KEY ||
-    process.env.SUPABASE_ANON_KEY;
+    (typeof import.meta !== "undefined" &&
+      (import.meta.env?.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env?.VITE_SUPABASE_ANON_KEY)) ||
+    (typeof process !== "undefined" &&
+      (process.env?.SUPABASE_PUBLISHABLE_KEY || process.env?.SUPABASE_ANON_KEY));
 
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
     const missing = [
@@ -45,8 +59,8 @@ function createSupabaseClient() {
       ...(!SUPABASE_PUBLISHABLE_KEY ? ["SUPABASE_PUBLISHABLE_KEY"] : []),
     ];
     const message = `Missing Supabase environment variable(s): ${missing.join(", ")}. Please check your .env configuration.`;
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
+    console.warn(`[Supabase] ${message}`);
+    return null;
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
@@ -61,13 +75,60 @@ function createSupabaseClient() {
   });
 }
 
-let _supabase: ReturnType<typeof createSupabaseClient> | undefined;
+let _supabase: ReturnType<typeof createClient<Database>> | null | undefined;
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
-export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>, {
+function createSafeChain(): any {
+  const target = () => createSafeChain();
+  return new Proxy(target, {
+    get(_, prop) {
+      if (prop === "then") {
+        return (resolve: (v: any) => void) => resolve({ data: null, error: null, count: 0 });
+      }
+      if (prop === "data") return { publicUrl: "" };
+      if (prop === "error") return null;
+      if (prop === "count") return 0;
+      if (prop === "publicUrl") return "";
+      return createSafeChain();
+    },
+    apply() {
+      return createSafeChain();
+    },
+  });
+}
+
+const fallbackStorage = {
+  from: () => ({
+    createSignedUrl: async () => ({ data: null, error: null }),
+    createSignedUrls: async () => ({ data: [], error: null }),
+    getPublicUrl: () => ({ data: { publicUrl: "" } }),
+    upload: async () => ({ data: null, error: null }),
+  }),
+};
+
+const fallbackAuth = {
+  getSession: async () => ({ data: { session: null }, error: null }),
+  getUser: async () => ({ data: { user: null }, error: null }),
+  onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+  signOut: async () => ({ error: null }),
+};
+
+export const supabase = new Proxy({} as any, {
   get(_, prop, receiver) {
-    if (!_supabase) _supabase = createSupabaseClient();
+    if (!isSupabaseConfigured()) {
+      if (prop === "auth") return fallbackAuth;
+      if (prop === "storage") return fallbackStorage;
+      if (prop === "channel") {
+        return () => ({
+          on: () => ({ subscribe: () => ({ unsubscribe: () => {} }) }),
+          subscribe: () => ({ unsubscribe: () => {} }),
+        });
+      }
+      if (prop === "removeChannel") return () => {};
+      if (prop === "from") return () => createSafeChain();
+      return createSafeChain();
+    }
+    if (_supabase === undefined) _supabase = createSupabaseClient();
+    if (!_supabase) return createSafeChain();
     return Reflect.get(_supabase, prop, receiver);
   },
 });

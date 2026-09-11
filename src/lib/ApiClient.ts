@@ -3,7 +3,8 @@
  * Forwards Supabase Auth JWT Access Tokens to FastAPI Backend Services
  */
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
+import { getAccessToken } from "@/auth/tokenStore";
 import { getBackendBaseUrl, resolveApiUrl, normalizeBackendUrl } from "@/lib/api/config";
 
 export const getApiBaseUrl = getBackendBaseUrl;
@@ -44,16 +45,27 @@ export interface FlightValidationApiResponse {
 
 export class ApiClient {
   /**
-   * Helper to retrieve active Supabase JWT Access Token header.
+   * Helper to retrieve active auth token header (FastAPI in-memory token or Supabase JWT).
    */
   public static async getAuthHeaders(): Promise<Record<string, string>> {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.access_token) {
-        return { Authorization: `Bearer ${session.access_token}` };
+      const bearer = getAccessToken();
+      if (bearer) {
+        return { Authorization: `Bearer ${bearer}` };
       }
-    } catch (err) {
-      console.warn("[ApiClient] Failed to retrieve session access token:", err);
+    } catch {
+      // ignore
+    }
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          return { Authorization: `Bearer ${session.access_token}` };
+        }
+      } catch (err) {
+        console.warn("[ApiClient] Failed to retrieve session access token:", err);
+      }
     }
     return {};
   }
