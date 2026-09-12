@@ -300,30 +300,22 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
         <div className="lg:col-span-5">
           <ExperiencePhoto
             src={
-              subService === "Air Ambulance Charter"
-                ? "/private charter/airambu.jpeg"
-                : subService === "Private Charter"
+              subService === "Private Charter"
                 ? "/images/charter/luxury-cabin.webp"
                 : HOMEPAGE_PHOTOS.privateCharter.src
             }
             alt={
-              subService === "Air Ambulance Charter"
-                ? "Shafsky Air Ambulance Dedicated Aero-Medical ICU Aircraft"
-                : subService === "Private Charter"
+              subService === "Private Charter"
                 ? "Shafsky Ultra-Luxury Private Jet Executive VIP Cabin"
                 : "Shafsky Private Jet and Helicopter Private Charter"
             }
             badge={
-              subService === "Air Ambulance Charter"
-                ? "Aero-Medical ICU"
-                : subService === "Private Charter"
+              subService === "Private Charter"
                 ? "Ultra-Luxury VIP Cabin"
                 : "VIP Aviation"
             }
             caption={
-              subService === "Air Ambulance Charter"
-                ? "Certified aero-medical ICU jet with doctor and stretcher"
-                : subService === "Private Charter"
+              subService === "Private Charter"
                 ? "Bespoke executive cabin with luxury amenities & personalized service"
                 : "Executive fleet ready for 2-hour dispatch"
             }

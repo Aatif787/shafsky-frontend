@@ -257,26 +257,20 @@ const CHARTER_HERO_SLIDES = [
   {
     src: HOMEPAGE_PHOTOS.privateCharter.src,
     alt: "Shafsky Private Jet and Helicopter Private Charter Fleet",
-    badge: "1/4 • Shafsky Private Charter Fleet",
+    badge: "1/3 • Shafsky Private Charter Fleet",
     label: "Private Charter Fleet",
   },
   {
     src: jetTarmac,
     alt: "Shafsky Executive Private Jet on Tarmac at Sunset",
-    badge: "2/4 • Executive Private Jet on Tarmac at Sunset",
+    badge: "2/3 • Executive Private Jet on Tarmac at Sunset",
     label: "Private Jet Tarmac",
   },
   {
     src: "/images/charter/luxury-cabin.webp",
     alt: "Shafsky Ultra-Luxury Private Jet Executive VIP Cabin",
-    badge: "3/4 • Ultra-Luxury Executive VIP Cabin",
+    badge: "3/3 • Ultra-Luxury Executive VIP Cabin",
     label: "VIP Luxury Cabin",
-  },
-  {
-    src: "/private charter/airambu.jpeg",
-    alt: "Shafsky Air Ambulance Dedicated Aero-Medical ICU Aircraft",
-    badge: "4/4 • Air Ambulance Dedicated Aero-Medical ICU Aircraft",
-    label: "Air Ambulance ICU",
   },
 ];
 
@@ -330,7 +324,7 @@ function DedicatedAirCharterPage() {
     } else if (optId === "Private Charter") {
       setHeroSlideIndex(2);
     } else if (optId === "Air Ambulance Charter") {
-      setHeroSlideIndex(3);
+      setHeroSlideIndex(0);
     }
     const match = CHARTER_OPTIONS.find((o) => o.id === optId);
     if (match) {
@@ -485,7 +479,7 @@ function DedicatedAirCharterPage() {
             </p>
           </div>
 
-          {/* Uncropped Landscape Hero Image Gallery: Slide 1 (Charter Fleet), Slide 2 (Private Jet), Slide 3 (Air Ambulance) */}
+          {/* Uncropped Landscape Hero Image Gallery: Slide 1 (Charter Fleet), Slide 2 (Private Jet), Slide 3 (VIP Cabin) */}
           <div className="space-y-3">
             <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center min-h-[260px] sm:min-h-[400px]">
               <img
@@ -890,20 +884,13 @@ function DedicatedAirCharterPage() {
 
                   {selectedOptionId === "Air Ambulance Charter" && (
                     <div className="space-y-4 p-4 rounded-xl bg-red-50/50 border border-red-200">
-                      {/* Air Ambulance Dedicated Visual */}
-                      <div className="relative rounded-xl overflow-hidden border border-red-200 shadow-xs bg-slate-900">
-                        <img
-                          src="/private charter/airambu.jpeg"
-                          alt="Shafsky Air Ambulance Dedicated Aero-Medical ICU Aircraft"
-                          className="w-full h-44 sm:h-52 object-cover object-center"
-                        />
-                        <div className="p-2.5 bg-red-900/90 backdrop-blur-xs text-white flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px] font-mono">
-                          <span className="font-bold flex items-center gap-1.5">
-                            <span>🚑</span>
-                            <span>Aero-Medical Critical Care ICU Aircraft</span>
-                          </span>
-                          <span className="text-red-200">Certified Stretcher & Aviation Doctor</span>
-                        </div>
+                      {/* Air Ambulance Dedicated Info Header */}
+                      <div className="p-3 bg-red-900/90 rounded-xl text-white flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px] font-mono shadow-xs">
+                        <span className="font-bold flex items-center gap-1.5">
+                          <span>🚑</span>
+                          <span>Aero-Medical Critical Care ICU Aircraft</span>
+                        </span>
+                        <span className="text-red-200">Certified Stretcher & Aviation Doctor</span>
                       </div>
 
                       <div>
@@ -1118,16 +1105,6 @@ function DedicatedAirCharterPage() {
                 <img
                   src="/images/charter/luxury-cabin.webp"
                   alt="Shafsky Ultra-Luxury Private Jet Executive VIP Cabin"
-                  className="w-full h-56 sm:h-72 object-cover object-center"
-                />
-              </div>
-            )}
-
-            {activeOption.id === "Air Ambulance Charter" && (
-              <div className="mb-6 rounded-2xl overflow-hidden border border-red-200 shadow-sm bg-slate-900">
-                <img
-                  src="/private charter/airambu.jpeg"
-                  alt="Shafsky Air Ambulance Dedicated Aero-Medical ICU Aircraft"
                   className="w-full h-56 sm:h-72 object-cover object-center"
                 />
               </div>

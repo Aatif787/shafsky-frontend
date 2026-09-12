@@ -104,7 +104,7 @@ export function Breadcrumbs({
   return (
     <nav
       aria-label="Breadcrumb"
-      className={`relative z-20 flex items-center flex-wrap gap-2 text-xs font-mono tracking-wider py-3.5 px-4 sm:px-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md ${className}`}
+      className={`relative z-20 flex items-center flex-wrap gap-2 text-xs font-mono tracking-wider py-2.5 px-4 sm:px-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xs ${className}`}
       style={{ fontFamily: "'JetBrains Mono', monospace" }}
     >
       <div className="flex items-center gap-2 text-white/50 hover:text-[#c5a059] transition-colors">

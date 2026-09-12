@@ -548,3 +548,32 @@ body {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Homepage Photo Carousel Card Responsive Sizing (16:9 Widescreen Harmony) */
+.homepage-carousel-card {
+  align-self: center;
+  aspect-ratio: 16 / 9;
+  width: min(85vw, 360px);
+  height: auto;
+}
+
+/* Tablet (640px to 1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .homepage-carousel-card {
+    width: clamp(340px, 45vw, 440px);
+    height: auto;
+    aspect-ratio: 16 / 9;
+    align-self: center;
+  }
+}
+
+/* Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+  .homepage-carousel-card {
+    width: auto;
+    height: clamp(320px, 28vw, 450px);
+    aspect-ratio: 16 / 9;
+    max-width: 85vw;
+    align-self: stretch;
+  }
+}

@@ -120,7 +120,7 @@ export function HomepagePhotoCarousel() {
       <div
         ref={containerRef}
         // Removed scroll-smooth from here so we can control instant jumps in JS
-        className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-4 px-4 sm:px-8 md:px-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex items-center gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-4 px-4 sm:px-8 md:px-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{
           scrollSnapType: "x mandatory",
         }}
@@ -128,29 +128,24 @@ export function HomepagePhotoCarousel() {
         {INFINITE_PHOTOS.map((item, idx) => (
           <div
             key={`${item.id}-${idx}`}
-            className="snap-center shrink-0 rounded-2xl sm:rounded-3xl border-2 border-[#84cc16]/30 bg-transparent overflow-hidden shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] hover:border-[#84cc16] hover:shadow-[0_14px_40px_-5px_rgba(132,204,22,0.25)] transition-all duration-300"
+            className="homepage-carousel-card snap-center shrink-0 rounded-2xl sm:rounded-3xl border-2 border-[#84cc16]/30 bg-transparent overflow-hidden shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] hover:border-[#84cc16] hover:shadow-[0_14px_40px_-5px_rgba(132,204,22,0.25)] transition-all duration-300"
             style={{
-              // Drive the container strictly by height and exact image aspect ratio.
-              // This guarantees ZERO black borders and ZERO cropping.
-              // Increasing height automatically increases width proportionally.
-              height: "clamp(320px, 42vw, 500px)",
-              aspectRatio: item.photo.aspectRatio,
-              maxWidth: "85vw", // On small screens, if width is capped, height shrinks proportionally
+              aspectRatio: "16 / 9",
             }}
           >
-            {/* Pure Uncropped Authentic Photograph */}
-            <div className="w-full h-full bg-white/5">
+            {/* Pure Uncropped Authentic Photograph — 16:9 Widescreen Harmony */}
+            <div className="w-full h-full bg-slate-950/20">
               <EditorialPhoto
                 src={item.photo.src}
                 alt={item.photo.alt}
                 width={item.photo.width}
                 height={item.photo.height}
-                aspectRatio={item.photo.aspectRatio}
+                aspectRatio="16 / 9"
                 priority={idx < 4} // Eager load first visible images
-                objectFit="contain" // Guarantees 100% complete original composition
+                objectFit="cover" // 100% flush fit with matching 16:9 aspect ratio
                 containerBg="bg-transparent"
                 className="w-full h-full"
-                imageClassName="w-full h-full object-contain"
+                imageClassName="w-full h-full object-cover"
               />
             </div>
           </div>

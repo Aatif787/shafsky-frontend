@@ -97,7 +97,7 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     id: "special-services",
     serviceParam: "special",
     title: "Special Services",
-    photo: spaWellnessImg,
+    photo: HOMEPAGE_PHOTOS.destinationCelebration.src,
     alt: "Luxury Couple Spa & Wellness, Romantic Honeymoon Tours, and Armed PSO Close Protection",
     badge: "Specialized Missions",
     description: "Ultra-luxury couple spa sanctuaries, bespoke romantic honeymoon expeditions, and certified armed PSO close protection escorts.",
@@ -173,56 +173,133 @@ export function EnterpriseSolutions() {
           </motion.div>
         </div>
 
-        {/* ORIGINAL 5-CARD HORIZONTAL ALIGNMENT SHOWCASE */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-8 items-start justify-items-center max-w-7xl mx-auto">
+        {/* DESKTOP 5-CARD HORIZONTAL ALIGNMENT SHOWCASE (100% UNTOUCHED FOR DESKTOP) */}
+        <div className="hidden lg:grid lg:grid-cols-5 gap-8 items-start justify-items-center max-w-7xl mx-auto">
           {OFFICIAL_SERVICES.map((srv, idx) => (
-                <motion.div
-                  key={srv.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.08 }}
-                  className="flex flex-col items-center text-center w-full group cursor-pointer"
-                  onClick={() => {
-                    if (srv.id === "meet-greet-lounge") {
-                      navigate({ to: "/solutions/concierge" });
-                    } else if (srv.id === "air-charter") {
-                      navigate({ to: "/solutions/aviation" });
-                    } else if (srv.id === "luxury-hotels") {
-                      navigate({ to: "/solutions/travel" });
-                    } else if (srv.id === "transport-service") {
-                      navigate({ to: "/solutions/cargo" });
-                    } else if (srv.id === "special-services") {
-                      navigate({ to: "/solutions/medical" });
-                    } else {
-                      setSelectedService(srv);
-                    }
-                  }}
-                >
-                  {/* Circular Authentic Photo */}
-                  <div className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-slate-100 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.12)] group-hover:border-lime-500 group-hover:shadow-[0_15px_30px_-5px_rgba(132,204,22,0.35)] group-hover:scale-105 transition-all duration-500 bg-white mb-4">
-                    <picture className="w-full h-full block">
-                      <source srcSet={srv.photo} type="image/jpeg" />
-                      <img
-                        src={srv.photo}
-                        alt={srv.alt}
-                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                        loading="lazy"
-                      />
-                    </picture>
-                    <div className="absolute inset-0 rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.08)] pointer-events-none group-hover:shadow-[inset_0_0_15px_rgba(132,204,22,0.2)] transition-shadow duration-300" />
-                  </div>
+            <motion.div
+              key={srv.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.08 }}
+              className="flex flex-col items-center text-center w-full group cursor-pointer"
+              onClick={() => {
+                if (srv.id === "meet-greet-lounge") {
+                  navigate({ to: "/solutions/concierge" });
+                } else if (srv.id === "air-charter") {
+                  navigate({ to: "/solutions/aviation" });
+                } else if (srv.id === "luxury-hotels") {
+                  navigate({ to: "/solutions/travel" });
+                } else if (srv.id === "transport-service") {
+                  navigate({ to: "/solutions/cargo" });
+                } else if (srv.id === "special-services") {
+                  navigate({ to: "/solutions/medical" });
+                } else {
+                  setSelectedService(srv);
+                }
+              }}
+            >
+              {/* Circular Authentic Photo */}
+              <div className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-slate-100 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.12)] group-hover:border-lime-500 group-hover:shadow-[0_15px_30px_-5px_rgba(132,204,22,0.35)] group-hover:scale-105 transition-all duration-500 bg-white mb-4">
+                <picture className="w-full h-full block">
+                  <source srcSet={srv.photo} type="image/jpeg" />
+                  <img
+                    src={srv.photo}
+                    alt={srv.alt}
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                    loading="lazy"
+                  />
+                </picture>
+                <div className="absolute inset-0 rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.08)] pointer-events-none group-hover:shadow-[inset_0_0_15px_rgba(132,204,22,0.2)] transition-shadow duration-300" />
+              </div>
 
-                  {/* Service Pillar Heading */}
-                  <h3
-                    className="text-sm sm:text-base md:text-lg font-bold text-slate-900 tracking-tight group-hover:text-lime-700 transition-colors duration-300 max-w-[210px] leading-snug"
+              {/* Service Pillar Heading */}
+              <h3
+                className="text-sm sm:text-base md:text-lg font-bold text-slate-900 tracking-tight group-hover:text-lime-700 transition-colors duration-300 max-w-[210px] leading-snug"
+                style={display}
+              >
+                {srv.title}
+              </h3>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* MOBILE & TABLET: 3-2 PORTAL LAYOUT (lg:hidden) */}
+        <div className="lg:hidden relative w-full max-w-sm sm:max-w-md mx-auto py-10 px-2 sm:px-4 select-none flex flex-col items-center">
+          
+          {/* Layout Renderer */}
+          {(() => {
+            const renderPortal = (srv: ServiceCategory, delay: number) => (
+              <motion.div
+                key={srv.id}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  if (srv.id === "meet-greet-lounge") navigate({ to: "/solutions/concierge" });
+                  else if (srv.id === "air-charter") navigate({ to: "/solutions/aviation" });
+                  else if (srv.id === "luxury-hotels") navigate({ to: "/solutions/travel" });
+                  else if (srv.id === "transport-service") navigate({ to: "/solutions/cargo" });
+                  else if (srv.id === "special-services") navigate({ to: "/solutions/medical" });
+                  else setSelectedService(srv);
+                }}
+                className="group relative rounded-full overflow-hidden cursor-pointer shadow-[0_10px_25px_-5px_rgba(0,0,0,0.15)] ring-2 ring-[#d4af37]/40 ring-offset-4 ring-offset-white transition-all duration-500 bg-slate-900 flex-shrink-0 w-[5.5rem] h-[5.5rem] sm:w-24 sm:h-24 z-10"
+              >
+                <picture className="w-full h-full block">
+                  <source srcSet={srv.photo} type="image/jpeg" />
+                  <img
+                    src={srv.photo}
+                    alt={srv.alt}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                </picture>
+                
+                {/* Luxury Vignette/Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10 group-hover:via-black/25 transition-all duration-500" />
+                
+                {/* Inner Glowing Ring */}
+                <div className="absolute inset-[3px] sm:inset-1 rounded-full border border-white/20 group-hover:border-[#d4af37]/70 pointer-events-none transition-colors duration-500" />
+
+                {/* Content Positioned at Bottom */}
+                <div className="absolute inset-0 flex flex-col items-center justify-end pb-3 sm:pb-4 px-1 sm:px-2 text-center">
+                  <span 
+                    className="text-[6px] sm:text-[7px] font-mono font-bold uppercase tracking-[0.1em] text-[#d4af37] mb-[2px] opacity-95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
+                    style={mono}
+                  >
+                    {srv.badge}
+                  </span>
+                  <h3 
+                    className="text-[9px] sm:text-[10px] font-bold text-white tracking-wider leading-[1.15] drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
                     style={display}
                   >
                     {srv.title}
                   </h3>
-                </motion.div>
-              ))}
-            </div>
+                </div>
+              </motion.div>
+            );
+
+            return (
+              <div className="relative z-10 w-full flex flex-col items-center gap-6 sm:gap-8">
+                {/* ROW 1: Top Three */}
+                <div className="flex justify-center gap-4 sm:gap-6 w-full relative">
+                  {renderPortal(OFFICIAL_SERVICES[0], 0.1)}
+                  {renderPortal(OFFICIAL_SERVICES[1], 0.2)}
+                  {renderPortal(OFFICIAL_SERVICES[2], 0.3)}
+                </div>
+
+                {/* ROW 2: Bottom Two */}
+                <div className="flex justify-center gap-4 sm:gap-6 w-full relative">
+                  {renderPortal(OFFICIAL_SERVICES[3], 0.4)}
+                  {renderPortal(OFFICIAL_SERVICES[4], 0.5)}
+                </div>
+              </div>
+            );
+          })()}
+        </div>
 
         {/* Bottom Floating Airplane Visual with Contrail Aesthetics */}
         <div className="relative flex flex-col items-center justify-center mt-12 sm:mt-16 pt-2">

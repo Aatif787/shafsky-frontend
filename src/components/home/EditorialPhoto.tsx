@@ -44,7 +44,7 @@ export function EditorialPhoto({
     <div
       className={`relative w-full flex items-center justify-center overflow-hidden ${containerBg} ${className}`}
       style={{
-        aspectRatio: calculatedAspectRatio,
+        aspectRatio: className.includes("h-full") ? undefined : calculatedAspectRatio,
       }}
     >
       <img
@@ -58,7 +58,7 @@ export function EditorialPhoto({
         sizes={sizes}
         className={`w-full h-full block max-w-full max-h-full ${imageClassName}`}
         style={{
-          objectFit,
+          objectFit: imageClassName.includes("object-") ? undefined : objectFit,
           objectPosition,
           imageRendering: "auto",
         }}
