@@ -358,7 +358,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 rounded-lg bg-slate-100 border border-slate-300 text-slate-900 hover:border-lime-500 transition-colors"
+            className="lg:hidden p-2 rounded-lg bg-slate-100 border border-slate-300 text-slate-900 hover:border-[#6e22db] active:bg-purple-50 transition-colors"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -371,7 +371,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
         <div className="lg:hidden fixed inset-x-0 top-full h-[calc(100vh-70px)] bg-white border-t border-slate-200 p-6 flex flex-col justify-between overflow-y-auto z-50 shadow-xl">
           <div className="space-y-4">
             <div
-              className="text-[10px] uppercase tracking-[0.3em] text-[#c5a059] font-bold pb-2 border-b border-slate-200"
+              className="text-[10px] uppercase tracking-[0.3em] text-[#6e22db] font-bold pb-2 border-b border-slate-200"
               style={mono}
             >
               Navigation Menu
@@ -396,13 +396,13 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                           <span>{item.label}</span>
                           <ChevronDown
                             size={16}
-                            className={`text-[#0a196f] transition-transform duration-200 ${
+                            className={`text-[#6e22db] transition-transform duration-200 ${
                               isExpanded ? "rotate-180" : ""
                             }`}
                           />
                         </button>
                         {isExpanded && (
-                          <div className="pl-3 mt-2 space-y-2 border-l-2 border-[#c5a059]/60">
+                          <div className="pl-3 mt-2 space-y-2 border-l-2 border-[#6e22db]/60">
                             {PRIMARY_SERVICES.map((srv) => {
                               const SIcon = srv.icon;
                               return (
@@ -412,8 +412,8 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                                   onClick={() => setMobileOpen(false)}
                                   className="block py-2 group"
                                 >
-                                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 group-hover:text-[#0a196f]">
-                                    <SIcon size={15} className="text-[#0a196f]" />
+                                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 group-hover:text-[#6e22db]">
+                                    <SIcon size={15} className="text-[#6e22db]" />
                                     <span>{srv.title}</span>
                                   </div>
                                   <p className="text-[10.5px] text-slate-500 font-mono mt-0.5 pl-6 leading-tight">
@@ -446,17 +446,17 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               <Link
                 to={getDashboardPath()}
                 onClick={() => setMobileOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-lime-500 transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-[#6e22db] transition-colors"
                 style={mono}
               >
-                <User size={14} className="text-lime-700" />
+                <User size={14} className="text-[#6e22db]" />
                 <span>{getDashboardLabel()}</span>
               </Link>
             ) : (
               <Link
                 to="/login"
                 onClick={() => setMobileOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-lime-500 transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-[#6e22db] transition-colors"
                 style={mono}
               >
                 <LogIn size={14} className="text-slate-600" />
@@ -466,10 +466,10 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
             <a
               href="tel:+919599087959"
-              className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-lime-50 border border-lime-300 text-xs font-bold text-slate-900 tracking-wider uppercase"
+              className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-purple-50 border border-purple-200 text-xs font-bold text-slate-900 tracking-wider uppercase"
               style={mono}
             >
-              <PhoneCall size={14} className="text-lime-600" />
+              <PhoneCall size={14} className="text-[#6e22db]" />
               <span>Call 24/7 Desk (+91 9599087959)</span>
             </a>
 
@@ -483,11 +483,11 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                   el.scrollIntoView({ behavior: "smooth", block: "center" });
                 }
               }}
-              className="group/btn relative overflow-hidden w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#84cc16] text-slate-950 text-xs font-bold tracking-wider uppercase shadow-md shadow-lime-500/25 transition-all duration-300 hover:shadow-lg hover:shadow-lime-500/40 hover:-translate-y-0.5 cursor-pointer"
+              className="group/btn relative overflow-hidden w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#6e22db] text-white text-xs font-bold tracking-wider uppercase shadow-md shadow-purple-600/30 transition-all duration-300 hover:shadow-lg hover:shadow-purple-600/45 hover:-translate-y-0.5 cursor-pointer"
               style={mono}
             >
-              <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
-              <div className="absolute inset-0 bg-[#a3e635] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
+              <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
+              <div className="absolute inset-0 bg-[#7c3aed] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
               <span className="relative z-10">Book Now</span>
               <ArrowRight size={14} className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
             </a>

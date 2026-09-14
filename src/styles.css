@@ -119,6 +119,48 @@
   --sidebar-ring: oklch(0.82 0.03 85);
 }
 
+/* ═════════════════════════════════════════════════════════════════════════════
+ * MOBILE-ONLY LUXURY PALETTE (ELECTRIC VIOLET & MIDNIGHT PLUM)
+ * Strictly applied for screens <= 767px. Desktop (>= 768px) is 100% untouched.
+ * ═════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  :root {
+    /* Mobile-only brand tokens */
+    --primary: #6e22db;
+    --primary-foreground: #ffffff;
+    --accent: #261042;
+    --accent-foreground: #ffffff;
+    --ring: #7c3aed;
+    --card: #faf7fd;
+    --card-foreground: #16131d;
+    --border: rgba(110, 34, 219, 0.12);
+
+    /* Remap Tailwind lime color scale on mobile to electric violet & lilac spectrum */
+    --color-lime-50: #faf5ff;
+    --color-lime-100: #f3e8ff;
+    --color-lime-200: #e9d5ff;
+    --color-lime-300: #d8b4fe;
+    --color-lime-400: #b993fa;
+    --color-lime-500: #8b5cf6;
+    --color-lime-600: #7c3aed;
+    --color-lime-700: #6e22db;
+    --color-lime-800: #581c87;
+    --color-lime-900: #3b0764;
+    --color-lime-950: #261042;
+  }
+
+  .dark {
+    --primary: #8b5cf6;
+    --primary-foreground: #ffffff;
+    --accent: #39185d;
+    --accent-foreground: #faf5ff;
+    --ring: #8b5cf6;
+    --card: #1f0e38;
+    --card-foreground: #f5eeff;
+    --border: rgba(168, 85, 247, 0.2);
+  }
+}
+
 @layer base {
 /* ─────────────────────────────────────────────────────────────────────────────
  * PREMIUM LUXURY ANIMATIONS & GPU UTILITIES (60 FPS Hardware Accelerated)

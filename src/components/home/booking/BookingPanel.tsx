@@ -232,12 +232,12 @@ export function BookingPanel() {
                     onClick={() => setTab(k)}
                     className={`relative z-10 flex flex-1 sm:flex-initial h-9 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                       active
-                        ? "text-slate-950 bg-[#84cc16] font-bold shadow-xs"
+                        ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-xs"
                         : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50"
                     }`}
                     style={mono}
                   >
-                    <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-slate-950" : "text-slate-500"}`} />
+                    <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-white md:text-slate-950" : "text-slate-500"}`} />
                     <span className="truncate">{label}</span>
                   </button>
                 );
@@ -596,7 +596,7 @@ export function BookingPanel() {
             <button
               type="button"
               onClick={handleContinueToPackages}
-              className="group/btn relative overflow-hidden w-full sm:w-auto min-w-[220px] inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#84cc16] via-[#9ee838] to-[#84cc16] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-slate-950 shadow-[0_10px_30px_rgba(132,204,22,0.45),inset_0_1px_2px_rgba(255,255,255,0.75)] transition-all duration-300 hover:shadow-[0_15px_40px_rgba(132,204,22,0.6),inset_0_1px_2px_rgba(255,255,255,1)] hover:-translate-y-0.5 cursor-pointer"
+              className="group/btn relative overflow-hidden w-full sm:w-auto min-w-[220px] inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r max-sm:from-[#6e22db] max-sm:via-[#7c3aed] max-sm:to-[#6e22db] max-sm:text-white max-sm:shadow-[0_10px_30px_rgba(110,34,219,0.35)] sm:from-[#84cc16] sm:via-[#9ee838] sm:to-[#84cc16] sm:text-slate-950 sm:shadow-[0_10px_30px_rgba(132,204,22,0.45),inset_0_1px_2px_rgba(255,255,255,0.75)] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:shadow-[0_15px_40px_rgba(110,34,219,0.45)] hover:-translate-y-0.5 cursor-pointer"
               style={mono}
             >
               <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/60 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
