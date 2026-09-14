@@ -87,9 +87,9 @@ export default defineConfig(({ mode }) => {
         },
       },
     } as any),
-    nitro({
-      preset: process.env.NITRO_PRESET || (process.env.CF_PAGES ? "cloudflare-pages" : "vercel"),
-    }),
+   nitro({
+  preset: process.env.NITRO_PRESET || "node-server",
+}),
     viteReact(),
   ],
   };
