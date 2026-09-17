@@ -3,11 +3,6 @@
  * Handles enqueuing, atomic pop, processing, retry backoffs, and logs via FastAPI backend.
  */
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { renderTemplate } from "./templates";
-import { getActiveBrandingServer } from "../branding/branding.server";
-import { sendEmail } from "./channels/email";
-import { sendWhatsApp } from "./channels/whatsapp";
-import { sendInApp } from "./channels/in-app";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { generateAllBookingPdfsInternal } from "@/lib/booking-documents.functions";
 import { apiGet, apiPost, getTokenFromRequest } from "@/lib/FastApiClient";

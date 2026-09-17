@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ArrowRight, User, Phone, Mail, FileText, ChevronDown, ChevronUp, Check, AlertCircle, Sparkles, Info, ShieldAlert, Globe } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowRight, User, ChevronDown, ChevronUp, Check, AlertCircle, Info, ShieldAlert, Globe } from "lucide-react";
 import { toast } from "sonner";
 import { TicketingPassengerData, TicketingJourneyData, IndividualPassenger } from "../../hooks/useTicketingWorkflow";
 

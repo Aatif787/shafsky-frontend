@@ -1,22 +1,12 @@
 import React, { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
-  ShieldCheck,
-  ArrowLeft,
-  Calendar,
-  Users,
-  MapPin,
-  Sparkles,
+  ArrowLeft, Sparkles,
   Send,
   CheckCircle2,
-  MessageSquare,
-  FileText,
-  Clock,
-  Heart,
-  Shield,
-  Plane,
+  MessageSquare
 } from "lucide-react";
-import { display, mono } from "@/components/home/theme";
+import { display } from "@/components/home/theme";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import toursTravelImg from "@/assets/others/tours-travel.jpg";
@@ -137,7 +127,7 @@ function DedicatedSpecialServicesPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
 
-  const handleSubmitRequest = async (e: React.FormEvent) => {
+  const handleSubmitRequest = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!clientName.trim() || !phone.trim()) {
       alert("Please provide your name and contact phone number.");

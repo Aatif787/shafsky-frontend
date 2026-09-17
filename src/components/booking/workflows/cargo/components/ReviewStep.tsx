@@ -1,4 +1,3 @@
-import React from "react";
 import { ArrowLeft } from "lucide-react";
 import { ContactSection } from "@/components/booking/shared/ContactSection";
 import { ReviewSummary } from "@/components/booking/shared/ReviewSummary";

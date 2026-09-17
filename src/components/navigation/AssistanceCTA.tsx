@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "@tanstack/react-router";
 import { PhoneCall, Sparkles, ArrowRight, ShieldCheck, Headphones } from "lucide-react";
 import { Magnetic, FadeInView } from "@/components/ui/interactions";

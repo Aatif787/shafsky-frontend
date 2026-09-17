@@ -4,11 +4,7 @@ import {
   User,
   Mail,
   Phone,
-  Globe,
-  FileText,
-  CheckCircle2,
-  AlertCircle,
-  Info,
+  Globe, CheckCircle2, Info,
   HeartPulse,
   Crown,
   Baby,
@@ -17,7 +13,7 @@ import {
   Briefcase,
   Sparkles,
   ChevronDown,
-  ChevronUp,
+  ChevronUp
 } from "lucide-react";
 import { FloatingInput, FloatingTextArea } from "@/components/ui/interactions";
 

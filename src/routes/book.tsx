@@ -1,4 +1,3 @@
-import React from "react";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { Navigation } from "@/components/Navigation";

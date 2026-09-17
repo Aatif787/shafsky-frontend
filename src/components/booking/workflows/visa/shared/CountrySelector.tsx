@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useId } from "react";
 import { Search, ChevronDown, Check, Globe, Loader2 } from "lucide-react";
-import { type Country, fetchAllCountries, fetchCountriesByKeyword, getFlagEmoji } from "@/data/countries";
+import { type Country, fetchAllCountries, fetchCountriesByKeyword } from "@/data/countries";
 
 interface CountrySelectorProps {
   label: string;

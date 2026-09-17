@@ -1,7 +1,6 @@
-import React from "react";
 import { ReviewSummary } from "../../shared/ReviewSummary";
 import { TicketingJourneyData, TicketingPassengerData, AncillarySelection } from "../../hooks/useTicketingWorkflow";
-import { Utensils, Armchair, Briefcase, Crown, Car, Hotel } from "lucide-react";
+import { Utensils, Armchair, Briefcase, Crown } from "lucide-react";
 
 interface TicketingReviewProps {
   journey: TicketingJourneyData;

@@ -1,4 +1,3 @@
-import React from "react";
 import { Clock, Phone, MessageSquare, AlertTriangle, ShieldCheck } from "lucide-react";
 import { UrgentAssistanceInfo } from "@/hooks/useJourneyEngine";
 

@@ -10,7 +10,6 @@ import {
 } from "@/lib/bookings.functions";
 import { pageMono, pageDisplay, Panel } from "@/components/site/PageShell";
 import {
-  Settings,
   Building,
   Palette,
   Plane,
@@ -21,10 +20,8 @@ import {
   MessageSquare,
   CreditCard,
   ShieldAlert,
-  Save,
-  CheckCircle2,
-  Loader2,
-  ExternalLink,
+  Save, Loader2,
+  ExternalLink
 } from "lucide-react";
 import { toast } from "sonner";
 import { CONTACT, NOTIFICATION } from "@/lib/constants";
@@ -168,7 +165,7 @@ function CentralizedSettingsView() {
     }
   }, [dbSettings]);
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       setSaving(true);

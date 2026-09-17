@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
-  Car,
   ArrowLeft,
   ArrowRight,
   Calendar,
@@ -11,18 +10,11 @@ import {
   Sparkles,
   Send,
   CheckCircle2,
-  MessageSquare,
-  ShieldCheck,
-  Crown,
+  MessageSquare
 } from "lucide-react";
-import { display, mono } from "@/components/home/theme";
-import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
+import { display } from "@/components/home/theme";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import home5Img from "@/assets/homepage/home5.jpeg";
-import vvipImg from "@/assets/homepage/vvip.jpeg";
-import buggyImg from "@/assets/homepage/buggy.jpeg";
-import home2Img from "@/assets/homepage/home2.jpeg";
-import transportImg from "@/assets/others/transport.png";
 
 export const Route = createFileRoute("/solutions/cargo")({
   head: () => ({
@@ -173,7 +165,7 @@ function DedicatedTransportServicePage() {
     }
   };
 
-  const handleSubmitRequest = async (e: React.FormEvent) => {
+  const handleSubmitRequest = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!pickupLocation.trim() || !dropLocation.trim()) {
       alert("Please provide both pickup and drop locations.");

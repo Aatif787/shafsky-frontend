@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { EditorialPhoto } from "./EditorialPhoto";
 
@@ -78,12 +79,8 @@ export function HomepagePhotoCarousel() {
     el.addEventListener("mouseenter", handleMouseEnter);
     el.addEventListener("mouseleave", handleMouseLeave);
 
-    let lastScrollLeft = -1;
-
     const autoScrollTimer = setInterval(() => {
       if (isHovered || !el) return;
-
-      const maxScroll = el.scrollWidth - el.clientWidth;
 
       // If we've scrolled past the first set of photos, instantly jump back to the exact
       // same visual position in the first set to create an infinite loop.
@@ -126,12 +123,16 @@ export function HomepagePhotoCarousel() {
         }}
       >
         {INFINITE_PHOTOS.map((item, idx) => (
-          <div
+          <motion.div
             key={`${item.id}-${idx}`}
-            className="homepage-carousel-card snap-center shrink-0 rounded-2xl sm:rounded-3xl border-2 border-[#84cc16]/30 bg-transparent overflow-hidden shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] hover:border-[#84cc16] hover:shadow-[0_14px_40px_-5px_rgba(132,204,22,0.25)] transition-all duration-300"
+            className="homepage-carousel-card shine-card snap-center shrink-0 rounded-2xl sm:rounded-3xl border-2 border-[#84cc16]/30 bg-transparent overflow-hidden shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] hover:border-[#84cc16] hover:shadow-[0_14px_40px_-5px_rgba(132,204,22,0.25)] transition-shadow duration-300"
             style={{
               aspectRatio: "16 / 9",
             }}
+            initial={idx < 8 ? { opacity: 0, y: 18 } : false}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: Math.min(idx, 6) * 0.06, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ y: -8, scale: 1.025 }}
           >
             {/* Pure Uncropped Authentic Photograph — 16:9 Widescreen Harmony */}
             <div className="w-full h-full bg-slate-950/20">
@@ -145,10 +146,10 @@ export function HomepagePhotoCarousel() {
                 objectFit="cover" // 100% flush fit with matching 16:9 aspect ratio
                 containerBg="bg-transparent"
                 className="w-full h-full"
-                imageClassName="w-full h-full object-cover"
+                imageClassName="w-full h-full object-cover transition-transform duration-700"
               />
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

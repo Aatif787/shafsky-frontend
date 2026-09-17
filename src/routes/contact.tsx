@@ -16,7 +16,7 @@ import { submitContact } from "@/lib/contact.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { BUSINESS } from "@/lib/constants";
-import { display, mono } from "@/components/home/theme";
+import { display } from "@/components/home/theme";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -61,7 +61,7 @@ function ContactPage() {
     website: "",
   });
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
     try {

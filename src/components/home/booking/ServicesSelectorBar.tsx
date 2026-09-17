@@ -1,7 +1,6 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { SELECTOR_SERVICES } from "./selectorServices";
-import { mono } from "@/components/home/theme";
 
 export function ServicesSelectorBar({
   selectedService,

@@ -1,24 +1,16 @@
 import React, { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
-  Plane,
   ArrowLeft,
   ArrowRight,
   Calendar,
   Clock,
   Users,
-  MapPin,
-  Building2,
-  HeartPulse,
-  Crown,
-  ShieldCheck,
-  Send,
+  MapPin, Send,
   CheckCircle2,
-  Sparkles,
-  PhoneCall,
-  MessageSquare,
+  Sparkles, MessageSquare
 } from "lucide-react";
-import { display, mono } from "@/components/home/theme";
+import { display } from "@/components/home/theme";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { charterApi, CharterRequestPayload } from "@/lib/api/charterApi";
 
@@ -332,7 +324,7 @@ function DedicatedAirCharterPage() {
     }
   };
 
-  const handleStep1Next = (e: React.FormEvent) => {
+  const handleStep1Next = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!origin.trim() || !destination.trim()) {
       alert("Please specify both origin and destination.");
@@ -349,12 +341,12 @@ function DedicatedAirCharterPage() {
     setCurrentStep(2);
   };
 
-  const handleStep2Next = (e: React.FormEvent) => {
+  const handleStep2Next = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setCurrentStep(3);
   };
 
-  const handleSubmitRequest = async (e: React.FormEvent) => {
+  const handleSubmitRequest = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!clientName.trim() || !phone.trim()) {
       alert("Please provide your name and contact phone number.");

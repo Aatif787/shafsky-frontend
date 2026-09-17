@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  ShieldCheck,
   Edit2,
   CheckCircle2,
   AlertTriangle,
@@ -8,13 +7,11 @@ import {
   ArrowLeft,
   Plane,
   User,
-  Phone,
-  Mail,
-  Receipt,
+  Phone, Receipt,
   Sparkles,
   Lock,
   RefreshCw,
-  Info,
+  Info
 } from "lucide-react";
 import { AirportWorkflowState, formatBookingServiceDateTime } from "../../hooks/useAirportWorkflow";
 import { FlightItineraryStrip } from "./FlightItineraryStrip";

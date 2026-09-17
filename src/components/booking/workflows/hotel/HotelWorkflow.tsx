@@ -1,26 +1,15 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Hotel,
   Calendar,
   Users,
   MapPin,
   Sparkles,
   ShieldCheck,
   Clock,
-  Building2,
-  Coffee,
-  Car,
-  Wine,
-  CheckCircle2,
+  Building2, Car, CheckCircle2,
   ArrowRight,
-  MessageSquare,
-  PhoneCall,
-  Briefcase,
-  Heart,
-  UserCheck,
-  SlidersHorizontal,
-  Compass,
+  MessageSquare, UserCheck
 } from "lucide-react";
 import { useHotelWorkflow } from "@/components/booking/hooks/useHotelWorkflow";
 import { createBooking } from "@/lib/bookings.functions";
@@ -58,7 +47,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
 
   const [submitted, setSubmitted] = useState<boolean>(false);
 
-  const handleSubmitRequest = async (e: React.FormEvent) => {
+  const handleSubmitRequest = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!guest.fullName || !guest.phone || !guest.email) {
       toast.error("Please fill in your Contact Name, Phone, and Email.");

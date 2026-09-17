@@ -3,7 +3,7 @@
  * (Shafsky Aviation Services Architecture - Phase 1 Foundation)
  */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export interface BookingDraftState {
   leadPassengerName: string;

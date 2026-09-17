@@ -17,12 +17,8 @@ import {
   Plane,
   Check,
   CheckCircle2,
-  Sparkles,
-  ShieldCheck,
-  Clock,
-  Wifi,
-  Coffee,
-  ChevronRight,
+  Sparkles, Coffee,
+  ChevronRight
 } from "lucide-react";
 import {
   HotelInfo,
@@ -92,7 +88,7 @@ export function HotelDetailTemplate({
     window.open(`https://wa.me/${whatsAppPhone}?text=${text}`, "_blank");
   };
 
-  const handleEnquirySubmit = (e: React.FormEvent) => {
+  const handleEnquirySubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedEnquiry) return;
 

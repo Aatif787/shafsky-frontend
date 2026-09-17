@@ -1,5 +1,5 @@
 import { FlightData } from "@/services/flight/FlightTypes";
-import { AIRPORT_REGISTRY, getAirportRegistryEntry, AirportRegistryEntry } from "@/data/airportRegistry";
+import { getAirportRegistryEntry, AirportRegistryEntry } from "@/data/airportRegistry";
 import { ApiClient } from "@/lib/ApiClient";
 
 export interface ResolvedServiceAirport {

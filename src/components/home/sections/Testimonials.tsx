@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { C, display, mono } from "../theme";
-import { ShieldCheck, ArrowLeft, ArrowRight, Quote, Star } from "lucide-react";
+import { display, mono } from "../theme";
+import { ArrowLeft, ArrowRight, Quote, Star } from "lucide-react";
 
 interface Review {
   name: string;

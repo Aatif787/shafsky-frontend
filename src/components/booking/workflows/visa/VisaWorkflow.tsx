@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BookingProgressHeader } from "@/components/booking/shared/BookingProgressHeader";
 import { BookingCancelModal } from "@/components/booking/shared/BookingCancelModal";

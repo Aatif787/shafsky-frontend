@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plane, Calendar, Clock, Check } from "lucide-react";
+import { X, Plane, Check } from "lucide-react";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { IntelligentAirlineAutocomplete } from "./IntelligentAirlineAutocomplete";
 import { IntelligentAirportAutocomplete } from "./IntelligentAirportAutocomplete";
@@ -40,7 +40,8 @@ export function EditJourneyDrawer({
   const [date, setDate] = useState(serviceDate || new Date().toISOString().split("T")[0]);
   const [time, setTime] = useState("12:00");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Wired to both <form onSubmit> and a <button onClick>, so accept any synthetic event.
+  const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     onSave({
       flightNum: flightNum.toUpperCase().replace(/\s+/g, ""),

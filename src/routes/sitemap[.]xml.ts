@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import type {} from "@tanstack/react-start";
+import type { } from "@tanstack/react-start";
 import { AIRPORTS } from "@/data/airports";
 import { BUSINESS } from "@/lib/constants";
 

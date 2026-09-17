@@ -1,4 +1,3 @@
-import React from "react";
 import { Plane } from "lucide-react";
 
 export function DoublePlaneIcon({ className }: { className?: string }) {

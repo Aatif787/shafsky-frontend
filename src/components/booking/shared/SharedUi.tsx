@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronDown, Plus, Minus, Check } from "lucide-react";
+import { Plus, Minus, Check } from "lucide-react";
 
 export const INPUT_CLASSES =
   "w-full h-12 px-4 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm font-medium placeholder-slate-400 outline-none transition-all duration-200 hover:border-lime-400 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-xs";

@@ -1,6 +1,5 @@
-import React from "react";
 import { BookingSuccessPass } from "../../shared/BookingSuccessPass";
-import { MessageCircle, Phone, Mail, Clock, ShieldCheck, UserCheck } from "lucide-react";
+import { MessageCircle, Phone, Mail, Clock, UserCheck } from "lucide-react";
 
 interface TicketingSuccessProps {
   bookingRef: string;

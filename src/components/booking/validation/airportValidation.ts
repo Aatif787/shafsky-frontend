@@ -1,4 +1,4 @@
-import { validateContactDetails, validateRouteCities } from "./sharedValidation";
+import { validateRouteCities } from "./sharedValidation";
 
 export function validateMeetGreetForm(pickupCity: string, destinationCity: string): string | null {
   return validateRouteCities(pickupCity, destinationCity);

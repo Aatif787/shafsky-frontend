@@ -1,5 +1,4 @@
-import React from "react";
-import { Building2, User, FileText, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { Building2, FileText, ArrowRight, ArrowLeft } from "lucide-react";
 
 export interface BusinessDetailsStepProps {
   entityType: "Individual" | "Company" | "Importer" | "Exporter" | "Freight Forwarder";

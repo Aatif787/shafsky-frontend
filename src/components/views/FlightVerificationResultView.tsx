@@ -1,10 +1,8 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  CheckCircle2,
-  RefreshCw,
-  Plane,
+  CheckCircle2, Plane,
   PlaneTakeoff,
   PlaneLanding,
   Clock,
@@ -17,9 +15,7 @@ import {
   Layers,
   FileText,
   Edit2,
-  Sparkles,
-  AlertCircle,
-  RotateCcw,
+  Sparkles
 } from "lucide-react";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { format } from "date-fns";

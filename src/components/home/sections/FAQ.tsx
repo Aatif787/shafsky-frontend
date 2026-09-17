@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, Plus, Minus, MessageSquare, PhoneCall } from "lucide-react";
-import { C, display, mono } from "../theme";
-import { SectionLabel } from "./SectionLabel";
+import { Plus, Minus, MessageSquare, PhoneCall } from "lucide-react";
+import { display, mono } from "../theme";
 
 export function FAQ() {
   const faqs = [

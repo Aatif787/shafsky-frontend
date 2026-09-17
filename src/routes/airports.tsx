@@ -12,13 +12,11 @@ import {
   Headphones,
   Zap,
   ChevronRight,
-  ChevronLeft,
-  Filter,
-  SlidersHorizontal,
+  ChevronLeft
 } from "lucide-react";
-import { AIRPORTS, type Airport } from "@/data/airports";
+import { AIRPORTS } from "@/data/airports";
 import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
-import { getAirportAsset, getAirportPrimaryImage, getAirportImages } from "@/lib/airport-assets";
+import { getAirportPrimaryImage } from "@/lib/airport-assets";
 import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
 import { BUSINESS } from "@/lib/constants";
 
@@ -83,7 +81,6 @@ function AirportsIndexPage() {
 function AirportsListingView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("All Countries");
-  const [selectedService, setSelectedService] = useState("All Services");
   const [featuredOnly, setFeaturedOnly] = useState(false);
   const [selectedLetter, setSelectedLetter] = useState("All");
   const [sortOption, setSortOption] = useState("A - Z");

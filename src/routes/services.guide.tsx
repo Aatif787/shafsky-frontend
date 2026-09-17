@@ -1,5 +1,4 @@
-import React from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   PlaneLanding,
   PlaneTakeoff,
@@ -10,15 +9,13 @@ import {
   PhoneCall,
   MessageSquare,
   ArrowRight,
-  Sparkles,
-  Luggage,
-  Users,
-  Compass,
+  Sparkles, Users,
+  Compass
 } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/home/sections/Footer";
 import { BUSINESS } from "@/lib/constants";
-import { display, mono } from "@/components/home/theme";
+import { display } from "@/components/home/theme";
 
 export const Route = createFileRoute("/services/guide")({
   head: () => ({

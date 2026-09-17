@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
-import { Plane, Clock, CheckCircle2, RefreshCw, ArrowRight } from "lucide-react";
+import { Plane, Clock, RefreshCw, ArrowRight } from "lucide-react";
 import { FlightData } from "@/services/flight/FlightTypes";
 
 interface ValidatedFlightExperienceProps {

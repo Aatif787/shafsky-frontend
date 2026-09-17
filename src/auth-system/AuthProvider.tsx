@@ -1,7 +1,7 @@
-import React, { createContext, useEffect, useState, useTransition } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import type { Profile, Role, User, AuthContextType } from "./types";
 import { setAccessToken, getAccessToken, clearAccessToken } from "@/auth/tokenStore";
-import { apiAuthLogin, apiAuthRefresh, apiAuthLogout, apiAuthMe } from "@/auth/authClient";
+import { apiAuthLogin, apiAuthRefresh, apiAuthLogout } from "@/auth/authClient";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -9,7 +9,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [, startTransition] = useTransition();
 
   // Helper function to resolve the user's profile and role from backend metadata
   const fetchProfile = (apiUser: any): Profile => {
@@ -175,8 +174,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const cleanEmail = email.trim().toLowerCase();
       const cleanName = fullName.trim();
-
-      const { data, error } = await apiAuthLogin(cleanEmail, password);
+      const { error } = await apiAuthLogin(cleanEmail, password);
       if (error) return { error };
 
       try {
@@ -214,7 +212,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const updatePassword = async (password: string) => {
+  const updatePassword = async (_password: string) => {
     try {
       return { error: null };
     } catch (err) {

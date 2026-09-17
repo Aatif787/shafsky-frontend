@@ -1,4 +1,3 @@
-import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Coffee, Wifi, Clock, Bed, ShieldCheck, MapPin } from "lucide-react";
 import { HotelDetailTemplate } from "@/components/hotels/HotelDetailTemplate";

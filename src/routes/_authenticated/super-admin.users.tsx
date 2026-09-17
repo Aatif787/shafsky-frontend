@@ -8,10 +8,9 @@ import {
   SASearchBar,
   SADataTable,
   SAStatusBadge,
-  saMono,
-  saTheme,
+  saMono
 } from "@/components/super-admin/SAComponents";
-import { Users, UserX, UserCheck, Trash2, Loader2 } from "lucide-react";
+import { Users, UserX, UserCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/super-admin/users")({

@@ -7,32 +7,16 @@ import {
   MessageSquare,
   ShieldCheck,
   X,
-  Send,
-  Bed,
-  Clock,
+  Send, Clock,
   Coffee,
-  Plane,
-  Building,
-  Sparkles,
-  Info,
-  Calendar,
-  ChevronRight,
+  Plane, Sparkles, ChevronRight,
   Maximize2,
-  CheckCircle2,
-  Star,
-  Wifi,
-  Utensils,
-  Compass,
-  FileText,
-  Layers,
-  Luggage,
-  Receipt,
-  User,
-  ExternalLink,
+  CheckCircle2, Compass,
+  FileText, ExternalLink,
   MapPin,
   Navigation,
   Loader2,
-  Copy,
+  Copy
 } from "lucide-react";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 
@@ -304,7 +288,7 @@ function HolidayInnExpressDetailPage() {
     window.open(`https://wa.me/919999017646?text=${text}`, "_blank");
   };
 
-  const submitEnquiry = async (e: React.FormEvent) => {
+  const submitEnquiry = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedRoom || isSubmitting) return;
 

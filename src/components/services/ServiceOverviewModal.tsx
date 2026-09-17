@@ -3,13 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
 import {
   X,
-  CheckCircle2,
-  Clock,
-  UserCheck,
+  CheckCircle2, UserCheck,
   FileCheck2,
   ArrowRight,
   ShieldCheck,
-  Sparkles,
+  Sparkles
 } from "lucide-react";
 import { PlatformService } from "@/data/servicesPlatformData";
 

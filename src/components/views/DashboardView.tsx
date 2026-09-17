@@ -1,21 +1,16 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { createFileRoute, redirect, Link } from "@tanstack/react-router";
+import React, { useState, useEffect, useMemo } from "react";
+import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
-import { getSessionInfo } from "@/lib/session";
 import { useAuth } from "@/auth-system/useAuth";
 import { useServerFn } from "@tanstack/react-start";
 import { createBooking } from "@/lib/bookings.functions";
 import { getCustomerPaymentHistory } from "@/lib/payments.functions";
-import { listUserPassengers, savePassenger, deletePassenger } from "@/lib/passengers.functions";
 import {
   LayoutDashboard,
   Plane,
-  Calendar,
-  ShieldCheck,
-  Users,
+  Calendar, Users,
   FileText,
   CreditCard,
   Headphones,
@@ -24,23 +19,9 @@ import {
   Loader2,
   Plus,
   Trash2,
-  Edit2,
-  AlertCircle,
-  CheckCircle,
-  Upload,
-
-  ArrowRight,
-  ArrowLeft,
-  Home,
-  Bell,
-  HelpCircle,
-  Phone,
-  Mail,
-  User,
-  Globe2,
-  Info,
-  Download,
-  Share2,
+  Edit2, CheckCircle,
+  Upload, Home,
+  Bell, Download
 } from "lucide-react";
 import { toast } from "sonner";
 import { display, mono } from "@/components/dashboard/theme";
@@ -70,15 +51,15 @@ export default function DashboardView({ userId }: { userId: string }) {
   const [savingProfile, setSavingProfile] = useState(false);
 
   // New booking form
-  const [bkName, setBkName] = useState("");
-  const [bkEmail, setBkEmail] = useState("");
-  const [bkPhone, setBkPhone] = useState("");
+  const [bkName] = useState("");
+  const [bkEmail] = useState("");
+  const [bkPhone] = useState("");
   const [bkOrigin, setBkOrigin] = useState("");
   const [bkDest, setBkDest] = useState("");
   const [bkDate, setBkDate] = useState("");
   const [bkService, setBkService] = useState("Meet & Greet Concierge");
   const [bkAdults, setBkAdults] = useState(1);
-  const [bkChildren, setBkChildren] = useState(0);
+  const [bkChildren] = useState(0);
   const [bkNotes, setBkNotes] = useState("");
   const [bookingSubmitting, setBookingSubmitting] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
@@ -414,16 +395,8 @@ export default function DashboardView({ userId }: { userId: string }) {
     }
   };
 
-  const formatRefDate = () => {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}${m}${day}`;
-  };
-
   // Saved passengers CRUD
-  const handleAddPassenger = (e: React.FormEvent) => {
+  const handleAddPassenger = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!psName.trim() || !psNat.trim() || !psPass.trim()) {
       toast.error("Please fill in name, nationality, and passport details.");
@@ -485,7 +458,7 @@ export default function DashboardView({ userId }: { userId: string }) {
   };
 
   // Support Ticket creation
-  const handleCreateTicket = (e: React.FormEvent) => {
+  const handleCreateTicket = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!tkSub.trim() || !tkMsg.trim()) {
       toast.error("Please enter a subject and your message.");
@@ -527,7 +500,7 @@ export default function DashboardView({ userId }: { userId: string }) {
   };
 
   // Secure Document locker upload
-  const handleUploadDocument = (e: React.FormEvent) => {
+  const handleUploadDocument = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!docName.trim()) {
       toast.error("Please specify a document name/tag.");
@@ -582,7 +555,7 @@ export default function DashboardView({ userId }: { userId: string }) {
     }
   };
 
-  const handleReschedule = async (e: React.FormEvent) => {
+  const handleReschedule = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!reschedulingId || !rescheduleDate) return;
     setRescheduleSubmitting(true);
@@ -619,7 +592,7 @@ export default function DashboardView({ userId }: { userId: string }) {
     toast.info("Booking details pre-filled. Review and submit.");
   };
 
-  const handleChangePassword = async (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newPassword.trim()) {
       toast.error("Please enter a new password.");
@@ -890,7 +863,7 @@ export default function DashboardView({ userId }: { userId: string }) {
                         No recent operations or activities logged.
                       </div>
                     ) : (
-                      bookings.slice(0, 3).map((b, i) => (
+                      bookings.slice(0, 3).map((b) => (
                         <div key={b.id} className="flex gap-4 items-start text-left">
                           <div className="w-1.5 h-1.5 rounded-full bg-[#0d5a6e] mt-1.5 shrink-0" />
                           <div>
@@ -1120,7 +1093,7 @@ export default function DashboardView({ userId }: { userId: string }) {
                               level="M"
                               bgColor="#ffffff"
                               fgColor="#0d2a36"
-                              includeMargin={false}
+                              marginSize={0}
                             />
                           </div>
                           <span className="text-[8px] font-mono text-[#5b6b75] uppercase mt-3 tracking-widest">

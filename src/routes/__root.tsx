@@ -16,6 +16,7 @@ import { BrandingHead } from "../lib/branding/BrandingHead";
 import { Toaster } from "../components/ui/sonner";
 import { AuthProvider } from "../auth-system/AuthProvider";
 import { AppErrorBoundary } from "../components/ui/AppErrorBoundary";
+import { MotionChrome } from "../components/motion/MotionChrome";
 import {
   isChunkLoadError,
   handleChunkReload,
@@ -201,10 +202,12 @@ function RootComponent() {
         <AuthProvider>
           <BrandingProvider>
             <BrandingHead />
-            <div className="sticky-safe relative min-h-screen" style={{ position: "relative" }}>
-              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-              <Outlet />
-            </div>
+            <MotionChrome>
+              <div className="sticky-safe relative min-h-screen" style={{ position: "relative" }}>
+                {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+                <Outlet />
+              </div>
+            </MotionChrome>
             <DeferredWhatsApp />
             <Toaster position="top-right" richColors closeButton />
           </BrandingProvider>

@@ -10,7 +10,7 @@ import {
   saMono,
   saTheme,
 } from "@/components/super-admin/SAComponents";
-import { ShieldAlert, Plus, Lock, Globe } from "lucide-react";
+import { ShieldAlert, Plus, Globe } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/super-admin/security")({
@@ -33,7 +33,7 @@ function SecurityPage() {
     staleTime: 15000,
   });
 
-  const handleAddIp = async (e: React.FormEvent) => {
+  const handleAddIp = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!ipAddress) return;
     try {

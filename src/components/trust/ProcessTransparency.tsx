@@ -1,5 +1,3 @@
-import React from "react";
-import { motion } from "framer-motion";
 import { CalendarCheck, ShieldCheck, Radio, CheckCircle2, Sparkles, ArrowRight } from "lucide-react";
 import { TiltCard, FadeInView, StaggerContainer, StaggerItem } from "@/components/ui/interactions";
 

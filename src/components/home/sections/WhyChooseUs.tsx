@@ -1,7 +1,6 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { ShieldCheck, Headphones, Award, Globe2, Clock, Sparkles, Plane, Users } from "lucide-react";
-import { C, display, mono } from "../theme";
+import { display, mono } from "../theme";
 
 export function WhyChooseUs() {
   const items = [

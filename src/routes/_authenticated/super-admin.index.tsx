@@ -6,8 +6,7 @@ import {
   SAPageHeader,
   SAKpiCard,
   saTheme,
-  saMono,
-  saDisplay,
+  saMono
 } from "@/components/super-admin/SAComponents";
 import {
   Users,

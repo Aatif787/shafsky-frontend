@@ -8,7 +8,7 @@ import {
   saMono,
   saTheme,
 } from "@/components/super-admin/SAComponents";
-import { KeyRound, Loader2 } from "lucide-react";
+import { KeyRound } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/super-admin/roles")({

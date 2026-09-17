@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { ShieldCheck, Globe2, Users, Clock } from "lucide-react";
-import { C, mono, display } from "../theme";
+import { mono, display } from "../theme";
 
 function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
   const [v, setV] = useState(0);

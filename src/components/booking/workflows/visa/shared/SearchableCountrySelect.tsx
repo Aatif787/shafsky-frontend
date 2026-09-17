@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Search, ChevronDown, Check, Globe, Loader2 } from "lucide-react";
 import { type Country, fetchAllCountries, fetchCountriesByKeyword } from "@/data/countries";
 

@@ -1,7 +1,6 @@
-import React from "react";
 import { type FieldConfig } from "@/data/bookingConfigurations";
 import { AIRPORTS } from "@/data/airports";
-import { Plus, Minus, Check } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import { FlightTimePicker } from "./shared/FlightTimePicker";
 
 interface DynamicFormFieldProps {

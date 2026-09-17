@@ -1,7 +1,7 @@
 import React, { Component, type ReactNode } from "react";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
 import { isChunkLoadError, handleChunkReload } from "@/lib/chunk-recovery";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { RefreshCw, Home } from "lucide-react";
 
 interface Props {
   children: ReactNode;

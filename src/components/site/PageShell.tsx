@@ -56,7 +56,6 @@ export const darkTheme = {
 export function PageContainer({
   children,
   className = "",
-  tone = "cream",
 }: {
   children: ReactNode;
   className?: string;

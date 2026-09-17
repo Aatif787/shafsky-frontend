@@ -4,11 +4,11 @@ import { useBranding } from "@/lib/branding/branding.context";
 import { updateBrandingSettings } from "@/lib/branding/branding.service";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { 
-  Globe, Mail, Phone, MapPin, Upload, Sparkles, 
-  RefreshCw, CheckCircle, Smartphone, Eye, Layout, Palette
+import {
+  Globe, Mail, Phone, MapPin, Upload, Sparkles,
+  RefreshCw, CheckCircle, Eye, Layout, Palette
 } from "lucide-react";
-import { saTheme, saMono, saDisplay } from "@/components/super-admin/SAComponents";
+import { saDisplay } from "@/components/super-admin/SAComponents";
 
 export const Route = createFileRoute("/_authenticated/super-admin/branding")({
   component: SuperAdminBranding,
@@ -57,7 +57,7 @@ function SuperAdminBranding() {
       const extension = file.name.split(".").pop() || "png";
       const filename = `${fileKey}-${Date.now()}.${extension}`;
 
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from("branding")
         .upload(filename, file, { 
           cacheControl: "3600",
@@ -78,14 +78,15 @@ function SuperAdminBranding() {
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
+  // Wired to both <form onSubmit> and a <button onClick>, so accept any synthetic event.
+  const handleSave = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setIsSaving(true);
     const toastId = toast.loading("Saving brand settings...");
 
     try {
       await updateBrandingSettings({ data: formData });
-      await refetch();
+      refetch();
       toast.success("Branding settings saved successfully!", { id: toastId });
     } catch (err: any) {
       console.error(err);

@@ -8,7 +8,7 @@ import {
   deleteServiceConfig,
 } from "@/lib/bookings.functions";
 import { pageMono, pageDisplay, Panel } from "@/components/site/PageShell";
-import { Loader2, AlertTriangle, Plus, Trash2, Edit2, Check, X } from "lucide-react";
+import { Loader2, AlertTriangle, Plus, Trash2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/services")({
@@ -94,7 +94,7 @@ function ServicesManagerView() {
     });
   };
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await triggerUpdate({

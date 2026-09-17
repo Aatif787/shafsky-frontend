@@ -1,24 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  Crown,
-  Plane,
-  Calendar,
-  Clock,
-  Users,
-  MapPin,
-  Sparkles,
-  ArrowRight,
+  Crown, ArrowRight,
   ArrowLeft,
-  CheckCircle2,
-  ShieldCheck,
-  PhoneCall,
-  MessageSquare,
-  Building2,
-  HeartPulse,
-  Send,
+  CheckCircle2, Send
 } from "lucide-react";
-import { display, mono } from "@/components/home/theme";
+import { display } from "@/components/home/theme";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { ExperiencePhoto } from "../shared/ExperiencePhoto";
 import {
@@ -152,7 +138,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
     }
   }, [initialSubService]);
 
-  const handleNextFromStep1 = (e: React.FormEvent) => {
+  const handleNextFromStep1 = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!origin.trim() || !destination.trim()) {
       alert("Please enter both origin and destination.");
@@ -169,12 +155,12 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
     setStep(2);
   };
 
-  const handleNextFromStep2 = (e: React.FormEvent) => {
+  const handleNextFromStep2 = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStep(3);
   };
 
-  const handleSubmitQuote = async (e: React.FormEvent) => {
+  const handleSubmitQuote = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!customerName.trim() || !phone.trim()) {
       alert("Please provide your name and contact phone number.");

@@ -1,4 +1,3 @@
-import React from "react";
 import { ArrowLeft, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
 import type { VisaEvaluationResult } from "@/lib/visa/visaIntelligence";
 

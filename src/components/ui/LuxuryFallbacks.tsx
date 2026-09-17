@@ -1,21 +1,12 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import {
-  Sparkles,
   PhoneCall,
   ArrowRight,
   ShieldCheck,
-  Compass,
-  Building2,
-  Headphones,
-  Search,
-  CheckCircle2,
-  Plane,
-  AlertCircle,
-  HelpCircle,
+  Compass, Search, Plane
 } from "lucide-react";
-import { AIRPORTS, getAirport, type Airport } from "@/data/airports";
+import { getAirport, type Airport } from "@/data/airports";
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * 1. LUXURY ANIMATED SHIMMER SKELETON LOADERS

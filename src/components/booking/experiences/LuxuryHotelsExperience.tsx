@@ -1,19 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
-  Hotel,
-  Calendar,
-  Users,
-  MapPin,
-  Sparkles,
-  ArrowRight,
+  Hotel, ArrowRight,
   ArrowLeft,
-  CheckCircle2,
-  PhoneCall,
-  MessageSquare,
-  ShieldCheck,
-  Building,
+  CheckCircle2
 } from "lucide-react";
-import { display, mono } from "@/components/home/theme";
+import { display } from "@/components/home/theme";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { ExperiencePhoto } from "../shared/ExperiencePhoto";
 import {
@@ -124,7 +115,7 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
   const activeSubObj = HOTEL_SUB_SERVICES.find((s) => s.id === subService) || HOTEL_SUB_SERVICES[0];
   const finalCity = customCity.trim() ? customCity : destination;
 
-  const handleNextFromStep1 = (e: React.FormEvent) => {
+  const handleNextFromStep1 = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!checkInDate || !checkOutDate) {
       alert("Please select both check-in and check-out dates.");
@@ -137,12 +128,12 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
     setStep(2);
   };
 
-  const handleNextFromStep2 = (e: React.FormEvent) => {
+  const handleNextFromStep2 = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStep(3);
   };
 
-  const handleSubmitFinal = async (e: React.FormEvent) => {
+  const handleSubmitFinal = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!guestName.trim() || !guestPhone.trim()) {
       alert("Please provide your name and contact phone number.");

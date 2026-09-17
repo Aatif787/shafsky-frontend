@@ -619,3 +619,88 @@ body {
     align-self: stretch;
   }
 }
+
+/* ── Cinematic motion layer ─────────────────────────────────────────────── */
+@keyframes routeFade {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+html.route-enter .sticky-safe {
+  animation: routeFade 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.route-cover .sticky-safe {
+  transform: scale(0.992);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes heroKenBurns {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.08) translate3d(-1.2%, -0.8%, 0);
+  }
+}
+
+@keyframes shineSweep {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-12deg);
+  }
+}
+
+.shine-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 45%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.42) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    transparent 100%
+  );
+  transform: translateX(-120%) skewX(-12deg);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.shine-card:hover::after {
+  animation: shineSweep 0.85s ease;
+}
+
+@media (min-width: 1024px) {
+  .hero-kenburns img {
+    animation: heroKenBurns 22s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-kenburns img,
+  .shine-card:hover::after,
+  html.route-enter .sticky-safe,
+  html.route-cover .sticky-safe {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+

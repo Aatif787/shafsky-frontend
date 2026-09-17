@@ -1,7 +1,6 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, ShieldCheck, Crown, Sparkles, Car, Headphones } from "lucide-react";
-import { C, display, mono } from "../theme";
+import { display, mono } from "../theme";
 
 export function Journey() {
   const steps = [
@@ -88,7 +87,8 @@ export function Journey() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.08 }}
-                className="relative rounded-2xl bg-white border border-[#e8dfc8] p-7 shadow-xs hover:border-[#c5a869] hover:shadow-xl transition-all duration-300 group flex flex-col justify-between"
+                whileHover={{ y: -8, scale: 1.015 }}
+                className="relative rounded-2xl bg-white border border-[#e8dfc8] p-7 shadow-xs hover:border-[#c5a869] hover:shadow-xl transition-shadow duration-300 group flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">

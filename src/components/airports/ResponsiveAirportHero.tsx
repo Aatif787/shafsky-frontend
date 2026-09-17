@@ -1,4 +1,3 @@
-import React from "react";
 import { getAirportAsset } from "@/lib/airport-assets";
 
 interface ResponsiveAirportHeroProps {

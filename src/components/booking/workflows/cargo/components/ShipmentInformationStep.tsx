@@ -1,5 +1,4 @@
-import React from "react";
-import { Package, MapPin, Scale, Box, ArrowRight, Check, AlertCircle } from "lucide-react";
+import { MapPin, Scale, ArrowRight, Check } from "lucide-react";
 import { ShipmentCard } from "../cards/ShipmentCard";
 
 export interface ShipmentInformationStepProps {

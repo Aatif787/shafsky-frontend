@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Breadcrumbs, BreadcrumbItem } from "@/components/navigation/Breadcrumbs";
 import { AssistanceCTA } from "@/components/navigation/AssistanceCTA";
@@ -33,12 +33,7 @@ export function PageJourneyWrapper({
   categoryHref,
   current,
   subService,
-  prevNav,
-  nextNav,
-  relatedServices,
   showBreadcrumbs = true,
-  showPrevNext = true,
-  showRelated = true,
   showCTA,
   showNav = true,
   showFooter = true,

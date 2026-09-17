@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Check, Info, HelpCircle } from "lucide-react";
 import type { DocumentRequirement, DocumentStatus } from "@/lib/visa/types";
 

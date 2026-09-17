@@ -1,24 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
-  ShieldCheck,
-  Clock,
-  User,
-  Phone,
-  Mail,
-  Plane,
-  RefreshCw,
+  ShieldCheck, RefreshCw,
   Plus,
-  Filter,
-  CheckCircle2,
-  AlertCircle,
-  MessageSquare,
-  FileText,
-  UserCheck,
+  Filter, UserCheck,
   Zap,
-  Search,
-  Calendar,
-  X,
-  History,
+  Search, X,
+  History
 } from "lucide-react";
 import { ApiClient } from "@/lib/ApiClient";
 import { toast } from "sonner";

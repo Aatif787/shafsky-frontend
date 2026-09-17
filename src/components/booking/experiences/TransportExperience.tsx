@@ -1,28 +1,15 @@
 import React, { useState, useEffect } from "react";
 import {
-  Car,
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  Luggage,
-  Sparkles,
-  ArrowRight,
+  Car, ArrowRight,
   ArrowLeft,
-  CheckCircle2,
-  PhoneCall,
-  MessageSquare,
-  Plane,
+  CheckCircle2
 } from "lucide-react";
-import { display, mono } from "@/components/home/theme";
-import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
+import { display } from "@/components/home/theme";
 import { ExperiencePhoto } from "../shared/ExperiencePhoto";
 import {
-  INPUT_CLASSES,
-  SELECT_CLASSES,
-  TEXTAREA_CLASSES,
+  INPUT_CLASSES, TEXTAREA_CLASSES,
   FieldLabel,
-  CounterField,
+  CounterField
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
 import { enquiryApi } from "@/lib/api/enquiryApi";
@@ -103,7 +90,7 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
   const activeSubObj = TRANSPORT_SUB_SERVICES.find((s) => s.id === subService) || TRANSPORT_SUB_SERVICES[0];
   const isAirportPickup = pickup.toLowerCase().includes("airport") || pickup.toLowerCase().includes("terminal") || pickup.toLowerCase().includes("t3") || pickup.toLowerCase().includes("t2");
 
-  const handleNextFromStep1 = (e: React.FormEvent) => {
+  const handleNextFromStep1 = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!pickup.trim() || !dropoff.trim()) {
       alert("Please provide both pickup and drop-off locations.");
@@ -116,12 +103,12 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
     setStep(2);
   };
 
-  const handleNextFromStep2 = (e: React.FormEvent) => {
+  const handleNextFromStep2 = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStep(3);
   };
 
-  const handleSubmitFinal = async (e: React.FormEvent) => {
+  const handleSubmitFinal = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!guestName.trim() || !guestPhone.trim()) {
       alert("Please provide your name and contact phone number.");

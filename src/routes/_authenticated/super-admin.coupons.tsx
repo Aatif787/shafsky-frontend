@@ -6,10 +6,8 @@ import { listCoupons, createCoupon, toggleCoupon, deleteCoupon } from "@/lib/sup
 import {
   SAPageHeader,
   SASearchBar,
-  SADataTable,
-  SAStatusBadge,
-  saMono,
-  saTheme,
+  SADataTable, saMono,
+  saTheme
 } from "@/components/super-admin/SAComponents";
 import { Percent, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -46,7 +44,7 @@ function CouponsPage() {
       .includes(search.toLowerCase());
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await execCreate({

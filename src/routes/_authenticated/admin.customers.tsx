@@ -30,23 +30,10 @@ import {
   Search,
   User,
   Plane,
-  Mail,
-  Phone,
-  Building,
-  History,
-  Lock,
-  FileText,
+  Mail, History, FileText,
   CreditCard,
-  Headphones,
-  Settings,
-  MessageSquare,
-  Bookmark,
-  ShieldCheck,
-  Send,
-  Upload,
-  RefreshCw,
-  Gift,
-  Plus,
+  Headphones, Bookmark, Send,
+  Upload, Gift
 } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -335,7 +322,7 @@ function CustomersManagerView() {
     );
   }
 
-  const handleUpdateProfile = async (e: React.FormEvent) => {
+  const handleUpdateProfile = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await runUpdateCustomer360({
@@ -367,7 +354,7 @@ function CustomersManagerView() {
     }
   };
 
-  const handleCreateNoteSubmit = async (e: React.FormEvent) => {
+  const handleCreateNoteSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newNoteContent.trim()) return;
     try {
@@ -386,7 +373,7 @@ function CustomersManagerView() {
     }
   };
 
-  const handleSendTicketMessage = async (e: React.FormEvent) => {
+  const handleSendTicketMessage = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!replyText.trim() || !selectedTicketId) return;
     try {
@@ -428,7 +415,7 @@ function CustomersManagerView() {
     }
   };
 
-  const handleUploadDocSubmit = async (e: React.FormEvent) => {
+  const handleUploadDocSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!uploadFileName || !uploadBase64) {
       toast.error("Please select a file to upload");

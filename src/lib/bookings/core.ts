@@ -1,9 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth, optionalSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { enqueueNotification } from "@/lib/notifications/queue";
 import { checkBookingEligibility, parseFlightDateTime } from "@/services/flight/FlightTimeUtils";
-import { apiGet, apiPost, apiPatch, apiDelete, getTokenFromRequest } from "@/lib/FastApiClient";
+import { apiGet, apiPost, getTokenFromRequest } from "@/lib/FastApiClient";
 import type {
   BookingItem,
   AssignableStaffMember,
@@ -11,10 +10,6 @@ import type {
   NotificationLogItem,
   BookingHistoryItem,
 } from "@/types/fastapi";
-import { assertPermission, assertStaffUser, isStaffUser } from "@/lib/permissions";
-import { requireAdminRole } from "@/lib/admin.middleware";
-import type { Json, Database } from "@/integrations/supabase/types";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const BookingInput = z.object({
   contact_name: z.string().trim().min(2).max(120),
@@ -341,19 +336,7 @@ export const createBooking = createServerFn({ method: "POST" })
       ? `${cleanData.notes}\n${verificationNotes}`
       : verificationNotes;
 
-    const { services, ...bookingFields } = cleanData;
-
-    const payload = {
-      ...bookingFields,
-      company: bookingFields.company || null,
-      return_date: bookingFields.return_date || null,
-      aircraft_preference: bookingFields.aircraft_preference || null,
-      service_type: bookingFields.service_type || null,
-      notes: appendedNotes,
-      user_id: userId,
-      verification_type: verificationType,
-      services: services || [],
-    };
+    const { services } = cleanData;
 
     const airportPayload = {
       service_package: cleanData.service_type || "STANDARD_MEET_GREET",

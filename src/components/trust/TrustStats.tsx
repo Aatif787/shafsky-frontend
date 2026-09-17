@@ -1,5 +1,3 @@
-import React from "react";
-import { motion } from "framer-motion";
 import { Award, Building2, Users, ShieldCheck, Sparkles } from "lucide-react";
 import { TiltCard, FadeInView, StaggerContainer, StaggerItem } from "@/components/ui/interactions";
 

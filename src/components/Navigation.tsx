@@ -8,19 +8,17 @@ import {
   Plane,
   ChevronDown,
   Crown,
-  Hotel,
-  Package,
-  HeartPulse,
-  Car,
+  Hotel, Car,
   PhoneCall,
   ArrowRight,
   ArrowLeft,
   User,
   LogIn,
-  ShieldCheck,
+  ShieldCheck
 } from "lucide-react";
 import { useBranding } from "@/lib/branding/branding.context";
-import { C, mono, display } from "@/components/home/theme";
+import { mono, display } from "@/components/home/theme";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ServiceMenuItem {
   title: string;
@@ -189,7 +187,12 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
             )}
 
             <Link to="/" className="flex items-center gap-3 group shrink-0">
-              <div className="relative flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-lime-50 border-2 border-lime-500/40 p-1 shadow-sm group-hover:border-lime-500 transition-all duration-300">
+              <motion.div
+                className="relative flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-lime-50 border-2 border-lime-500/40 p-1 shadow-sm group-hover:border-lime-500 transition-all duration-300"
+                whileHover={{ scale: 1.08, rotate: -4 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 420, damping: 18 }}
+              >
                 <img
                   src={branding.logo_url || "/logo.png"}
                   alt="Shafsky Aviation Services"
@@ -198,7 +201,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                     (e.target as HTMLElement).style.display = "none";
                   }}
                 />
-              </div>
+              </motion.div>
               <div className="flex flex-col">
                 <span
                   className="text-[17px] sm:text-[19px] font-bold tracking-tight text-slate-900 group-hover:text-lime-600 transition-colors"
@@ -253,8 +256,16 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                   </Link>
 
                   {/* Enterprise Services Mega Menu Dropdown */}
-                  {isMega && isHovered && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-[clamp(560px,46vw,660px)] rounded-2xl bg-white border border-[#0a196f]/15 shadow-[0_16px_40px_rgba(10,25,111,0.08)] p-[clamp(12px,1.2vw,18px)] transition-all duration-200 z-50">
+                  <AnimatePresence>
+                    {isMega && isHovered && (
+                      <motion.div
+                        key="services-mega"
+                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                        className="absolute top-full left-1/2 -translate-x-1/2 w-[clamp(560px,46vw,660px)] rounded-2xl bg-white border border-[#0a196f]/15 shadow-[0_16px_40px_rgba(10,25,111,0.08)] p-[clamp(12px,1.2vw,18px)] z-50"
+                      >
                       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3 px-1">
                         <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#c5a059] font-bold">
                           Shafsky Enterprise Services
@@ -294,8 +305,9 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                           );
                         })}
                       </div>
-                    </div>
-                  )}
+                    </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             })}
@@ -335,7 +347,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               </Link>
             )}
 
-            <a
+            <motion.a
               href="/#book"
               onClick={(e) => {
                 const el = document.getElementById("book");
@@ -344,14 +356,16 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                   el.scrollIntoView({ behavior: "smooth", block: "center" });
                 }
               }}
-              className="group/btn relative overflow-hidden inline-flex items-center gap-2 rounded-xl bg-[#84cc16] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-950 shadow-md shadow-lime-500/20 transition-all duration-300 hover:shadow-lg hover:shadow-lime-500/40 hover:-translate-y-0.5 cursor-pointer"
+              whileHover={{ y: -3, scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="group/btn relative overflow-hidden inline-flex items-center gap-2 rounded-xl bg-[#84cc16] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-950 shadow-md shadow-lime-500/20 transition-shadow duration-300 hover:shadow-lg hover:shadow-lime-500/40 cursor-pointer"
               style={mono}
             >
               <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
               <div className="absolute inset-0 bg-[#a3e635] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
               <span className="relative z-10">Book Now</span>
               <ArrowRight size={14} className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
-            </a>
+            </motion.a>
           </div>
 
           {/* Mobile Menu Toggle Button */}
@@ -367,8 +381,15 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
       </div>
 
       {/* Mobile Full-Screen Drawer */}
-      {mobileOpen && (
-        <div className="lg:hidden fixed inset-x-0 top-full h-[calc(100vh-70px)] bg-white border-t border-slate-200 p-6 flex flex-col justify-between overflow-y-auto z-50 shadow-xl">
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:hidden fixed inset-x-0 top-full h-[calc(100vh-70px)] bg-white border-t border-slate-200 p-6 flex flex-col justify-between overflow-y-auto z-50 shadow-xl"
+          >
           <div className="space-y-4">
             <div
               className="text-[10px] uppercase tracking-[0.3em] text-[#6e22db] font-bold pb-2 border-b border-slate-200"
@@ -492,8 +513,9 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               <ArrowRight size={14} className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
             </a>
           </div>
-        </div>
-      )}
+        </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

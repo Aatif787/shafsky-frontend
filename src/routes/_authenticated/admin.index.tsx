@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { getAdminDashboardMetrics } from "@/lib/bookings.functions";
 import { pageDisplay, pageMono, Panel } from "@/components/site/PageShell";
-import { Loader2, AlertTriangle, ArrowUpRight, TrendingUp, Inbox, UserCheck2 } from "lucide-react";
+import { Loader2, AlertTriangle, ArrowUpRight, TrendingUp, Inbox } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   component: DashboardView,
@@ -58,7 +58,6 @@ function DashboardView() {
 
   // Guest vs Clerk
   const guest = metrics.bookings.filter((b) => !b.user_id).length;
-  const member = metrics.bookings.filter((b) => b.user_id).length;
 
   // Dates (Today and Upcoming)
   const todayStr = new Date().toISOString().slice(0, 10);

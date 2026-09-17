@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowRight, Sparkles, CheckCircle2, ChevronRight, PhoneCall, Check } from "lucide-react";
+import { X, ArrowRight, Sparkles, CheckCircle2, ChevronRight, PhoneCall } from "lucide-react";
 import { display, mono } from "../theme";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import planeImg from "@/assets/others/plane.png";
 import meetGreetImg from "@/assets/others/meetgreet.jpeg";
 import servicesImg from "@/assets/others/services.png";
 
-import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 
 interface SubServiceOption {
   label: string;
@@ -182,6 +181,7 @@ export function EnterpriseSolutions() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.08 }}
+              whileHover={{ y: -6 }}
               className="flex flex-col items-center text-center w-full group cursor-pointer"
               onClick={() => {
                 if (srv.id === "meet-greet-lounge") {

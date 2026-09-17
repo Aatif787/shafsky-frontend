@@ -1,9 +1,6 @@
-import type { Database } from "@/integrations/supabase/types";
 import {
   generateBookingEmailHtml,
-  generateWhatsAppText,
-  generateAdminNotificationText,
-  type BookingEmailPayload,
+  generateWhatsAppText, type BookingEmailPayload
 } from "./notification-templates";
 import { CONTACT, NOTIFICATION } from "./constants";
 import { apiGet, apiPost } from "./FastApiClient";

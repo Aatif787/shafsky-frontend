@@ -1,6 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Crown,
   PlaneLanding,
@@ -12,12 +11,9 @@ import {
   Check,
   ArrowRight,
   Plus,
-  Minus,
-  Sparkles,
-  Luggage,
-  Users,
+  Minus, Luggage
 } from "lucide-react";
-import { display, mono, C } from "../theme";
+import { display, mono } from "../theme";
 
 type FlowType = "arrival" | "departure" | "transit";
 

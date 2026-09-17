@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { ASSETS } from "@/lib/assets";
 
@@ -64,7 +63,7 @@ const ARRIVAL_IMAGES = [
   },
 ];
 
-export function ServicesGallery({ airportCity, airportCode }: ServicesGalleryProps) {
+export function ServicesGallery({}: ServicesGalleryProps) {
   return (
     <section className="px-4 py-12 sm:px-8 md:px-16 md:py-16 max-w-[1600px] mx-auto space-y-14">
       {/* ── 1. DEPARTURE SERVICES GALLERY ── */}

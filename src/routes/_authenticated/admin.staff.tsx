@@ -12,12 +12,7 @@ import {
 import { pageMono, pageDisplay, Panel } from "@/components/site/PageShell";
 import {
   Loader2,
-  AlertTriangle,
-  UserCheck2,
-  ShieldCheck,
-  UserPlus,
-  ShieldAlert,
-  Search,
+  AlertTriangle, UserPlus, Search,
   Filter,
   KeyRound,
   UserX,
@@ -25,7 +20,7 @@ import {
   Edit2,
   X,
   Mail,
-  Phone,
+  Phone
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -102,7 +97,7 @@ function EnterpriseUserManagementView() {
   }, [users, searchTerm, roleFilter, statusFilter]);
 
   // Handle Add User
-  const handleAddUserSubmit = async (e: React.FormEvent) => {
+  const handleAddUserSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!addEmail.trim() || !addName.trim()) {
       toast.error("Please enter email address and full name.");
@@ -135,7 +130,7 @@ function EnterpriseUserManagementView() {
   };
 
   // Handle Edit User
-  const handleEditUserSubmit = async (e: React.FormEvent) => {
+  const handleEditUserSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingUser) return;
 

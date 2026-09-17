@@ -1,13 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth, optionalSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { enqueueNotification } from "@/lib/notifications/queue";
-import { checkBookingEligibility, parseFlightDateTime } from "@/services/flight/FlightTimeUtils";
-import { apiGet, apiPost, apiPatch, apiDelete, getTokenFromRequest } from "@/lib/FastApiClient";
-import { assertPermission, assertStaffUser, isStaffUser } from "@/lib/permissions";
-import { requireAdminRole } from "@/lib/admin.middleware";
-import type { Json, Database } from "@/integrations/supabase/types";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { apiGet, apiPost, apiPatch, getTokenFromRequest } from "@/lib/FastApiClient";
 
 export const updateBookingDetailsServer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

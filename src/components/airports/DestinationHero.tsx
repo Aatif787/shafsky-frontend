@@ -4,7 +4,7 @@ import { ArrowDown, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Airport } from "@/data/airports";
 import { DARK, mono } from "./Atoms";
-import { getAirportAsset, getAirportImages, getAirportHeroImages } from "@/lib/airport-assets";
+import { getAirportAsset, getAirportHeroImages } from "@/lib/airport-assets";
 import { ResponsiveAirportHero } from "./ResponsiveAirportHero";
 
 export function DestinationHero({ a }: { a: Airport }) {
@@ -56,12 +56,11 @@ export function DestinationHero({ a }: { a: Airport }) {
 
   const heroZoom = motionReady ? { opacity: 0 } : false;
   const fadeUp = motionReady ? { opacity: 0, y: 20 } : false;
-  const fadeUpSm = motionReady ? { opacity: 0, y: 15 } : false;
 
   return (
     <section
       onWheel={handleWheel}
-      className="relative flex h-[100svh] min-h-[560px] w-full flex-col overflow-hidden p-2 sm:p-4 md:p-6 select-none"
+      className="relative flex h-auto min-h-0 w-full flex-col overflow-hidden p-2 sm:p-4 lg:h-[100svh] lg:min-h-[560px] lg:p-6 select-none"
       style={{ backgroundColor: DARK.bg }}
     >
       {/* Top Header Bar */}
@@ -84,7 +83,7 @@ export function DestinationHero({ a }: { a: Airport }) {
         )}
       </div>
 
-      <div className="relative min-h-0 w-full flex-1 overflow-hidden rounded-[1.5rem] border border-white/10 shadow-2xl sm:rounded-[2.5rem] bg-slate-900">
+      <div className="relative aspect-[16/9] w-full flex-none overflow-hidden rounded-[1.5rem] border border-white/10 shadow-2xl sm:rounded-[2.5rem] bg-slate-900 lg:aspect-auto lg:min-h-0 lg:flex-1 lg:hero-kenburns">
         {/* PURE CRYSTAL-CLEAR IMAGE (ZERO DARK SHADOWS OR HEAVY BLACK GRADIENTS) */}
         <AnimatePresence mode="sync">
           {hasDynamicHero && slide === 0 ? (
@@ -115,10 +114,7 @@ export function DestinationHero({ a }: { a: Airport }) {
               <img
                 src={images[slide] || images[0]}
                 alt={`${a.city} Airport View ${slide + 1}`}
-                className="h-full w-full object-cover"
-                style={{
-                  objectPosition: "center center",
-                }}
+                className="h-full w-full object-cover object-center"
               />
             </motion.div>
           )}
@@ -189,7 +185,7 @@ export function DestinationHero({ a }: { a: Airport }) {
         initial={false}
         animate={motionReady ? { y: [0, 6, 0] } : { y: 0 }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-6 right-8 z-10 flex flex-col items-center gap-2 text-[9px] uppercase tracking-[0.4em] text-slate-500 font-bold"
+        className="absolute bottom-6 right-8 z-10 hidden flex-col items-center gap-2 text-[9px] uppercase tracking-[0.4em] text-slate-500 font-bold lg:flex"
         style={mono}
       >
         Scroll

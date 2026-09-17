@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -10,15 +10,13 @@ import {
   ChevronDown,
   CalendarDays,
   Users,
-  Package,
-  Crown,
-  X,
-  ArrowRight,
+  Package, X,
+  ArrowRight
 } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { format, parseISO, isValid } from "date-fns";
-import { C, mono, display } from "../theme";
+import { mono, display } from "../theme";
 import { DoublePlaneIcon } from "./DoublePlaneIcon";
 
 const FIELD =
@@ -56,7 +54,7 @@ export function BookingPanel() {
   }, []);
 
   // Field validation touched states
-  const [touched, setTouched] = useState({
+  const [, setTouched] = useState({
     flightNumber: false,
     departDate: false,
     flightNumber2: false,
@@ -377,7 +375,7 @@ export function BookingPanel() {
                       }
                     }}
                     disabled={{ before: todayStart }}
-                    initialFocus
+                    autoFocus
                   />
                 </PopoverContent>
               </Popover>

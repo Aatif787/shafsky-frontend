@@ -1,7 +1,5 @@
-import React from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
-  Crown,
   Hotel,
   Ticket,
   Car,
@@ -11,7 +9,7 @@ import {
   Sparkles,
   ArrowRight,
   ShieldCheck,
-  Building2,
+  Building2
 } from "lucide-react";
 import { TiltCard, StaggerContainer, StaggerItem } from "@/components/ui/interactions";
 
@@ -135,8 +133,6 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
     serviceId: "jet_charter",
   },
 };
-
-const subServices = [];
 
 function resolveIntelligentSuggestions(pathname: string, searchLocation: any): RelatedServiceItem[] {
   let sub = "";

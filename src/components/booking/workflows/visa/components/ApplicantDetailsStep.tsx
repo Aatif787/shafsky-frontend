@@ -1,4 +1,3 @@
-import React from "react";
 import { ArrowLeft, ArrowRight, Briefcase, Plus } from "lucide-react";
 import type { IndividualApplicant } from "../VisaWorkflow";
 import { ApplicantCard } from "../cards/ApplicantCard";

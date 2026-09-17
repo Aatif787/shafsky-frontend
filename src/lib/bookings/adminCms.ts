@@ -2,12 +2,9 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth, optionalSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { enqueueNotification } from "@/lib/notifications/queue";
-import { checkBookingEligibility, parseFlightDateTime } from "@/services/flight/FlightTimeUtils";
-import { apiGet, apiPost, apiPatch, apiDelete, getTokenFromRequest } from "@/lib/FastApiClient";
-import { assertPermission, assertStaffUser, isStaffUser } from "@/lib/permissions";
+import { apiGet, apiPost, apiDelete, getTokenFromRequest } from "@/lib/FastApiClient";
+import { assertPermission } from "@/lib/permissions";
 import { requireAdminRole } from "@/lib/admin.middleware";
-import type { Json, Database } from "@/integrations/supabase/types";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { autoAssignBookingIfNeeded } from "./core";
 import type {

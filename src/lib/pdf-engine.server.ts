@@ -718,7 +718,7 @@ export async function generateCancellationConfirmationPdf(booking: any): Promise
 
 export async function generateRefundReceiptPdf(booking: any): Promise<Uint8Array> {
   const ctx = await createBasePdf("Refund Receipt", booking.booking_ref);
-  const { page, font, bold, mono, colors, width, height } = ctx;
+  const { page, font, bold, colors, width, height } = ctx;
   
   let y = height - 140;
   
@@ -744,7 +744,7 @@ export async function generateRefundReceiptPdf(booking: any): Promise<Uint8Array
 
 export async function generateBookingSummaryPdf(booking: any): Promise<Uint8Array> {
   const ctx = await createBasePdf("Booking Summary", booking.booking_ref);
-  const { page, font, bold, colors, width, height } = ctx;
+  const { page, font, bold, colors, height } = ctx;
   
   let y = height - 140;
   
