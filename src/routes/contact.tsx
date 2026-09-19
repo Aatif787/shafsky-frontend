@@ -66,8 +66,8 @@ function ContactPage() {
 
   const contactMethods = [
     {
-      title: "24/7 Helpline",
-      value: "+91 9599087959",
+      title: "24/7 Helpline & Mobile",
+      value: "+91 9599087959 / +91 9599615459",
       desc: "Instant phone assistance anytime",
       actionText: "Call Now",
       actionHref: "tel:+919599087959",
@@ -75,8 +75,8 @@ function ContactPage() {
       highlight: true,
     },
     {
-      title: "WhatsApp Support",
-      value: "Direct Chat",
+      title: "WhatsApp & Support",
+      value: "+91 9599087959",
       desc: "Fast responses on WhatsApp",
       actionText: "Chat on WhatsApp",
       actionHref: "https://wa.me/919599087959?text=Hello%20Shafsky%20Aviation,%20I%20have%20an%20inquiry.",
@@ -85,10 +85,10 @@ function ContactPage() {
     },
     {
       title: "Email Us",
-      value: "contact@shafskyaviation.com",
-      desc: "General inquiries and booking quotes",
+      value: "info@shafskyaviation.com",
+      desc: "shafskyaviation@gmail.com",
       actionText: "Send Email",
-      actionHref: "mailto:contact@shafskyaviation.com",
+      actionHref: "mailto:info@shafskyaviation.com",
       icon: Mail,
       highlight: false,
     },
@@ -166,19 +166,29 @@ function ContactPage() {
             <div className="lg:col-span-5 space-y-6 flex flex-col justify-between">
               <div>
                 <h3 className="text-xl sm:text-2xl font-bold text-slate-950" style={display}>
-                  Get in Touch
+                  Feel Free to Contact
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-                  Send us a message and our team will get back to you within a few minutes.
+                  Connect with Shafsky Aviation Services for 24/7 dedicated support and bespoke concierge assistance.
                 </p>
 
                 <div className="mt-6 space-y-4 text-xs text-slate-700">
                   <div className="flex items-start gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
                     <MapPin size={18} className="text-lime-600 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-bold text-slate-900 block">Office Address</span>
+                      <span className="font-bold text-slate-900 block">Operational Office</span>
                       <span className="text-slate-600 mt-0.5 block leading-relaxed">
-                        8/5 Ground Floor, West Mehram Nagar Gate No. 1, Opp. IGI Airport Terminal 1, New Delhi 110010, India.
+                        8/5, Ground Floor, West Mehram Nagar Gate No.1, Opp. IGI Airport, New Delhi -110010
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                    <MapPin size={18} className="text-lime-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold text-slate-900 block">Registered Office</span>
+                      <span className="text-slate-600 mt-0.5 block leading-relaxed">
+                        C-1/118, Lajpat Nagar-1, Near Defence Colony Flyover, New Delhi, Delhi &ndash; 110024
                       </span>
                     </div>
                   </div>
@@ -186,9 +196,9 @@ function ContactPage() {
                   <div className="flex items-start gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
                     <Clock size={18} className="text-lime-600 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-bold text-slate-900 block">Operating Hours</span>
+                      <span className="font-bold text-slate-900 block">Website &amp; Support</span>
                       <span className="text-slate-600 mt-0.5 block">
-                        24 Hours / 7 Days a Week (All 365 Days)
+                        <a href="https://shafskyaviation.com" target="_blank" rel="noopener noreferrer" className="text-lime-700 underline font-medium">shafskyaviation.com</a> &bull; 24 Hours / 7 Days a Week
                       </span>
                     </div>
                   </div>
@@ -198,7 +208,7 @@ function ContactPage() {
               <div className="p-4 rounded-2xl bg-lime-50/70 border border-lime-200 text-xs text-lime-900 font-mono">
                 <strong>Need Immediate Assistance?</strong>
                 <p className="mt-1 text-slate-700 font-sans">
-                  Call our 24/7 hotline directly at <a href="tel:+919599087959" className="font-bold text-lime-800 underline">+91 9599087959</a> for urgent flight bookings.
+                  Call our 24/7 hotline directly at <a href="tel:+919599087959" className="font-bold text-lime-800 underline">+91 9599087959</a> or <a href="tel:+919599615459" className="font-bold text-lime-800 underline">+91 9599615459</a>.
                 </p>
               </div>
             </div>

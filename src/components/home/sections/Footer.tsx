@@ -152,13 +152,30 @@ export function Footer() {
                   >
                     +919599087959
                   </a>
+                  {", "}
+                  <a
+                    href="tel:+919599615459"
+                    className="hover:text-[#cca028] transition-colors font-medium font-sans"
+                  >
+                    +919599615459
+                  </a>
+                </div>
+
+                <div>
+                  <span className="font-bold">Email: </span>
+                  <a
+                    href="mailto:info@shafskyaviation.com"
+                    className="hover:text-[#cca028] transition-colors font-medium font-sans"
+                  >
+                    info@shafskyaviation.com
+                  </a>
                 </div>
 
                 <div className="space-y-1">
                   <span className="font-bold block">Operational Office:</span>
                   <p className="text-white/90 leading-relaxed">
                     8/5, Ground Floor, West Mehram Nagar Gate No.1, Opp. IGI
-                    Airport Terminal 1, New Delhi -110010
+                    Airport, New Delhi -110010
                   </p>
                 </div>
 
