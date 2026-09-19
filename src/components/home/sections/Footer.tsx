@@ -14,7 +14,7 @@ export function Footer() {
     { label: "Wishlist", href: "/book" },
     { label: "Privacy policy", href: "/privacy-policy" },
     { label: "Terms and conditions", href: "/services/guide" },
-    { label: "Cancellation and refund", href: "/services/guide" },
+    { label: "Cancellation and refund", href: "/cancellation-and-refund" },
     { label: "Our Team", href: "/services/guide" },
     { label: "Career", href: "/contact" },
   ];

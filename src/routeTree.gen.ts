@@ -15,6 +15,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AirportsRouteImport } from './routes/airports'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookRouteImport } from './routes/book'
+import { Route as CancellationAndRefundRouteImport } from './routes/cancellation-and-refund'
 import { Route as CharterRouteImport } from './routes/charter'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FlightVerificationRouteImport } from './routes/flight-verification'
@@ -103,6 +104,11 @@ const AuthRoute = AuthRouteImport.update({
 const BookRoute = BookRouteImport.update({
   id: '/book',
   path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CancellationAndRefundRoute = CancellationAndRefundRouteImport.update({
+  id: '/cancellation-and-refund',
+  path: '/cancellation-and-refund',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CharterRoute = CharterRouteImport.update({
@@ -441,6 +447,7 @@ export interface FileRoutesByFullPath {
   '/airports': typeof AirportsRouteWithChildren
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/cancellation-and-refund': typeof CancellationAndRefundRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
@@ -508,6 +515,7 @@ export interface FileRoutesByTo {
   '/airports': typeof AirportsRouteWithChildren
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/cancellation-and-refund': typeof CancellationAndRefundRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
@@ -575,6 +583,7 @@ export interface FileRoutesById {
   '/airports': typeof AirportsRouteWithChildren
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/cancellation-and-refund': typeof CancellationAndRefundRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
@@ -644,6 +653,7 @@ export interface FileRouteTypes {
     | '/airports'
     | '/auth'
     | '/book'
+    | '/cancellation-and-refund'
     | '/charter'
     | '/contact'
     | '/flight-verification'
@@ -711,6 +721,7 @@ export interface FileRouteTypes {
     | '/airports'
     | '/auth'
     | '/book'
+    | '/cancellation-and-refund'
     | '/charter'
     | '/contact'
     | '/flight-verification'
@@ -777,6 +788,7 @@ export interface FileRouteTypes {
     | '/airports'
     | '/auth'
     | '/book'
+    | '/cancellation-and-refund'
     | '/charter'
     | '/contact'
     | '/flight-verification'
@@ -846,6 +858,7 @@ export interface RootRouteChildren {
   AirportsRoute: typeof AirportsRouteWithChildren
   AuthRoute: typeof AuthRoute
   BookRoute: typeof BookRoute
+  CancellationAndRefundRoute: typeof CancellationAndRefundRoute
   CharterRoute: typeof CharterRoute
   ContactRoute: typeof ContactRoute
   FlightVerificationRoute: typeof FlightVerificationRoute
@@ -914,6 +927,13 @@ declare module '@tanstack/react-router' {
       path: '/book'
       fullPath: '/book'
       preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cancellation-and-refund': {
+      id: '/cancellation-and-refund'
+      path: '/cancellation-and-refund'
+      fullPath: '/cancellation-and-refund'
+      preLoaderRoute: typeof CancellationAndRefundRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/charter': {
@@ -1472,6 +1492,7 @@ const rootRouteChildren: RootRouteChildren = {
   AirportsRoute: AirportsRouteWithChildren,
   AuthRoute: AuthRoute,
   BookRoute: BookRoute,
+  CancellationAndRefundRoute: CancellationAndRefundRoute,
   CharterRoute: CharterRoute,
   ContactRoute: ContactRoute,
   FlightVerificationRoute: FlightVerificationRoute,
