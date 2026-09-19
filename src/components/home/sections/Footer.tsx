@@ -5,7 +5,7 @@ import { ICICI_REVIEW_MODE } from "../../../lib/config/reviewMode";
 
 export function Footer() {
   const allQuickLinks = [
-    { label: "About us", href: "/services/guide" },
+    { label: "About us", href: "/about-us" },
     { label: "Contact us", href: "/contact" },
     { label: "My account", href: "/auth" },
     { label: "Our services", href: "/solutions/concierge" },
@@ -67,11 +67,14 @@ export function Footer() {
         <div className="relative z-10 mx-auto max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-14 items-start">
             {/* Column 1: About Us (md:col-span-5) */}
-            <div className="md:col-span-5 space-y-5">
+            <div className="md:col-span-5 space-y-4">
+              <span className="text-[#cca028] text-xs uppercase tracking-widest font-semibold block">
+                WHO WE ARE
+              </span>
               <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                About Us
+                About Shafsky Aviation Services
               </h3>
-              <p className="text-sm sm:text-[15px] text-white/95 leading-relaxed">
+              <p className="text-sm sm:text-[14.5px] text-white/95 leading-relaxed">
                 We would like to introduce ourselves as Shafsky Aviation Services
                 Pvt. Ltd. with brand name{" "}
                 <span className="text-[#cca028] font-bold">
@@ -80,6 +83,11 @@ export function Footer() {
                 . &ldquo;Welcome &amp; Assist Services&rdquo; providing Meet
                 &amp; Greet and Lounge Service to domestic and international
                 passengers.
+              </p>
+              <p className="text-xs sm:text-[13.5px] text-white/80 leading-relaxed">
+                With an aviation legacy dating back to 1986, our highly trained
+                professionals deliver bespoke airport concierge, ensuring every
+                interaction reflects precision, discretion, and world-class service.
               </p>
             </div>
 

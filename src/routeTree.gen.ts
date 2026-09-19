@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutUsRouteImport } from './routes/about-us'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AirportsRouteImport } from './routes/airports'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -84,6 +85,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutUsRoute = AboutUsRouteImport.update({
+  id: '/about-us',
+  path: '/about-us',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountRoute = AccountRouteImport.update({
@@ -443,6 +449,7 @@ const ApiV1CharterRequestsRoute = ApiV1CharterRequestsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about-us': typeof AboutUsRoute
   '/account': typeof AccountRoute
   '/airports': typeof AirportsRouteWithChildren
   '/auth': typeof AuthRoute
@@ -511,6 +518,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about-us': typeof AboutUsRoute
   '/account': typeof AccountRoute
   '/airports': typeof AirportsRouteWithChildren
   '/auth': typeof AuthRoute
@@ -579,6 +587,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/about-us': typeof AboutUsRoute
   '/account': typeof AccountRoute
   '/airports': typeof AirportsRouteWithChildren
   '/auth': typeof AuthRoute
@@ -649,6 +658,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about-us'
     | '/account'
     | '/airports'
     | '/auth'
@@ -717,6 +727,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about-us'
     | '/account'
     | '/airports'
     | '/auth'
@@ -784,6 +795,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/about-us'
     | '/account'
     | '/airports'
     | '/auth'
@@ -854,6 +866,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AboutUsRoute: typeof AboutUsRoute
   AccountRoute: typeof AccountRoute
   AirportsRoute: typeof AirportsRouteWithChildren
   AuthRoute: typeof AuthRoute
@@ -899,6 +912,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about-us': {
+      id: '/about-us'
+      path: '/about-us'
+      fullPath: '/about-us'
+      preLoaderRoute: typeof AboutUsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account': {
@@ -1488,6 +1508,7 @@ const AirportsRouteWithChildren = AirportsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AboutUsRoute: AboutUsRoute,
   AccountRoute: AccountRoute,
   AirportsRoute: AirportsRouteWithChildren,
   AuthRoute: AuthRoute,
