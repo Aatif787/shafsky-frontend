@@ -25,6 +25,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsAndConditionsRouteImport } from './routes/terms-and-conditions'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authenticated/super-admin'
@@ -155,6 +156,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
+  id: '/terms-and-conditions',
+  path: '/terms-and-conditions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -463,6 +469,7 @@ export interface FileRoutesByFullPath {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
@@ -532,6 +539,7 @@ export interface FileRoutesByTo {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
@@ -601,6 +609,7 @@ export interface FileRoutesById {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
@@ -672,6 +681,7 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/terms-and-conditions'
     | '/admin'
     | '/dashboard'
     | '/super-admin'
@@ -741,6 +751,7 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/terms-and-conditions'
     | '/dashboard'
     | '/airports/$code'
     | '/api/process-queue'
@@ -809,6 +820,7 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/terms-and-conditions'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/super-admin'
@@ -880,6 +892,7 @@ export interface RootRouteChildren {
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsAndConditionsRoute: typeof TermsAndConditionsRoute
   ApiProcessQueueRoute: typeof ApiProcessQueueRoute
   HotelsAirportHotelRoute: typeof HotelsAirportHotelRoute
   HotelsCastleBlueRoute: typeof HotelsCastleBlueRoute
@@ -1010,6 +1023,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms-and-conditions': {
+      id: '/terms-and-conditions'
+      path: '/terms-and-conditions'
+      fullPath: '/terms-and-conditions'
+      preLoaderRoute: typeof TermsAndConditionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -1522,6 +1542,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsAndConditionsRoute: TermsAndConditionsRoute,
   ApiProcessQueueRoute: ApiProcessQueueRoute,
   HotelsAirportHotelRoute: HotelsAirportHotelRoute,
   HotelsCastleBlueRoute: HotelsCastleBlueRoute,

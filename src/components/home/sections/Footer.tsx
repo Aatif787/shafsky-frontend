@@ -13,7 +13,7 @@ export function Footer() {
     { label: "Blog", href: "/services/guide" },
     { label: "Wishlist", href: "/book" },
     { label: "Privacy policy", href: "/privacy-policy" },
-    { label: "Terms and conditions", href: "/services/guide" },
+    { label: "Terms and conditions", href: "/terms-and-conditions" },
     { label: "Cancellation and refund", href: "/cancellation-and-refund" },
     { label: "Our Team", href: "/services/guide" },
     { label: "Career", href: "/contact" },
