@@ -20,6 +20,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FlightVerificationRouteImport } from './routes/flight-verification'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -127,6 +128,11 @@ const GalleryRoute = GalleryRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -440,6 +446,7 @@ export interface FileRoutesByFullPath {
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -506,6 +513,7 @@ export interface FileRoutesByTo {
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -572,6 +580,7 @@ export interface FileRoutesById {
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -640,6 +649,7 @@ export interface FileRouteTypes {
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/admin'
@@ -706,6 +716,7 @@ export interface FileRouteTypes {
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/dashboard'
@@ -771,6 +782,7 @@ export interface FileRouteTypes {
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/_authenticated/admin'
@@ -839,6 +851,7 @@ export interface RootRouteChildren {
   FlightVerificationRoute: typeof FlightVerificationRoute
   GalleryRoute: typeof GalleryRoute
   LoginRoute: typeof LoginRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiProcessQueueRoute: typeof ApiProcessQueueRoute
@@ -936,6 +949,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -1457,6 +1477,7 @@ const rootRouteChildren: RootRouteChildren = {
   FlightVerificationRoute: FlightVerificationRoute,
   GalleryRoute: GalleryRoute,
   LoginRoute: LoginRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiProcessQueueRoute: ApiProcessQueueRoute,

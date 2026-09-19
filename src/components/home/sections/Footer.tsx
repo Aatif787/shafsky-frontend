@@ -12,7 +12,7 @@ export function Footer() {
     { label: "Hotels", href: "/hotels/airport-hotel" },
     { label: "Blog", href: "/services/guide" },
     { label: "Wishlist", href: "/book" },
-    { label: "Privacy policy", href: "/services/guide" },
+    { label: "Privacy policy", href: "/privacy-policy" },
     { label: "Terms and conditions", href: "/services/guide" },
     { label: "Cancellation and refund", href: "/services/guide" },
     { label: "Our Team", href: "/services/guide" },
