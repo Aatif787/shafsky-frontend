@@ -49,7 +49,7 @@ export const ASSETS = {
   blr: "/images/airports/blr/bangalore-kia-terminal-1.webp",
   hyd: "/images/airports/hyd/hyderabad-rgia-terminal.webp",
   lko: "/images/airports/lko/lucknow-ccsi-terminal.webp",
-  jai: "/images/airports/jai/jaipur-airport-terminal.webp",
+  jai: "/images/airports/jai/jaipur.png",
   amd: "/images/airports/amd/ahmedabad-svpia-terminal.webp",
   goi: "/images/airports/goi/goa-dabolim-terminal.webp",
   gox: "/images/airports/gox/goa-mopa-manohar-terminal.webp",

@@ -15,36 +15,23 @@ import { Footer } from "@/components/home/sections/Footer";
 import { submitContact } from "@/lib/contact.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { BUSINESS } from "@/lib/constants";
 import { display } from "@/components/home/theme";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Contact Us — Shafsky Aviation Services" },
-      {
-        name: "description",
-        content:
-          "Contact Shafsky Aviation Services 24/7 for airport Meet & Greet assistance, private jet charters, and general inquiries.",
-      },
-      { name: "robots", content: "index, follow" },
-      { property: "og:title", content: "Contact Us — Shafsky Aviation Services" },
-      {
-        property: "og:description",
-        content: "Get in touch with our 24/7 team for airport assistance and charter requests.",
-      },
-      { property: "og:url", content: `${BUSINESS.BASE_URL}/contact` },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Contact Us — Shafsky Aviation Services" },
-      {
-        name: "twitter:description",
-        content: "Get in touch with our 24/7 team for airport assistance and charter requests.",
-      },
-    ],
-    links: [{ rel: "canonical", href: `${BUSINESS.BASE_URL}/contact` }],
-  }),
+  head: () =>
+    pageHead({
+      title: "Contact Shafsky Aviation | 24/7 Airport Concierge Desk",
+      description:
+        "Contact Shafsky Aviation Services 24/7 for airport Meet & Greet, private charter, and VIP transfers. Call +91 9599087959 or email ops@shafskyaviation.com.",
+      path: "/contact",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Contact", path: "/contact" },
+        ]),
+      ],
+    }),
   component: ContactPage,
 });
 

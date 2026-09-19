@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
+import { pageHead } from "@/lib/seo";
 
 const flightVerificationSearchSchema = z.object({
   flight_number: z.string().optional().catch(""),
@@ -15,11 +16,13 @@ const flightVerificationSearchSchema = z.object({
 
 export const Route = createFileRoute("/flight-verification")({
   validateSearch: (search) => flightVerificationSearchSchema.parse(search),
-  head: () => ({
-    meta: [
-      { title: "Journey Details — Shafsky Aviation Services" },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Journey Details | Shafsky Aviation Services",
+      description: "Continue your Shafsky Aviation booking.",
+      path: "/flight-verification",
+      robots: "noindex, nofollow",
+    }),
   component: FlightVerificationPage,
 });
 

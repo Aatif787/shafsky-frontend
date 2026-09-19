@@ -1,6 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute('/gallery')({
+  head: () =>
+    pageHead({
+      title: "Gallery | Shafsky Aviation Services",
+      description: "Visual gallery of Shafsky Aviation Services.",
+      path: "/gallery",
+      robots: "noindex, follow",
+    }),
   component: GalleryRoute,
 })
 

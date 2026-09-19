@@ -1,0 +1,5 @@
+Contact: mailto:ops@shafskyaviation.com
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en, hi
+Canonical: https://shafskyaviation.com/.well-known/security.txt
+Canonical: https://shafskyaviation.in/.well-known/security.txt

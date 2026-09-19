@@ -11,18 +11,22 @@ import { enquiryApi } from "@/lib/api/enquiryApi";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import toursTravelImg from "@/assets/others/tours-travel.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/solutions/medical")({
-  head: () => ({
-    meta: [
-      { title: "Special Services & Bespoke Concierge — Shafsky Aviation" },
-      {
-        name: "description",
-        content:
-          "Ultra-luxury couple spa and wellness sanctuaries, curated romantic honeymoons, and armed PSO close protection with VIP luxury shopping escorts.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "VIP Special Services, Spa & Close Protection | Shafsky",
+      description:
+        "Bespoke spa and wellness, curated travel, and armed PSO close protection with VIP shopping escorts. Special services by Shafsky Aviation.",
+      path: "/solutions/medical",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Special Services", path: "/solutions/medical" },
+        ]),
+      ],
+    }),
   component: DedicatedSpecialServicesPage,
 });
 

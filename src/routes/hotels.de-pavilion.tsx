@@ -7,18 +7,23 @@ import {
   GalleryImage,
   RoomCategory,
 } from "@/components/hotels/types";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/hotels/de-pavilion")({
-  head: () => ({
-    meta: [
-      { title: "Hotel De Pavilion New Delhi — Shafsky Aviation" },
-      {
-        name: "description",
-        content:
-          "Book Delux, Premium & Family (Triple/Quad) Rooms at Hotel De Pavilion, Mahipalpur, near IGI Airport New Delhi. Official partner rates from ₹ 3,000/- (Including 12% GST). EPAI, CPAI and MAP meal plans.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Hotel De Pavilion Mahipalpur Near IGI Airport | Shafsky",
+      description:
+        "Book Deluxe, Premium and Family rooms at Hotel De Pavilion, Mahipalpur, near IGI Airport New Delhi. Partner rates from ₹3,000 including GST.",
+      path: "/hotels/de-pavilion",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Hotels", path: "/solutions/travel" },
+          { name: "Hotel De Pavilion", path: "/hotels/de-pavilion" },
+        ]),
+      ],
+    }),
   component: HotelDePavilionPage,
 });
 

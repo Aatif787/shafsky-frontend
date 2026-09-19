@@ -48,7 +48,7 @@ export function PageJourneyWrapper({
       {showNav && <Navigation visible={true} />}
 
       {/* 2. MAIN PAGE CONTENT CONTAINER */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16">
+      <main id="main-content" className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16">
         {/* BREADCRUMBS AT TOP OF CONTENT */}
         {showBreadcrumbs && (
           <div className="mb-6 sm:mb-8">

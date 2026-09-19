@@ -2,7 +2,7 @@
 // Images sourced from Unsplash featured (stable redirect) — keyed by landmark queries.
 
 import { ASSETS } from "@/lib/assets";
-import { getAirportImages } from "@/lib/airport-assets";
+import { getAirportHeroImages, getAirportImages } from "@/lib/airport-assets";
 import { AIRPORT_REGISTRY } from "./airportRegistry";
 
 const chaarminar = ASSETS.charminar;
@@ -898,11 +898,14 @@ export const AIRPORTS: Airport[] = [
     ...a,
     cover: dekJaiAir,
     mobCover: mobJaiAir,
-    slideshow: ["/images/airports/jai/jai-airport-home.webp"],
+    slideshow: [
+      "/images/airports/jai/jaipur.png",
+      "/images/airports/jai/jai-airport-home.webp",
+    ],
     gallery: [
-      "/images/airports/jai/clean-2.webp",
-      "/images/airports/jai/clean-3.webp",
-      "/images/airports/jai/clean-1.webp",
+      "/images/airports/jai/jaipur-airport-terminal.webp",
+      "/images/airports/jai/hawa-mahal.webp",
+      "/images/airports/jai/amber-fort.webp",
       a.gallery[0],
     ],
   })),
@@ -1412,12 +1415,14 @@ export function getAirport(code: string): Airport {
   const found = AIRPORTS.find((a) => a.code.toUpperCase() === upperCode);
   if (found) {
     const hubImgs = getAirportImages(found.code);
+    const heroImgs = getAirportHeroImages(found.code);
     if (hubImgs && hubImgs.length > 0) {
+      const homeImgs = heroImgs.length > 0 ? heroImgs : hubImgs;
       return {
         ...found,
-        cover: hubImgs[0],
-        mobCover: hubImgs[0],
-        slideshow: hubImgs,
+        cover: homeImgs[0],
+        mobCover: homeImgs[0],
+        slideshow: homeImgs,
         gallery: [...hubImgs, ...found.gallery.filter((g) => !hubImgs.includes(g))],
       };
     }

@@ -3,18 +3,23 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, MapPin, ExternalLink } from "lucide-react";
 import { display } from "@/components/home/theme";
 import hotelPageImg from "@/assets/others/hotelpage.png";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/solutions/travel")({
-  head: () => ({
-    meta: [
-      { title: "Luxury Hotels & VIP Accommodations — Shafsky Aviation" },
-      {
-        name: "description",
-        content:
-          "Preferred partner rates at distinguished palace resorts, 5-star executive suites, and airport transit hotels across India and worldwide.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Luxury Airport Hotels & VIP Stays in India | Shafsky",
+      description:
+        "Preferred rates at palace resorts, 5-star suites, and airport transit hotels near IGI Delhi and major Indian hubs. Book VIP hotel stays with Shafsky Aviation.",
+      path: "/solutions/travel",
+      keywords: ["airport hotel Delhi", "IGI airport hotel", "VIP hotel booking India"],
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Luxury Hotels", path: "/solutions/travel" },
+        ]),
+      ],
+    }),
   component: DedicatedLuxuryHotelsPage,
 });
 

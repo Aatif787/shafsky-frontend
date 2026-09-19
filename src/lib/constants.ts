@@ -15,6 +15,7 @@ export const BUSINESS = {
   DESCRIPTION:
     "Private charter, cargo, medical evacuation, aircraft management and Suswagatam airport concierge",
   BASE_URL: "https://shafskyaviation.com",
+  IN_URL: "https://shafskyaviation.in",
 } as const;
 
 export const NOTIFICATION = {

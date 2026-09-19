@@ -14,6 +14,9 @@ import {
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 
+import { TRANSPORT_OPTIONS } from "@/data/transportation/options";
+import type { TransportationVehicleItem } from "@/data/transportation/types";
+
 export type TransportSubService =
   | "Luxury Vehicles"
   | "MUV / Large Vehicles"
@@ -45,12 +48,40 @@ const TRANSPORT_SUB_SERVICES: {
     },
   ];
 
-interface TransportExperienceProps {
+export interface TransportExperienceProps {
   initialSubService?: string;
+  initialVehicleId?: string;
+  initialVehicleName?: string;
 }
 
-export function TransportExperience({ initialSubService }: TransportExperienceProps) {
+export function TransportExperience({
+  initialSubService,
+  initialVehicleId,
+  initialVehicleName,
+}: TransportExperienceProps) {
+  // Resolve preselected canonical vehicle from catalog if vehicle ID or name is provided
+  const allVehicles: TransportationVehicleItem[] = React.useMemo(() => {
+    return TRANSPORT_OPTIONS.flatMap((opt) => opt.vehicles || []);
+  }, []);
+
+  const preselectedVehicle = React.useMemo(() => {
+    if (initialVehicleId) {
+      const match = allVehicles.find(
+        (v) => v.id.toLowerCase() === initialVehicleId.toLowerCase()
+      );
+      if (match) return match;
+    }
+    if (initialVehicleName) {
+      const match = allVehicles.find(
+        (v) => v.name.toLowerCase() === initialVehicleName.toLowerCase()
+      );
+      if (match) return match;
+    }
+    return null;
+  }, [allVehicles, initialVehicleId, initialVehicleName]);
+
   const defaultSub: TransportSubService = (
+    (preselectedVehicle && (preselectedVehicle.category as TransportSubService)) ||
     TRANSPORT_SUB_SERVICES.find((s) => s.id.toLowerCase() === (initialSubService || "").toLowerCase())?.id ||
     "Luxury Vehicles"
   );
@@ -79,13 +110,18 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialSubService) {
+    if (preselectedVehicle) {
+      const match = TRANSPORT_SUB_SERVICES.find(
+        (s) => s.id.toLowerCase() === preselectedVehicle.category.toLowerCase()
+      );
+      if (match) setSubService(match.id);
+    } else if (initialSubService) {
       const match = TRANSPORT_SUB_SERVICES.find(
         (s) => s.id.toLowerCase() === initialSubService.toLowerCase()
       );
       if (match) setSubService(match.id);
     }
-  }, [initialSubService]);
+  }, [preselectedVehicle, initialSubService]);
 
   const activeSubObj = TRANSPORT_SUB_SERVICES.find((s) => s.id === subService) || TRANSPORT_SUB_SERVICES[0];
   const isAirportPickup = pickup.toLowerCase().includes("airport") || pickup.toLowerCase().includes("terminal") || pickup.toLowerCase().includes("t3") || pickup.toLowerCase().includes("t2");
@@ -129,12 +165,17 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
         origin: pickup.trim(),
         destination: dropoff.trim(),
         serviceDate: `${pickupDate}${pickupTime ? ` ${pickupTime}` : ""}`,
-        notes: specialRequests.trim() || undefined,
+        notes: [
+          specialRequests.trim(),
+          preselectedVehicle ? `Vehicle Requested: ${preselectedVehicle.name} (ID: ${preselectedVehicle.id})` : "",
+        ].filter(Boolean).join(" | ") || undefined,
         details: {
           passengers,
           luggage,
           flight_number: flightNumber || undefined,
           category: subService,
+          vehicle_id: preselectedVehicle?.id || initialVehicleId || undefined,
+          vehicle_name: preselectedVehicle?.name || initialVehicleName || undefined,
         },
       });
       if (res.success && res.data?.bookingRef) {
@@ -153,7 +194,8 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
   };
 
   const getWhatsAppLink = () => {
-    const summary = `Service: Transport Service%0ACategory: ${subService}%0APickup: ${pickup}%0ADrop-off: ${dropoff}%0ADate & Time: ${pickupDate} at ${pickupTime}%0APassengers: ${passengers} Guests, ${luggage} Bags${flightNumber ? `%0AFlight: ${flightNumber}` : ""}%0A%0AGuest: ${guestName}%0APhone: ${guestPhone}%0AEmail: ${guestEmail || "N/A"}%0ARequests: ${specialRequests || "None"}`;
+    const vehicleDetail = preselectedVehicle ? `Vehicle: ${preselectedVehicle.name} (${preselectedVehicle.id})%0A` : "";
+    const summary = `Service: Transport Service%0ACategory: ${subService}%0A${vehicleDetail}Pickup: ${pickup}%0ADrop-off: ${dropoff}%0ADate & Time: ${pickupDate} at ${pickupTime}%0APassengers: ${passengers} Guests, ${luggage} Bags${flightNumber ? `%0AFlight: ${flightNumber}` : ""}%0A%0AGuest: ${guestName}%0APhone: ${guestPhone}%0AEmail: ${guestEmail || "N/A"}%0ARequests: ${specialRequests || "None"}`;
     return `https://wa.me/919599087959?text=Hello%20Shafsky%20Transport%20Desk,%20I%20would%20like%20to%20book%20ground%20transport:%0A%0A${summary}`;
   };
 
@@ -292,6 +334,49 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
                 Vehicle Category: <strong className="text-slate-800">{subService}</strong> ({activeSubObj.vehicles})
               </p>
             </div>
+
+            {/* Preselected Vehicle Badge/Card */}
+            {preselectedVehicle && (
+              <div className="rounded-2xl border border-lime-300 bg-lime-50/70 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  {preselectedVehicle.image ? (
+                    <img
+                      src={preselectedVehicle.image}
+                      alt={preselectedVehicle.name}
+                      className="w-20 h-14 sm:w-24 sm:h-16 object-cover rounded-xl border border-lime-200 bg-white shadow-2xs"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-16 h-12 rounded-xl bg-white border border-lime-200 flex items-center justify-center text-lime-700">
+                      <Car size={20} />
+                    </div>
+                  )}
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-lime-800 bg-lime-200/80 px-2 py-0.5 rounded-full">
+                        Selected Vehicle
+                      </span>
+                      <span className="text-[10.5px] font-mono text-slate-500">
+                        {preselectedVehicle.id}
+                      </span>
+                    </div>
+                    <h3 className="text-base sm:text-lg font-extrabold text-slate-950 mt-0.5">
+                      {preselectedVehicle.name}
+                    </h3>
+                    <p className="text-xs text-slate-600">
+                      Tier: <strong className="text-slate-800">{preselectedVehicle.category}</strong>
+                      {preselectedVehicle.passengerCapacity ? ` • Up to ${preselectedVehicle.passengerCapacity} Pax` : ""}
+                      {preselectedVehicle.luggageCapacity ? ` • ${preselectedVehicle.luggageCapacity} Bags` : ""}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-left sm:text-right text-xs font-mono text-slate-600 border-t sm:border-t-0 pt-2 sm:pt-0 border-lime-200/60">
+                  <span className="inline-block text-[11px] font-semibold text-lime-900 bg-white px-2.5 py-1 rounded-lg border border-lime-200">
+                    Tariff Calculated by Route & Schedule
+                  </span>
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -473,8 +558,14 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
               <div className="font-bold text-slate-900 mb-2 font-mono uppercase tracking-wider text-[11px]">
                 Transport Summary:
               </div>
+              {preselectedVehicle && (
+                <div className="flex justify-between text-slate-600">
+                  <span>Selected Vehicle:</span>
+                  <span className="font-bold text-slate-950">{preselectedVehicle.name}</span>
+                </div>
+              )}
               <div className="flex justify-between text-slate-600">
-                <span>Vehicle:</span>
+                <span>Vehicle Tier:</span>
                 <span className="font-semibold text-slate-900">{subService}</span>
               </div>
               <div className="flex justify-between text-slate-600">
@@ -527,12 +618,15 @@ export function TransportExperience({ initialSubService }: TransportExperiencePr
         }}
         referenceId={submittedRef || ""}
         serviceTitle="Transport Service Request"
-        subServiceTitle={subService}
+        subServiceTitle={preselectedVehicle ? `${preselectedVehicle.name} (${subService})` : subService}
         customerName={guestName}
         customerPhone={guestPhone}
         whatsAppUrl={getWhatsAppLink()}
         isQuoteRequest={false}
         summaryItems={[
+          ...(preselectedVehicle
+            ? [{ label: "Selected Vehicle", value: preselectedVehicle.name }]
+            : []),
           { label: "Vehicle Tier", value: subService },
           { label: "Pickup", value: pickup },
           { label: "Drop-off", value: dropoff },

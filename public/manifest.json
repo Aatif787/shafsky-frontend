@@ -1,22 +1,26 @@
 {
   "short_name": "Shafsky",
   "name": "Shafsky Aviation Services",
-  "description": "Exclusive private jet charter, air ambulance, and VIP airport concierge across 20+ airports in India and worldwide.",
+  "description": "Airport Meet & Greet, VIP concierge, luxury transfers, and private charter across 20+ airports in India.",
   "icons": [
     {
       "src": "/logo.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
-      "src": "/shafsky-logo.png",
+      "src": "/logo.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "start_url": "/",
   "background_color": "#050b14",
   "theme_color": "#84cc16",
   "display": "standalone",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "lang": "en-IN",
+  "categories": ["travel", "business"]
 }

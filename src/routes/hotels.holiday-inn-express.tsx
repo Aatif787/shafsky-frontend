@@ -19,18 +19,23 @@ import {
   Copy
 } from "lucide-react";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/hotels/holiday-inn-express")({
-  head: () => ({
-    meta: [
-      { title: "Holiday Inn Express Hotel IGI Airport T3 — Shafsky Aviation" },
-      {
-        name: "description",
-        content:
-          "Exclusive rates and hourly transit bookings at Holiday Inn Express Hotel IGI Airport Terminal 3, New Delhi. Airside transit and day-use stays.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Holiday Inn Express IGI Airport Terminal 3 | Shafsky",
+      description:
+        "Exclusive rates and hourly transit bookings at Holiday Inn Express, IGI Airport Terminal 3, New Delhi. Airside transit and day-use stays with Shafsky Aviation.",
+      path: "/hotels/holiday-inn-express",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Hotels", path: "/solutions/travel" },
+          { name: "Holiday Inn Express T3", path: "/hotels/holiday-inn-express" },
+        ]),
+      ],
+    }),
   component: HolidayInnExpressDetailPage,
 });
 

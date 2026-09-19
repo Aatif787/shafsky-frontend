@@ -17,18 +17,27 @@ import home3Img from "@/assets/homepage/home3.jpeg";
 import home5Img from "@/assets/homepage/home5.jpeg";
 
 import { BookingPanel } from "@/components/home/booking/BookingPanel";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/solutions/concierge")({
-  head: () => ({
-    meta: [
-      { title: "Meet & Greet and Lounge Service — Shafsky Aviation" },
-      {
-        name: "description",
-        content:
-          "Official Shafsky Aviation Meet & Greet and Lounge Service catalog and booking for Domestic and International Departure, Arrival, and Transit across global airports.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Airport Meet & Greet and Lounge Service in India | Shafsky",
+      description:
+        "Official Shafsky Meet & Greet and lounge service for domestic and international arrival, departure, and transit. Aerobridge greeting, fast-track, and VIP lounge access.",
+      path: "/solutions/concierge",
+      keywords: [
+        "airport meet and greet",
+        "VIP lounge service India",
+        "airport assistance booking",
+      ],
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Meet & Greet", path: "/solutions/concierge" },
+        ]),
+      ],
+    }),
   component: MeetGreetDedicatedPage,
 });
 

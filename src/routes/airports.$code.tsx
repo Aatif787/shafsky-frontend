@@ -7,7 +7,12 @@ import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
 import { DestinationHero } from "@/components/airports/DestinationHero";
 import { DestinationBody } from "@/components/airports/DestinationBody";
 import { StickyMobileBookingBar } from "@/components/ui/StickyMobileBookingBar";
-import { BUSINESS } from "@/lib/constants";
+import {
+  pageHead,
+  airportPageJsonLd,
+  breadcrumbJsonLd,
+  faqJsonLd,
+} from "@/lib/seo";
 
 const airportPageSearchSchema = z.object({
   origin: z.string().optional().catch(""),
@@ -33,28 +38,28 @@ export const Route = createFileRoute("/airports/$code")({
   head: ({ params }) => {
     const registryEntry = getAirportRegistryEntry(params.code);
     const a = getAirport(params.code);
-    const url = `${BUSINESS.BASE_URL}/airports/${params.code}`;
-    const title = registryEntry
-      ? registryEntry.seo.title
-      : a
-      ? `${a.city} (${a.code}) — Shafsky Aviation Services Experience`
-      : "Destination — Shafsky Aviation Services";
-    const desc = registryEntry
-      ? registryEntry.seo.description
-      : a
-      ? `${a.tagline}. Premium concierge experience for ${a.city}.`
-      : "Shafsky destination";
-    return {
-      meta: [
-        { title },
-        { name: "description", content: desc },
-        { property: "og:title", content: title },
-        { property: "og:description", content: desc },
-        { property: "og:url", content: url },
-        { property: "og:type", content: "article" },
+    const code = (params.code || "").toUpperCase();
+    const title = registryEntry.seo.title;
+    const desc = registryEntry.seo.description;
+    const image = registryEntry.coverImage || a?.cover;
+    const faqs = (registryEntry.faqs || []).map(([q, answer]) => ({ q, a: answer }));
+    return pageHead({
+      title,
+      description: desc,
+      path: `/airports/${code}`,
+      image,
+      type: "article",
+      keywords: registryEntry.seo.keywords,
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Airports", path: "/airports" },
+          { name: `${registryEntry.city} (${registryEntry.code})`, path: `/airports/${code}` },
+        ]),
+        airportPageJsonLd(registryEntry),
+        ...(faqs.length > 0 ? [faqJsonLd(faqs)] : []),
       ],
-      links: [{ rel: "canonical", href: url }],
-    };
+    });
   },
   loader: ({ params }) => {
     const a = getAirport(params.code);

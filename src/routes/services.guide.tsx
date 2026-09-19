@@ -14,36 +14,24 @@ import {
 } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/home/sections/Footer";
-import { BUSINESS } from "@/lib/constants";
 import { display } from "@/components/home/theme";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/services/guide")({
-  head: () => ({
-    meta: [
-      { title: "Airport Assistance Guide — Shafsky Aviation Services" },
-      {
-        name: "description",
-        content:
-          "Simple guide to Shafsky Airport Assistance: how Meet & Greet works on arrival, departure, and transit across 20+ airports in India.",
-      },
-      { name: "robots", content: "index, follow" },
-      { property: "og:title", content: "Airport Assistance Guide — Shafsky Aviation Services" },
-      {
-        property: "og:description",
-        content: "How airport Meet & Greet, fast-track assistance, and luggage porter services work.",
-      },
-      { property: "og:url", content: `${BUSINESS.BASE_URL}/services/guide` },
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Airport Assistance Guide — Shafsky Aviation Services" },
-      {
-        name: "twitter:description",
-        content: "Simple step-by-step guide to airport meet & greet and passenger assistance.",
-      },
-    ],
-    links: [{ rel: "canonical", href: `${BUSINESS.BASE_URL}/services/guide` }],
-  }),
+  head: () =>
+    pageHead({
+      title: "Airport Assistance Guide | Meet & Greet Arrival, Departure & Transit",
+      description:
+        "How Shafsky airport Meet & Greet works on arrival, departure, and transit: aerobridge greeting, fast-track, lounge access, and luggage porterage across 20+ Indian airports.",
+      path: "/services/guide",
+      type: "article",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Airport Assistance Guide", path: "/services/guide" },
+        ]),
+      ],
+    }),
   component: ServiceGuidePage,
 });
 

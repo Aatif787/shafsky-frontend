@@ -109,10 +109,11 @@ export const AIRPORT_IMAGES_MAP: Record<string, string[]> = {
     "/images/airports/ixr/dassam-falls.webp",
   ],
   jai: [
+    "/images/airports/jai/jaipur.png",
+    "/images/airports/jai/jai-airport-home.webp",
     "/images/airports/jai/jaipur-airport-terminal.webp",
     "/images/airports/jai/hawa-mahal.webp",
     "/images/airports/jai/amber-fort.webp",
-    "/images/airports/jai/jaipur.png",
   ],
   lko: [
     "/images/airports/lko/lucknow-ccsi-terminal.webp",
@@ -296,8 +297,11 @@ export function getAirportHeroImages(airportCode: string): string[] {
     return ["/images/airports/bbi/bhubaneswar-bpia-terminal.webp"];
   }
   if (normalized === "jai") {
-    // Return high-quality Jaipur International Airport terminal image on the airport hero banner
-    return ["/images/airports/jai/jaipur-airport-terminal.webp"];
+    // Airport hero / home page banner uses jaipur.png and jai-airport-home.webp; jaipur-airport-terminal remains in the gallery/places.
+    return [
+      "/images/airports/jai/jaipur.png",
+      "/images/airports/jai/jai-airport-home.webp",
+    ];
   }
   if (normalized === "cok") {
     // Exclude tourist landmarks (Kerala Folklore Museum, Bolgatty Island, Kumbalangi) from COK airport hero banner
@@ -416,7 +420,7 @@ export function getAirportHeroImages(airportCode: string): string[] {
 export function getCityPrimaryImage(airportCode: string): string {
   if (!airportCode) return ASSETS.del;
   const normalized = airportCode.trim().toLowerCase();
-  if (normalized === "jai") return "/images/airports/jai/jai-airport-home.webp";
+  if (normalized === "jai") return "/images/airports/jai/jaipur.png";
   if (normalized === "bbi") return "/images/airports/bbi/bbi-airport-home.webp";
   return getAirportPrimaryImage(airportCode);
 }
