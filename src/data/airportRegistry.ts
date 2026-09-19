@@ -2,6 +2,7 @@
 // Single source of truth for all airport pages, search, cards, service catalogs, and booking integrations.
 
 import { ASSETS } from "@/lib/assets";
+import { getAirportImages } from "@/lib/airport-assets";
 
 const dekAmdAir = ASSETS.amd;
 const mobAmdAir = ASSETS.amd;
@@ -32,12 +33,6 @@ const dekGoxAir = ASSETS.gox;
 const mobGoxAir = ASSETS.gox;
 const dekBbiAir = ASSETS.bbi;
 const mobBbiAir = ASSETS.bbi;
-const dekBlrAir = ASSETS.blr;
-const dekCcuAir = ASSETS.ccu;
-const dekIxcAir = ASSETS.ixc;
-const dekIxrAir = ASSETS.ixr;
-const dekTrvAir = ASSETS.trv;
-import { getAirportImages, getAirportPrimaryImage } from "@/lib/airport-assets";
 
 export interface MeetGreetPackage {
   id: string;
@@ -530,7 +525,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     shortDescription: "World's first solar-powered airport. Premium airside greeting, Earth lounge pass, and chauffeured transfers.",
     coverImage: dekCokAir,
     mobCoverImage: mobCokAir,
-    galleryImages: [dekCokAir],
+    galleryImages: [dekCokAir, "/images/airports/cok/clean-2.webp", "/images/airports/cok/clean-3.webp", "/images/airports/cok/clean-4.webp"],
     coordinates: { lat: 10.1520, lng: 76.4019 },
     airportType: "International Hub",
     terminals: "Terminals 1 & 3",
@@ -742,9 +737,15 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     heroTitle: "Visakhapatnam Airport Concierge",
     heroSubtitle: "Visakhapatnam International Airport (VTZ) — VIP Escort & Executive Transfers",
     shortDescription: "Coastal Andhra Pradesh hub. Aerobridge welcome, baggage assistance, and executive chauffeur handoffs.",
-    coverImage: dekVtzAir,
-    mobCoverImage: mobVtzAir,
-    galleryImages: [dekVtzAir, mobVtzAir],
+    coverImage: "/images/airports/vtz/clean-1.webp",
+    mobCoverImage: "/images/airports/vtz/clean-1.webp",
+    galleryImages: [
+      "/images/airports/vtz/clean-1.webp",
+      "/images/airports/vtz/clean-2.webp",
+      "/images/airports/vtz/clean-3.webp",
+      "/images/airports/vtz/clean-4.webp",
+      "/images/airports/vtz/clean-5.webp",
+    ],
     coordinates: { lat: 17.7211, lng: 83.2245 },
     airportType: "International Hub",
     terminals: "Integrated Terminal",

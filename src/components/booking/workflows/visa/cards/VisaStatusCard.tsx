@@ -1,4 +1,3 @@
-import React from "react";
 import { ShieldCheck, Clock, AlertTriangle } from "lucide-react";
 import type { VisaEvaluationResult } from "@/lib/visa/visaIntelligence";
 

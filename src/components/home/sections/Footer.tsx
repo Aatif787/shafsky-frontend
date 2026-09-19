@@ -1,180 +1,206 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
-import { Plane, PhoneCall, Mail, MapPin, ShieldCheck, ArrowRight } from "lucide-react";
-import { useBranding } from "@/lib/branding/branding.context";
-import { C, display, mono } from "../theme";
+import { Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import { ICICI_REVIEW_MODE } from "../../../lib/config/reviewMode";
 
 export function Footer() {
-  const { branding } = useBranding();
+  const allQuickLinks = [
+    { label: "About us", href: "/about-us" },
+    { label: "Contact us", href: "/contact" },
+    { label: "My account", href: "/auth" },
+    { label: "Our services", href: "/solutions/concierge" },
+    { label: "Hotels", href: "/hotels/airport-hotel" },
+    { label: "Blog", href: "/services/guide" },
+    { label: "Wishlist", href: "/book" },
+    { label: "Privacy policy", href: "/privacy-policy" },
+    { label: "Terms and conditions", href: "/terms-and-conditions" },
+    { label: "Cancellation and refund", href: "/cancellation-and-refund" },
+    { label: "Our Team", href: "/services/guide" },
+    { label: "Career", href: "/contact" },
+  ];
+
+  const quickLinks = ICICI_REVIEW_MODE
+    ? allQuickLinks.filter((link) => link.label !== "Hotels" && !link.href.startsWith("/hotels"))
+    : allQuickLinks;
+
+  const socialLinks = [
+    {
+      label: "Facebook",
+      href: "https://www.facebook.com/shafskyaviation/",
+      icon: Facebook,
+    },
+    {
+      label: "Twitter",
+      href: "https://x.com/ShafskyAviation",
+      icon: Twitter,
+    },
+    {
+      label: "Instagram",
+      href: "https://www.instagram.com/aviationshafsky/",
+      icon: Instagram,
+    },
+    {
+      label: "LinkedIn",
+      href: "https://www.linkedin.com/in/mohammad-shahood-shafsky",
+      icon: Linkedin,
+    },
+    {
+      label: "YouTube",
+      href: "https://www.youtube.com/@shafskyaviation",
+      icon: Youtube,
+    },
+  ];
 
   return (
-    <footer className="relative px-4 sm:px-8 pb-12 pt-16 sm:pt-20 md:px-14 bg-[#03070e] text-white border-t border-[#c5a869]/25">
-      <div className="relative mx-auto max-w-[1480px]">
-        <div className="grid gap-10 md:gap-16 pb-12 md:grid-cols-12 border-b border-white/10">
-          {/* Column 1: Brand & Headquarters */}
-          <div className="md:col-span-4">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center h-11 w-11 rounded-xl bg-[#0a1424] border border-[#c5a869]/40 p-1 shadow-md">
-                <img
-                  src={branding.logo_url || "/logo.png"}
-                  alt={branding.company_name || "Shafsky Aviation Services"}
-                  className="h-full w-full object-contain filter brightness-110"
-                  onError={(e) => {
-                    (e.target as HTMLElement).style.display = "none";
-                  }}
-                />
+    <footer className="relative w-full text-white font-serif overflow-hidden select-none">
+      {/* Background Airplane Image & Atmospheric Dark Vignette */}
+      <div
+        className="relative w-full bg-[#11161d] bg-cover bg-center bg-no-repeat pt-14 pb-16 sm:pt-16 sm:pb-20 px-6 sm:px-10 lg:px-16"
+        style={{
+          backgroundImage: `url('/images/footer-plane-bg.webp')`,
+        }}
+      >
+        {/* Soft Vignette Overlay matching reference image depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0e131b]/80 via-[#0e131b]/65 to-[#090d13]/85 pointer-events-none" />
+
+        {/* Content Container (3 Columns) */}
+        <div className="relative z-10 mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-14 items-start">
+            {/* Column 1: About Us (md:col-span-5) */}
+            <div className="md:col-span-5 space-y-4">
+              <span className="text-[#cca028] text-xs uppercase tracking-widest font-semibold block">
+                WHO WE ARE
+              </span>
+              <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                About Shafsky Aviation Services
+              </h3>
+              <p className="text-sm sm:text-[14.5px] text-white/95 leading-relaxed">
+                We would like to introduce ourselves as Shafsky Aviation Services
+                Pvt. Ltd. with brand name{" "}
+                <span className="text-[#cca028] font-bold">
+                  &ldquo;SUSWAGATAM&rdquo;
+                </span>
+                . &ldquo;Welcome &amp; Assist Services&rdquo; providing Meet
+                &amp; Greet and Lounge Service to domestic and international
+                passengers.
+              </p>
+              <p className="text-xs sm:text-[13.5px] text-white/80 leading-relaxed">
+                With an aviation legacy dating back to 1986, our highly trained
+                professionals deliver bespoke airport concierge, ensuring every
+                interaction reflects precision, discretion, and world-class service.
+              </p>
+            </div>
+
+            {/* Column 2: Quick Links (md:col-span-3) */}
+            <div className="md:col-span-3 space-y-5">
+              <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                Quick Links
+              </h3>
+              <ul className="space-y-1.5 text-sm sm:text-[14.5px]">
+                {quickLinks.map((link, idx) => (
+                  <li key={idx}>
+                    <Link
+                      to={link.href}
+                      className="text-white/95 hover:text-[#cca028] transition-colors duration-150 inline-block py-0.5"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 3: Contact Us (md:col-span-4) */}
+            <div className="md:col-span-4 space-y-5">
+              <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                Contact Us
+              </h3>
+
+              {/* 5 Social Media Rounded Square Buttons */}
+              <div className="flex items-center gap-2.5 flex-wrap">
+                {socialLinks.map((social, idx) => {
+                  const Icon = social.icon;
+                  return (
+                    <a
+                      key={idx}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={social.label}
+                      className="w-8 h-8 rounded-md bg-[#cca028] hover:bg-[#b88e1e] text-white flex items-center justify-center shadow-xs transition-transform hover:scale-105"
+                    >
+                      <Icon size={15} className="text-white fill-white stroke-[0]" />
+                    </a>
+                  );
+                })}
               </div>
+
+              {/* Golden Company Brand Title */}
               <div>
-                <div className="text-xl font-bold font-serif tracking-tight text-white" style={display}>
-                  SHAFSKY
+                <h4 className="text-base sm:text-[17px] font-bold text-[#cca028] tracking-tight">
+                  Shafsky Aviation Services Pvt. Ltd.
+                </h4>
+              </div>
+
+              {/* Contact Details */}
+              <div className="space-y-3.5 text-xs sm:text-[14px] text-white/95 leading-snug">
+                <div>
+                  <span className="font-bold">Mobile: </span>
+                  <a
+                    href="tel:+919599087959"
+                    className="hover:text-[#cca028] transition-colors font-medium font-sans"
+                  >
+                    +919599087959
+                  </a>
+                  {", "}
+                  <a
+                    href="tel:+919599615459"
+                    className="hover:text-[#cca028] transition-colors font-medium font-sans"
+                  >
+                    +919599615459
+                  </a>
                 </div>
-                <div className="text-[9px] uppercase tracking-[0.35em] text-[#c5a869] font-mono -mt-1 font-semibold" style={mono}>
-                  Aviation Services
+
+                <div>
+                  <span className="font-bold">Email: </span>
+                  <a
+                    href="mailto:info@shafskyaviation.com"
+                    className="hover:text-[#cca028] transition-colors font-medium font-sans"
+                  >
+                    info@shafskyaviation.com
+                  </a>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="font-bold block">Operational Office:</span>
+                  <p className="text-white/90 leading-relaxed">
+                    8/5, Ground Floor, West Mehram Nagar Gate No.1, Opp. IGI
+                    Airport, New Delhi -110010
+                  </p>
+                </div>
+
+                <div className="space-y-1 pt-1">
+                  <span className="font-bold block">Registered Office:</span>
+                  <p className="text-white/90 leading-relaxed">
+                    C-1/118, Lajpat Nagar-1, Near Defence Colony Flyover, New
+                    Delhi, Delhi &ndash; 110024
+                  </p>
                 </div>
               </div>
-            </div>
-
-            <p className="mt-6 text-xs sm:text-sm text-slate-300 leading-relaxed font-light max-w-sm">
-              Official Aviation Ground Operations & Airport Services Partner based at IGI Airport Terminal 1, New Delhi. Delivering bespoke airside hospitality and executive private charters since 2022.
-            </p>
-
-            <div className="mt-6 space-y-2.5 text-xs text-slate-300">
-              <div className="flex items-start gap-2.5">
-                <MapPin size={15} className="text-[#c5a869] shrink-0 mt-0.5" />
-                <span>8/5, Ground Floor, West Mehram Nagar Gate No.1, Opp. IGI Airport Terminal 1, New Delhi 110010</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <PhoneCall size={14} className="text-[#c5a869] shrink-0" />
-                <a href="tel:+919599087959" className="hover:text-[#d9c18b] font-mono" style={mono}>
-                  +91 9599087959 (24/7 Operations Desk)
-                </a>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <Mail size={14} className="text-[#c5a869] shrink-0" />
-                <a href="mailto:ops@shafsky.com" className="hover:text-[#d9c18b]">
-                  ops@shafsky.com
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation Links Columns */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 md:col-span-8">
-            {/* Column 2: Airport Services */}
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.35em] text-[#d9c18b] font-bold" style={mono}>
-                Airport Services
-              </div>
-              <ul className="mt-5 space-y-2.5 text-xs sm:text-[13px] text-slate-300">
-                <li>
-                  <Link to="/solutions/concierge" className="transition hover:text-white">
-                    Meet & Greet Escort
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/solutions/concierge" className="transition hover:text-white">
-                    Passport Fast-Track
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/solutions/concierge" className="transition hover:text-white">
-                    Executive Lounge Access
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/solutions/travel" className="transition hover:text-white">
-                    Airside Tarmac Sedans
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/airports" className="transition hover:text-[#d9c18b] font-semibold">
-                    All 20+ Airport Hubs →
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 3: Private Aviation & Logistics */}
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.35em] text-[#d9c18b] font-bold" style={mono}>
-                Aviation Solutions
-              </div>
-              <ul className="mt-5 space-y-2.5 text-xs sm:text-[13px] text-slate-300">
-                <li>
-                  <Link to="/charter" className="transition hover:text-white">
-                    Private Jet Charter
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/charter" className="transition hover:text-white">
-                    Helicopter Transfers
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/solutions/medical" className="transition hover:text-white">
-                    24/7 ICU Air Ambulance
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/solutions/cargo" className="transition hover:text-white">
-                    AVI Pet Transport
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/solutions/cargo" className="transition hover:text-white">
-                    Express Cargo Logistics
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 4: Trust, Governance & Verification */}
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.35em] text-[#d9c18b] font-bold" style={mono}>
-                Governance & Trust
-              </div>
-              <ul className="mt-5 space-y-2.5 text-xs sm:text-[13px] text-slate-300">
-                <li>
-                  <Link to="/flight-verification" className="transition hover:text-[#d9c18b]">
-                    Flight & PNR Status
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/services/guide" className="transition hover:text-white">
-                    Standards & Heritage
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/contact" className="transition hover:text-white">
-                    Duty Manager Contact
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/account" className="transition hover:text-white">
-                    VIP Client Portal
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/services/guide" className="transition hover:text-white">
-                    Terms & Privacy Protocol
-                  </Link>
-                </li>
-              </ul>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom Legal Copyright Bar */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <div>
-            © {new Date().getFullYear()} Shafsky Aviation Services Pvt. Ltd. All rights reserved.
-          </div>
-          <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400" style={mono}>
-            <ShieldCheck size={14} className="text-[#c5a869]" />
-            <span>DGCA Security Protocol & Airside Clearance Compliant</span>
-          </div>
-        </div>
+      {/* Solid Black Copyright Bar */}
+      <div className="w-full bg-black py-4 px-4 sm:px-6 text-center border-t border-black">
+        <p className="text-xs sm:text-[13px] text-white/90 tracking-wide font-normal">
+          &copy; Copyright 2024 Shafsky Aviation Services Pvt. Ltd. All Rights
+          Reserved
+        </p>
       </div>
     </footer>
   );
 }
+
+export default Footer;

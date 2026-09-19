@@ -2,8 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import type { Airport } from "@/data/airports";
-import { display, mono } from "./Atoms";
-import { getAirportAsset, getAirportPrimaryImage } from "@/lib/airport-assets";
+import { getAirportPrimaryImage } from "@/lib/airport-assets";
 
 export function ShowcaseCard({ a, idx }: { a: Airport; idx: number }) {
   const cardImage = getAirportPrimaryImage(a.code) || a.mobCover || a.cover;
@@ -22,7 +21,7 @@ export function ShowcaseCard({ a, idx }: { a: Airport; idx: number }) {
       <Link
         to="/airports/$code"
         params={{ code: a.code }}
-        className="group relative flex items-center gap-3.5 sm:gap-4 p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-[#7c3aed]/50 hover:shadow-md transition-all duration-300 overflow-hidden h-full"
+        className="group relative flex items-center gap-3.5 sm:gap-4 p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-[#7c3aed]/50 hover:shadow-md transition-all duration-300 overflow-hidden h-full shine-card"
       >
         {/* Left Compact Square Thumbnail */}
         <div className="relative h-20 w-20 sm:h-22 sm:w-22 shrink-0 overflow-hidden rounded-xl bg-slate-100 border border-slate-100">

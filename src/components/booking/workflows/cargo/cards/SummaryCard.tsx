@@ -1,5 +1,4 @@
-import React from "react";
-import { Package, MapPin, Calendar, Clock, Building2, User, Scale, Box, ShieldCheck, ArrowRight } from "lucide-react";
+import { Clock, ArrowRight } from "lucide-react";
 
 interface SummaryCardProps {
   origin: string;

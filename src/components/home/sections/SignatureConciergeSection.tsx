@@ -1,6 +1,5 @@
-import React from "react";
 import { Link } from "@tanstack/react-router";
-import { PlaneLanding, PlaneTakeoff, Shuffle, ArrowRight, Crown, Sparkles, ShieldCheck, Clock } from "lucide-react";
+import { PlaneLanding, PlaneTakeoff, Shuffle, ArrowRight, Crown, Sparkles, ShieldCheck } from "lucide-react";
 import { display, mono } from "../theme";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { EditorialPhoto } from "../EditorialPhoto";

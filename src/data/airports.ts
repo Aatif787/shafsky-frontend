@@ -2,6 +2,8 @@
 // Images sourced from Unsplash featured (stable redirect) — keyed by landmark queries.
 
 import { ASSETS } from "@/lib/assets";
+import { getAirportHeroImages, getAirportImages } from "@/lib/airport-assets";
+import { AIRPORT_REGISTRY } from "./airportRegistry";
 
 const chaarminar = ASSETS.charminar;
 const golkunda = ASSETS.golkunda;
@@ -16,7 +18,6 @@ const hotel = ASSETS.hotel;
 const vipTransport1 = ASSETS.vipTransport;
 const cargo = ASSETS.cargo;
 const medical = ASSETS.medical;
-const world = ASSETS.world;
 const vipConcierge = ASSETS.concierge;
 const vipTransport2 = ASSETS.vipTransport2;
 const vipTransport3 = ASSETS.vipTransport3;
@@ -53,8 +54,6 @@ const dekBlrAir = ASSETS.blr;
 const mobBlrAir = ASSETS.blr;
 const dekIxcAir = ASSETS.ixc;
 const mobIxcAir = ASSETS.ixc;
-import { getAirportImages, getAirportPrimaryImage } from "@/lib/airport-assets";
-import { AIRPORT_REGISTRY, getAirportRegistryEntry } from "./airportRegistry";
 
 export type Facility = { name: string; status: "live" | "24x7" | "limited" };
 export type Attraction = {
@@ -245,18 +244,30 @@ const getPhotoUrl = (q: string, size: string) => {
   const query = q.toLowerCase().trim();
 
   // Specific keyword/landmark mappings for imported local assets
-  if (query.includes("charminar")) return chaarminar;
-  if (query.includes("imambara") || query.includes("imambada") || query.includes("rumi darwaza")) return imambada;
-  if (query.includes("india gate")) return indiagate;
-  if (query.includes("red fort")) return redfort;
-  if (query.includes("golden temple")) return "/images/airports/atq/clean-3.webp";
-  if (query.includes("ram bagh") || query.includes("ranjit singh")) return "/images/airports/atq/clean-4.webp";
-  if (query.includes("gobindgarh")) return "/images/airports/atq/clean-5.webp";
-  if (query.includes("durgiana")) return "/images/airports/atq/clean-6.webp";
-  if (query.includes("wagah")) return "/images/airports/atq/clean-7.webp";
-  if (query.includes("parliament")) return "/images/airports/del/clean-8.webp";
-  if (query.includes("lal kila") || query.includes("lal qila")) return "/images/airports/del/clean-4.webp";
-  if (query.includes("jama masjid")) return "/images/airports/del/clean-7.webp";
+  if (query.includes("charminar")) return "/images/airports/hyd/charminar.webp";
+  if (query.includes("imambara") || query.includes("imambada") || query.includes("rumi darwaza")) {
+    if (query.includes("rumi darwaza")) return "/images/airports/lko/rumi-darwaza.webp";
+    if (query.includes("chota imambara")) return "/images/airports/lko/chota-imambara.webp";
+    return "/images/airports/lko/bara-imambara.webp";
+  }
+  if (query.includes("india gate")) return "/images/airports/del/india-gate.webp";
+  if (query.includes("red fort")) return "/images/airports/del/red-fort.webp";
+  if (query.includes("golden temple")) return "/images/airports/atq/golden-temple.webp";
+  if (query.includes("ram bagh") || query.includes("ranjit singh")) return "/images/airports/atq/ram-bagh-palace.webp";
+  if (query.includes("gobindgarh")) return "/images/airports/atq/gobindgarh-fort.webp";
+  if (query.includes("durgiana")) return "/images/airports/atq/durgiana-temple.webp";
+  if (query.includes("wagah")) return "/images/airports/atq/wagah-border.webp";
+  if (query.includes("parliament")) return "/images/airports/del/parliament-house.webp";
+  if (query.includes("lal kila") || query.includes("lal qila")) return "/images/airports/del/red-fort.webp";
+  if (query.includes("jama masjid")) return "/images/airports/del/jama-masjid.webp";
+  if (query.includes("ananta vasudeva") || query.includes("ananta basudev")) return "/images/airports/bbi/ananta-vasudeva-temple.webp";
+  if (query.includes("gateway of india")) return "/images/airports/bom/gateway-of-india.webp";
+  if (query.includes("haji ali")) return "/images/airports/bom/haji-ali-dargah.webp";
+  if (query.includes("cst") || query.includes("terminus")) return "/images/airports/bom/chhatrapati-shivaji-terminus.webp";
+  if (query.includes("kursura") || query.includes("submarine")) return "/images/airports/vtz/ins-kursura-submarine-museum.webp";
+  if (query.includes("kailasagiri")) return "/images/airports/vtz/kailasagiri-hill.webp";
+  if (query.includes("yarada")) return "/images/airports/vtz/yarada-beach.webp";
+  if (query.includes("rk beach")) return "/images/airports/vtz/rk-beach-promenade.webp";
 
   // Check PHOTO_MAP keys for exact match
   let id = "";
@@ -741,6 +752,17 @@ export const AIRPORTS: Airport[] = [
         maps: "https://maps.google.com/?q=Marine+Drive",
       },
       {
+        name: "Haji Ali Dargah",
+        img: "/images/airports/bom/clean-4.webp",
+        desc: "Historic 15th-century Indo-Islamic shrine and mosque set on an islet in the Arabian Sea.",
+        distance: "18 km",
+        travel: "40 min",
+        hours: "05:30 – 22:00",
+        fee: "Free",
+        photo: "Causeway islet view",
+        maps: "https://maps.google.com/?q=Haji+Ali+Dargah+Mumbai",
+      },
+      {
         name: "Elephanta Caves",
         img: us("Elephanta Caves"),
         desc: "UNESCO 5th-century rock-cut Shiva temples.",
@@ -849,7 +871,7 @@ export const AIRPORTS: Airport[] = [
     cover: dekHydAir,
     mobCover: mobHydAir,
     slideshow: [chaarminar, golkunda],
-    gallery: [chaarminar, golkunda, chaarminar, golkunda, a.gallery[4], a.gallery[5]],
+    gallery: [chaarminar, golkunda, a.gallery[1], a.gallery[4], a.gallery[5]],
     attractions: a.attractions.map((att) => {
       if (att.name === "Charminar") return { ...att, img: chaarminar };
       if (att.name === "Golconda Fort") return { ...att, img: golkunda };
@@ -876,8 +898,16 @@ export const AIRPORTS: Airport[] = [
     ...a,
     cover: dekJaiAir,
     mobCover: mobJaiAir,
-    slideshow: [dekJaiAir],
-    gallery: [dekJaiAir, a.gallery[0]],
+    slideshow: [
+      "/images/airports/jai/jaipur.png",
+      "/images/airports/jai/jai-airport-home.webp",
+    ],
+    gallery: [
+      "/images/airports/jai/jaipur-airport-terminal.webp",
+      "/images/airports/jai/hawa-mahal.webp",
+      "/images/airports/jai/amber-fort.webp",
+      a.gallery[0],
+    ],
   })),
   ...buildCity({
     code: "ATQ",
@@ -1046,16 +1076,16 @@ export const AIRPORTS: Airport[] = [
     terminals: "3",
     annual: "10M",
     attr: [
-      ["Chinese Fishing Nets", "Chinese Fishing Nets", "14th-c cantilever nets at Fort Kochi."],
-      ["Mattancherry Palace", "Mattancherry Palace", "Kerala-Portuguese mural museum."],
-      ["Backwaters Cruise", "Kerala backwaters houseboat", "Kettuvallam through canals."],
+      ["Kumbalangi Village", "Kumbalangi Village Kochi", "Acclaimed model ecotourism village with tranquil backwaters, rustic canoes, and Chinese nets."],
+      ["Bolgatty Island & Marine Drive", "Bolgatty Island Marine Drive Kochi", "Scenic waterfront promenade and island palace where water meets the city skyline."],
+      ["Kerala Folklore Museum", "Kerala Folklore Museum", "Three-floor architectural museum showcasing Kerala heritage and folk art."],
     ],
   }).map((a) => ({
     ...a,
     cover: dekCokAir,
     mobCover: mobCokAir,
     slideshow: [dekCokAir],
-    gallery: [dekCokAir, a.gallery[0]],
+    gallery: [dekCokAir, "/images/airports/cok/clean-2.webp", "/images/airports/cok/clean-3.webp", "/images/airports/cok/clean-4.webp"],
   })),
   ...buildCity({
     code: "TRV",
@@ -1082,17 +1112,30 @@ export const AIRPORTS: Airport[] = [
     landmark: "RK Beach",
     tagline: "Jewel of the East Coast",
     q1: "RK Beach Visakhapatnam",
-    q2: "Araku Valley",
-    q3: "Vizag port",
+    q2: "INS Kursura submarine",
+    q3: "Kailasagiri Hill",
     airportName: "Visakhapatnam International Airport",
     terminals: "1",
     annual: "2.5M",
     attr: [
-      ["RK Beach", "RK Beach Visakhapatnam", "8-km Ramakrishna seafront promenade."],
-      ["Submarine Museum", "INS Kursura submarine", "Real Soviet sub on the beach."],
-      ["Araku Valley", "Araku Valley", "Eastern Ghats coffee plateau."],
+      ["Submarine Museum", "INS Kursura submarine", "Preserved Soviet-built Kalvari-class submarine museum on RK Beach."],
+      ["Kailasagiri Hill", "Kailasagiri Hill Visakhapatnam", "Scenic hilltop park with 40-foot statues of Shiva and Parvathi overlooking the coast."],
+      ["Yarada Beach", "Yarada Beach Visakhapatnam", "Golden sand beach bordered by hills on three sides and the Bay of Bengal."],
+      ["RK Beach Promenade", "RK Beach Visakhapatnam", "Iconic coastal promenade with ocean breeze and Dolphin's Nose views."],
     ],
-  }),
+  }).map((a) => ({
+    ...a,
+    cover: "/images/airports/vtz/visakhapatnam-airport-terminal.webp",
+    mobCover: "/images/airports/vtz/visakhapatnam-airport-terminal.webp",
+    slideshow: ["/images/airports/vtz/visakhapatnam-airport-terminal.webp"],
+    gallery: [
+      "/images/airports/vtz/visakhapatnam-airport-terminal.webp",
+      "/images/airports/vtz/ins-kursura-submarine-museum.webp",
+      "/images/airports/vtz/kailasagiri-hill.webp",
+      "/images/airports/vtz/yarada-beach.webp",
+      "/images/airports/vtz/rk-beach-promenade.webp",
+    ],
+  })),
   ...buildCity({
     code: "BBI",
     icao: "VEBS",
@@ -1106,16 +1149,26 @@ export const AIRPORTS: Airport[] = [
     terminals: "2",
     annual: "4.5M",
     attr: [
-      ["Lingaraj Temple", "Lingaraj Temple Bhubaneswar", "11th-century monument dedicated to Lord Shiva."],
-      ["Udayagiri Caves", "Udayagiri & Khandagiri Caves", "Ancient rock-cut caves with historical inscriptions."],
-      ["Dhauli Shanti Stupa", "Dhauli Stupa", "Peace pagoda marking the Kalinga war transformation."]
+      ["Ananta Vasudeva Temple", "Ananta Vasudeva Temple Bhubaneswar", "13th-century Vaishnavite sanctuary dedicated to Krishna and Balarama, built in exquisite Kalinga stone architecture."],
+      ["Lingaraj Temple", "Lingaraj Temple Bhubaneswar", "11th-century monument dedicated to Lord Shiva, the pinnacle of Kalinga architecture."],
+      ["Mukteswar Temple", "Mukteswar Temple Bhubaneswar", "10th-century gem of Odishan architecture famed for its ornate torana arched gateway."],
+      ["Rajarani Temple", "Rajarani Temple Bhubaneswar", "11th-century temple celebrated for its delicate stone sculptures and love-carved spires."],
+      ["Udayagiri Caves", "Udayagiri & Khandagiri Caves", "Ancient rock-cut caves with historic Jain monastic chambers and royal inscriptions."],
+      ["Dhauli Shanti Stupa", "Dhauli Stupa", "Gleaming white peace pagoda by the Daya River marking Emperor Ashoka's path to Buddhism."],
+      ["Nandankanan Zoological Park", "Nandankanan Bhubaneswar", "World-renowned white tiger safari, serene Kanjia lake, and lush botanical sanctuary."]
     ]
   }).map((a) => ({
     ...a,
     cover: dekBbiAir,
     mobCover: mobBbiAir,
-    slideshow: [dekBbiAir],
-    gallery: [dekBbiAir, a.gallery[0]],
+    slideshow: ["/images/airports/bbi/bbi-airport-home.webp"],
+    gallery: [
+      "/images/airports/bbi/bhubaneswar-bpia-terminal.webp",
+      "/images/airports/bbi/ananta-vasudeva-temple.webp",
+      "/images/airports/bbi/lingaraj-temple.webp",
+      "/images/airports/bbi/mukteswar-temple.webp",
+      a.gallery[0],
+    ],
   })),
   ...buildCity({
     code: "IXC",
@@ -1362,12 +1415,14 @@ export function getAirport(code: string): Airport {
   const found = AIRPORTS.find((a) => a.code.toUpperCase() === upperCode);
   if (found) {
     const hubImgs = getAirportImages(found.code);
+    const heroImgs = getAirportHeroImages(found.code);
     if (hubImgs && hubImgs.length > 0) {
+      const homeImgs = heroImgs.length > 0 ? heroImgs : hubImgs;
       return {
         ...found,
-        cover: hubImgs[0],
-        mobCover: hubImgs[0],
-        slideshow: hubImgs,
+        cover: homeImgs[0],
+        mobCover: homeImgs[0],
+        slideshow: homeImgs,
         gallery: [...hubImgs, ...found.gallery.filter((g) => !hubImgs.includes(g))],
       };
     }

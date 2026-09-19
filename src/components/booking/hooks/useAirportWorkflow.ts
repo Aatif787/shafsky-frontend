@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegistry";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { ApiClient } from "@/lib/ApiClient";

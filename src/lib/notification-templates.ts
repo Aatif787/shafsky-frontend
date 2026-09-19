@@ -1,4 +1,3 @@
-import { CONTACT } from "./constants";
 
 export interface BookingEmailPayload {
   booking_ref: string;

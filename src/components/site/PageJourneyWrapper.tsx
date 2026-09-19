@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Breadcrumbs, BreadcrumbItem } from "@/components/navigation/Breadcrumbs";
 import { AssistanceCTA } from "@/components/navigation/AssistanceCTA";
@@ -33,12 +33,7 @@ export function PageJourneyWrapper({
   categoryHref,
   current,
   subService,
-  prevNav,
-  nextNav,
-  relatedServices,
   showBreadcrumbs = true,
-  showPrevNext = true,
-  showRelated = true,
   showCTA,
   showNav = true,
   showFooter = true,
@@ -53,7 +48,7 @@ export function PageJourneyWrapper({
       {showNav && <Navigation visible={true} />}
 
       {/* 2. MAIN PAGE CONTENT CONTAINER */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16">
+      <main id="main-content" className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16">
         {/* BREADCRUMBS AT TOP OF CONTENT */}
         {showBreadcrumbs && (
           <div className="mb-6 sm:mb-8">

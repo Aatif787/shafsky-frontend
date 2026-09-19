@@ -1,4 +1,3 @@
-import React from "react";
 import { Sparkles, Shield, Clock, Award, Star, Compass } from "lucide-react";
 import { TiltCard, FadeInView, StaggerContainer, StaggerItem } from "@/components/ui/interactions";
 

@@ -16,7 +16,7 @@ import {
   AlertTriangle,
   Headphones,
 } from "lucide-react";
-import { darkTheme, pageDisplay, pageMono, Panel } from "@/components/site/PageShell";
+import { pageDisplay, pageMono, Panel } from "@/components/site/PageShell";
 import { checkStaffAccess } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -100,7 +100,7 @@ function clientHasPermission(roles: string[], action: string): boolean {
 function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const { isStaff, roles = ["customer"], userId = "guest_user" } = Route.useLoaderData();
+  const { isStaff, roles = ["customer"] } = Route.useLoaderData();
 
   if (!isStaff) {
     return (

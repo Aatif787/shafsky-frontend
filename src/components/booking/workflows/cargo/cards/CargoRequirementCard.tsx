@@ -1,5 +1,4 @@
-import React from "react";
-import { ShieldAlert, Thermometer, Truck, ShieldCheck, AlertTriangle, FileText } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 interface CargoRequirementCardProps {
   pickupRequired: boolean;

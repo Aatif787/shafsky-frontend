@@ -24,7 +24,7 @@ export const LIGHT = {
 
 export const DARK = LIGHT;
 
-export function SectionLabel({ index, label }: { index: string; label: string }) {
+export function SectionLabel({ label }: { index: string; label: string }) {
   return (
     <div
       className="flex min-w-0 items-center gap-3 text-[10px] uppercase tracking-[0.26em] sm:gap-4 sm:tracking-[0.4em]"

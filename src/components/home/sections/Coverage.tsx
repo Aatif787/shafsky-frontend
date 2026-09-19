@@ -1,7 +1,7 @@
-import React from "react";
 import { AirportShowcase } from "@/components/airports/AirportShowcase";
-import { C, display, mono } from "../theme";
-import { SectionLabel } from "./SectionLabel";
+import { display, mono } from "../theme";
+import { Reveal } from "@/components/motion/Reveal";
+import { motion } from "framer-motion";
 
 export function Coverage() {
   return (
@@ -11,7 +11,7 @@ export function Coverage() {
     >
       <div className="mx-auto max-w-[1480px]">
         <div className="px-4 sm:px-8 md:px-14 grid gap-8 sm:gap-12 md:grid-cols-12 items-start">
-          <div className="md:col-span-6">
+          <Reveal className="md:col-span-6">
             <div
               className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.45em] text-[#a88b4a] font-bold"
               style={mono}
@@ -37,15 +37,22 @@ export function Coverage() {
               from Delhi, Mumbai, and Bengaluru to Goa, Hyderabad, Kochi, Jaipur, and Amritsar.
               Wherever you fly in this network, Suswagatam is already on station.
             </p>
-          </div>
+          </Reveal>
           <div className="md:col-span-6 grid grid-cols-2 gap-4 sm:gap-6 md:mt-16">
             {[
               ["20+", "Indian Hubs"],
               ["24/7", "Live Dispatch"],
               ["< 12m", "Avg. Response"],
               ["Domestic + Intl", "Full Clearance"],
-            ].map(([v, l]) => (
-              <div key={l} className="border-l-2 pl-4 border-[#c5a869]">
+            ].map(([v, l], i) => (
+              <motion.div
+                key={l}
+                className="border-l-2 pl-4 border-[#c5a869]"
+                initial={{ opacity: 0, x: 16 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.12 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              >
                 <div className="text-[28px] sm:text-[32px] leading-none text-slate-950 font-normal font-serif" style={display}>
                   {v}
                 </div>
@@ -55,7 +62,7 @@ export function Coverage() {
                 >
                   {l}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

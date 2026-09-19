@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { createFileRoute, redirect, Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
-import { supabase } from "@/integrations/supabase/client";
-import { getSessionInfo } from "@/lib/session";
 import { useAuth } from "@/auth-system/useAuth";
 import {
   getSuperAdminKPIs,
@@ -16,22 +14,11 @@ import {
   getAuditLogs,
 } from "@/lib/super-admin.functions";
 import {
-  LayoutDashboard,
-  ShieldAlert,
   Users,
   Percent,
   Activity,
   History,
-  Loader2,
-  CheckCircle,
-  AlertTriangle,
-  Plus,
-  Trash2,
-  RefreshCw,
-  LogOut,
-  UserCheck,
-  Zap,
-  Lock,
+  Loader2, AlertTriangle, Trash2, LogOut, Zap
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -170,7 +157,7 @@ export default function SuperAdminView({ userId }: { userId: string }) {
 
   const loading = isStatsLoading || isCouponsLoading || isAuditLoading || isUsersLoading;
 
-  const handleCreateCoupon = async (e: React.FormEvent) => {
+  const handleCreateCoupon = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setCouponSubmitting(true);
     try {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createBooking } from "@/lib/bookings.functions";
 import { useServerFn } from "@tanstack/react-start";
@@ -7,7 +7,6 @@ import { toast } from "sonner";
 // Reused Presentation Architecture
 import { BookingProgressHeader } from "@/components/booking/shared/BookingProgressHeader";
 import { BookingCancelModal } from "@/components/booking/shared/BookingCancelModal";
-import { SERVICE_REGISTRY } from "@/data/serviceRegistry";
 
 // Step Components
 import { ShipmentInformationStep } from "./components/ShipmentInformationStep";

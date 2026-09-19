@@ -82,14 +82,29 @@ export default defineConfig(({ mode }) => {
       server: {
         entry: "server",
         prerender: {
-          routes: ["/", "/airports", "/contact"],
+          routes: [
+            "/",
+            "/airports",
+            "/airports/DEL",
+            "/airports/BOM",
+            "/airports/BLR",
+            "/airports/HYD",
+            "/airports/JAI",
+            "/contact",
+            "/book",
+            "/services/guide",
+            "/solutions/concierge",
+            "/solutions/aviation",
+            "/solutions/cargo",
+            "/solutions/travel",
+          ],
           crawlLinks: false,
         },
       },
     } as any),
-   nitro({
-  preset: process.env.NITRO_PRESET || "node-server",
-}),
+    nitro({
+      preset: process.env.NITRO_PRESET || "node-server",
+    }),
     viteReact(),
   ],
   };

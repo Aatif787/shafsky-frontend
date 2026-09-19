@@ -1,7 +1,6 @@
-import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, PhoneCall, MessageSquare, ArrowRight, X, Clock, ShieldCheck } from "lucide-react";
-import { display, mono } from "@/components/home/theme";
+import { CheckCircle2, PhoneCall, MessageSquare, X, Clock } from "lucide-react";
+import { display } from "@/components/home/theme";
 
 interface BookingSuccessModalProps {
   isOpen: boolean;

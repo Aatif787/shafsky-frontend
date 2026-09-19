@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { enqueueNotification } from "@/lib/notifications/queue";
 import { apiPost, getTokenFromRequest } from "@/lib/FastApiClient";
 
 export const CreateCheckoutInput = z.object({

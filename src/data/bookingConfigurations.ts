@@ -7,14 +7,7 @@ import {
   Plane,
   Package,
   ShieldCheck,
-  Building2,
-  Calendar,
-  Users,
-  FileText,
-  MapPin,
-  Stethoscope,
-  ShieldAlert,
-  Luggage,
+  Building2
 } from "lucide-react";
 
 export type FieldType =

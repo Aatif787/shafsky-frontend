@@ -72,7 +72,7 @@ export function SignInPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);

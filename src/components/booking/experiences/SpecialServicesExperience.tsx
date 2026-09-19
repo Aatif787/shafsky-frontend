@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
-  Shield,
-  Calendar,
-  Users,
-  MapPin,
-  Sparkles,
+  Shield, Sparkles,
   ArrowRight,
   ArrowLeft,
-  CheckCircle2,
-  PhoneCall,
-  MessageSquare,
-  Globe,
-  Heart,
+  CheckCircle2, Globe
 } from "lucide-react";
-import { display, mono } from "@/components/home/theme";
+import { display } from "@/components/home/theme";
 import { ExperiencePhoto } from "../shared/ExperiencePhoto";
 import {
   INPUT_CLASSES,
@@ -117,12 +109,12 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
 
   const activeSubObj = SPECIAL_SUB_SERVICES.find((s) => s.id === subService) || SPECIAL_SUB_SERVICES[0];
 
-  const handleNextFromStep1 = (e: React.FormEvent) => {
+  const handleNextFromStep1 = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStep(2);
   };
 
-  const handleSubmitFinal = async (e: React.FormEvent) => {
+  const handleSubmitFinal = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!guestName.trim() || !guestPhone.trim()) {
       alert("Please provide your name and contact phone number.");

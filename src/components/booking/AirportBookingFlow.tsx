@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import React, { useState, useEffect, useMemo } from "react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   Plane,
@@ -16,11 +16,9 @@ import {
   Lock,
   RefreshCw,
   PhoneCall,
-  MessageSquare,
-  Share2,
-  Building2,
+  MessageSquare, Building2,
   Minus,
-  Plus,
+  Plus
 } from "lucide-react";
 import { ApiClient } from "@/lib/ApiClient";
 import { resolveApiUrl } from "@/lib/api/config";
@@ -87,8 +85,6 @@ function buildAnchoredServiceClock(
 }
 
 export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
-  const navigate = useNavigate();
-
   // 1. Initial State from Search Params & Intent
   const extractIata = (raw?: string) => {
     if (!raw) return "";
@@ -120,8 +116,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       : extractIata(searchParams?.transit)) ||
     "DEL";
 
-  const [airportCode, setAirportCode] = useState<string>(rawAirportCode);
-  const [direction, setDirection] = useState<"arrival" | "departure" | "transit">(initialDirection);
+  const [airportCode] = useState<string>(rawAirportCode);
+  const [direction] = useState<"arrival" | "departure" | "transit">(initialDirection);
   const [travelType, setTravelType] = useState<"domestic" | "international">(initialTravelType);
 
   const registryEntry = getAirportRegistryEntry(airportCode);
@@ -597,7 +593,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   }, []);
 
   // Launch Razorpay Payment & Confirm Booking ONLY upon Backend Signature Verification
-  const handleProceedToPayment = async (e?: React.FormEvent) => {
+  const handleProceedToPayment = async (e?: React.SubmitEvent<HTMLFormElement>) => {
     if (e) e.preventDefault();
 
     // 1. Validate All Passenger Details

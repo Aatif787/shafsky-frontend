@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Plane, Calendar, Clock, MapPin, Building2, CheckCircle2, ChevronUp } from "lucide-react";
+import { Plane, Calendar, Building2, CheckCircle2, ChevronUp } from "lucide-react";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { IntelligentAirlineAutocomplete } from "./IntelligentAirlineAutocomplete";
 import { IntelligentAirportAutocomplete } from "./IntelligentAirportAutocomplete";
@@ -67,7 +67,7 @@ export function ManualFlightEntryForm({
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
 

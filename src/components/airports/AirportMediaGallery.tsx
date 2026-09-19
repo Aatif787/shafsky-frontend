@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
@@ -17,7 +17,6 @@ interface AirportMediaGalleryProps {
 export function AirportMediaGallery({
   airportCode,
   airportCity,
-  airportName,
 }: AirportMediaGalleryProps) {
   const images = getAirportImages(airportCode);
   const scrollRef = useRef<HTMLDivElement>(null);

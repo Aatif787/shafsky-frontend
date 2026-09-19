@@ -61,7 +61,7 @@ export function StickyMobileBookingBar({
         {/* Left Service Descriptor & Live Price */}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <span className="flex h-2 w-2 rounded-full bg-lime-500 animate-pulse" />
+            <span className="flex h-2 w-2 rounded-full bg-[#6e22db] animate-pulse" />
             <span className="font-mono text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate block">
               {title}
             </span>
@@ -87,7 +87,7 @@ export function StickyMobileBookingBar({
           <a
             href={actionHref}
             onClick={handleClick}
-            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-r from-lime-500 via-lime-400 to-lime-500 px-4 text-xs font-mono font-black uppercase tracking-wider text-slate-950 shadow-md shadow-lime-500/25 active:scale-95 transition"
+            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-r from-[#6e22db] via-[#7c3aed] to-[#6e22db] px-4 text-xs font-mono font-black uppercase tracking-wider text-white shadow-md shadow-[#6e22db]/30 active:scale-95 transition hover:shadow-lg hover:shadow-[#6e22db]/40"
           >
             <span>{buttonText}</span>
             <ArrowRight size={14} />

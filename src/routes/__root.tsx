@@ -6,8 +6,10 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  redirect,
 } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
+import { ICICI_REVIEW_MODE } from "../lib/config/reviewMode";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -16,11 +18,15 @@ import { BrandingHead } from "../lib/branding/BrandingHead";
 import { Toaster } from "../components/ui/sonner";
 import { AuthProvider } from "../auth-system/AuthProvider";
 import { AppErrorBoundary } from "../components/ui/AppErrorBoundary";
+import { MotionChrome } from "../components/motion/MotionChrome";
 import {
   isChunkLoadError,
   handleChunkReload,
   setupChunkRecovery,
 } from "../lib/chunk-recovery";
+import { BUSINESS } from "../lib/constants";
+import { SEO } from "../lib/seo";
+import { searchConsoleMeta } from "../lib/search-console";
 
 const WhatsAppWidget = lazy(() =>
   import("../components/ui/WhatsAppWidget").then((m) => ({ default: m.WhatsAppWidget })),
@@ -122,37 +128,51 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: ({ location }) => {
+    if (ICICI_REVIEW_MODE) {
+      const p = location.pathname.toLowerCase();
+      if (
+        p.startsWith("/solutions/aviation") ||
+        p.startsWith("/solutions/cargo") ||
+        p.startsWith("/solutions/travel") ||
+        p.startsWith("/solutions/medical") ||
+        p.startsWith("/charter") ||
+        p.startsWith("/hotels")
+      ) {
+        throw redirect({ to: "/solutions/concierge" });
+      }
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Shafsky Aviation Services — Private Charter & Airport Concierge" },
-      {
-        name: "description",
-        content:
-          "Shafsky Aviation Services delivers private charter, cargo, medical evacuation, aircraft management and Suswagatam airport concierge across 19 Indian hubs and global destinations.",
-      },
+      { title: SEO.defaultTitle },
+      { name: "description", content: SEO.defaultDescription },
       { name: "author", content: "Shafsky Aviation Services" },
+      { name: "application-name", content: "Shafsky" },
+      { name: "geo.region", content: "IN-DL" },
+      { name: "geo.placename", content: "New Delhi" },
+      { name: "geo.position", content: "28.5562;77.1000" },
+      { name: "ICBM", content: "28.5562, 77.1000" },
+      { name: "format-detection", content: "telephone=no" },
+      { name: "referrer", content: "strict-origin-when-cross-origin" },
       { property: "og:site_name", content: "Shafsky Aviation Services" },
-      { property: "og:title", content: "Shafsky Aviation Services — Private Charter & Airport Concierge" },
-      {
-        property: "og:description",
-        content:
-          "Private charter, cargo, medical and Suswagatam concierge across India and beyond. Engineered for the edge of flight.",
-      },
+      { property: "og:title", content: SEO.defaultTitle },
+      { property: "og:description", content: SEO.defaultDescription },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
+      { property: "og:locale", content: "en_IN" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Shafsky Aviation Services" },
-      {
-        name: "twitter:description",
-        content:
-          "Private charter, cargo, medical and Suswagatam concierge across India and beyond.",
-      },
+      { name: "twitter:title", content: SEO.defaultTitle },
+      { name: "twitter:description", content: SEO.defaultDescription },
+      { name: "twitter:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
       { name: "theme-color", content: "#84cc16" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "Shafsky" },
+      ...searchConsoleMeta(),
     ],
     links: [
       { rel: "manifest", href: "/manifest.json" },
@@ -176,11 +196,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en-IN">
       <head>
         <HeadContent />
       </head>
       <body>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-slate-900 focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
         {children}
         <Scripts />
       </body>
@@ -201,10 +227,12 @@ function RootComponent() {
         <AuthProvider>
           <BrandingProvider>
             <BrandingHead />
-            <div className="sticky-safe relative min-h-screen" style={{ position: "relative" }}>
-              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-              <Outlet />
-            </div>
+            <MotionChrome>
+              <div className="sticky-safe relative min-h-screen" style={{ position: "relative" }}>
+                {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+                <Outlet />
+              </div>
+            </MotionChrome>
             <DeferredWhatsApp />
             <Toaster position="top-right" richColors closeButton />
           </BrandingProvider>

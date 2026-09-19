@@ -281,7 +281,7 @@ function AnalyticsDashboardView() {
                   }}
                 />
                 <Bar dataKey="count" fill="#5fb5ad" radius={[4, 4, 0, 0]} opacity={0.85}>
-                  {getStaffWorkloadData().map((entry, index) => (
+                  {getStaffWorkloadData().map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Bar>

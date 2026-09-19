@@ -1,7 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
-import React from 'react'
+import { pageHead } from "@/lib/seo";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export const Route = createFileRoute('/gallery')({
+  head: () =>
+    pageHead({
+      title: "Gallery | Shafsky Aviation Services",
+      description: "Visual gallery of Shafsky Aviation Services.",
+      path: "/gallery",
+      robots: "noindex, follow",
+    }),
   component: GalleryRoute,
 })
 
@@ -9,7 +17,11 @@ function GalleryRoute() {
   return (
     <div className="pt-24 pb-16 px-4 max-w-7xl mx-auto min-h-screen">
       <h1 className="text-4xl font-bold text-slate-900 mb-8">Gallery</h1>
-      <p className="text-slate-600 mb-8">View our premium services and exclusive fleet.</p>
+      <p className="text-slate-600 mb-8">
+        {ICICI_REVIEW_MODE
+          ? "View our premium airport Meet & Greet services and lounge experience."
+          : "View our premium services and exclusive fleet."}
+      </p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Placeholder for gallery items */}

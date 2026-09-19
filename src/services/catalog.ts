@@ -1,43 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   Users,
-  Ticket,
-  Hotel,
-  HeartPulse,
-  Package,
-  Luggage,
-  Car,
+  Ticket, HeartPulse,
+  Package, Car,
   Plane,
-  ShieldCheck,
-  Building2,
-  Clock,
-  Sparkles,
-  Award,
-  Crown,
-  PlaneTakeoff,
-  Stethoscope,
-  Compass,
-  FileCheck,
-  Truck,
-  Briefcase,
-  LucideIcon,
+  ShieldCheck, Clock,
+  Sparkles, Crown,
+  PlaneTakeoff, LucideIcon
 } from "lucide-react";
 
 import { ASSETS } from "@/lib/assets";
 
 const meetGreetImg = ASSETS.meetGreet;
-const lounge = ASSETS.lounge;
 const fastTrackImg = ASSETS.fastTrack;
 const vipTransport1 = ASSETS.vipTransport;
 const hotelImg = ASSETS.hotel;
-const cargoAssistImg = ASSETS.cargoAssist;
-const medicalAssistImg = ASSETS.medicalAssist;
 const vipConciergeImg = ASSETS.concierge;
-const concierge = ASSETS.concierge;
 const heroJet = ASSETS.heroJet;
-
-const meetVideo = "https://assets.mixkit.co/videos/preview/mixkit-plane-flying-above-the-clouds-at-sunset-1002-large.mp4";
-const interior = ASSETS.interior;
 const jetTarmac = ASSETS.jetTarmac;
 const cargo = ASSETS.cargo;
 const medical = ASSETS.medical;

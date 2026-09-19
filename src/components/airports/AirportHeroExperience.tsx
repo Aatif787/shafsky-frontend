@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDown, MapPin, Clock, Globe, ShieldCheck, Sparkles, Plane, ArrowRight } from "lucide-react";
+import { ArrowDown, Clock, Globe, ShieldCheck, Sparkles, Plane, ArrowRight } from "lucide-react";
 import type { Airport } from "@/data/airports";
 import { getAirportAsset } from "@/lib/airport-assets";
 import { ResponsiveAirportHero } from "./ResponsiveAirportHero";

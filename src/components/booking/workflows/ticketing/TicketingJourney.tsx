@@ -1,5 +1,4 @@
-import React from "react";
-import { ArrowRight, Plane, Calendar, Users, Sparkles, Check, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { TicketingJourneyData } from "../../hooks/useTicketingWorkflow";
 

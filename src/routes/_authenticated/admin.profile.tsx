@@ -8,7 +8,7 @@ import {
   AdminDataTable,
   AdminStatusBadge,
 } from "@/components/admin/AdminComponents";
-import { User, Activity, Save } from "lucide-react";
+import { User, Save } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/profile")({
@@ -40,7 +40,7 @@ function AdminProfilePage() {
     }
   }, [data]);
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSaving(true);
     try {

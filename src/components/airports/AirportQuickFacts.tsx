@@ -1,16 +1,10 @@
-import React from "react";
 import { motion } from "framer-motion";
 import {
   Building2,
   Clock,
   ShieldCheck,
-  ConciergeBell,
-  MapPin,
-  Plane,
-  Layers,
-  Users,
-  Compass,
-  FileCheck,
+  ConciergeBell, Compass,
+  FileCheck
 } from "lucide-react";
 import { type Airport } from "@/data/airports";
 

@@ -1,6 +1,6 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { ASSETS } from "@/lib/assets";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 const depWheelchair = ASSETS.depWheelchair;
 const depLounge = ASSETS.depLounge;
@@ -20,7 +20,9 @@ const DEPARTURE_IMAGES = [
   {
     src: depWheelchair,
     title: "Curbside Greeting & VVIP Terminal Welcome",
-    alt: "VVIP Terminal curbside greeting with luxury chauffeur, luggage porter, and red carpet reception",
+    alt: ICICI_REVIEW_MODE
+      ? "VVIP Terminal curbside greeting with luggage porter and red carpet reception"
+      : "VVIP Terminal curbside greeting with luxury chauffeur, luggage porter, and red carpet reception",
   },
   {
     src: depLounge,
@@ -59,12 +61,16 @@ const ARRIVAL_IMAGES = [
   },
   {
     src: arrChauffeur,
-    title: "Chauffeur Baggage Loading & Curbside Transfer",
-    alt: "Shafsky hostess in saree and uniformed chauffeur loading luggage trolley into vehicle trunk for arriving family outside terminal",
+    title: ICICI_REVIEW_MODE
+      ? "Curbside Baggage Assistance & Porter Escort"
+      : "Chauffeur Baggage Loading & Curbside Transfer",
+    alt: ICICI_REVIEW_MODE
+      ? "Shafsky hostess in saree and luggage porter assisting with luggage trolley outside terminal"
+      : "Shafsky hostess in saree and uniformed chauffeur loading luggage trolley into vehicle trunk for arriving family outside terminal",
   },
 ];
 
-export function ServicesGallery({ airportCity, airportCode }: ServicesGalleryProps) {
+export function ServicesGallery({}: ServicesGalleryProps) {
   return (
     <section className="px-4 py-12 sm:px-8 md:px-16 md:py-16 max-w-[1600px] mx-auto space-y-14">
       {/* ── 1. DEPARTURE SERVICES GALLERY ── */}

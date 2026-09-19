@@ -12,37 +12,36 @@ import {
   Headphones,
   Zap,
   ChevronRight,
-  ChevronLeft,
-  Filter,
-  SlidersHorizontal,
+  ChevronLeft
 } from "lucide-react";
-import { AIRPORTS, type Airport } from "@/data/airports";
+import { AIRPORTS } from "@/data/airports";
 import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
-import { getAirportAsset, getAirportPrimaryImage, getAirportImages } from "@/lib/airport-assets";
+import { getAirportPrimaryImage } from "@/lib/airport-assets";
 import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
-import { BUSINESS } from "@/lib/constants";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export const Route = createFileRoute("/airports")({
-  head: () => ({
-    meta: [
-      { title: "Our Serviceable Airports — Shafsky Aviation Services" },
-      {
-        name: "description",
-        content: "Explore our active airports across India and worldwide for meet & greet, passenger assistance, and terminal services.",
-      },
-      { name: "robots", content: "index, follow" },
-      { property: "og:title", content: "Our Serviceable Airports — Shafsky Aviation Services" },
-      { property: "og:description", content: "Explore our active airports across India and worldwide." },
-      { property: "og:url", content: `${BUSINESS.BASE_URL}/airports` },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Our Serviceable Airports — Shafsky Aviation Services" },
-      { name: "twitter:description", content: "Explore our active airports across India and worldwide." },
-      { name: "twitter:image", content: `${BUSINESS.BASE_URL}/og-image.jpg` },
-    ],
-    links: [{ rel: "canonical", href: `${BUSINESS.BASE_URL}/airports` }],
-  }),
+  head: () =>
+    pageHead({
+      title: "Airport Meet & Greet Coverage Across India | Shafsky Aviation",
+      description: ICICI_REVIEW_MODE
+        ? "Book VIP Meet & Greet, airside escort, and VIP lounge access at 20+ Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Goa, and Jaipur."
+        : "Book VIP Meet & Greet, airside escort, lounge access, and luxury transfers at 20+ Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Goa, and Jaipur.",
+      path: "/airports",
+      keywords: [
+        "airport meet and greet India",
+        "VIP airport concierge",
+        "Delhi airport meet and greet",
+        "Mumbai airport assistance",
+      ],
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Airports", path: "/airports" },
+        ]),
+      ],
+    }),
   component: AirportsIndexPage,
 });
 
@@ -83,7 +82,6 @@ function AirportsIndexPage() {
 function AirportsListingView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("All Countries");
-  const [selectedService, setSelectedService] = useState("All Services");
   const [featuredOnly, setFeaturedOnly] = useState(false);
   const [selectedLetter, setSelectedLetter] = useState("All");
   const [sortOption, setSortOption] = useState("A - Z");

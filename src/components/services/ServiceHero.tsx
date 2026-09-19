@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { Sparkles, ArrowRight, ShieldCheck, Headphones, CheckCircle2 } from "lucide-react";

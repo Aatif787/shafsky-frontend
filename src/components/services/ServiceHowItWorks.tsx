@@ -1,6 +1,5 @@
-import React from "react";
 import { motion } from "framer-motion";
-import { Compass, Sparkles } from "lucide-react";
+import { Compass } from "lucide-react";
 import { FadeInView } from "@/components/ui/interactions";
 
 export interface TimelineStep {

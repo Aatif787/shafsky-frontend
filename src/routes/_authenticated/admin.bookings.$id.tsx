@@ -16,29 +16,15 @@ import {
 import { generateBookingDocument, listBookingDocuments, generateAllBookingPdfs, deleteOldDocumentVersions, resendDocumentEmail } from "@/lib/booking-documents.functions";
 import { listBookingPassengers } from "@/lib/passengers.functions";
 import { pageMono, pageDisplay, Panel } from "@/components/site/PageShell";
-import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
-
-type BookingStatus = Database["public"]["Enums"]["booking_status"];
 import {
   Loader2,
   AlertTriangle,
-  ArrowLeft,
-  Calendar,
-  MapPin,
-  FileText,
-  User,
-  Plus,
-  History,
-  ShieldCheck,
-  Plane,
+  ArrowLeft, Plane,
   AlertCircle,
-  Eye,
-  Download,
-  RefreshCw,
+  Eye, RefreshCw,
   Send,
   Trash2,
-  Calculator,
+  Calculator
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -226,7 +212,7 @@ function BookingDetailsView() {
     setIsEditing(true);
   };
 
-  const handleEditSubmit = async (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await triggerEditDetails({

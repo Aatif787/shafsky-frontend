@@ -1,6 +1,5 @@
-import React from "react";
 import { BookingSuccessPass } from "@/components/booking/shared/BookingSuccessPass";
-import { ShieldCheck, User, Clock, PhoneCall } from "lucide-react";
+import { ShieldCheck, User, Clock } from "lucide-react";
 
 export interface SuccessStepProps {
   bookingRef: string;

@@ -1,5 +1,4 @@
-import React from "react";
-import { Plane, Sparkles, Compass } from "lucide-react";
+import { Plane, Sparkles } from "lucide-react";
 
 interface AirportPhase1HeaderProps {
   airportName?: string;

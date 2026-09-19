@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
-import { Clock, ArrowRight, Info, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Info } from "lucide-react";
 import { PlatformService } from "@/data/servicesPlatformData";
 
 interface ServiceCardProps {

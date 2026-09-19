@@ -1,40 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
-  Plane,
   ArrowLeft,
   ArrowRight,
   Calendar,
   Clock,
   Users,
-  MapPin,
-  Building2,
-  HeartPulse,
-  Crown,
-  ShieldCheck,
-  Send,
+  MapPin, Send,
   CheckCircle2,
-  Sparkles,
-  PhoneCall,
-  MessageSquare,
+  Sparkles, MessageSquare
 } from "lucide-react";
-import { display, mono } from "@/components/home/theme";
+import { display } from "@/components/home/theme";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { charterApi, CharterRequestPayload } from "@/lib/api/charterApi";
 
 import jetTarmac from "@/assets/homepage/home2.jpeg";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/solutions/aviation")({
-  head: () => ({
-    meta: [
-      { title: "Private Charter Services — Shafsky Aviation" },
-      {
-        name: "description",
-        content:
-          "On-demand private jets, twin helicopters, and specialized mission aircraft on your schedule. 10 specialized charter options with rapid flight clearance.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Private Jet & Helicopter Charter in India | Shafsky Aviation",
+      description:
+        "On-demand private jets, helicopters, and mission aircraft across India. Corporate, tourism, pilgrim, and celebrity charter with rapid flight clearance.",
+      path: "/solutions/aviation",
+      keywords: ["private jet charter India", "helicopter charter", "air charter booking"],
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Private Charter", path: "/solutions/aviation" },
+        ]),
+      ],
+    }),
   component: DedicatedAirCharterPage,
 });
 
@@ -253,23 +250,41 @@ const CHARTER_OPTIONS: CharterOptionDef[] = [
   },
 ];
 
-const CHARTER_HERO_SLIDES = [
+export interface CharterHeroSlide {
+  type: "video" | "image";
+  src: string;
+  alt: string;
+  badge: string;
+  label: string;
+}
+
+const CHARTER_HERO_SLIDES: CharterHeroSlide[] = [
   {
+    type: "video",
+    src: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_091828_e240eb17-6edc-4129-ad9d-98678e3fd238.mp4",
+    alt: "Shafsky Private Jet In-Flight Aerial Cinematic Video Animation",
+    badge: "1/4 • Private Jet In-Flight Video Animation",
+    label: "In-Flight Video",
+  },
+  {
+    type: "image",
     src: HOMEPAGE_PHOTOS.privateCharter.src,
     alt: "Shafsky Private Jet and Helicopter Private Charter Fleet",
-    badge: "1/3 • Shafsky Private Charter Fleet",
+    badge: "2/4 • Shafsky Private Charter Fleet",
     label: "Private Charter Fleet",
   },
   {
+    type: "image",
     src: jetTarmac,
     alt: "Shafsky Executive Private Jet on Tarmac at Sunset",
-    badge: "2/3 • Executive Private Jet on Tarmac at Sunset",
+    badge: "3/4 • Executive Private Jet on Tarmac at Sunset",
     label: "Private Jet Tarmac",
   },
   {
+    type: "image",
     src: "/images/charter/luxury-cabin.webp",
     alt: "Shafsky Ultra-Luxury Private Jet Executive VIP Cabin",
-    badge: "3/3 • Ultra-Luxury Executive VIP Cabin",
+    badge: "4/4 • Ultra-Luxury Executive VIP Cabin",
     label: "VIP Luxury Cabin",
   },
 ];
@@ -280,6 +295,74 @@ function DedicatedAirCharterPage() {
     "Domestic and International Charter"
   );
   const [heroSlideIndex, setHeroSlideIndex] = useState<number>(0);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Swipe & drag gesture state for hero media carousel
+  const [dragStartX, setDragStartX] = useState<number | null>(null);
+  const [dragOffset, setDragOffset] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
+
+  useEffect(() => {
+    if (heroSlideIndex === 0 && videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, [heroSlideIndex]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setDragStartX(e.touches[0].clientX);
+    setDragOffset(0);
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (dragStartX === null) return;
+    const currentX = e.touches[0].clientX;
+    setDragOffset(currentX - dragStartX);
+  };
+
+  const handleTouchEnd = () => {
+    if (dragStartX !== null) {
+      if (dragOffset < -45) {
+        setHeroSlideIndex((prev) => (prev + 1) % CHARTER_HERO_SLIDES.length);
+      } else if (dragOffset > 45) {
+        setHeroSlideIndex((prev) => (prev - 1 + CHARTER_HERO_SLIDES.length) % CHARTER_HERO_SLIDES.length);
+      }
+    }
+    setDragStartX(null);
+    setDragOffset(0);
+    setIsDragging(false);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setDragStartX(e.clientX);
+    setDragOffset(0);
+    setIsDragging(true);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || dragStartX === null) return;
+    setDragOffset(e.clientX - dragStartX);
+  };
+
+  const handleMouseUp = () => {
+    if (isDragging && dragStartX !== null) {
+      if (dragOffset < -45) {
+        setHeroSlideIndex((prev) => (prev + 1) % CHARTER_HERO_SLIDES.length);
+      } else if (dragOffset > 45) {
+        setHeroSlideIndex((prev) => (prev - 1 + CHARTER_HERO_SLIDES.length) % CHARTER_HERO_SLIDES.length);
+      }
+    }
+    setDragStartX(null);
+    setDragOffset(0);
+    setIsDragging(false);
+  };
 
   const activeOption =
     CHARTER_OPTIONS.find((o) => o.id === selectedOptionId) || CHARTER_OPTIONS[0];
@@ -320,11 +403,11 @@ function DedicatedAirCharterPage() {
     if (optId === "Domestic and International Charter") {
       setHeroSlideIndex(0);
     } else if (optId === "Corporate Charter") {
-      setHeroSlideIndex(1);
-    } else if (optId === "Private Charter") {
       setHeroSlideIndex(2);
+    } else if (optId === "Private Charter") {
+      setHeroSlideIndex(3);
     } else if (optId === "Air Ambulance Charter") {
-      setHeroSlideIndex(0);
+      setHeroSlideIndex(1);
     }
     const match = CHARTER_OPTIONS.find((o) => o.id === optId);
     if (match) {
@@ -332,7 +415,7 @@ function DedicatedAirCharterPage() {
     }
   };
 
-  const handleStep1Next = (e: React.FormEvent) => {
+  const handleStep1Next = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!origin.trim() || !destination.trim()) {
       alert("Please specify both origin and destination.");
@@ -349,12 +432,12 @@ function DedicatedAirCharterPage() {
     setCurrentStep(2);
   };
 
-  const handleStep2Next = (e: React.FormEvent) => {
+  const handleStep2Next = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setCurrentStep(3);
   };
 
-  const handleSubmitRequest = async (e: React.FormEvent) => {
+  const handleSubmitRequest = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!clientName.trim() || !phone.trim()) {
       alert("Please provide your name and contact phone number.");
@@ -440,101 +523,184 @@ function DedicatedAirCharterPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-lime-200">
       {/* ─────────────────────────────────────────────────────────────
-          1. COMPLETE HERO PHOTO & PRIVATE CHARTER TITLE
+          1. FULL SCREEN WIDTH & PERFECT RATIO HERO MEDIA STAGE
           ───────────────────────────────────────────────────────────── */}
-      <section className="relative px-4 pt-4 pb-8 sm:px-6 lg:px-8 border-b border-slate-100">
-        <div className="mx-auto max-w-6xl">
-          {/* Header Bar with Back Button & Breadcrumbs */}
-          <div className="flex items-center justify-between gap-4 mb-6">
+      <section className="relative w-full overflow-hidden bg-slate-950 border-b border-slate-200">
+        {/* Top Header Overlay Bar: Back Button & VIP Aviation Desk Badge */}
+        <div className="absolute top-3 sm:top-6 left-3 sm:left-8 right-3 sm:right-8 z-20 flex items-center justify-between pointer-events-none">
+          <button
+            onClick={() => {
+              if (window.history.length > 1) {
+                window.history.back();
+              } else {
+                navigate({ to: "/" });
+              }
+            }}
+            className="pointer-events-auto inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-slate-950/80 hover:bg-slate-900 text-white backdrop-blur-md border border-white/20 text-[11px] sm:text-xs font-bold shadow-lg transition-all cursor-pointer"
+          >
+            <ArrowLeft size={14} className="text-lime-400" />
+            <span>Back</span>
+          </button>
+
+          <div className="pointer-events-auto inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono font-bold text-lime-400 uppercase tracking-wider sm:tracking-widest bg-slate-950/80 backdrop-blur-md px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-lime-400/30 shadow-lg">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-lime-400 inline-block animate-pulse" />
+            <span>VIP AVIATION & PRIVATE FLIGHT DESK</span>
+          </div>
+        </div>
+
+        {/* Subtle Scrim Gradients for Contrast */}
+        <div className="absolute inset-x-0 top-0 h-24 sm:h-32 bg-gradient-to-b from-black/75 via-black/30 to-transparent pointer-events-none z-10" />
+        <div className="absolute inset-x-0 bottom-0 h-24 sm:h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none z-10" />
+
+        {/* Full-Width & Perfect 16:9 Mobile Aspect Ratio Media Gallery (0% Cut, 0% Crop) */}
+        <div
+          className="relative w-full aspect-video lg:aspect-auto lg:h-screen lg:min-h-[600px] overflow-hidden flex items-center justify-center select-none cursor-grab active:cursor-grabbing touch-pan-y"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          {/* Swipeable Track */}
+          <div
+            className={`flex w-full h-full absolute inset-0 ${isDragging ? "transition-none" : "transition-transform duration-500 ease-out"}`}
+            style={{
+              transform: `translateX(calc(-${heroSlideIndex * 100}% + ${dragOffset}px))`,
+            }}
+          >
+            {CHARTER_HERO_SLIDES.map((slide, idx) => (
+              <div
+                key={idx}
+                className="w-full h-full shrink-0 relative flex items-center justify-center overflow-hidden bg-slate-950"
+              >
+                {slide.type === "video" ? (
+                  <video
+                    ref={videoRef}
+                    src={slide.src}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-full object-cover object-center select-none pointer-events-none"
+                    aria-label={slide.alt}
+                  />
+                ) : (
+                  <img
+                    src={slide.src}
+                    alt={slide.alt}
+                    className="w-full h-full object-cover object-center select-none block pointer-events-none"
+                    loading={idx <= 1 ? "eager" : "lazy"}
+                    draggable={false}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Slide Navigation Overlay Buttons */}
+          <div className="absolute inset-y-0 left-2 sm:left-6 right-2 sm:right-6 flex items-center justify-between pointer-events-none z-10">
             <button
-              onClick={() => {
-                if (window.history.length > 1) {
-                  window.history.back();
-                } else {
-                  navigate({ to: "/" });
-                }
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setHeroSlideIndex((prev) => (prev - 1 + CHARTER_HERO_SLIDES.length) % CHARTER_HERO_SLIDES.length);
               }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-lime-500 hover:text-lime-700 hover:bg-lime-50/50 shadow-sm transition-all cursor-pointer"
+              className="pointer-events-auto p-2 sm:p-3 rounded-full bg-slate-950/70 hover:bg-slate-900 text-white backdrop-blur-md transition shadow-xl cursor-pointer border border-white/15"
+              aria-label="Previous slide"
             >
-              <ArrowLeft size={14} className="text-lime-600" />
-              <span>Back</span>
+              <ArrowLeft size={15} className="sm:hidden text-white" />
+              <ArrowLeft size={18} className="hidden sm:block text-white" />
             </button>
-
-            <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-lime-700 uppercase tracking-widest bg-lime-50 px-3.5 py-1.5 rounded-full border border-lime-200">
-              <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
-              <span>VIP AVIATION & PRIVATE FLIGHT DESK</span>
-            </div>
-          </div>
-
-          {/* Title & Short Existing Description */}
-          <div className="text-center max-w-3xl mx-auto mb-6">
-            <h1
-              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
-              style={display}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setHeroSlideIndex((prev) => (prev + 1) % CHARTER_HERO_SLIDES.length);
+              }}
+              className="pointer-events-auto p-2 sm:p-3 rounded-full bg-slate-950/70 hover:bg-slate-900 text-white backdrop-blur-md transition shadow-xl cursor-pointer border border-white/15"
+              aria-label="Next slide"
             >
-              Private <span className="text-lime-600">Charter</span>
-            </h1>
-            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              On-demand executive private jets, twin helicopters, and specialized mission aircraft on your schedule.
-            </p>
+              <ArrowRight size={15} className="sm:hidden text-white" />
+              <ArrowRight size={18} className="hidden sm:block text-white" />
+            </button>
           </div>
 
-          {/* Uncropped Landscape Hero Image Gallery: Slide 1 (Charter Fleet), Slide 2 (Private Jet), Slide 3 (VIP Cabin) */}
-          <div className="space-y-3">
-            <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center min-h-[260px] sm:min-h-[400px]">
-              <img
-                src={CHARTER_HERO_SLIDES[heroSlideIndex]?.src || CHARTER_HERO_SLIDES[0].src}
-                alt={CHARTER_HERO_SLIDES[heroSlideIndex]?.alt || "Shafsky Private Charter"}
-                className="w-full h-auto object-contain object-center select-none block transition-opacity duration-300"
-                loading="eager"
-              />
-
-              {/* Slide Navigation Overlay Buttons */}
-              <div className="absolute inset-y-0 left-3 right-3 flex items-center justify-between pointer-events-none">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setHeroSlideIndex((prev) => (prev - 1 + CHARTER_HERO_SLIDES.length) % CHARTER_HERO_SLIDES.length)
-                  }
-                  className="pointer-events-auto p-2 rounded-full bg-slate-900/60 hover:bg-slate-900/90 text-white backdrop-blur-md transition shadow-md cursor-pointer"
-                  aria-label="Previous photo"
-                >
-                  <ArrowLeft size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setHeroSlideIndex((prev) => (prev + 1) % CHARTER_HERO_SLIDES.length)}
-                  className="pointer-events-auto p-2 rounded-full bg-slate-900/60 hover:bg-slate-900/90 text-white backdrop-blur-md transition shadow-md cursor-pointer"
-                  aria-label="Next photo"
-                >
-                  <ArrowRight size={16} />
-                </button>
-              </div>
-
-              {/* Photo Caption Badge */}
-              <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md text-white text-[11px] font-mono px-3 py-1 rounded-full border border-white/10 shadow-sm">
-                {CHARTER_HERO_SLIDES[heroSlideIndex]?.badge}
-              </div>
+          {/* Media Caption Badge on Bottom-Left */}
+          <div className="absolute bottom-2.5 sm:bottom-6 left-3 sm:left-8 z-20 flex items-center gap-2 pointer-events-none">
+            <div className="bg-slate-950/80 backdrop-blur-md text-white text-[10px] sm:text-xs font-mono px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-white/15 shadow-md flex items-center gap-1.5 sm:gap-2">
+              {CHARTER_HERO_SLIDES[heroSlideIndex]?.type === "video" && (
+                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-lime-400 animate-pulse" />
+              )}
+              <span>{CHARTER_HERO_SLIDES[heroSlideIndex]?.badge}</span>
             </div>
+          </div>
 
-            {/* 3-Slide Thumbnail / Pill Selectors */}
-            <div className="flex items-center justify-center gap-3 pt-1 flex-wrap">
-              {CHARTER_HERO_SLIDES.map((item, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setHeroSlideIndex(idx)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-mono font-bold transition cursor-pointer ${
-                    heroSlideIndex === idx
-                      ? "bg-lime-500 text-slate-950 border-lime-600 shadow-sm"
-                      : "bg-white text-slate-600 border-slate-200 hover:border-lime-400 hover:bg-lime-50/50"
+          {/* Desktop 4-Slide Thumbnail / Pill Selectors Floating Centered at Bottom */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 hidden lg:flex items-center justify-center gap-2.5 bg-slate-950/80 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/15 shadow-2xl">
+            {CHARTER_HERO_SLIDES.map((item, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setHeroSlideIndex(idx)}
+                className={`whitespace-nowrap flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition cursor-pointer ${
+                  heroSlideIndex === idx
+                    ? "bg-lime-500 text-slate-950 border-lime-400 shadow-sm"
+                    : "bg-slate-900/60 text-slate-300 border-slate-700/60 hover:border-lime-500 hover:text-white"
+                }`}
+              >
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    heroSlideIndex === idx ? "bg-slate-950" : "bg-slate-500"
                   }`}
-                >
-                  <span className={`w-2 h-2 rounded-full ${heroSlideIndex === idx ? "bg-slate-950" : "bg-slate-300"}`} />
-                  <span>{item.label}</span>
-                </button>
-              ))}
-            </div>
+                />
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Swipe Pagination Dots on Bottom Right */}
+          <div className="absolute bottom-2.5 sm:bottom-6 right-3 sm:right-8 z-20 flex items-center gap-1 sm:gap-1.5 bg-slate-950/60 backdrop-blur-md px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/15">
+            {CHARTER_HERO_SLIDES.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setHeroSlideIndex(idx);
+                }}
+                className={`h-1 sm:h-1.5 rounded-full transition-all cursor-pointer ${
+                  heroSlideIndex === idx ? "w-4 sm:w-6 bg-lime-400" : "w-1 sm:w-1.5 bg-white/40 hover:bg-white/70"
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile & Tablet 4-Slide Thumbnail / Pill Selectors Bar (Directly below 16:9 media, 100% accessible with no overlap) */}
+        <div className="lg:hidden w-full bg-slate-900/95 border-t border-slate-800/90 py-2 px-3">
+          <div className="flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5">
+            {CHARTER_HERO_SLIDES.map((item, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setHeroSlideIndex(idx)}
+                className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg border text-[10px] sm:text-xs font-mono font-bold transition cursor-pointer ${
+                  heroSlideIndex === idx
+                    ? "bg-lime-500 text-slate-950 border-lime-400 shadow-sm"
+                    : "bg-slate-800/80 text-slate-300 border-slate-700/80 hover:border-lime-500 hover:text-white"
+                }`}
+              >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    heroSlideIndex === idx ? "bg-slate-950" : "bg-slate-500"
+                  }`}
+                />
+                <span>{item.label}</span>
+              </button>
+            ))}
           </div>
         </div>
       </section>

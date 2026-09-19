@@ -1,4 +1,3 @@
-import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Coffee, Wifi, Clock, Bed, ShieldCheck, MapPin } from "lucide-react";
 import { HotelDetailTemplate } from "@/components/hotels/HotelDetailTemplate";
@@ -8,18 +7,23 @@ import {
   GalleryImage,
   RoomCategory,
 } from "@/components/hotels/types";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/hotels/castle-blue")({
-  head: () => ({
-    meta: [
-      { title: "Hotel Castle Blue New Delhi — Shafsky Aviation" },
-      {
-        name: "description",
-        content:
-          "Book Executive and Deluxe Rooms at Hotel Castle Blue, Mahipalpur, near IGI Airport New Delhi. Partner rates from ₹ 2,500/- (+ 12% GST). CPAI & MAP meal plans with complimentary breakfast and 24/7 concierge.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Hotel Castle Blue Mahipalpur Near IGI Airport | Shafsky",
+      description:
+        "Book Executive and Deluxe rooms at Hotel Castle Blue, Mahipalpur, near IGI Airport New Delhi. Partner rates from ₹2,500 (+GST) with breakfast and 24/7 concierge.",
+      path: "/hotels/castle-blue",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Hotels", path: "/solutions/travel" },
+          { name: "Hotel Castle Blue", path: "/hotels/castle-blue" },
+        ]),
+      ],
+    }),
   component: HotelCastleBluePage,
 });
 

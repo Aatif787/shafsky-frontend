@@ -1,4 +1,4 @@
-import { BookingService, ServicePricingRule } from "../types";
+import { BookingService } from "../types";
 
 export const SERVICE_PRICING_CONFIG: Record<string, number> = {
   [BookingService.CHARTER]: 450000,

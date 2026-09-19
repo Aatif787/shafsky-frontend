@@ -1,32 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, Plus, Minus, MessageSquare, PhoneCall } from "lucide-react";
-import { C, display, mono } from "../theme";
-import { SectionLabel } from "./SectionLabel";
+import { Plus, Minus, MessageSquare, PhoneCall } from "lucide-react";
+import { display, mono } from "../theme";
+import { HOMEPAGE_FAQS } from "@/lib/site-content";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export function FAQ() {
-  const faqs = [
-    {
-      q: "What is Suswagatam Meet & Greet?",
-      a: "Suswagatam is Shafsky Aviation Services' signature welcome and assistance protocol for domestic and international passengers across Indian airports — encompassing personal aerobridge escorts, security fast-track, VIP lounge sanctuary, dedicated baggage porterage, and tarmac vehicle transfers.",
-    },
-    {
-      q: "Which airports are covered in your pan-India network?",
-      a: "We maintain live airside operations across 20+ Indian airports including Delhi (DEL), Mumbai (BOM), Bengaluru (BLR), Hyderabad (HYD), Chennai (MAA), Kolkata (CCU), Goa Dabolim (GOI), Goa Mopa (GOX), Kochi (COK), Jaipur (JAI), Ahmedabad (AMD), Lucknow (LKO), and Amritsar (ATQ).",
-    },
-    {
-      q: "How does the Private Charter quotation workflow function?",
-      a: "Private Charter requests are processed through our 24/7 Flight Operations Desk. Once you submit your origin, destination, date, and passenger manifest, our team evaluates airframe availability, FBO terminal slots, and in-flight catering preferences to deliver a tailored mission brief and quotation within 45 minutes.",
-    },
-    {
-      q: "What is the advance booking window for airport services?",
-      a: "Standard airport services should ideally be reserved at least 12 hours in advance for domestic itineraries and 24 hours for international flights to guarantee airside security clearance. For short-notice urgent dispatch, our 24/7 operations line is directly accessible at +91 9599087959.",
-    },
-    {
-      q: "Are services customizable for diplomatic delegations and large families?",
-      a: "Yes. We regularly handle state delegations, corporate boards, and multi-generational families with synchronized multiple-escort teams, dedicated airside coaches, and specialized luggage handling protocols.",
-    },
-  ];
+  const allFaqs = HOMEPAGE_FAQS;
+  const faqs = ICICI_REVIEW_MODE
+    ? allFaqs.filter((f) => !f.q.toLowerCase().includes("charter") && !f.a.toLowerCase().includes("charter"))
+    : allFaqs;
 
   const [open, setOpen] = useState<number | null>(0);
 

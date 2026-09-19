@@ -1,15 +1,8 @@
 import {
   Crown,
-  Hotel,
-  Car,
-  Ticket,
-  HeartPulse,
+  Hotel, HeartPulse,
   Plane,
-  Package,
-  ShieldCheck,
-  Building2,
-  Calendar,
-  Users,
+  Package
 } from "lucide-react";
 import { type FieldConfig } from "./bookingConfigurations";
 

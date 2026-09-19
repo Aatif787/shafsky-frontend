@@ -1,22 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import {
-  Compass,
   Radio,
-  Clock,
-  ShieldCheck,
-  Plane,
-  ArrowUpRight,
-  Wind,
-  Thermometer,
-  Eye,
-  CheckCircle2,
-  ChevronRight,
-  Activity,
-  Layers,
+  Clock, ArrowUpRight, CheckCircle2, Activity
 } from "lucide-react";
-import { display, mono, C } from "../theme";
+import { display, mono } from "../theme";
 
 interface HubTelemetry {
   code: string;

@@ -1,4 +1,3 @@
-import React from "react";
 import { ArrowLeft, Users } from "lucide-react";
 import { ReviewSummary } from "@/components/booking/shared/ReviewSummary";
 import type { VisaEvaluationResult } from "@/lib/visa/visaIntelligence";

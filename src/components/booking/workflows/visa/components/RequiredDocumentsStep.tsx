@@ -1,4 +1,3 @@
-import React from "react";
 import { ArrowLeft, ArrowRight, FileText, ShieldCheck } from "lucide-react";
 import type { DocumentRequirement } from "@/lib/visa/types";
 import { DocumentCard } from "../cards/DocumentCard";

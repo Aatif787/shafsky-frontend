@@ -2,21 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { pageMono, pageDisplay, Panel } from "@/components/site/PageShell";
+import { pageMono, pageDisplay } from "@/components/site/PageShell";
 import {
-  Loader2,
-  AlertTriangle,
-  Search,
-  MessageSquare,
-  UserCheck,
-  CheckCircle,
-  Clock,
-  Send,
-  Lock,
-  Bookmark,
-  Sparkles,
-  RefreshCw,
-  FolderOpen,
+  Loader2, Search, Send, RefreshCw,
+  FolderOpen
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -142,7 +131,7 @@ function AdminCasesView() {
     }
   };
 
-  const handleSendReply = async (e: React.FormEvent) => {
+  const handleSendReply = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedCaseId || !replyText.trim()) return;
     setSubmittingReply(true);

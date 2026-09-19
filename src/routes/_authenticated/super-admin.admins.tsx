@@ -11,7 +11,7 @@ import {
   saMono,
   saTheme,
 } from "@/components/super-admin/SAComponents";
-import { ShieldCheck, Plus, Trash2, UserPlus } from "lucide-react";
+import { ShieldCheck, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/super-admin/admins")({

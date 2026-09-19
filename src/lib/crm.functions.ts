@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { apiGet, apiPost, apiPatch, getTokenFromRequest } from "@/lib/FastApiClient";
+import { apiGet, apiPatch, getTokenFromRequest } from "@/lib/FastApiClient";
 import { assertStaffUser, isStaffUser } from "@/lib/permissions";
 
 // Memory fallback store for development/migrations lag

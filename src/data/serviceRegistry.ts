@@ -1,17 +1,8 @@
 import {
-  OFFICIAL_SHAFSKY_SERVICES,
-  ServiceCatalogItem,
+  OFFICIAL_SHAFSKY_SERVICES
 } from "@/services/catalog";
 import {
-  Users,
-  Ticket,
-  Hotel,
-  Car,
-  Plane,
-  Package,
-  HeartPulse,
-  Stethoscope,
-  LucideIcon,
+  LucideIcon
 } from "lucide-react";
 
 export type ServiceCategory = "concierge" | "travel" | "cargo" | "medical" | "aviation" | "security";

@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import { TiltCard, FadeInView } from "@/components/ui/interactions";

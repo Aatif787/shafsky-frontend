@@ -1,4 +1,3 @@
-import React from "react";
 import { Plane } from "lucide-react";
 import { FlightData, FlightAirport } from "@/services/flight/FlightTypes";
 import { AIRPORT_REGISTRY } from "@/data/airportRegistry";

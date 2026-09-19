@@ -7,8 +7,7 @@ import {
   SAPageHeader,
   SASearchBar,
   SADataTable,
-  saMono,
-  saTheme,
+  saMono
 } from "@/components/super-admin/SAComponents";
 import { FileText, Download } from "lucide-react";
 import { toast } from "sonner";

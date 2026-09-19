@@ -1,7 +1,5 @@
-import React from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
-  Crown,
   Hotel,
   Ticket,
   Car,
@@ -11,9 +9,10 @@ import {
   Sparkles,
   ArrowRight,
   ShieldCheck,
-  Building2,
+  Building2
 } from "lucide-react";
 import { TiltCard, StaggerContainer, StaggerItem } from "@/components/ui/interactions";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export interface RelatedServiceItem {
   id: string;
@@ -136,8 +135,6 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
   },
 };
 
-const subServices = [];
-
 function resolveIntelligentSuggestions(pathname: string, searchLocation: any): RelatedServiceItem[] {
   let sub = "";
   try {
@@ -200,7 +197,20 @@ export function RelatedServices({
     services && services.length > 0
       ? services
       : resolveIntelligentSuggestions(location.pathname, location.search)
-  ).filter(Boolean);
+  )
+    .filter(Boolean)
+    .filter((item) => {
+      if (!ICICI_REVIEW_MODE) return true;
+      return (
+        item.link.startsWith("/solutions/concierge") ||
+        item.link.startsWith("/airports") ||
+        item.link.startsWith("/book")
+      );
+    });
+
+  if (ICICI_REVIEW_MODE && activeItems.length === 0) {
+    return null;
+  }
 
   return (
     <section className={`my-16 relative ${className}`}>

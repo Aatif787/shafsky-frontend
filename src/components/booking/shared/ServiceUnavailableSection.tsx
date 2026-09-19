@@ -1,4 +1,3 @@
-import React from "react";
 import { AlertCircle, Phone, MessageSquare, ArrowRight, ShieldAlert } from "lucide-react";
 
 interface ServiceUnavailableSectionProps {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   X,
   Plus,
@@ -7,17 +7,7 @@ import {
   Eye,
   FileText,
   Send,
-  Save,
-  CheckCircle,
-  Calendar,
-  DollarSign,
-  ShieldCheck,
-  User,
-  Plane,
-  Percent,
-  Clock,
-  Sparkles,
-  RefreshCw,
+  Save, Sparkles
 } from "lucide-react";
 import { pageMono, pageDisplay } from "@/components/site/PageShell";
 
@@ -116,7 +106,7 @@ export function QuoteBuilderModal({
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState<number | "">("");
   const [newItemQty, setNewItemQty] = useState<number>(1);
-  const [newItemCategory, setNewItemCategory] = useState<"departure" | "arrival" | "charter" | "add_on">("departure");
+  const [newItemCategory] = useState<"departure" | "arrival" | "charter" | "add_on">("departure");
 
   // Initialize line items from booking or existingServices
   useEffect(() => {

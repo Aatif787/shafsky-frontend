@@ -18,6 +18,6 @@ declare global {
   }
 }
 
-export function reportLovableError(error: unknown, context: Record<string, unknown> = {}) {
+export function reportLovableError(_error?: unknown, _context: Record<string, unknown> = {}) {
   // No-op: Lovable error reporting is disabled.
 }

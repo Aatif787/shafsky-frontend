@@ -3,6 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { getActiveBrandingServer } from "@/lib/branding/branding.server";
 import { CheckCircle2, Plane, AlertTriangle, Calendar, Users, Shield, ArrowRight } from "lucide-react";
+import { pageHead } from "@/lib/seo";
 
 // Server function to securely fetch public booking details without exposing sensitive info
 const fetchPublicBooking = createServerFn({ method: "GET" })
@@ -24,6 +25,13 @@ const fetchPublicBooking = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/verify/$id")({
+  head: ({ params }) =>
+    pageHead({
+      title: "Booking Verification | Shafsky Aviation Services",
+      description: "Public booking verification for Shafsky Aviation reservations.",
+      path: `/verify/${params.id}`,
+      robots: "noindex, nofollow",
+    }),
   component: VerifyRouteComponent,
 });
 

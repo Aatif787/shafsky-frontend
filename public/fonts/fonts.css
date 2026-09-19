@@ -24,9 +24,7 @@
 /* Noto Sans Regular */
 @font-face {
   font-family: "Noto Sans";
-  src:
-    url("/fonts/NotoSans-Regular.woff2") format("woff2"),
-    url("/fonts/NotoSans-Regular.ttf") format("truetype");
+  src: url("/fonts/NotoSans-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -35,9 +33,7 @@
 /* Noto Sans Bold */
 @font-face {
   font-family: "Noto Sans";
-  src:
-    url("/fonts/NotoSans-Bold.woff2") format("woff2"),
-    url("/fonts/NotoSans-Bold.ttf") format("truetype");
+  src: url("/fonts/NotoSans-Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -46,9 +42,7 @@
 /* Noto Sans Arabic */
 @font-face {
   font-family: "Noto Sans Arabic";
-  src:
-    url("/fonts/NotoSansArabic-Regular.woff2") format("woff2"),
-    url("/fonts/NotoSansArabic-Regular.ttf") format("truetype");
+  src: url("/fonts/NotoSansArabic-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -57,9 +51,7 @@
 /* Noto Sans Devanagari */
 @font-face {
   font-family: "Noto Sans Devanagari";
-  src:
-    url("/fonts/NotoSansDevanagari-Regular.woff2") format("woff2"),
-    url("/fonts/NotoSansDevanagari-Regular.ttf") format("truetype");
+  src: url("/fonts/NotoSansDevanagari-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;

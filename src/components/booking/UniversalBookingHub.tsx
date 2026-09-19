@@ -1,19 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import {
   Plane,
   Crown,
   Car,
   Hotel,
-  Shield,
-  Sparkles,
-  PhoneCall,
-  MessageSquare,
-  ShieldCheck,
-  CheckCircle2,
-  ChevronRight,
+  Shield, PhoneCall
 } from "lucide-react";
-import { display, mono } from "@/components/home/theme";
+import { display } from "@/components/home/theme";
 import { MeetGreetExperience } from "./experiences/MeetGreetExperience";
 import { AirCharterExperience } from "./experiences/AirCharterExperience";
 import { TransportExperience } from "./experiences/TransportExperience";

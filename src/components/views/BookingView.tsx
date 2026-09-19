@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { createBooking } from "@/lib/bookings.functions";
@@ -96,13 +95,13 @@ export default function BookingView({ searchParams }: BookingViewProps) {
 
   // Shared Route & Contact State
   const [pickupCity, setPickupCity] = useState<string>(searchParams?.origin || "");
-  const [destinationCity, setDestinationCity] = useState<string>(searchParams?.destination || "");
+  const [flightDate] = useState<string>(searchParams?.depart_date || "");
   const [flightDate, setFlightDate] = useState<string>(searchParams?.depart_date || "");
   const [leadPassengerName, setLeadPassengerName] = useState<string>("");
   const [passengerEmail, setPassengerEmail] = useState<string>("");
-  const [passengerPhone, setPassengerPhone] = useState<string>("");
-  const [paxAdults, setPaxAdults] = useState<number>(searchParams?.pax_adults || 1);
-  const [flightNumber, setFlightNumber] = useState<string>(searchParams?.flight_number || "");
+  const [paxAdults] = useState<number>(searchParams?.pax_adults || 1);
+  const [flightNumber] = useState<string>(searchParams?.flight_number || "");
+  const [specialRequests] = useState<string>(searchParams?.notes || "");
   const [specialRequests, setSpecialRequests] = useState<string>(searchParams?.notes || "");
 
   useEffect(() => {

@@ -10,25 +10,15 @@ import {
 import { pageMono, pageDisplay, Panel } from "@/components/site/PageShell";
 import {
   Plane,
-  Search,
-  CheckCircle2,
-  Clock,
-  DollarSign,
-  AlertCircle,
-  X,
+  Search, X,
   User,
   FileText,
   CreditCard,
   Send,
-  Loader2,
-  Calendar,
-  Phone,
-  Mail,
-  MapPin,
-  Check,
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
-import { format, isToday, isTomorrow, parseISO } from "date-fns";
+import { isToday, isTomorrow } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/admin/operations")({
   component: AdminOperationsPage,

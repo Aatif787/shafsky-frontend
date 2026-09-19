@@ -1,15 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Menu,
-  X,
-  Plane,
-  Clock,
+  X, Clock,
   MessageCircle,
   Phone,
   ArrowRight,
   Lock,
   Globe,
-  Award,
+  Award
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { PrivateCharterRequestFlow } from "./PrivateCharterRequestFlow";

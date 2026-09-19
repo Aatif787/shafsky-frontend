@@ -1,21 +1,9 @@
-import React, { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import {
-  Plane,
-  Gauge,
-  Compass,
-  ArrowRight,
-  Clock,
-  ShieldCheck,
-  Users,
-  Luggage,
-  Sparkles,
-  Zap,
-  MapPin,
-  ChevronDown,
+  Plane, ArrowRight
 } from "lucide-react";
-import { display, mono, C } from "../theme";
+import { display, mono } from "../theme";
 
 interface AircraftModel {
   id: string;

@@ -2,24 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
   Plane,
-  Search,
-  Filter,
-  Eye,
-  Calendar,
-  Clock,
-  Users,
-  CheckCircle2,
-  AlertCircle,
-  Phone,
-  Mail,
-  MessageCircle,
-  Edit2,
-  X,
+  Search, Eye, X,
   Check,
-  Loader2,
-  Shield,
-  FileText,
-  UserCheck,
+  Loader2
 } from "lucide-react";
 import { charterApi, CharterRequestData } from "@/lib/api/charterApi";
 import { toast } from "sonner";
@@ -93,7 +78,7 @@ function AdminCharterView() {
     loadRequests();
   }, [statusFilter]);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearchSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     loadRequests();
   };

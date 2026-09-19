@@ -1,15 +1,9 @@
-import React from "react";
 import { motion } from "framer-motion";
 import {
   Crown,
   Ticket,
-  Car,
-  Hotel,
-  ShieldCheck,
-  Sparkles,
-  Clock,
-  CheckCircle2,
-  Award,
+  Car, ShieldCheck,
+  Sparkles, CheckCircle2
 } from "lucide-react";
 import type { Airport } from "@/data/airports";
 

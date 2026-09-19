@@ -6,77 +6,139 @@ import { ASSETS } from "./assets";
  */
 export const AIRPORT_IMAGES_MAP: Record<string, string[]> = {
   amd: [
-    "/images/airports/amd/clean-1.webp",
-    "/images/airports/amd/clean-2.webp",
-    "/images/airports/amd/clean-3.webp",
-    "/images/airports/amd/clean-4.webp",
-    "/images/airports/amd/clean-5.webp",
+    "/images/airports/amd/ahmedabad-svpia-terminal.webp",
+    "/images/airports/amd/sabarmati-ashram.webp",
+    "/images/airports/amd/adalaj-stepwell.webp",
+    "/images/airports/amd/atal-pedestrian-bridge.webp",
+    "/images/airports/amd/sidi-saiyyed-mosque.webp",
   ],
   atq: [
-    "/images/airports/atq/clean-1.webp",
-    "/images/airports/atq/clean-2.webp",
-    "/images/airports/atq/clean-3.webp",
-    "/images/airports/atq/clean-4.webp",
-    "/images/airports/atq/clean-5.webp",
-    "/images/airports/atq/clean-6.webp",
-    "/images/airports/atq/clean-7.webp",
+    "/images/airports/atq/amritsar-sgrdj-terminal.webp",
+    "/images/airports/atq/amritsar-airport-interior.webp",
+    "/images/airports/atq/golden-temple.webp",
+    "/images/airports/atq/ram-bagh-palace.webp",
+    "/images/airports/atq/gobindgarh-fort.webp",
+    "/images/airports/atq/durgiana-temple.webp",
+    "/images/airports/atq/wagah-border.webp",
+    "/images/airports/atq/jallianwala-bagh.webp",
   ],
-  bbi: ["/images/airports/bbi/clean-1.webp", "/images/airports/bbi/clean-2.webp"],
+  bbi: [
+    "/images/airports/bbi/bhubaneswar-bpia-terminal.webp",
+    "/images/airports/bbi/ananta-vasudeva-temple.webp",
+    "/images/airports/bbi/lingaraj-temple.webp",
+    "/images/airports/bbi/mukteswar-temple.webp",
+  ],
   blr: [
-    "/images/airports/blr/clean-1.webp",
-    "/images/airports/blr/clean-2.webp",
-    "/images/airports/blr/clean-3.webp",
-    "/images/airports/blr/clean-4.webp",
+    "/images/airports/blr/bangalore-kia-terminal-1.webp",
+    "/images/airports/blr/bangalore-kia-terminal-2.webp",
+    "/images/airports/blr/bangalore-palace.webp",
+    "/images/airports/blr/vidhana-soudha.webp",
   ],
   bom: [
-    "/images/airports/bom/clean-1.webp",
-    "/images/airports/bom/clean-2.webp",
-    "/images/airports/bom/clean-3.webp",
-    "/images/airports/bom/clean-4.webp",
-    "/images/airports/bom/clean-5.webp",
+    "/images/airports/bom/mumbai-csmia-terminal-2.webp",
+    "/images/airports/bom/gateway-of-india.webp",
+    "/images/airports/bom/chhatrapati-shivaji-terminus.webp",
+    "/images/airports/bom/haji-ali-dargah.webp",
   ],
-  ccu: ["/images/airports/ccu/clean-1.webp"],
-  cok: ["/images/airports/cok/clean-1.webp"],
+  ccu: [
+    "/images/airports/ccu/kolkata-nscbi-terminal.webp",
+    "/images/airports/ccu/howrah-bridge.webp",
+    "/images/airports/ccu/victoria-memorial.webp",
+    "/images/airports/ccu/dakshineswar-temple.webp",
+  ],
+  cok: [
+    "/images/airports/cok/cochin-cia-terminal.webp",
+    "/images/airports/cok/kerala-folklore-museum.webp",
+    "/images/airports/cok/bolgatty-palace-marine-drive.webp",
+    "/images/airports/cok/kumbalangi-village.webp",
+  ],
   del: [
-    "/images/airports/del/clean-8.webp",
-    "/images/airports/del/clean-3.webp",
-    "/images/airports/del/clean-4.webp",
-    "/images/airports/del/clean-7.webp",
-    "/images/airports/del/clean-1.webp",
-    "/images/airports/del/clean-2.webp",
+    "/images/airports/del/delhi-igia-terminal-3.webp",
+    "/images/airports/del/india-gate.webp",
+    "/images/airports/del/red-fort.webp",
+    "/images/airports/del/qutub-minar.webp",
+    "/images/airports/del/lotus-temple.webp",
+    "/images/airports/del/humayuns-tomb.webp",
+    "/images/airports/del/jama-masjid.webp",
+    "/images/airports/del/parliament-house.webp",
   ],
-  gau: ["/images/airports/gau/clean-1.webp"],
-  goi: ["/images/airports/goi/clean-1.webp"],
+  gau: [
+    "/images/airports/gau/guwahati-lgbi-terminal.webp",
+    "/images/airports/gau/kamakhya-temple.webp",
+    "/images/airports/gau/brahmaputra-river-cruise.webp",
+    "/images/airports/gau/umananda-island.webp",
+    "/images/airports/gau/kaziranga-gate.webp",
+  ],
+  goi: [
+    "/images/airports/goi/goa-dabolim-terminal.webp",
+    "/images/airports/goi/basilica-of-bom-jesus.webp",
+    "/images/airports/goi/dudhsagar-falls.webp",
+    "/images/airports/goi/palolem-beach.webp",
+  ],
   gox: [
-    "/images/airports/gox/clean-1.webp",
-    "/images/airports/gox/clean-3.webp",
-    "/images/airports/gox/clean-2.webp",
+    "/images/airports/gox/goa-mopa-manohar-terminal.webp",
+    "/images/airports/gox/fort-aguada.webp",
+    "/images/airports/gox/baga-beach.webp",
+    "/images/airports/gox/vagator-beach.webp",
+    "/images/airports/gox/i-love-goa-monument.webp",
   ],
   hyd: [
-    "/images/airports/hyd/clean-1.webp",
-    "/images/airports/hyd/clean-2.webp",
-    "/images/airports/hyd/clean-3.webp",
-    "/images/airports/hyd/clean-4.webp",
-    "/images/airports/hyd/clean-5.webp",
+    "/images/airports/hyd/hyderabad-rgia-terminal.webp",
+    "/images/airports/hyd/charminar.webp",
+    "/images/airports/hyd/golconda-fort.webp",
+    "/images/airports/hyd/hussain-sagar-buddha.webp",
+    "/images/airports/hyd/chowmahalla-palace.webp",
   ],
-  ixc: ["/images/airports/ixc/clean-2.webp"],
-  ixe: ["/images/airports/ixe/clean-1.webp"],
-  ixr: ["/images/airports/ixr/clean-1.webp"],
+  ixc: [
+    "/images/airports/ixc/chandigarh-sbs-terminal.webp",
+    "/images/airports/ixc/chandigarh-airport-exterior.webp",
+    "/images/airports/ixc/rock-garden-chandigarh.webp",
+    "/images/airports/ixc/sukhna-lake.webp",
+    "/images/airports/ixc/rose-garden-chandigarh.webp",
+    "/images/airports/ixc/open-hand-monument.webp",
+  ],
+  ixe: [
+    "/images/airports/ixe/mangalore-airport-terminal.webp",
+    "/images/airports/ixe/panambur-beach.webp",
+    "/images/airports/ixe/kadri-manjunath-temple.webp",
+  ],
+  ixr: [
+    "/images/airports/ixr/ranchi-birsa-munda-terminal.webp",
+    "/images/airports/ixr/hundru-falls.webp",
+    "/images/airports/ixr/jagannath-temple-ranchi.webp",
+    "/images/airports/ixr/dassam-falls.webp",
+  ],
   jai: [
-    "/images/airports/jai/clean-2.webp",
-    "/images/airports/jai/clean-1.webp",
-    "/images/airports/jai/clean-3.webp",
+    "/images/airports/jai/jaipur.png",
+    "/images/airports/jai/jai-airport-home.webp",
+    "/images/airports/jai/jaipur-airport-terminal.webp",
+    "/images/airports/jai/hawa-mahal.webp",
+    "/images/airports/jai/amber-fort.webp",
   ],
   lko: [
-    "/images/airports/lko/clean-1.webp",
-    "/images/airports/lko/clean-2.webp",
-    "/images/airports/lko/clean-3.webp",
-    "/images/airports/lko/clean-4.webp",
-    "/images/airports/lko/clean-5.webp",
+    "/images/airports/lko/lucknow-ccsi-terminal.webp",
+    "/images/airports/lko/bara-imambara.webp",
+    "/images/airports/lko/rumi-darwaza.webp",
+    "/images/airports/lko/chota-imambara.webp",
+    "/images/airports/lko/ambedkar-memorial-park.webp",
+    "/images/airports/lko/hazratganj-clock-tower.webp",
   ],
-  maa: ["/images/airports/maa/clean-1.webp"],
-  trv: ["/images/airports/trv/clean-1.webp"],
-  vtz: ["/images/airports/vtz/clean-1.webp"],
+  maa: [
+    "/images/airports/maa/chennai-airport-terminal.webp",
+    "/images/airports/maa/marina-beach-chennai.webp",
+    "/images/airports/maa/kapaleeshwarar-temple.webp",
+    "/images/airports/maa/chennai-central-station.webp",
+  ],
+  trv: [
+    "/images/airports/trv/thiruvananthapuram-terminal.webp",
+  ],
+  vtz: [
+    "/images/airports/vtz/visakhapatnam-airport-terminal.webp",
+    "/images/airports/vtz/ins-kursura-submarine-museum.webp",
+    "/images/airports/vtz/kailasagiri-hill.webp",
+    "/images/airports/vtz/yarada-beach.webp",
+    "/images/airports/vtz/rk-beach-promenade.webp",
+  ],
 };
 
 const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: string }> = {
@@ -90,8 +152,8 @@ const ASSETS_MAP: Record<string, { desktop?: string; mobile?: string; tablet?: s
   ixr: { desktop: ASSETS.ixr, mobile: ASSETS.ixr, tablet: ASSETS.ixr },
   jai: { desktop: ASSETS.jai, mobile: ASSETS.jai, tablet: ASSETS.jai },
   atq: {
-    desktop: "/images/airports/atq/clean-1.webp",
-    mobile: "/images/airports/atq/clean-2.webp",
+    desktop: "/images/airports/atq/amritsar-sgrdj-terminal.webp",
+    mobile: "/images/airports/atq/amritsar-airport-interior.webp",
     tablet: "/images/airports/atq/hero-tablet.webp",
   },
   gau: { desktop: ASSETS.gau, mobile: ASSETS.gau, tablet: ASSETS.gau },
@@ -122,20 +184,33 @@ export function getAirportImages(airportCode: string): string[] {
 
 /**
  * Returns terminal-specific imagery for the airport top hero / landing banner,
- * ensuring city landmarks (like Bangalore Palace) are excluded from the airport hero.
+ * ensuring city landmarks (like Bangalore Palace, Gateway of India) are excluded from the airport hero.
  */
 export function getAirportHeroImages(airportCode: string): string[] {
   if (!airportCode) return [];
   const normalized = airportCode.trim().toLowerCase();
   const allImages = getAirportImages(airportCode);
   if (normalized === "blr") {
-    // Exclude tourist landmarks (clean-3 Bangalore Palace, clean-4 Vidhana Soudha) from BLR airport hero banner
-    return allImages.filter((img) => !img.includes("clean-3") && !img.includes("clean-4"));
-  }
-  if (normalized === "del") {
-    // Exclude tourist landmarks (clean-8 Parliament House, clean-3 India Gate, clean-4 Red Fort, clean-7 Jama Masjid) from DEL airport hero banner
+    // Exclude tourist landmarks (Bangalore Palace, Vidhana Soudha) from BLR airport hero banner
     return allImages.filter(
       (img) =>
+        !img.includes("bangalore-palace") &&
+        !img.includes("vidhana-soudha") &&
+        !img.includes("clean-3") &&
+        !img.includes("clean-4")
+    );
+  }
+  if (normalized === "del") {
+    // Exclude tourist landmarks (India Gate, Red Fort, Qutub Minar, etc.) from DEL airport hero banner
+    return allImages.filter(
+      (img) =>
+        !img.includes("india-gate") &&
+        !img.includes("red-fort") &&
+        !img.includes("qutub-minar") &&
+        !img.includes("lotus-temple") &&
+        !img.includes("humayuns-tomb") &&
+        !img.includes("jama-masjid") &&
+        !img.includes("parliament-house") &&
         !img.includes("clean-8") &&
         !img.includes("clean-3") &&
         !img.includes("clean-4") &&
@@ -145,9 +220,14 @@ export function getAirportHeroImages(airportCode: string): string[] {
     );
   }
   if (normalized === "lko") {
-    // Exclude tourist landmarks (clean-2 Bara Imambara, clean-3 Rumi Darwaza, clean-4 Chota Imambara, clean-5 Ambedkar Memorial Park) from LKO airport hero banner
+    // Exclude tourist landmarks (Bara Imambara, Rumi Darwaza, etc.) from LKO airport hero banner
     return allImages.filter(
       (img) =>
+        !img.includes("bara-imambara") &&
+        !img.includes("rumi-darwaza") &&
+        !img.includes("chota-imambara") &&
+        !img.includes("ambedkar-memorial-park") &&
+        !img.includes("hazratganj") &&
         !img.includes("clean-2") &&
         !img.includes("clean-3") &&
         !img.includes("clean-4") &&
@@ -155,9 +235,12 @@ export function getAirportHeroImages(airportCode: string): string[] {
     );
   }
   if (normalized === "bom") {
-    // Exclude tourist landmarks (clean-2 Gateway of India, clean-3 CST, clean-4 Marine Drive, clean-5 Bandra-Worli Sea Link) from BOM airport hero banner
+    // Exclude tourist landmarks (Gateway of India, CST, Haji Ali Dargah) from BOM airport hero banner
     return allImages.filter(
       (img) =>
+        !img.includes("gateway-of-india") &&
+        !img.includes("chhatrapati-shivaji-terminus") &&
+        !img.includes("haji-ali-dargah") &&
         !img.includes("clean-2") &&
         !img.includes("clean-3") &&
         !img.includes("clean-4") &&
@@ -165,9 +248,13 @@ export function getAirportHeroImages(airportCode: string): string[] {
     );
   }
   if (normalized === "hyd") {
-    // Exclude tourist landmarks (clean-2 Charminar, clean-3 Golconda Fort, clean-4 Hussain Sagar Buddha, clean-5 Chowmahalla Palace) from HYD airport hero banner
+    // Exclude tourist landmarks (Charminar, Golconda Fort, etc.) from HYD airport hero banner
     return allImages.filter(
       (img) =>
+        !img.includes("charminar") &&
+        !img.includes("golconda-fort") &&
+        !img.includes("hussain-sagar-buddha") &&
+        !img.includes("chowmahalla-palace") &&
         !img.includes("clean-2") &&
         !img.includes("clean-3") &&
         !img.includes("clean-4") &&
@@ -175,9 +262,13 @@ export function getAirportHeroImages(airportCode: string): string[] {
     );
   }
   if (normalized === "amd") {
-    // Exclude tourist landmarks (clean-2 Sabarmati Ashram, clean-3 Adalaj Stepwell, clean-4 Atal Bridge, clean-5 Sidi Saiyyed Mosque) from AMD airport hero banner
+    // Exclude tourist landmarks (Sabarmati Ashram, Adalaj Stepwell, etc.) from AMD airport hero banner
     return allImages.filter(
       (img) =>
+        !img.includes("sabarmati-ashram") &&
+        !img.includes("adalaj-stepwell") &&
+        !img.includes("atal-pedestrian-bridge") &&
+        !img.includes("sidi-saiyyed-mosque") &&
         !img.includes("clean-2") &&
         !img.includes("clean-3") &&
         !img.includes("clean-4") &&
@@ -185,9 +276,15 @@ export function getAirportHeroImages(airportCode: string): string[] {
     );
   }
   if (normalized === "atq") {
-    // Exclude tourist landmarks (clean-3 Golden Temple, clean-4 Ram Bagh Palace, clean-5 Gobindgarh Fort, clean-6 Durgiana Temple, clean-7 Wagah Border) from ATQ airport hero banner
+    // Exclude tourist landmarks (Golden Temple, Ram Bagh Palace, etc.) from ATQ airport hero banner
     return allImages.filter(
       (img) =>
+        !img.includes("golden-temple") &&
+        !img.includes("ram-bagh-palace") &&
+        !img.includes("gobindgarh-fort") &&
+        !img.includes("durgiana-temple") &&
+        !img.includes("wagah-border") &&
+        !img.includes("jallianwala-bagh") &&
         !img.includes("clean-3") &&
         !img.includes("clean-4") &&
         !img.includes("clean-5") &&
@@ -195,7 +292,137 @@ export function getAirportHeroImages(airportCode: string): string[] {
         !img.includes("clean-7")
     );
   }
+  if (normalized === "bbi") {
+    // Return high-quality Biju Patnaik International Airport terminal image on the airport hero banner
+    return ["/images/airports/bbi/bhubaneswar-bpia-terminal.webp"];
+  }
+  if (normalized === "jai") {
+    // Airport hero / home page banner uses jaipur.png and jai-airport-home.webp; jaipur-airport-terminal remains in the gallery/places.
+    return [
+      "/images/airports/jai/jaipur.png",
+      "/images/airports/jai/jai-airport-home.webp",
+    ];
+  }
+  if (normalized === "cok") {
+    // Exclude tourist landmarks (Kerala Folklore Museum, Bolgatty Island, Kumbalangi) from COK airport hero banner
+    return allImages.filter(
+      (img) =>
+        !img.includes("folklore") &&
+        !img.includes("bolgatty") &&
+        !img.includes("marine-drive") &&
+        !img.includes("kumbalangi") &&
+        !img.includes("clean-2") &&
+        !img.includes("clean-3") &&
+        !img.includes("clean-4")
+    );
+  }
+  if (normalized === "vtz") {
+    // Exclude tourist landmarks (Submarine Museum, Kailasagiri Hill, Yarada Beach, RK Beach Promenade) from VTZ airport hero banner
+    return allImages.filter(
+      (img) =>
+        !img.includes("kursura") &&
+        !img.includes("submarine") &&
+        !img.includes("kailasagiri") &&
+        !img.includes("yarada") &&
+        !img.includes("rk-beach") &&
+        !img.includes("clean-2") &&
+        !img.includes("clean-3") &&
+        !img.includes("clean-4") &&
+        !img.includes("clean-5")
+    );
+  }
+  if (normalized === "ccu") {
+    return allImages.filter(
+      (img) =>
+        !img.includes("howrah-bridge") &&
+        !img.includes("victoria-memorial") &&
+        !img.includes("dakshineswar") &&
+        !img.includes("clean-2") &&
+        !img.includes("clean-3") &&
+        !img.includes("clean-4")
+    );
+  }
+  if (normalized === "goi") {
+    return allImages.filter(
+      (img) =>
+        !img.includes("basilica") &&
+        !img.includes("dudhsagar") &&
+        !img.includes("palolem") &&
+        !img.includes("clean-2") &&
+        !img.includes("clean-3") &&
+        !img.includes("clean-4")
+    );
+  }
+  if (normalized === "gox") {
+    return allImages.filter(
+      (img) =>
+        !img.includes("fort-aguada") &&
+        !img.includes("baga-beach") &&
+        !img.includes("vagator-beach") &&
+        !img.includes("i-love-goa") &&
+        !img.includes("clean-2") &&
+        !img.includes("clean-3") &&
+        !img.includes("clean-4") &&
+        !img.includes("clean-5")
+    );
+  }
+  if (normalized === "ixc") {
+    return allImages.filter(
+      (img) =>
+        !img.includes("rock-garden") &&
+        !img.includes("sukhna-lake") &&
+        !img.includes("rose-garden") &&
+        !img.includes("open-hand") &&
+        !img.includes("clean-3") &&
+        !img.includes("clean-4") &&
+        !img.includes("clean-5") &&
+        !img.includes("clean-6")
+    );
+  }
+  if (normalized === "ixe") {
+    return allImages.filter(
+      (img) =>
+        !img.includes("panambur") &&
+        !img.includes("kadri") &&
+        !img.includes("clean-2") &&
+        !img.includes("clean-3")
+    );
+  }
+  if (normalized === "ixr") {
+    return allImages.filter(
+      (img) =>
+        !img.includes("hundru") &&
+        !img.includes("jagannath") &&
+        !img.includes("dassam") &&
+        !img.includes("clean-2") &&
+        !img.includes("clean-3") &&
+        !img.includes("clean-4")
+    );
+  }
+  if (normalized === "maa") {
+    return allImages.filter(
+      (img) =>
+        !img.includes("marina-beach") &&
+        !img.includes("kapaleeshwarar") &&
+        !img.includes("chennai-central") &&
+        !img.includes("clean-2") &&
+        !img.includes("clean-3") &&
+        !img.includes("clean-4")
+    );
+  }
   return allImages;
+}
+
+/**
+ * Returns city landmark / attraction imagery for the Home Page,
+ * ensuring Home Page shows city sights and never airport images.
+ */
+export function getCityPrimaryImage(airportCode: string): string {
+  if (!airportCode) return ASSETS.del;
+  const normalized = airportCode.trim().toLowerCase();
+  if (normalized === "jai") return "/images/airports/jai/jaipur.png";
+  if (normalized === "bbi") return "/images/airports/bbi/bbi-airport-home.webp";
+  return getAirportPrimaryImage(airportCode);
 }
 
 /**

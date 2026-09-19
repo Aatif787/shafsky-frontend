@@ -1,21 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  Plane,
-  Calendar,
-  Users,
-  Luggage,
-  Sparkles,
-  ArrowRight,
-  ArrowLeft,
-  CheckCircle2,
-  PhoneCall,
-  MessageSquare,
-  ShieldCheck,
-  Check,
+  Sparkles, CheckCircle2,
+  PhoneCall, Check
 } from "lucide-react";
 import { display, mono } from "@/components/home/theme";
-import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import meetGreetImg from "@/assets/others/meetgreet.jpeg";
 import transitImg from "@/assets/homepage/transit.jpeg";
 import buggyImg from "@/assets/homepage/buggy.jpeg";
@@ -200,7 +188,7 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
     city: "TBD",
   };
 
-  const handleSubmitFinal = async (e: React.FormEvent) => {
+  const handleSubmitFinal = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!airport) {
       alert("Please select your airport hub.");

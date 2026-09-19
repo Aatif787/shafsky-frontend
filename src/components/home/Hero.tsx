@@ -44,6 +44,7 @@ export function Hero({ visible = true }: { visible?: boolean }) {
       style={{ background: C.bg, color: C.ink, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
     >
       <Navigation visible={visible} />
+      <main id="main-content">
       <HeroSection visible={visible} />
       <BookingPanel />
 
@@ -87,6 +88,7 @@ export function Hero({ visible = true }: { visible?: boolean }) {
       <Deferred height={320}>
         <FinalCTA />
       </Deferred>
+      </main>
 
       {/* 15. Luxury Footer */}
       <ScrollSection isLast>

@@ -11,17 +11,21 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutUsRouteImport } from './routes/about-us'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AirportsRouteImport } from './routes/airports'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookRouteImport } from './routes/book'
+import { Route as CancellationAndRefundRouteImport } from './routes/cancellation-and-refund'
 import { Route as CharterRouteImport } from './routes/charter'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FlightVerificationRouteImport } from './routes/flight-verification'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsAndConditionsRouteImport } from './routes/terms-and-conditions'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authenticated/super-admin'
@@ -84,6 +88,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutUsRoute = AboutUsRouteImport.update({
+  id: '/about-us',
+  path: '/about-us',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountRoute = AccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -102,6 +111,11 @@ const AuthRoute = AuthRouteImport.update({
 const BookRoute = BookRouteImport.update({
   id: '/book',
   path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CancellationAndRefundRoute = CancellationAndRefundRouteImport.update({
+  id: '/cancellation-and-refund',
+  path: '/cancellation-and-refund',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CharterRoute = CharterRouteImport.update({
@@ -129,6 +143,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   id: '/robots.txt',
   path: '/robots.txt',
@@ -137,6 +156,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
+  id: '/terms-and-conditions',
+  path: '/terms-and-conditions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -431,17 +455,21 @@ const ApiV1CharterRequestsRoute = ApiV1CharterRequestsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about-us': typeof AboutUsRoute
   '/account': typeof AccountRoute
   '/airports': typeof AirportsRouteWithChildren
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/cancellation-and-refund': typeof CancellationAndRefundRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
@@ -497,17 +525,21 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about-us': typeof AboutUsRoute
   '/account': typeof AccountRoute
   '/airports': typeof AirportsRouteWithChildren
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/cancellation-and-refund': typeof CancellationAndRefundRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
@@ -563,17 +595,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/about-us': typeof AboutUsRoute
   '/account': typeof AccountRoute
   '/airports': typeof AirportsRouteWithChildren
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/cancellation-and-refund': typeof CancellationAndRefundRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
@@ -631,17 +667,21 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about-us'
     | '/account'
     | '/airports'
     | '/auth'
     | '/book'
+    | '/cancellation-and-refund'
     | '/charter'
     | '/contact'
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/terms-and-conditions'
     | '/admin'
     | '/dashboard'
     | '/super-admin'
@@ -697,17 +737,21 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about-us'
     | '/account'
     | '/airports'
     | '/auth'
     | '/book'
+    | '/cancellation-and-refund'
     | '/charter'
     | '/contact'
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/terms-and-conditions'
     | '/dashboard'
     | '/airports/$code'
     | '/api/process-queue'
@@ -762,17 +806,21 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/about-us'
     | '/account'
     | '/airports'
     | '/auth'
     | '/book'
+    | '/cancellation-and-refund'
     | '/charter'
     | '/contact'
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/terms-and-conditions'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/super-admin'
@@ -830,17 +878,21 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AboutUsRoute: typeof AboutUsRoute
   AccountRoute: typeof AccountRoute
   AirportsRoute: typeof AirportsRouteWithChildren
   AuthRoute: typeof AuthRoute
   BookRoute: typeof BookRoute
+  CancellationAndRefundRoute: typeof CancellationAndRefundRoute
   CharterRoute: typeof CharterRoute
   ContactRoute: typeof ContactRoute
   FlightVerificationRoute: typeof FlightVerificationRoute
   GalleryRoute: typeof GalleryRoute
   LoginRoute: typeof LoginRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsAndConditionsRoute: typeof TermsAndConditionsRoute
   ApiProcessQueueRoute: typeof ApiProcessQueueRoute
   HotelsAirportHotelRoute: typeof HotelsAirportHotelRoute
   HotelsCastleBlueRoute: typeof HotelsCastleBlueRoute
@@ -875,6 +927,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about-us': {
+      id: '/about-us'
+      path: '/about-us'
+      fullPath: '/about-us'
+      preLoaderRoute: typeof AboutUsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account': {
       id: '/account'
       path: '/account'
@@ -901,6 +960,13 @@ declare module '@tanstack/react-router' {
       path: '/book'
       fullPath: '/book'
       preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cancellation-and-refund': {
+      id: '/cancellation-and-refund'
+      path: '/cancellation-and-refund'
+      fullPath: '/cancellation-and-refund'
+      preLoaderRoute: typeof CancellationAndRefundRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/charter': {
@@ -938,6 +1004,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/robots.txt': {
       id: '/robots.txt'
       path: '/robots.txt'
@@ -950,6 +1023,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms-and-conditions': {
+      id: '/terms-and-conditions'
+      path: '/terms-and-conditions'
+      fullPath: '/terms-and-conditions'
+      preLoaderRoute: typeof TermsAndConditionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -1448,17 +1528,21 @@ const AirportsRouteWithChildren = AirportsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AboutUsRoute: AboutUsRoute,
   AccountRoute: AccountRoute,
   AirportsRoute: AirportsRouteWithChildren,
   AuthRoute: AuthRoute,
   BookRoute: BookRoute,
+  CancellationAndRefundRoute: CancellationAndRefundRoute,
   CharterRoute: CharterRoute,
   ContactRoute: ContactRoute,
   FlightVerificationRoute: FlightVerificationRoute,
   GalleryRoute: GalleryRoute,
   LoginRoute: LoginRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsAndConditionsRoute: TermsAndConditionsRoute,
   ApiProcessQueueRoute: ApiProcessQueueRoute,
   HotelsAirportHotelRoute: HotelsAirportHotelRoute,
   HotelsCastleBlueRoute: HotelsCastleBlueRoute,

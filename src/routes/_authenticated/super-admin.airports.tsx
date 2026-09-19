@@ -6,10 +6,8 @@ import { listAirports, upsertAirport, deleteAirport } from "@/lib/super-admin.fu
 import {
   SAPageHeader,
   SASearchBar,
-  SADataTable,
-  SAStatusBadge,
-  saMono,
-  saTheme,
+  SADataTable, saMono,
+  saTheme
 } from "@/components/super-admin/SAComponents";
 import { Plane, Plus, Trash2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
@@ -59,7 +57,7 @@ function AirportsPage() {
     );
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await execUpsert({

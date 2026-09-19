@@ -1,8 +1,7 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { C, mono } from "../theme";
 
-export function SectionLabel({ index, label }: { index: string; label: string }) {
+export function SectionLabel({ label }: { index: string; label: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}

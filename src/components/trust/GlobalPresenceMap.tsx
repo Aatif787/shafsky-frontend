@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Globe2, MapPin, Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { Globe2, MapPin, Sparkles, ArrowRight, CheckCircle2 } from "lucide-react";
 import { AIRPORTS, getAirport } from "@/data/airports";
-import { TiltCard, FadeInView, StaggerContainer, StaggerItem } from "@/components/ui/interactions";
+import { FadeInView } from "@/components/ui/interactions";
 
 export function GlobalPresenceMap() {
   const [activeRegion, setActiveRegion] = useState<"all" | "north" | "west" | "south" | "east">("all");

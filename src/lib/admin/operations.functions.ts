@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAdminRole } from "@/lib/admin.middleware";
-import { apiGet, apiPost, apiPatch, apiDelete, getTokenFromRequest } from "@/lib/FastApiClient";
+import { apiGet, apiPost, getTokenFromRequest } from "@/lib/FastApiClient";
 
 // ─── Dashboard Metrics ───
 export const getAdminDashboardMetricsFn = createServerFn({ method: "GET" })

@@ -1,4 +1,3 @@
-import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Coffee, Wifi, Clock, Bed, ShieldCheck, MapPin } from "lucide-react";
 import { HotelDetailTemplate } from "@/components/hotels/HotelDetailTemplate";
@@ -8,18 +7,23 @@ import {
   GalleryImage,
   RoomCategory,
 } from "@/components/hotels/types";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/hotels/airport-hotel")({
-  head: () => ({
-    meta: [
-      { title: "Airport Hotel New Delhi — Opposite Terminal 1 — Shafsky Aviation" },
-      {
-        name: "description",
-        content:
-          "Book Standard, Delux, Luxury and Suite Rooms at Airport Hotel, directly opposite IGI Airport Terminal 1 (Domestic), Mehram Nagar, New Delhi. Official rates from ₹ 3,700/- (+ 12% GST) with breakfast.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Airport Hotel Opposite IGI Terminal 1 New Delhi | Shafsky",
+      description:
+        "Book Standard, Deluxe, Luxury and Suite rooms at Airport Hotel, opposite IGI Airport Terminal 1, Mehram Nagar, New Delhi. Partner rates from ₹3,700 (+GST) with breakfast.",
+      path: "/hotels/airport-hotel",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Hotels", path: "/solutions/travel" },
+          { name: "Airport Hotel", path: "/hotels/airport-hotel" },
+        ]),
+      ],
+    }),
   component: HotelAirportHotelPage,
 });
 

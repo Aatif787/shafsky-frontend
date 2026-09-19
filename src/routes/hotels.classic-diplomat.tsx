@@ -1,4 +1,3 @@
-import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Coffee, Wifi, Clock, Bed, ShieldCheck, MapPin } from "lucide-react";
 import { HotelDetailTemplate } from "@/components/hotels/HotelDetailTemplate";
@@ -8,18 +7,23 @@ import {
   GalleryImage,
   RoomCategory,
 } from "@/components/hotels/types";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/hotels/classic-diplomat")({
-  head: () => ({
-    meta: [
-      { title: "Classic Diplomat Hotel New Delhi — Shafsky Aviation" },
-      {
-        name: "description",
-        content:
-          "Book your stay at Classic Diplomat Hotel, Mahipalpur, near IGI Airport New Delhi. Deluxe Premium & Suite Rooms from ₹ 4,100/night with free breakfast. Exclusive Shafsky Aviation rates.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Classic Diplomat Hotel Mahipalpur Near IGI Airport | Shafsky",
+      description:
+        "Book Deluxe Premium and Suite rooms at Classic Diplomat Hotel, Mahipalpur, near IGI Airport New Delhi. Exclusive Shafsky rates from ₹4,100/night with breakfast.",
+      path: "/hotels/classic-diplomat",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Hotels", path: "/solutions/travel" },
+          { name: "Classic Diplomat", path: "/hotels/classic-diplomat" },
+        ]),
+      ],
+    }),
   component: ClassicDiplomatPage,
 });
 

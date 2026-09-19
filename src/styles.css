@@ -119,6 +119,48 @@
   --sidebar-ring: oklch(0.82 0.03 85);
 }
 
+/* ═════════════════════════════════════════════════════════════════════════════
+ * MOBILE-ONLY LUXURY PALETTE (ELECTRIC VIOLET & MIDNIGHT PLUM)
+ * Strictly applied for screens <= 767px. Desktop (>= 768px) is 100% untouched.
+ * ═════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  :root {
+    /* Mobile-only brand tokens */
+    --primary: #6e22db;
+    --primary-foreground: #ffffff;
+    --accent: #261042;
+    --accent-foreground: #ffffff;
+    --ring: #7c3aed;
+    --card: #faf7fd;
+    --card-foreground: #16131d;
+    --border: rgba(110, 34, 219, 0.12);
+
+    /* Remap Tailwind lime color scale on mobile to electric violet & lilac spectrum */
+    --color-lime-50: #faf5ff;
+    --color-lime-100: #f3e8ff;
+    --color-lime-200: #e9d5ff;
+    --color-lime-300: #d8b4fe;
+    --color-lime-400: #b993fa;
+    --color-lime-500: #8b5cf6;
+    --color-lime-600: #7c3aed;
+    --color-lime-700: #6e22db;
+    --color-lime-800: #581c87;
+    --color-lime-900: #3b0764;
+    --color-lime-950: #261042;
+  }
+
+  .dark {
+    --primary: #8b5cf6;
+    --primary-foreground: #ffffff;
+    --accent: #39185d;
+    --accent-foreground: #faf5ff;
+    --ring: #8b5cf6;
+    --card: #1f0e38;
+    --card-foreground: #f5eeff;
+    --border: rgba(168, 85, 247, 0.2);
+  }
+}
+
 @layer base {
 /* ─────────────────────────────────────────────────────────────────────────────
  * PREMIUM LUXURY ANIMATIONS & GPU UTILITIES (60 FPS Hardware Accelerated)
@@ -577,3 +619,88 @@ body {
     align-self: stretch;
   }
 }
+
+/* ── Cinematic motion layer ─────────────────────────────────────────────── */
+@keyframes routeFade {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+html.route-enter .sticky-safe {
+  animation: routeFade 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.route-cover .sticky-safe {
+  transform: scale(0.992);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes heroKenBurns {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.08) translate3d(-1.2%, -0.8%, 0);
+  }
+}
+
+@keyframes shineSweep {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-12deg);
+  }
+}
+
+.shine-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 45%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.42) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    transparent 100%
+  );
+  transform: translateX(-120%) skewX(-12deg);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.shine-card:hover::after {
+  animation: shineSweep 0.85s ease;
+}
+
+@media (min-width: 1024px) {
+  .hero-kenburns img {
+    animation: heroKenBurns 22s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-kenburns img,
+  .shine-card:hover::after,
+  html.route-enter .sticky-safe,
+  html.route-cover .sticky-safe {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+

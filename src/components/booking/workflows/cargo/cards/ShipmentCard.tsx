@@ -1,5 +1,4 @@
-import React from "react";
-import { Package, ArrowRight, Scale, Box, MapPin } from "lucide-react";
+import { Package, ArrowRight, Scale, Box } from "lucide-react";
 
 interface ShipmentCardProps {
   origin: string;

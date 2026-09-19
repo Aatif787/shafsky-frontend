@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import type {} from "@tanstack/react-start";
+import type { } from "@tanstack/react-start";
 import { BUSINESS } from "@/lib/constants";
 
 export const Route = createFileRoute("/robots.txt")({
@@ -15,9 +15,26 @@ export const Route = createFileRoute("/robots.txt")({
           "Disallow: /account",
           "Disallow: /login",
           "Disallow: /dashboard",
+          "Disallow: /admin",
+          "Disallow: /super-admin",
           "Disallow: /_authenticated/",
+          "Disallow: /verify/",
+          "Disallow: /flight-verification",
+          "Disallow: /gallery",
+          "",
+          "User-agent: GPTBot",
+          "Allow: /",
+          "",
+          "User-agent: Google-Extended",
+          "Allow: /",
+          "",
+          "User-agent: PerplexityBot",
+          "Allow: /",
           "",
           `Sitemap: ${BUSINESS.BASE_URL}/sitemap.xml`,
+          `Sitemap: ${BUSINESS.IN_URL}/sitemap.xml`,
+          `LLMs-Txt: ${BUSINESS.BASE_URL}/llms.txt`,
+          `LLMs-Txt: ${BUSINESS.IN_URL}/llms.txt`,
         ].join("\n");
 
         return new Response(robotsTxt, {

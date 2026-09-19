@@ -8,7 +8,7 @@ import {
   Crown,
 } from "lucide-react";
 import { AIRPORTS } from "@/data/airports";
-import { getAirportAsset, getAirportPrimaryImage } from "@/lib/airport-assets";
+import { getCityPrimaryImage } from "@/lib/airport-assets";
 
 export function AirportShowcase() {
   const allAirports = AIRPORTS;
@@ -117,12 +117,8 @@ export function AirportShowcase() {
             // Gradual entry/exit opacity decay curve (0 sudden pops)
             const opacity = absDiff === 0 ? 1 : absDiff === 1 ? 0.88 : absDiff === 2 ? 0.55 : absDiff === 3 ? 0.22 : 0;
 
-            // Optical Depth-of-Field Blur
-            const blurPx = absDiff === 0 ? 0 : absDiff === 1 ? 1.5 : absDiff === 2 ? 4 : 7;
-            const filterStyle = `blur(${blurPx}px)`;
-
             const isCenter = diff === 0;
-            const cardImage = getAirportPrimaryImage(airport.code) || airport.mobCover || airport.cover;
+            const cardImage = getCityPrimaryImage(airport.code) || airport.mobCover || airport.cover;
 
             return (
               <motion.div
@@ -136,7 +132,6 @@ export function AirportShowcase() {
                   rotateZ: rotateZ,
                   scale: scale,
                   opacity: opacity,
-                  filter: filterStyle,
                 }}
                 transition={{
                   duration: 0.6,
@@ -145,7 +140,7 @@ export function AirportShowcase() {
                 style={{
                   position: "absolute",
                   zIndex: 30 - absDiff,
-                  willChange: "transform, opacity, filter",
+                  willChange: "transform, opacity",
                   transformStyle: "preserve-3d",
                 }}
                 className={`w-[260px] rounded-3xl bg-white border transition-shadow duration-500 cursor-pointer overflow-hidden ${
@@ -211,7 +206,7 @@ export function AirportShowcase() {
         <div className="lg:hidden flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 py-4 px-2">
           {allAirports.map((airport, index) => {
             const isSelected = index === activeIndex;
-            const cardImage = getAirportPrimaryImage(airport.code) || airport.mobCover || airport.cover;
+            const cardImage = getCityPrimaryImage(airport.code) || airport.mobCover || airport.cover;
 
             return (
               <div

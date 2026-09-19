@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Plane } from "lucide-react";
 
 export function AirlineLogo({ iata }: { iata: string }) {

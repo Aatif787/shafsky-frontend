@@ -1,22 +1,7 @@
-import React, { useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
-  Plane,
-  Calendar,
-  Users,
-  Luggage,
-  Sparkles,
-  ArrowRight,
-  ArrowLeft,
-  CheckCircle2,
-  PhoneCall,
-  MessageSquare,
-  ShieldCheck,
-  Check,
-  Clock,
-  MapPin,
-  ChevronRight,
+  Sparkles, ArrowLeft
 } from "lucide-react";
 import { display, mono } from "@/components/home/theme";
 import meetGreetImg from "@/assets/others/meetgreet.jpeg";
@@ -32,18 +17,27 @@ import home3Img from "@/assets/homepage/home3.jpeg";
 import home5Img from "@/assets/homepage/home5.jpeg";
 
 import { BookingPanel } from "@/components/home/booking/BookingPanel";
+import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/solutions/concierge")({
-  head: () => ({
-    meta: [
-      { title: "Meet & Greet and Lounge Service — Shafsky Aviation" },
-      {
-        name: "description",
-        content:
-          "Official Shafsky Aviation Meet & Greet and Lounge Service catalog and booking for Domestic and International Departure, Arrival, and Transit across global airports.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Airport Meet & Greet and Lounge Service in India | Shafsky",
+      description:
+        "Official Shafsky Meet & Greet and lounge service for domestic and international arrival, departure, and transit. Aerobridge greeting, fast-track, and VIP lounge access.",
+      path: "/solutions/concierge",
+      keywords: [
+        "airport meet and greet",
+        "VIP lounge service India",
+        "airport assistance booking",
+      ],
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Meet & Greet", path: "/solutions/concierge" },
+        ]),
+      ],
+    }),
   component: MeetGreetDedicatedPage,
 });
 
@@ -224,7 +218,6 @@ const AIRPORTS = [
 function MeetGreetDedicatedPage() {
   const navigate = useNavigate();
   const [selectedSubService, setSelectedSubService] = useState<MeetGreetOptionKey>("Domestic Departure");
-  const [selectedTransitType, setSelectedTransitType] = useState<string>("Domestic to Domestic");
 
   const activeCatalog = CATALOG_DATA.find((c) => c.id === selectedSubService) || CATALOG_DATA[0];
 

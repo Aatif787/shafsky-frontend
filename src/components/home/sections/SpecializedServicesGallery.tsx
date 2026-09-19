@@ -1,6 +1,5 @@
-import React from "react";
 import { Link } from "@tanstack/react-router";
-import { Sparkles, ArrowRight, ShieldCheck, HeartPulse, ShoppingBag, Zap, Users, Compass } from "lucide-react";
+import { ArrowRight, HeartPulse, ShoppingBag, Zap, Users, Compass } from "lucide-react";
 import { display, mono } from "../theme";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { EditorialPhoto } from "../EditorialPhoto";

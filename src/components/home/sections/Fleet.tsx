@@ -1,8 +1,8 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { motion } from "framer-motion";
-import { C, display, mono } from "../theme";
+import { display, mono } from "../theme";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Plane, ShieldCheck, Compass, Sparkles } from "lucide-react";
+import { ArrowRight, Plane } from "lucide-react";
 
 export function Fleet() {
   const fleet = [

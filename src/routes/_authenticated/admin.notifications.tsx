@@ -10,9 +10,7 @@ import {
   Search,
   RefreshCw,
   Mail,
-  MessageSquare,
-  AlertOctagon,
-  Eye,
+  MessageSquare, Eye
 } from "lucide-react";
 import { toast } from "sonner";
 

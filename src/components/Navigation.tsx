@@ -8,19 +8,18 @@ import {
   Plane,
   ChevronDown,
   Crown,
-  Hotel,
-  Package,
-  HeartPulse,
-  Car,
+  Hotel, Car,
   PhoneCall,
   ArrowRight,
   ArrowLeft,
   User,
   LogIn,
-  ShieldCheck,
+  ShieldCheck
 } from "lucide-react";
 import { useBranding } from "@/lib/branding/branding.context";
-import { C, mono, display } from "@/components/home/theme";
+import { mono, display } from "@/components/home/theme";
+import { motion, AnimatePresence } from "framer-motion";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 interface ServiceMenuItem {
   title: string;
@@ -110,6 +109,14 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
   const authRole = auth?.profile?.role;
   const isLoggedIn = Boolean(authUser || roles.length > 0);
 
+  const activePrimaryServices = ICICI_REVIEW_MODE
+    ? PRIMARY_SERVICES.filter((srv) => srv.href === "/solutions/concierge")
+    : PRIMARY_SERVICES;
+
+  const activeNavStructure = ICICI_REVIEW_MODE
+    ? NAV_STRUCTURE.filter((item) => item.href !== "/solutions/aviation")
+    : NAV_STRUCTURE;
+
   const getDashboardPath = (): any => {
     if (authRole === "super_admin" || roles.includes("super_admin")) return "/super-admin/dashboard";
     if (authRole === "staff" || roles.includes("staff")) return "/staff/dashboard";
@@ -189,7 +196,12 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
             )}
 
             <Link to="/" className="flex items-center gap-3 group shrink-0">
-              <div className="relative flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-lime-50 border-2 border-lime-500/40 p-1 shadow-sm group-hover:border-lime-500 transition-all duration-300">
+              <motion.div
+                className="relative flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-lime-50 border-2 border-lime-500/40 p-1 shadow-sm group-hover:border-lime-500 transition-all duration-300"
+                whileHover={{ scale: 1.08, rotate: -4 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 420, damping: 18 }}
+              >
                 <img
                   src={branding.logo_url || "/logo.png"}
                   alt="Shafsky Aviation Services"
@@ -198,7 +210,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                     (e.target as HTMLElement).style.display = "none";
                   }}
                 />
-              </div>
+              </motion.div>
               <div className="flex flex-col">
                 <span
                   className="text-[17px] sm:text-[19px] font-bold tracking-tight text-slate-900 group-hover:text-lime-600 transition-colors"
@@ -218,7 +230,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-            {NAV_STRUCTURE.map((item) => {
+            {activeNavStructure.map((item) => {
               const isMega = !!item.isMega;
               const isHovered = hoveredCategory === item.label;
               const isActive =
@@ -253,19 +265,29 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                   </Link>
 
                   {/* Enterprise Services Mega Menu Dropdown */}
-                  {isMega && isHovered && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-[clamp(560px,46vw,660px)] rounded-2xl bg-white border border-[#0a196f]/15 shadow-[0_16px_40px_rgba(10,25,111,0.08)] p-[clamp(12px,1.2vw,18px)] transition-all duration-200 z-50">
+                  <AnimatePresence>
+                    {isMega && isHovered && (
+                      <motion.div
+                        key="services-mega"
+                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                        className={`absolute top-full left-1/2 -translate-x-1/2 rounded-2xl bg-white border border-[#0a196f]/15 shadow-[0_16px_40px_rgba(10,25,111,0.08)] p-[clamp(12px,1.2vw,18px)] z-50 ${
+                          ICICI_REVIEW_MODE ? "w-[clamp(340px,28vw,420px)]" : "w-[clamp(560px,46vw,660px)]"
+                        }`}
+                      >
                       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3 px-1">
                         <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#c5a059] font-bold">
                           Shafsky Enterprise Services
                         </span>
                         <span className="text-[10px] font-mono text-slate-400 font-medium">
-                          5 Core Portfolios
+                          {ICICI_REVIEW_MODE ? "Airside Concierge" : "5 Core Portfolios"}
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(6px,0.7vw,10px)]">
-                        {PRIMARY_SERVICES.map((srv) => {
+                      <div className={ICICI_REVIEW_MODE ? "grid grid-cols-1 gap-2" : "grid grid-cols-1 sm:grid-cols-2 gap-[clamp(6px,0.7vw,10px)]"}>
+                        {activePrimaryServices.map((srv) => {
                           const SrvIcon = srv.icon;
                           return (
                             <Link
@@ -294,8 +316,9 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                           );
                         })}
                       </div>
-                    </div>
-                  )}
+                    </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             })}
@@ -335,7 +358,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               </Link>
             )}
 
-            <a
+            <motion.a
               href="/#book"
               onClick={(e) => {
                 const el = document.getElementById("book");
@@ -344,21 +367,23 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                   el.scrollIntoView({ behavior: "smooth", block: "center" });
                 }
               }}
-              className="group/btn relative overflow-hidden inline-flex items-center gap-2 rounded-xl bg-[#84cc16] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-950 shadow-md shadow-lime-500/20 transition-all duration-300 hover:shadow-lg hover:shadow-lime-500/40 hover:-translate-y-0.5 cursor-pointer"
+              whileHover={{ y: -3, scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="group/btn relative overflow-hidden inline-flex items-center gap-2 rounded-xl bg-[#84cc16] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-950 shadow-md shadow-lime-500/20 transition-shadow duration-300 hover:shadow-lg hover:shadow-lime-500/40 cursor-pointer"
               style={mono}
             >
               <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
               <div className="absolute inset-0 bg-[#a3e635] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
               <span className="relative z-10">Book Now</span>
               <ArrowRight size={14} className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
-            </a>
+            </motion.a>
           </div>
 
           {/* Mobile Menu Toggle Button */}
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 rounded-lg bg-slate-100 border border-slate-300 text-slate-900 hover:border-lime-500 transition-colors"
+            className="lg:hidden p-2 rounded-lg bg-slate-100 border border-slate-300 text-slate-900 hover:border-[#6e22db] active:bg-purple-50 transition-colors"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -367,18 +392,25 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
       </div>
 
       {/* Mobile Full-Screen Drawer */}
-      {mobileOpen && (
-        <div className="lg:hidden fixed inset-x-0 top-full h-[calc(100vh-70px)] bg-white border-t border-slate-200 p-6 flex flex-col justify-between overflow-y-auto z-50 shadow-xl">
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:hidden fixed inset-x-0 top-full h-[calc(100vh-70px)] bg-white border-t border-slate-200 p-6 flex flex-col justify-between overflow-y-auto z-50 shadow-xl"
+          >
           <div className="space-y-4">
             <div
-              className="text-[10px] uppercase tracking-[0.3em] text-[#c5a059] font-bold pb-2 border-b border-slate-200"
+              className="text-[10px] uppercase tracking-[0.3em] text-[#6e22db] font-bold pb-2 border-b border-slate-200"
               style={mono}
             >
               Navigation Menu
             </div>
 
             <div className="flex flex-col gap-2">
-              {NAV_STRUCTURE.map((item) => {
+              {activeNavStructure.map((item) => {
                 const isMega = !!item.isMega;
                 const isExpanded = expandedMobileCategory === item.label;
 
@@ -396,14 +428,14 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                           <span>{item.label}</span>
                           <ChevronDown
                             size={16}
-                            className={`text-[#0a196f] transition-transform duration-200 ${
+                            className={`text-[#6e22db] transition-transform duration-200 ${
                               isExpanded ? "rotate-180" : ""
                             }`}
                           />
                         </button>
                         {isExpanded && (
-                          <div className="pl-3 mt-2 space-y-2 border-l-2 border-[#c5a059]/60">
-                            {PRIMARY_SERVICES.map((srv) => {
+                          <div className="pl-3 mt-2 space-y-2 border-l-2 border-[#6e22db]/60">
+                            {activePrimaryServices.map((srv) => {
                               const SIcon = srv.icon;
                               return (
                                 <Link
@@ -412,8 +444,8 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                                   onClick={() => setMobileOpen(false)}
                                   className="block py-2 group"
                                 >
-                                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 group-hover:text-[#0a196f]">
-                                    <SIcon size={15} className="text-[#0a196f]" />
+                                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 group-hover:text-[#6e22db]">
+                                    <SIcon size={15} className="text-[#6e22db]" />
                                     <span>{srv.title}</span>
                                   </div>
                                   <p className="text-[10.5px] text-slate-500 font-mono mt-0.5 pl-6 leading-tight">
@@ -446,17 +478,17 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               <Link
                 to={getDashboardPath()}
                 onClick={() => setMobileOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-lime-500 transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-[#6e22db] transition-colors"
                 style={mono}
               >
-                <User size={14} className="text-lime-700" />
+                <User size={14} className="text-[#6e22db]" />
                 <span>{getDashboardLabel()}</span>
               </Link>
             ) : (
               <Link
                 to="/login"
                 onClick={() => setMobileOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-lime-500 transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-[#6e22db] transition-colors"
                 style={mono}
               >
                 <LogIn size={14} className="text-slate-600" />
@@ -466,10 +498,10 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
             <a
               href="tel:+919599087959"
-              className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-lime-50 border border-lime-300 text-xs font-bold text-slate-900 tracking-wider uppercase"
+              className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-purple-50 border border-purple-200 text-xs font-bold text-slate-900 tracking-wider uppercase"
               style={mono}
             >
-              <PhoneCall size={14} className="text-lime-600" />
+              <PhoneCall size={14} className="text-[#6e22db]" />
               <span>Call 24/7 Desk (+91 9599087959)</span>
             </a>
 
@@ -483,17 +515,18 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                   el.scrollIntoView({ behavior: "smooth", block: "center" });
                 }
               }}
-              className="group/btn relative overflow-hidden w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#84cc16] text-slate-950 text-xs font-bold tracking-wider uppercase shadow-md shadow-lime-500/25 transition-all duration-300 hover:shadow-lg hover:shadow-lime-500/40 hover:-translate-y-0.5 cursor-pointer"
+              className="group/btn relative overflow-hidden w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#6e22db] text-white text-xs font-bold tracking-wider uppercase shadow-md shadow-purple-600/30 transition-all duration-300 hover:shadow-lg hover:shadow-purple-600/45 hover:-translate-y-0.5 cursor-pointer"
               style={mono}
             >
-              <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
-              <div className="absolute inset-0 bg-[#a3e635] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
+              <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
+              <div className="absolute inset-0 bg-[#7c3aed] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
               <span className="relative z-10">Book Now</span>
               <ArrowRight size={14} className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
             </a>
           </div>
-        </div>
-      )}
+        </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

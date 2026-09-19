@@ -3,20 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
   ArrowRight,
-  Check,
-  Crown,
-  Users,
-  Car,
-  Plane,
-  Package,
-  HeartPulse,
-  Compass,
-  Clock,
-  Award,
-  Ticket,
-  Hotel,
-  ShieldCheck,
-  Search,
+  Check, Users, ShieldCheck,
+  Search
 } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";

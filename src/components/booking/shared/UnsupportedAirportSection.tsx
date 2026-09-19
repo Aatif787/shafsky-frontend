@@ -1,4 +1,3 @@
-import React from "react";
 import { Phone, MessageSquare, Headphones, ShieldAlert, Sparkles, MapPin } from "lucide-react";
 
 interface UnsupportedAirportSectionProps {

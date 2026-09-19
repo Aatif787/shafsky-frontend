@@ -6,15 +6,9 @@ import { parseFlightInfo } from "@/lib/notification-templates";
 import { pageMono, pageDisplay, Panel } from "@/components/site/PageShell";
 import {
   Loader2,
-  AlertTriangle,
-  TrendingUp,
-  BarChart,
-  PieChart,
-  TrendingDown,
-  Plane,
-  ShieldCheck,
+  AlertTriangle, ShieldCheck,
   User,
-  BellRing,
+  BellRing
 } from "lucide-react";
 import {
   AreaChart,

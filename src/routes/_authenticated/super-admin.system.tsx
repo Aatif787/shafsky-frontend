@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { listFeatureFlags, toggleFeatureFlag } from "@/lib/super-admin.functions";
 import { SAPageHeader, saMono, saTheme } from "@/components/super-admin/SAComponents";
-import { Cpu, ShieldCheck, Mail, MessageSquare } from "lucide-react";
+import { Cpu, Mail, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/super-admin/system")({

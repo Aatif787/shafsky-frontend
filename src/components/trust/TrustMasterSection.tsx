@@ -1,4 +1,3 @@
-import React from "react";
 import { TrustStats } from "./TrustStats";
 import { QualityStandards } from "./QualityStandards";
 import { CustomerConfidence } from "./CustomerConfidence";
@@ -19,7 +18,6 @@ interface TrustMasterSectionProps {
 export function TrustMasterSection({
   showStats = true,
   showQuality = true,
-  showReviews = false, // Permanently disabled testimonials
   showProcess = true,
   showSafety = true,
   showMap = true,

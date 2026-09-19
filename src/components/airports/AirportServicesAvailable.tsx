@@ -1,48 +1,8 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { Link } from "@tanstack/react-router";
 import {
-  Crown,
-  Hotel,
-  Ticket,
-  Car,
-  Package,
-  HeartPulse,
-  Sparkles,
-  ArrowRight,
-  ShieldCheck,
-  Building2,
-  Check,
+  Sparkles
 } from "lucide-react";
 import { type Airport } from "@/data/airports";
-import { NoServicesState } from "@/components/ui/LuxuryFallbacks";
 import { MeetGreetPackageComparison } from "@/components/airports/MeetGreetPackageComparison";
-
-import { ASSETS } from "@/lib/assets";
-
-const lounge = ASSETS.lounge;
-const vipTransport1 = ASSETS.vipTransport;
-const hotelImg = ASSETS.hotel;
-const fastTrackImg = ASSETS.fastTrack;
-const cargoAssistImg = ASSETS.cargoAssist;
-const medicalAssistImg = ASSETS.medicalAssist;
-const meetGreetImg = ASSETS.meetGreet;
-const vipConciergeImg = ASSETS.concierge;
-
-const SERVICE_IMAGES: Record<string, string> = {
-  meet_greet: meetGreetImg,
-  arr_meet_greet: meetGreetImg,
-  dep_meet_greet: meetGreetImg,
-  lounge: lounge,
-  transfer: vipTransport1,
-  fast_track: fastTrackImg,
-  hotel: hotelImg,
-  visa: fastTrackImg,
-  baggage: cargoAssistImg,
-  porter: cargoAssistImg,
-  wheelchair: medicalAssistImg,
-  concierge: vipConciergeImg,
-};
 
 interface AirportServicesAvailableProps {
   a: Airport;

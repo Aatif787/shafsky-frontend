@@ -1,6 +1,4 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { ShieldCheck, Lock, UserCheck, Compass, Headphones, Sparkles, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, Lock, UserCheck, Compass, Headphones } from "lucide-react";
 import { TiltCard, FadeInView, StaggerContainer, StaggerItem } from "@/components/ui/interactions";
 
 export interface SafetyPillar {

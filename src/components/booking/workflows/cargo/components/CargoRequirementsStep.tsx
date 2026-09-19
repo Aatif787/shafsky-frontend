@@ -1,5 +1,4 @@
-import React from "react";
-import { Truck, ShieldCheck, Thermometer, ShieldAlert, AlertTriangle, ArrowRight, ArrowLeft } from "lucide-react";
+import { ShieldCheck, Thermometer, ShieldAlert, AlertTriangle, ArrowRight, ArrowLeft } from "lucide-react";
 import { CargoRequirementCard } from "../cards/CargoRequirementCard";
 
 export interface CargoRequirementsStepProps {
