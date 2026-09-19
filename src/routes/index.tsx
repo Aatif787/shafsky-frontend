@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Hero } from "@/components/Hero";
 import { HOMEPAGE_FAQS } from "@/lib/site-content";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 import {
   SEO,
   pageHead,
@@ -23,7 +24,11 @@ export const Route = createFileRoute("/")({
         websiteJsonLd(),
         localBusinessJsonLd(),
         serviceCatalogJsonLd(),
-        faqJsonLd([...HOMEPAGE_FAQS]),
+        faqJsonLd(
+          ICICI_REVIEW_MODE
+            ? HOMEPAGE_FAQS.filter((f) => !f.q.toLowerCase().includes("charter") && !f.a.toLowerCase().includes("charter"))
+            : [...HOMEPAGE_FAQS]
+        ),
         breadcrumbJsonLd([{ name: "Home", path: "/" }]),
       ],
     }),

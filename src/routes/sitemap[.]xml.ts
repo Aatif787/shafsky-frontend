@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { } from "@tanstack/react-start";
 import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
 import { BUSINESS } from "@/lib/constants";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 const COM = BUSINESS.BASE_URL;
 const IN = BUSINESS.IN_URL;
@@ -32,6 +33,15 @@ const STATIC_PAGES: SitemapEntry[] = [
   { path: "/hotels/holiday-inn-express", changefreq: "monthly", priority: "0.5" },
 ];
 
+const NON_REVIEW_PREFIXES = [
+  "/solutions/aviation",
+  "/solutions/cargo",
+  "/solutions/travel",
+  "/solutions/medical",
+  "/charter",
+  "/hotels",
+];
+
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
@@ -42,7 +52,13 @@ export const Route = createFileRoute("/sitemap.xml")({
           priority: "0.8",
         }));
 
-        const entries = [...STATIC_PAGES, ...airportEntries];
+        const staticList = ICICI_REVIEW_MODE
+          ? STATIC_PAGES.filter(
+              (page) => !NON_REVIEW_PREFIXES.some((prefix) => page.path.startsWith(prefix))
+            )
+          : STATIC_PAGES;
+
+        const entries = [...staticList, ...airportEntries];
 
         const urls = entries.flatMap((e) => {
           const com = `${COM}${e.path}`;

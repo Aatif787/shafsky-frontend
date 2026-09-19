@@ -14,6 +14,7 @@ import { MeetGreetPackageComparison } from "./MeetGreetPackageComparison";
 import { ServicesGallery } from "./ServicesGallery";
 import { AirportMediaGallery } from "./AirportMediaGallery";
 import { AssistanceCTA } from "@/components/navigation/AssistanceCTA";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearch?: Record<string, unknown> }) {
   const quickInfoChips = [
@@ -80,7 +81,11 @@ export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearc
       {/* 4. Book Service CTA Banner */}
       <AssistanceCTA
         heading={`Ready for VIP Arrival at ${a.city}?`}
-        subheading={`Reserve custom airside escort, lounge access, and chauffeured transit at ${a.code}.`}
+        subheading={
+          ICICI_REVIEW_MODE
+            ? `Reserve custom airside escort, fast-track, and VIP lounge access at ${a.code}.`
+            : `Reserve custom airside escort, lounge access, and chauffeured transit at ${a.code}.`
+        }
         airportCode={a.code}
         airportName={a.airport?.name || `${a.city} (${a.code})`}
       />
@@ -92,7 +97,20 @@ export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearc
           Airport Concierge FAQs.
         </h2>
         <div className="mt-8 space-y-4">
-          {a.faqs.map(([q, ans], i) => (
+          {(ICICI_REVIEW_MODE
+            ? a.faqs
+                .filter(([q]) => !/(chauffeur|private charter|air charter|luxury hotel|fleet|car rental|pso|limousine|transfer directly to)/i.test(q))
+                .map(([q, ans]) => {
+                  const cleanAns = ans
+                    .replace(/,\s*and\s*chauffeur\b/gi, "")
+                    .replace(/\band\s*chauffeur\b/gi, "")
+                    .replace(/and ad-hoc charter\s*/gi, "")
+                    .replace(/\bchauffeur\b/gi, "curbside porter")
+                    .replace(/\bcharter\b/gi, "concierge");
+                  return [q, cleanAns] as [string, string];
+                })
+            : a.faqs
+          ).map(([q, ans], i) => (
             <FAQ key={`faq-${q}-${i}`} q={q} a={ans} />
           ))}
         </div>

@@ -1,9 +1,10 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
 import { Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import { ICICI_REVIEW_MODE } from "../../../lib/config/reviewMode";
 
 export function Footer() {
-  const quickLinks = [
+  const allQuickLinks = [
     { label: "About us", href: "/services/guide" },
     { label: "Contact us", href: "/contact" },
     { label: "My account", href: "/auth" },
@@ -17,6 +18,10 @@ export function Footer() {
     { label: "Our Team", href: "/services/guide" },
     { label: "Career", href: "/contact" },
   ];
+
+  const quickLinks = ICICI_REVIEW_MODE
+    ? allQuickLinks.filter((link) => link.label !== "Hotels" && !link.href.startsWith("/hotels"))
+    : allQuickLinks;
 
   const socialLinks = [
     {

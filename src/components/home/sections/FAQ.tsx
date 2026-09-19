@@ -3,9 +3,13 @@ import { motion } from "framer-motion";
 import { Plus, Minus, MessageSquare, PhoneCall } from "lucide-react";
 import { display, mono } from "../theme";
 import { HOMEPAGE_FAQS } from "@/lib/site-content";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export function FAQ() {
-  const faqs = HOMEPAGE_FAQS;
+  const allFaqs = HOMEPAGE_FAQS;
+  const faqs = ICICI_REVIEW_MODE
+    ? allFaqs.filter((f) => !f.q.toLowerCase().includes("charter") && !f.a.toLowerCase().includes("charter"))
+    : allFaqs;
 
   const [open, setOpen] = useState<number | null>(0);
 

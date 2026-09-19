@@ -17,13 +17,15 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { display } from "@/components/home/theme";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export const Route = createFileRoute("/contact")({
   head: () =>
     pageHead({
       title: "Contact Shafsky Aviation | 24/7 Airport Concierge Desk",
-      description:
-        "Contact Shafsky Aviation Services 24/7 for airport Meet & Greet, private charter, and VIP transfers. Call +91 9599087959 or email ops@shafskyaviation.com.",
+      description: ICICI_REVIEW_MODE
+        ? "Contact Shafsky Aviation Services 24/7 for airport Meet & Greet, VIP lounge access, and airside assistance. Call +91 9599087959 or email ops@shafskyaviation.com."
+        : "Contact Shafsky Aviation Services 24/7 for airport Meet & Greet, private charter, and VIP transfers. Call +91 9599087959 or email ops@shafskyaviation.com.",
       path: "/contact",
       jsonLd: [
         breadcrumbJsonLd([

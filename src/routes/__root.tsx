@@ -6,8 +6,10 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  redirect,
 } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
+import { ICICI_REVIEW_MODE } from "../lib/config/reviewMode";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -126,6 +128,21 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: ({ location }) => {
+    if (ICICI_REVIEW_MODE) {
+      const p = location.pathname.toLowerCase();
+      if (
+        p.startsWith("/solutions/aviation") ||
+        p.startsWith("/solutions/cargo") ||
+        p.startsWith("/solutions/travel") ||
+        p.startsWith("/solutions/medical") ||
+        p.startsWith("/charter") ||
+        p.startsWith("/hotels")
+      ) {
+        throw redirect({ to: "/solutions/concierge" });
+      }
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },

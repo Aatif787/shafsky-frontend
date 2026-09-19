@@ -1,13 +1,16 @@
 import { BUSINESS, CONTACT } from "@/lib/constants";
 import { SOCIAL_LINKS } from "@/lib/site-content";
 import type { AirportRegistryEntry } from "@/data/airportRegistry";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export const SEO = {
   siteName: BUSINESS.NAME,
-  defaultTitle:
-    "Airport Meet & Greet, VIP Concierge & Private Charter in India | Shafsky Aviation",
-  defaultDescription:
-    "Book airport Meet & Greet, VIP airside escort, lounge access, luxury transfers, and private charter with Shafsky Aviation Services across 20+ Indian airports.",
+  defaultTitle: ICICI_REVIEW_MODE
+    ? "Airport Meet & Greet & VIP Lounge Services in India | Shafsky Aviation"
+    : "Airport Meet & Greet, VIP Concierge & Private Charter in India | Shafsky Aviation",
+  defaultDescription: ICICI_REVIEW_MODE
+    ? "Book airport Meet & Greet, VIP airside escort, dedicated buggy, fast-track clearance, and executive lounge access with Shafsky Aviation Services across 20+ Indian airports."
+    : "Book airport Meet & Greet, VIP airside escort, lounge access, luxury transfers, and private charter with Shafsky Aviation Services across 20+ Indian airports.",
   locale: "en_IN",
   ogImagePath: "/og-image.jpg",
   language: "en-IN",
@@ -227,42 +230,53 @@ export function faqJsonLd(faqs: Array<{ q: string; a: string }>) {
 }
 
 export function serviceCatalogJsonLd() {
+  const fullList = [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Airport Meet & Greet",
+      url: absoluteUrl("/solutions/concierge"),
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Private Charter",
+      url: absoluteUrl("/solutions/aviation"),
+    },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: "Airport Transfers",
+      url: absoluteUrl("/solutions/cargo"),
+    },
+    {
+      "@type": "ListItem",
+      position: 4,
+      name: "Luxury Hotels",
+      url: absoluteUrl("/solutions/travel"),
+    },
+    {
+      "@type": "ListItem",
+      position: 5,
+      name: "Special Services",
+      url: absoluteUrl("/solutions/medical"),
+    },
+  ];
+
+  const reviewList = [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Airport Meet & Greet & Lounge Services",
+      url: absoluteUrl("/solutions/concierge"),
+    },
+  ];
+
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Shafsky Aviation Services",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Airport Meet & Greet",
-        url: absoluteUrl("/solutions/concierge"),
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Private Charter",
-        url: absoluteUrl("/solutions/aviation"),
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: "Airport Transfers",
-        url: absoluteUrl("/solutions/cargo"),
-      },
-      {
-        "@type": "ListItem",
-        position: 4,
-        name: "Luxury Hotels",
-        url: absoluteUrl("/solutions/travel"),
-      },
-      {
-        "@type": "ListItem",
-        position: 5,
-        name: "Special Services",
-        url: absoluteUrl("/solutions/medical"),
-      },
-    ],
+    itemListElement: ICICI_REVIEW_MODE ? reviewList : fullList,
   };
 }
 

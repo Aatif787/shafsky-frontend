@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { EditorialPhoto } from "./EditorialPhoto";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 // All 13 authentic Shafsky Aviation photos in deliberate order with GREET photo in the middle
 const ALL_HOMEPAGE_PHOTOS = [
@@ -59,6 +60,21 @@ const ALL_HOMEPAGE_PHOTOS = [
   },
 ];
 
+const REVIEW_MODE_PHOTO_IDS = new Set([
+  "greet",
+  "transit",
+  "vvip",
+  "meet",
+  "lounge",
+  "buggy",
+  "wheelchair",
+  "dutyfree",
+]);
+
+const ACTIVE_HOMEPAGE_PHOTOS = ICICI_REVIEW_MODE
+  ? ALL_HOMEPAGE_PHOTOS.filter((p) => REVIEW_MODE_PHOTO_IDS.has(p.id))
+  : ALL_HOMEPAGE_PHOTOS;
+
 export function HomepagePhotoCarousel() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -109,7 +125,7 @@ export function HomepagePhotoCarousel() {
   }, []);
 
   // Triplicate the photos array to create a massive runway for the infinite loop
-  const INFINITE_PHOTOS = [...ALL_HOMEPAGE_PHOTOS, ...ALL_HOMEPAGE_PHOTOS, ...ALL_HOMEPAGE_PHOTOS];
+  const INFINITE_PHOTOS = [...ACTIVE_HOMEPAGE_PHOTOS, ...ACTIVE_HOMEPAGE_PHOTOS, ...ACTIVE_HOMEPAGE_PHOTOS];
 
   return (
     <div className="w-full relative">

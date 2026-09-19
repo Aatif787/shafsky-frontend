@@ -13,6 +13,7 @@ import {
   breadcrumbJsonLd,
   faqJsonLd,
 } from "@/lib/seo";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 const airportPageSearchSchema = z.object({
   origin: z.string().optional().catch(""),
@@ -40,9 +41,30 @@ export const Route = createFileRoute("/airports/$code")({
     const a = getAirport(params.code);
     const code = (params.code || "").toUpperCase();
     const title = registryEntry.seo.title;
-    const desc = registryEntry.seo.description;
+    let desc = registryEntry.seo.description;
+    if (ICICI_REVIEW_MODE) {
+      desc = desc
+        .replace(/,\s*and\s*tarmac\s*transfers/gi, "")
+        .replace(/,\s*and\s*Maybach\s*chauffeur\s*transfers/gi, "")
+        .replace(/and chauffeured transfers/gi, "")
+        .replace(/and private chauffeur transfers/gi, "")
+        .replace(/and chauffeur transfers/gi, "")
+        .replace(/,\s*and\s*chauffeur\b/gi, "");
+    }
     const image = registryEntry.coverImage || a?.cover;
-    const faqs = (registryEntry.faqs || []).map(([q, answer]) => ({ q, a: answer }));
+    const faqs = (registryEntry.faqs || [])
+      .filter(([q]) => !ICICI_REVIEW_MODE || !/(chauffeur|private charter|air charter|luxury hotel|fleet|car rental|pso|limousine|transfer directly to)/i.test(q))
+      .map(([q, answer]) => ({
+        q,
+        a: ICICI_REVIEW_MODE
+          ? answer
+              .replace(/,\s*and\s*chauffeur\b/gi, "")
+              .replace(/\band\s*chauffeur\b/gi, "")
+              .replace(/and ad-hoc charter\s*/gi, "")
+              .replace(/\bchauffeur\b/gi, "curbside porter")
+              .replace(/\bcharter\b/gi, "concierge")
+          : answer,
+      }));
     return pageHead({
       title,
       description: desc,

@@ -5,6 +5,7 @@ import { Footer } from "@/components/home/sections/Footer";
 import { AirportBookingFlow } from "@/components/booking/AirportBookingFlow";
 import { TransportExperience } from "@/components/booking/experiences/TransportExperience";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 const bookSearchSchema = z.object({
   service: z.string().optional().catch("meet-greet"),
@@ -42,8 +43,9 @@ export const Route = createFileRoute("/book")({
   head: () =>
     pageHead({
       title: "Book Airport Meet & Greet Online | Shafsky Aviation",
-      description:
-        "Reserve airport Meet & Greet and passenger assistance across 20+ Indian airports. Fast-track, lounge, and luxury transfer booking with Shafsky Aviation.",
+      description: ICICI_REVIEW_MODE
+        ? "Reserve airport Meet & Greet and passenger assistance across 20+ Indian airports. Fast-track and VIP lounge access booking with Shafsky Aviation."
+        : "Reserve airport Meet & Greet and passenger assistance across 20+ Indian airports. Fast-track, lounge, and luxury transfer booking with Shafsky Aviation.",
       path: "/book",
       jsonLd: [
         breadcrumbJsonLd([
@@ -58,29 +60,31 @@ export const Route = createFileRoute("/book")({
 function BookRoutePage() {
   const search = Route.useSearch();
 
-  // If explicitly Private Charter requested
-  const s = (search.service || search.service_id || "").toLowerCase();
-  if (s.includes("charter") || s.includes("aviation") || s.includes("jet")) {
-    return <Navigate to="/solutions/aviation" />;
-  }
+  if (!ICICI_REVIEW_MODE) {
+    // If explicitly Private Charter requested
+    const s = (search.service || search.service_id || "").toLowerCase();
+    if (s.includes("charter") || s.includes("aviation") || s.includes("jet")) {
+      return <Navigate to="/solutions/aviation" />;
+    }
 
-  // If Transport / Chauffeured Ground Fleet requested:
-  if (s.includes("transport") || s.includes("vehicle") || search.vehicle_id) {
-    return (
-      <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between">
-        <Navigation visible={true} />
-        <main id="main-content" className="flex-1 pt-16 sm:pt-20 py-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto">
-            <TransportExperience
-              initialSubService={search.sub || search.sub_service || search.category}
-              initialVehicleId={search.vehicle_id}
-              initialVehicleName={search.vehicle_name}
-            />
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
+    // If Transport / Chauffeured Ground Fleet requested:
+    if (s.includes("transport") || s.includes("vehicle") || search.vehicle_id) {
+      return (
+        <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between">
+          <Navigation visible={true} />
+          <main id="main-content" className="flex-1 pt-16 sm:pt-20 py-8 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-5xl mx-auto">
+              <TransportExperience
+                initialSubService={search.sub || search.sub_service || search.category}
+                initialVehicleId={search.vehicle_id}
+                initialVehicleName={search.vehicle_name}
+              />
+            </div>
+          </main>
+          <Footer />
+        </div>
+      );
+    }
   }
 
   // DEFAULT & AIRPORT CONCIERGE FLOW:

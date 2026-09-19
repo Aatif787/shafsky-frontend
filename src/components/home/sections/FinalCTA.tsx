@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, PhoneCall, ShieldCheck, Sparkles } from "lucide-react";
 import { mono, display } from "../theme";
+import { ICICI_REVIEW_MODE } from "../../../lib/config/reviewMode";
 
 const CTA_VIDEOS = [
   {
@@ -212,7 +213,9 @@ export function FinalCTA() {
             transition={{ duration: 0.8, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="mt-6 text-sm sm:text-base md:text-lg text-white font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]"
           >
-            Experience personal airside escorts, priority customs clearance, and bespoke private jet charter across 20+ Indian hubs and global destinations.
+            {ICICI_REVIEW_MODE
+              ? "Experience personal airside escorts, dedicated buggy transfers, VIP lounge access, and seamless airport fast-track assistance across 20+ Indian hubs and global destinations."
+              : "Experience personal airside escorts, priority customs clearance, and bespoke private jet charter across 20+ Indian hubs and global destinations."}
           </motion.p>
         </motion.div>
 

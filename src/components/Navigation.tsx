@@ -19,6 +19,7 @@ import {
 import { useBranding } from "@/lib/branding/branding.context";
 import { mono, display } from "@/components/home/theme";
 import { motion, AnimatePresence } from "framer-motion";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 interface ServiceMenuItem {
   title: string;
@@ -107,6 +108,14 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
   const authUser = auth?.user;
   const authRole = auth?.profile?.role;
   const isLoggedIn = Boolean(authUser || roles.length > 0);
+
+  const activePrimaryServices = ICICI_REVIEW_MODE
+    ? PRIMARY_SERVICES.filter((srv) => srv.href === "/solutions/concierge")
+    : PRIMARY_SERVICES;
+
+  const activeNavStructure = ICICI_REVIEW_MODE
+    ? NAV_STRUCTURE.filter((item) => item.href !== "/solutions/aviation")
+    : NAV_STRUCTURE;
 
   const getDashboardPath = (): any => {
     if (authRole === "super_admin" || roles.includes("super_admin")) return "/super-admin/dashboard";
@@ -221,7 +230,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-            {NAV_STRUCTURE.map((item) => {
+            {activeNavStructure.map((item) => {
               const isMega = !!item.isMega;
               const isHovered = hoveredCategory === item.label;
               const isActive =
@@ -264,19 +273,21 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 6, scale: 0.98 }}
                         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                        className="absolute top-full left-1/2 -translate-x-1/2 w-[clamp(560px,46vw,660px)] rounded-2xl bg-white border border-[#0a196f]/15 shadow-[0_16px_40px_rgba(10,25,111,0.08)] p-[clamp(12px,1.2vw,18px)] z-50"
+                        className={`absolute top-full left-1/2 -translate-x-1/2 rounded-2xl bg-white border border-[#0a196f]/15 shadow-[0_16px_40px_rgba(10,25,111,0.08)] p-[clamp(12px,1.2vw,18px)] z-50 ${
+                          ICICI_REVIEW_MODE ? "w-[clamp(340px,28vw,420px)]" : "w-[clamp(560px,46vw,660px)]"
+                        }`}
                       >
                       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3 px-1">
                         <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#c5a059] font-bold">
                           Shafsky Enterprise Services
                         </span>
                         <span className="text-[10px] font-mono text-slate-400 font-medium">
-                          5 Core Portfolios
+                          {ICICI_REVIEW_MODE ? "Airside Concierge" : "5 Core Portfolios"}
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(6px,0.7vw,10px)]">
-                        {PRIMARY_SERVICES.map((srv) => {
+                      <div className={ICICI_REVIEW_MODE ? "grid grid-cols-1 gap-2" : "grid grid-cols-1 sm:grid-cols-2 gap-[clamp(6px,0.7vw,10px)]"}>
+                        {activePrimaryServices.map((srv) => {
                           const SrvIcon = srv.icon;
                           return (
                             <Link
@@ -399,7 +410,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
             </div>
 
             <div className="flex flex-col gap-2">
-              {NAV_STRUCTURE.map((item) => {
+              {activeNavStructure.map((item) => {
                 const isMega = !!item.isMega;
                 const isExpanded = expandedMobileCategory === item.label;
 
@@ -424,7 +435,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                         </button>
                         {isExpanded && (
                           <div className="pl-3 mt-2 space-y-2 border-l-2 border-[#6e22db]/60">
-                            {PRIMARY_SERVICES.map((srv) => {
+                            {activePrimaryServices.map((srv) => {
                               const SIcon = srv.icon;
                               return (
                                 <Link

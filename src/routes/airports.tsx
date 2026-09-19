@@ -19,13 +19,15 @@ import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
 import { getAirportPrimaryImage } from "@/lib/airport-assets";
 import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export const Route = createFileRoute("/airports")({
   head: () =>
     pageHead({
       title: "Airport Meet & Greet Coverage Across India | Shafsky Aviation",
-      description:
-        "Book VIP Meet & Greet, airside escort, lounge access, and luxury transfers at 20+ Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Goa, and Jaipur.",
+      description: ICICI_REVIEW_MODE
+        ? "Book VIP Meet & Greet, airside escort, and VIP lounge access at 20+ Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Goa, and Jaipur."
+        : "Book VIP Meet & Greet, airside escort, lounge access, and luxury transfers at 20+ Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Goa, and Jaipur.",
       path: "/airports",
       keywords: [
         "airport meet and greet India",

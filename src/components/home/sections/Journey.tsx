@@ -1,12 +1,15 @@
 import { motion } from "framer-motion";
 import { Calendar, ShieldCheck, Crown, Sparkles, Car, Headphones } from "lucide-react";
 import { display, mono } from "../theme";
+import { ICICI_REVIEW_MODE } from "../../../lib/config/reviewMode";
 
 export function Journey() {
   const steps = [
     {
       title: "Reservation & Flight Details",
-      desc: "Tell us your flight number and requirements — arrival, departure, connection or private charter.",
+      desc: ICICI_REVIEW_MODE
+        ? "Tell us your flight number and requirements — arrival, departure, or airport transit."
+        : "Tell us your flight number and requirements — arrival, departure, connection or private charter.",
       icon: Calendar,
       tag: "Step 01",
     },
@@ -29,8 +32,10 @@ export function Journey() {
       tag: "Step 04",
     },
     {
-      title: "Lounge & Chauffeur Transfer",
-      desc: "Relax in the executive lounge sanctuary or step directly into your chauffeured luxury tarmac vehicle.",
+      title: ICICI_REVIEW_MODE ? "Lounge & Airside Transfer" : "Lounge & Chauffeur Transfer",
+      desc: ICICI_REVIEW_MODE
+        ? "Relax in the executive lounge sanctuary or enjoy dedicated airside buggy transit directly to your gate."
+        : "Relax in the executive lounge sanctuary or step directly into your chauffeured luxury tarmac vehicle.",
       icon: Car,
       tag: "Step 05",
     },

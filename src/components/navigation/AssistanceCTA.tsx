@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { PhoneCall, Sparkles, ArrowRight, ShieldCheck, Headphones } from "lucide-react";
 import { Magnetic, FadeInView } from "@/components/ui/interactions";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 interface AssistanceCTAProps {
   heading?: string;
@@ -12,11 +13,15 @@ interface AssistanceCTAProps {
 
 export function AssistanceCTA({
   heading = "Need VIP Concierge Assistance?",
-  subheading = "Reserve custom airside escort, lounge, or private transport.",
+  subheading,
   className = "",
   airportCode,
   airportName,
 }: AssistanceCTAProps) {
+  const defaultSubheading = ICICI_REVIEW_MODE
+    ? "Reserve custom airside escort, fast-track, and VIP lounge access."
+    : "Reserve custom airside escort, lounge, or private transport.";
+  const activeSubheading = subheading || defaultSubheading;
   const lockedCode = (airportCode || "").trim().toUpperCase();
   const reservationSearch = lockedCode
     ? {
@@ -39,11 +44,13 @@ export function AssistanceCTA({
               className="mt-4 text-3xl sm:text-4xl font-serif font-bold text-slate-900 leading-tight"
             >
               {heading} <br className="hidden sm:inline" />
-              <span className="italic text-[#7c3aed] font-normal">{subheading}</span>
+              <span className="italic text-[#7c3aed] font-normal">{activeSubheading}</span>
             </h2>
 
             <p className="mt-3 text-sm text-slate-600 leading-relaxed font-sans max-w-xl">
-              Our operational command is staged 24 hours a day to orchestrate your flight, meet & greet escort, medevac, or cargo clearance with zero delays.
+              {ICICI_REVIEW_MODE
+                ? "Our operational command is staged 24 hours a day to orchestrate your flight meet & greet escort, fast-track clearance, and VIP lounge access with zero delays."
+                : "Our operational command is staged 24 hours a day to orchestrate your flight, meet & greet escort, medevac, or cargo clearance with zero delays."}
             </p>
 
             <div className="mt-5 flex flex-wrap items-center gap-6 text-xs text-slate-500 font-mono tracking-wider font-bold">

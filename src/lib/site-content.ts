@@ -9,6 +9,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import { ShieldCheck, Headphones, Globe2, Sparkles, Clock, Award } from "lucide-react";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 /* ─────────────────── HERO ─────────────────── */
 
@@ -18,7 +19,7 @@ export const HERO_CONTENT = {
   subtitle:
     "Shafsky Aviation Services's Suswagatam concierge service meets you at the aerobridge, fast-tracks every checkpoint and delivers you to your destination — door to door, every flight.",
   ctaPrimary: "Book Services",
-  ctaSecondary: "Private Charter",
+  ctaSecondary: ICICI_REVIEW_MODE ? "VIP Lounge" : "Private Charter",
   ctaWhatsApp: "WhatsApp Us",
 } as const;
 

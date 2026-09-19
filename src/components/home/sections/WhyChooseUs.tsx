@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ShieldCheck, Headphones, Award, Globe2, Clock, Sparkles, Plane, Users } from "lucide-react";
 import { display, mono } from "../theme";
+import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export function WhyChooseUs() {
   const items = [
@@ -46,6 +47,15 @@ export function WhyChooseUs() {
     },
   ];
 
+  const displayedItems = ICICI_REVIEW_MODE
+    ? items.filter(
+        (it) =>
+          it.title !== "Private Jets On-Demand" &&
+          it.title !== "Luxury Doorstep Cars" &&
+          it.title !== "All-in-One Easy Booking"
+      )
+    : items;
+
   return (
     <section
       id="why"
@@ -73,7 +83,7 @@ export function WhyChooseUs() {
         </div>
 
         <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {items.map((it, i) => {
+          {displayedItems.map((it, i) => {
             const Icon = it.icon;
             return (
               <motion.div
