@@ -54,15 +54,15 @@ export function UrgentAssistanceSection({
       {/* Action Buttons: Call, WhatsApp, Request Callback */}
       <div className="pt-2 flex flex-col sm:flex-row items-center gap-3 relative z-10">
         <a
-          href={`tel:${urgentInfo?.contact_phone || "+919876543210"}`}
+          href={`tel:${urgentInfo?.contact_phone || "+919599087959"}`}
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-lg transition-all"
         >
           <Phone className="w-4 h-4" />
-          <span>Call Desk ({urgentInfo?.contact_phone || "+91-9876543210"})</span>
+          <span>Call Desk ({urgentInfo?.contact_phone || "+91-9599087959"})</span>
         </a>
 
         <a
-          href={`https://wa.me/${(urgentInfo?.contact_whatsapp || "919876543210").replace(/[^0-9]/g, "")}?text=Urgent%20Booking%20Notice%20for%20${encodeURIComponent(serviceName)}`}
+          href={`https://wa.me/${(urgentInfo?.contact_whatsapp || "919599087959").replace(/[^0-9]/g, "")}?text=Urgent%20Booking%20Notice%20for%20${encodeURIComponent(serviceName)}`}
           target="_blank"
           rel="noreferrer"
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all"

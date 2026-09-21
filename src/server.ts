@@ -1,4 +1,5 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config();
 import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
@@ -94,8 +95,16 @@ export default {
 
     const url = new URL(request.url);
     const isFlightValidate = url.pathname === "/api/flight/validate";
+    const isStaticAsset =
+      url.pathname.startsWith("/assets/") ||
+      url.pathname.startsWith("/fonts/") ||
+      url.pathname.startsWith("/images/") ||
+      url.pathname === "/favicon.ico" ||
+      url.pathname === "/manifest.json" ||
+      url.pathname === "/robots.txt" ||
+      url.pathname === "/sitemap.xml";
 
-    if (process.env.NODE_ENV === "production" && !isFlightValidate && isRateLimited(clientIp)) {
+    if (process.env.NODE_ENV === "production" && !isFlightValidate && !isStaticAsset && isRateLimited(clientIp)) {
       return new Response(JSON.stringify({ error: "Too many requests. Please try again later." }), {
         status: 429,
         headers: {

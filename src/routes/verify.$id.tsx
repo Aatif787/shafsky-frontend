@@ -78,9 +78,12 @@ function VerifyRouteComponent() {
   const { booking, branding } = data;
 
   // Mask name for privacy (e.g. Tariq -> T****q)
-  const maskName = (name: string) => {
-    if (name.length <= 2) return name;
-    return name[0] + "*".repeat(name.length - 2) + name[name.length - 1];
+  const maskName = (name?: string | null) => {
+    if (!name || typeof name !== "string") return "Valued Guest";
+    const trimmed = name.trim();
+    if (trimmed.length === 0) return "Valued Guest";
+    if (trimmed.length <= 2) return trimmed;
+    return trimmed[0] + "*".repeat(Math.max(1, trimmed.length - 2)) + trimmed[trimmed.length - 1];
   };
 
   return (
@@ -132,7 +135,7 @@ function VerifyRouteComponent() {
         <div className="py-6 border-b border-dashed border-[#e2e8f0] flex flex-col gap-4 text-xs">
           <div className="flex justify-between items-center py-1">
             <span className="text-[#576875] flex items-center gap-2"><Users size={14} /> Passenger</span>
-            <span className="font-semibold text-[#0b1a24]">{maskName(booking.contact_name)}</span>
+            <span className="font-semibold text-[#0b1a24]">{maskName(booking.contact_name || booking.passengerName || booking.lead_passenger_name)}</span>
           </div>
 
           <div className="flex justify-between items-center py-1">

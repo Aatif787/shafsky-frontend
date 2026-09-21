@@ -123,8 +123,18 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   const registryEntry = getAirportRegistryEntry(airportCode);
   const airportCityName = searchParams?.airport_name || registryEntry?.city || registryEntry?.name || airportCode;
 
-  const initialOrigin = extractIata(searchParams?.origin) || (direction === "departure" ? airportCode : "");
-  const initialDestination = extractIata(searchParams?.destination) || (direction === "arrival" ? airportCode : "");
+  const rawOrigin = extractIata(searchParams?.origin);
+  const rawDest = extractIata(searchParams?.destination);
+
+  const initialOrigin =
+    direction === "arrival"
+      ? (rawOrigin && rawOrigin !== airportCode ? rawOrigin : "")
+      : (rawOrigin || (direction === "departure" ? airportCode : ""));
+
+  const initialDestination =
+    direction === "departure"
+      ? (rawDest && rawDest !== airportCode ? rawDest : "")
+      : (rawDest || (direction === "arrival" ? airportCode : ""));
 
   const [originCode, setOriginCode] = useState<string>(initialOrigin);
   const [destCode, setDestCode] = useState<string>(initialDestination);
@@ -385,8 +395,14 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
           flightNum: cleaned,
           departDate: serviceDate,
           tripType: direction === "transit" ? "multi_city" : "one_way",
-          originCode: originCode || airportCode,
-          destCode: destCode || airportCode,
+          originCode:
+            direction === "arrival"
+              ? (originCode && originCode !== airportCode ? originCode : "")
+              : (originCode || airportCode),
+          destCode:
+            direction === "departure"
+              ? (destCode && destCode !== airportCode ? destCode : "")
+              : (destCode || airportCode),
           airportCode,
           direction,
         }),
@@ -432,14 +448,24 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               logo: flightObj?.airline?.logo || null,
             },
             origin: {
-              code: (flightObj?.departure?.airport || flightObj?.origin?.code || originCode || "").toUpperCase(),
+              code: (
+                flightObj?.departure?.airport ||
+                flightObj?.origin?.code ||
+                (direction === "departure" ? airportCode : (originCode !== airportCode ? originCode : "")) ||
+                ""
+              ).toUpperCase(),
               name: flightObj?.departure?.airport_name || flightObj?.origin?.name || null,
               city: flightObj?.departure?.city || flightObj?.origin?.city || null,
               country: flightObj?.departure?.country || null,
               timezone: flightObj?.departure?.timezone || null,
             },
             destination: {
-              code: (flightObj?.arrival?.airport || flightObj?.destination?.code || destCode || "").toUpperCase(),
+              code: (
+                flightObj?.arrival?.airport ||
+                flightObj?.destination?.code ||
+                (direction === "arrival" ? airportCode : (destCode !== airportCode ? destCode : "")) ||
+                ""
+              ).toUpperCase(),
               name: flightObj?.arrival?.airport_name || flightObj?.destination?.name || null,
               city: flightObj?.arrival?.city || flightObj?.destination?.city || null,
               country: flightObj?.arrival?.country || null,
@@ -637,17 +663,37 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     }
 
     const packageSlug = (selectedPackageId || "gold").toLowerCase();
-    const cleanOrigin = (
+    let cleanOrigin = (
       (isFlightVerified && verifiedFlight?.origin?.code) ||
-      originCode ||
+      (originCode && originCode !== airportCode ? originCode : "") ||
       (direction === "departure" ? airportCode : "")
     ).trim().toUpperCase();
 
-    const cleanDest = (
+    let cleanDest = (
       (isFlightVerified && verifiedFlight?.destination?.code) ||
-      destCode ||
+      (destCode && destCode !== airportCode ? destCode : "") ||
       (direction === "arrival" ? airportCode : "")
     ).trim().toUpperCase();
+
+    if (direction !== "transit") {
+      if (direction === "arrival") {
+        if (!cleanDest) cleanDest = airportCode;
+        if (cleanOrigin === cleanDest) cleanOrigin = "";
+      } else if (direction === "departure") {
+        if (!cleanOrigin) cleanOrigin = airportCode;
+        if (cleanOrigin === cleanDest) cleanDest = "";
+      }
+    }
+
+    if (direction === "arrival" && !cleanOrigin) {
+      toast.error("Please enter the departure airport (where your flight is departing from).");
+      return;
+    }
+
+    if (direction === "departure" && !cleanDest) {
+      toast.error("Please enter the destination airport (where your flight is flying to).");
+      return;
+    }
 
     if (
       direction !== "transit" &&
@@ -1354,6 +1400,50 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 </div>
               </div>
 
+              {/* Route Endpoints: Origin & Destination (Shown when not auto-verified) */}
+              {!isFlightVerified && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      {direction === "arrival" ? "Flying From (Departure Airport)" : "Departure Airport"}
+                      {direction === "arrival" && <span className="text-red-500"> *</span>}
+                    </label>
+                    {direction === "departure" ? (
+                      <div className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                        {airportCode} ({airportCityName})
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        value={originCode}
+                        onChange={(e) => setOriginCode(e.target.value.toUpperCase())}
+                        placeholder="e.g. DEL, BOM, BLR, CCU"
+                        className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      />
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      {direction === "departure" ? "Flying To (Destination Airport)" : "Arrival Service Airport"}
+                      {direction === "departure" && <span className="text-red-500"> *</span>}
+                    </label>
+                    {direction === "arrival" ? (
+                      <div className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                        {airportCode} ({airportCityName})
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        value={destCode}
+                        onChange={(e) => setDestCode(e.target.value.toUpperCase())}
+                        placeholder="e.g. DEL, BOM, BLR, CCU"
+                        className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* URGENT CUTOFF VIP FAST-TRACK BANNER */}
               {isCutoffUrgent && (
                 <div className="rounded-2xl border border-rose-300 bg-rose-50/80 p-4 sm:p-5 text-xs text-rose-950 space-y-3 shadow-xs">
@@ -1603,6 +1693,50 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase tracking-wider focus:border-lime-500 focus:outline-none"
                     required
                   />
+                </div>
+              </div>
+
+              {/* Row: Flight Route (Origin & Destination) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    {direction === "arrival" ? "Flying From (Departure Airport)" : "Departure Airport"}
+                    {direction === "arrival" && <span className="text-red-500"> *</span>}
+                  </label>
+                  {direction === "departure" ? (
+                    <div className="h-11 rounded-xl border border-slate-200 bg-slate-100/70 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                      {airportCode} ({airportCityName})
+                    </div>
+                  ) : (
+                    <input
+                      type="text"
+                      value={originCode}
+                      onChange={(e) => setOriginCode(e.target.value.toUpperCase())}
+                      placeholder="e.g. DEL, BOM, BLR, CCU"
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      required={direction === "arrival"}
+                    />
+                  )}
+                </div>
+                <div>
+                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    {direction === "departure" ? "Flying To (Destination Airport)" : "Arrival Service Airport"}
+                    {direction === "departure" && <span className="text-red-500"> *</span>}
+                  </label>
+                  {direction === "arrival" ? (
+                    <div className="h-11 rounded-xl border border-slate-200 bg-slate-100/70 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                      {airportCode} ({airportCityName})
+                    </div>
+                  ) : (
+                    <input
+                      type="text"
+                      value={destCode}
+                      onChange={(e) => setDestCode(e.target.value.toUpperCase())}
+                      placeholder="e.g. DEL, BOM, BLR, CCU"
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      required={direction === "departure"}
+                    />
+                  )}
                 </div>
               </div>
 

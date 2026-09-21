@@ -69,15 +69,15 @@ export function UnsupportedAirportSection({
       {/* Action Buttons */}
       <div className="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center gap-3 relative z-10">
         <a
-          href="tel:+919876543210"
+          href="tel:+919599087959"
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-lg transition-all"
         >
           <Phone className="w-4 h-4" />
-          <span>Call VIP Desk (+91-9876543210)</span>
+          <span>Call VIP Desk (+91-9599087959)</span>
         </a>
 
         <a
-          href="https://wa.me/919876543210?text=Hi%20Shafsky%20Concierge,%20I%20need%20assistance%20for%20an%20unsupported%20airport"
+          href="https://wa.me/919599087959?text=Hi%20Shafsky%20Concierge,%20I%20need%20assistance%20for%20an%20unsupported%20airport"
           target="_blank"
           rel="noreferrer"
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all"

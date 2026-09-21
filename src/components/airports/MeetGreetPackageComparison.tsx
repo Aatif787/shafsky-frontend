@@ -541,11 +541,18 @@ export function MeetGreetPackageComparison({
                           source: "airport_page",
                           airport: airportCode,
                           airport_name: cityName,
-                          origin: (bookingSearch?.origin as string) || airportCode,
-                          destination: (bookingSearch?.destination as string) || airportCode,
-                          pax_adults: Number(bookingSearch?.pax_adults) || 1,
-                          pax_children: Number(bookingSearch?.pax_children) || 0,
-                          pax_infants: Number(bookingSearch?.pax_infants) || 0,
+                          origin:
+                            journeyType === "DEPARTURE"
+                              ? airportCode
+                              : (bookingSearch?.origin as string) && (bookingSearch?.origin as string).toUpperCase() !== airportCode.toUpperCase()
+                                ? (bookingSearch?.origin as string)
+                                : "",
+                          destination:
+                            journeyType === "ARRIVAL"
+                              ? airportCode
+                              : (bookingSearch?.destination as string) && (bookingSearch?.destination as string).toUpperCase() !== airportCode.toUpperCase()
+                                ? (bookingSearch?.destination as string)
+                                : "",
                           direction:
                             journeyType === "TRANSIT"
                               ? "transit"

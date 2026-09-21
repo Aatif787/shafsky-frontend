@@ -44,7 +44,7 @@ export function TicketingSuccess({ bookingRef, routeSummary, guestSummary }: Tic
         {/* 24/7 Support Channels */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
           <a
-            href="https://wa.me/447700900077"
+            href="https://wa.me/919599087959"
             target="_blank"
             rel="noopener noreferrer"
             className="p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/70 flex items-center gap-3 transition-all"
@@ -57,13 +57,13 @@ export function TicketingSuccess({ bookingRef, routeSummary, guestSummary }: Tic
           </a>
 
           <a
-            href="tel:+447700900077"
+            href="tel:+919599087959"
             className="p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/70 flex items-center gap-3 transition-all"
           >
             <Phone className="w-4 h-4 text-emerald-400" />
             <div>
               <span className="text-xs font-bold block text-slate-100">Priority Hotline</span>
-              <span className="text-[10px] text-slate-400 font-mono">+44 7700 900077</span>
+              <span className="text-[10px] text-slate-400 font-mono">+91 9599087959</span>
             </div>
           </a>
 

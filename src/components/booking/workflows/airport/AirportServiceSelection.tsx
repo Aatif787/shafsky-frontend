@@ -101,7 +101,7 @@ export function AirportServiceSelection({
           type="button"
           onClick={() => {
             window.open(
-              "https://wa.me/919876543210?text=" +
+              "https://wa.me/919599087959?text=" +
                 encodeURIComponent(
                   `VIP Package Request for ${state.resolvedAirport?.name || state.airportName} (${state.resolvedAirport?.code || state.airportCode}) ${state.direction} journey`
                 ),
@@ -212,7 +212,7 @@ export function AirportServiceSelection({
               type="button"
               onClick={() => {
                 window.open(
-                  "https://wa.me/919876543210?text=" +
+                  "https://wa.me/919599087959?text=" +
                     encodeURIComponent(
                       `VIP Package Request for ${state.airportName || state.airportCode} (${state.direction})`
                     ),

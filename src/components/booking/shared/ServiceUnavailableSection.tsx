@@ -52,7 +52,7 @@ export function ServiceUnavailableSection({
         </button>
 
         <a
-          href="https://wa.me/919876543210?text=Hi%20Shafsky%20Concierge,%20I%20need%20assistance%20for%20an%20unavailable%20service"
+          href="https://wa.me/919599087959?text=Hi%20Shafsky%20Concierge,%20I%20need%20assistance%20for%20an%20unavailable%20service"
           target="_blank"
           rel="noreferrer"
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all"
@@ -62,7 +62,7 @@ export function ServiceUnavailableSection({
         </a>
 
         <a
-          href="tel:+919876543210"
+          href="tel:+919599087959"
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-slate-200 font-mono text-xs font-bold uppercase tracking-wider border border-white/10 transition-all"
         >
           <Phone className="w-4 h-4" />
