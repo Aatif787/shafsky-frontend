@@ -69,14 +69,14 @@ export function ServiceAudience({ serviceName, audiences }: ServiceAudienceProps
           <div>
             <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.3em] text-[#c5a059]">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Tailored Personas</span>
+              <span>Designed For You</span>
             </div>
             <h2 className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-white">
               Who Is <span className="text-[#c5a059]">{serviceName}</span> For?
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-white/60 font-sans max-w-xl">
-            Bespoke concierge protocols engineered specifically for distinct travel requirements.
+            Personalized airport services designed for individual and group travel needs.
           </p>
         </div>
       </FadeInView>

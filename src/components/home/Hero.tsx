@@ -6,7 +6,6 @@ import { HeroSection } from "./HeroSection";
 import { BookingPanel } from "./booking/BookingPanel";
 import { ViewportMount } from "./ViewportMount";
 
-const WhyChooseUs = lazy(() => import("./sections/WhyChooseUs").then((m) => ({ default: m.WhyChooseUs })));
 const TrustBar = lazy(() => import("./sections/TrustBar").then((m) => ({ default: m.TrustBar })));
 const EnterpriseSolutions = lazy(() =>
   import("./sections/EnterpriseSolutions").then((m) => ({ default: m.EnterpriseSolutions })),
@@ -14,7 +13,6 @@ const EnterpriseSolutions = lazy(() =>
 const VIPTestimonials = lazy(() =>
   import("./sections/VIPTestimonials").then((m) => ({ default: m.VIPTestimonials })),
 );
-const Journey = lazy(() => import("./sections/Journey").then((m) => ({ default: m.Journey })));
 const FAQ = lazy(() => import("./sections/FAQ").then((m) => ({ default: m.FAQ })));
 const FinalCTA = lazy(() => import("./sections/FinalCTA").then((m) => ({ default: m.FinalCTA })));
 const Footer = lazy(() => import("./sections/Footer").then((m) => ({ default: m.Footer })));
@@ -63,19 +61,6 @@ export function Hero({ visible = true }: { visible?: boolean }) {
         <VIPTestimonials />
       </Deferred>
 
-      {/* 7. Why Choose Shafsky Aviation */}
-      <ScrollSection id="why">
-        <Deferred>
-          <WhyChooseUs />
-        </Deferred>
-      </ScrollSection>
-
-      {/* 8. 3-Step Passenger Journey */}
-      <ScrollSection>
-        <Deferred>
-          <Journey />
-        </Deferred>
-      </ScrollSection>
 
       {/* 13. Frequently Asked Questions */}
       <ScrollSection>

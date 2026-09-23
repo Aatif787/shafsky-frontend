@@ -22,10 +22,10 @@ export function ServiceWhyChoose({ serviceName, benefits }: ServiceWhyChooseProp
       highlight: "90 Mins Saved",
     },
     {
-      title: "White-Glove Staging",
-      description: "Dedicated Guest Relations Officers welcome you at the aerobridge exit with discrete name placarding.",
+      title: "Personal Host Greeting",
+      description: "Dedicated Guest Relations Officers welcome you at the gate exit with a personalized name placard.",
       icon: Award,
-      highlight: "Personal Officer",
+      highlight: "Dedicated Host",
     },
     {
       title: "Confidentiality Guaranteed",
@@ -34,10 +34,10 @@ export function ServiceWhyChoose({ serviceName, benefits }: ServiceWhyChooseProp
       highlight: "100% Private",
     },
     {
-      title: "24/7 Command Support",
-      description: "Real-time telemetry and flight radar tracking ensures host staging even during unscheduled delays.",
+      title: "24/7 Operations Support",
+      description: "Real-time flight tracking ensures your host is waiting even during unexpected delays.",
       icon: Compass,
-      highlight: "24/7 Staged",
+      highlight: "24/7 Available",
     },
   ];
 
@@ -57,7 +57,7 @@ export function ServiceWhyChoose({ serviceName, benefits }: ServiceWhyChooseProp
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-slate-600 font-sans font-medium max-w-xl">
-            Engineered to deliver seamless luxury, absolute privacy, and total peace of mind at every stage of your flight.
+            Designed to deliver comfortable hospitality, privacy, and peace of mind at every stage of your journey.
           </p>
         </div>
       </FadeInView>

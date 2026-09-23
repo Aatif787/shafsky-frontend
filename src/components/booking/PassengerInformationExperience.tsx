@@ -46,13 +46,13 @@ export const SPECIAL_ASSISTANCE_OPTIONS = [
   },
   {
     id: "infant",
-    title: "Infant & Family Care Protocol",
+    title: "Infant & Family Care",
     desc: "Stroller handling, baby care lounge access & priority family escort.",
     icon: Baby,
   },
   {
     id: "senior",
-    title: "Senior Citizen Protocol",
+    title: "Senior Citizen Care",
     desc: "Gentle pacing, comfortable seating & step-free terminal transit.",
     icon: Users,
   },
@@ -65,7 +65,7 @@ export const SPECIAL_ASSISTANCE_OPTIONS = [
   {
     id: "vip",
     title: "VIP & Diplomatic Security",
-    desc: "Discreet VVIP clearance, diplomatic protocol officer & motorcade support.",
+    desc: "Discreet VIP clearance, dedicated escort officer, and chauffeur vehicle support.",
     icon: Crown,
   },
   {
@@ -131,7 +131,7 @@ export function PassengerInformationExperience({
   selectedAssistanceOptions = [],
   setSelectedAssistanceOptions,
   isInternationalRoute = false,
-  subtitle = "Enter lead guest details, contact information, and special airside protocols.",
+  subtitle = "Enter lead guest details, contact information, and special service requests.",
 }: PassengerInformationExperienceProps) {
   // Collapsible section controls
   const [openSection, setOpenSection] = useState<"passengers" | "contact" | "requests">("passengers");
@@ -401,7 +401,7 @@ export function PassengerInformationExperience({
                 Section 2 of 3
               </div>
               <h3 className="text-xl font-serif text-slate-900 font-medium group-hover:text-[#7c3aed] transition-colors">
-                Contact Information & Dispatch Desk
+                Contact Information & Travel Updates
               </h3>
             </div>
           </div>
@@ -454,7 +454,7 @@ export function PassengerInformationExperience({
               {/* COUNTRY CODE SELECTOR & PHONE / WHATSAPP NUMBER */}
               <div>
                 <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-1.5 font-bold">
-                  Phone / WhatsApp Dispatch Number *
+                  Phone / WhatsApp Number *
                 </label>
                 <div className="flex gap-2">
                   {/* COUNTRY CODE SELECTOR */}
@@ -516,7 +516,7 @@ export function PassengerInformationExperience({
                 Section 3 of 3
               </div>
               <h3 className="text-xl font-serif text-slate-900 font-medium group-hover:text-[#7c3aed] transition-colors">
-                Special Protocols & Assist Requests
+                Special Requests & Passenger Assistance
               </h3>
             </div>
           </div>
@@ -588,11 +588,11 @@ export function PassengerInformationExperience({
               <div>
                 <FloatingTextArea
                   id="special_requests_notes"
-                  label="Dietary Preferences, Security Protocols, or Custom Instructions"
+                  label="Dietary Preferences, Accessibility, or Special Instructions"
                   rows={4}
                   value={specialRequests}
                   onChange={(e) => setSpecialRequests(e.target.value)}
-                  placeholder="Specify dietary preferences, wheelchair needs, diplomatic security protocols, or custom instructions..."
+                  placeholder="Specify dietary preferences, wheelchair needs, VIP escort requests, or special instructions..."
                 />
               </div>
 
@@ -600,7 +600,7 @@ export function PassengerInformationExperience({
               <div className="p-4 rounded-2xl bg-[#7c3aed]/10 border border-[#7c3aed]/20 flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-[#7c3aed] shrink-0 mt-0.5" />
                 <div className="text-xs text-slate-800 font-sans leading-relaxed">
-                  <span className="font-bold text-[#7c3aed]">Shafsky Concierge Assurance:</span> All special requests and diplomatic protocols are logged directly into our command desk manifest 4 hours before flight departure.
+                  <span className="font-bold text-[#7c3aed]">Shafsky Concierge Assurance:</span> All special requests and preferences are confirmed with your airport host team well ahead of flight departure.
                 </div>
               </div>
             </motion.div>

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { applicationRouteForRole } from "@/auth/ensureSession";
 import { useAuth } from "./useAuth";
 import {
   Lock,
@@ -20,44 +22,82 @@ export function SignInPage() {
     profile,
     loading,
     signInWithPassword,
+    verifySignInCode,
+    signInWithGoogle,
     signUp,
+    verifySignUpCode,
     resetPasswordForEmail,
     updatePassword,
   } = useAuth();
+  const navigate = useNavigate();
 
   const [mode, setMode] = useState<"signin" | "signup" | "forgot" | "reset">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [awaitingEmailCode, setAwaitingEmailCode] = useState(false);
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [staffSignIn, setStaffSignIn] = useState(false);
 
   // Initialize mode from URL params
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
+      const staff = params.get("staff") === "1";
+      if (staff) {
+        setStaffSignIn(true);
+      }
       const modeParam = params.get("mode");
-      if (modeParam === "signup" || modeParam === "forgot" || modeParam === "reset") {
-        setMode(modeParam as any);
+      if (modeParam === "forgot" || modeParam === "reset") {
+        setStaffSignIn(true);
+        setMode(modeParam);
+      } else if (!staff) {
+        // Customers only use Google on this screen.
+        setMode("signin");
+        setStaffSignIn(false);
+      } else if (modeParam === "signup" || modeParam === "signin") {
+        setMode(modeParam);
       }
     }
   }, []);
 
   useEffect(() => {
     if (!loading && user && profile && mode !== "reset") {
-      const userRole = profile.role || "customer";
-      if (userRole === "super_admin" || userRole === "admin") {
-        window.location.href = "/admin";
-      } else {
-        window.location.href = "/dashboard";
-      }
+      void navigate({ to: applicationRouteForRole(profile.role) });
     }
-  }, [user, profile, loading, mode]);
+  }, [user, profile, loading, mode, navigate]);
+
+  const customerGoogle = mode === "signin" && !staffSignIn && !awaitingEmailCode;
+
+  const continueWithGoogle = async () => {
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    setSubmitting(true);
+    try {
+      const result = await signInWithGoogle();
+      if (result.error) {
+        translateError(result.error);
+        setSubmitting(false);
+        return;
+      }
+      // Existing Clerk session was exchanged in-place (no OAuth redirect).
+      if (result.role) {
+        setSubmitting(false);
+        void navigate({ to: applicationRouteForRole(result.role) });
+      }
+      // Otherwise SSO redirect is in progress; leave the button loading.
+    } catch (err) {
+      translateError(err instanceof Error ? err : new Error("Google sign-in failed"));
+      setSubmitting(false);
+    }
+  };
 
   const changeMode = (newMode: "signin" | "signup" | "forgot" | "reset") => {
     setMode(newMode);
@@ -65,6 +105,8 @@ export function SignInPage() {
     setSuccessMsg(null);
     setPassword("");
     setConfirmPassword("");
+    setAwaitingEmailCode(false);
+    setVerificationCode("");
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
       url.searchParams.set("mode", newMode);
@@ -78,9 +120,19 @@ export function SignInPage() {
     setSuccessMsg(null);
 
     // Common validations
-    if (mode === "signin") {
+    if (mode === "signin" && awaitingEmailCode) {
+      if (!verificationCode.trim()) {
+        setErrorMsg("Enter the email verification code.");
+        return;
+      }
+    } else if (mode === "signin") {
       if (!email.trim() || !password.trim()) {
         setErrorMsg("Please enter both email and password.");
+        return;
+      }
+    } else if (mode === "signup" && awaitingEmailCode) {
+      if (!verificationCode.trim()) {
+        setErrorMsg("Enter the email verification code.");
         return;
       }
     } else if (mode === "signup") {
@@ -118,24 +170,33 @@ export function SignInPage() {
 
     setSubmitting(true);
     try {
-      if (mode === "signin") {
-        const { error } = await signInWithPassword(email.trim(), password);
+      if (mode === "signin" && awaitingEmailCode) {
+        const { error } = await verifySignInCode(verificationCode.trim());
+        if (error) {
+          translateError(error);
+        }
+      } else if (mode === "signin") {
+        const { error, verificationRequired } = await signInWithPassword(email.trim(), password);
+        if (error) {
+          translateError(error);
+        } else if (verificationRequired) {
+          setAwaitingEmailCode(true);
+        }
+      } else if (mode === "signup" && awaitingEmailCode) {
+        const { error } = await verifySignUpCode(verificationCode.trim());
         if (error) {
           translateError(error);
         }
       } else if (mode === "signup") {
-        const { error } = await signUp(email.trim(), password, fullName.trim());
+        const { error, verificationRequired } = await signUp(
+          email.trim(),
+          password,
+          fullName.trim(),
+        );
         if (error) {
           translateError(error);
-        } else {
-          setSuccessMsg(
-            "Verification email sent! Please check your inbox to confirm your registration.",
-          );
-          // Clear inputs
-          setEmail("");
-          setFullName("");
-          setPassword("");
-          setConfirmPassword("");
+        } else if (verificationRequired) {
+          setAwaitingEmailCode(true);
         }
       } else if (mode === "forgot") {
         const { error } = await resetPasswordForEmail(email.trim());
@@ -331,7 +392,7 @@ export function SignInPage() {
             className="text-[9px] uppercase tracking-[0.4em] mt-1 font-semibold"
             style={{ color: "#8a9aa3", fontFamily: "'Inter', system-ui, sans-serif" }}
           >
-            {mode === "signin" && "Secure Entry Console"}
+            {mode === "signin" && (customerGoogle ? "Continue with Google" : "Staff Entry Console")}
             {mode === "signup" && "Guest Register Portal"}
             {mode === "forgot" && "Reset Link Dispatcher"}
             {mode === "reset" && "Credential Update Console"}
@@ -401,8 +462,58 @@ export function SignInPage() {
         )}
 
         {/* Credentials Form */}
+        {customerGoogle && (
+          <div className="space-y-4">
+            <button
+              type="button"
+              onClick={() => void continueWithGoogle()}
+              disabled={submitting}
+              className="w-full h-12 rounded-2xl text-white text-[11px] font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              style={{
+                background: "linear-gradient(145deg, #0e6378, #0c5264)",
+                boxShadow: "5px 5px 12px #d8d0c1, -5px -5px 12px #ffffff",
+              }}
+            >
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              Continue with Google
+            </button>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-5">
-          {mode === "signup" && (
+          {(mode === "signup" || mode === "signin") && awaitingEmailCode && (
+            <div className="space-y-1.5">
+              <p
+                className="text-[11px] leading-relaxed text-[#5b6b75]"
+                style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+              >
+                Enter the email verification code sent to {email.trim()}.
+              </p>
+              <label
+                className="text-[10px] uppercase tracking-widest text-[#5b6b75] font-bold block"
+                htmlFor="verificationCode"
+              >
+                Verification code
+              </label>
+              <input
+                id="verificationCode"
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                required
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                placeholder="Email code"
+                className="w-full h-11 px-4 rounded-xl border-none text-xs font-semibold outline-none text-[#0d2a36] placeholder:text-[#b0b8be]"
+                style={{
+                  background: "#faf5ea",
+                  boxShadow: "inset 4px 4px 8px #e0d9ca, inset -4px -4px 8px #ffffff",
+                }}
+              />
+            </div>
+          )}
+
+          {mode === "signup" && !awaitingEmailCode && (
             <div className="space-y-1.5">
               <label
                 className="text-[10px] uppercase tracking-widest text-[#5b6b75] font-bold block"
@@ -437,7 +548,7 @@ export function SignInPage() {
             </div>
           )}
 
-          {mode !== "reset" && (
+          {mode !== "reset" && !awaitingEmailCode && !customerGoogle && (
             <div className="space-y-1.5">
               <label
                 className="text-[10px] uppercase tracking-widest text-[#5b6b75] font-bold block"
@@ -472,7 +583,7 @@ export function SignInPage() {
             </div>
           )}
 
-          {mode !== "forgot" && (
+          {mode !== "forgot" && !awaitingEmailCode && !customerGoogle && (
             <div className="space-y-1.5">
               <label
                 className="text-[10px] uppercase tracking-widest text-[#5b6b75] font-bold block"
@@ -581,7 +692,7 @@ export function SignInPage() {
             </div>
           )}
 
-          {(mode === "signup" || mode === "reset") && (
+          {(mode === "reset" || (mode === "signup" && !awaitingEmailCode)) && (
             <div className="space-y-1.5">
               <label
                 className="text-[10px] uppercase tracking-widest text-[#5b6b75] font-bold block"
@@ -691,7 +802,7 @@ export function SignInPage() {
             </div>
           )}
 
-          {mode === "signin" && (
+          {mode === "signin" && staffSignIn && !awaitingEmailCode && (
             <div className="text-right">
               <button
                 type="button"
@@ -714,6 +825,9 @@ export function SignInPage() {
             </div>
           )}
 
+          {mode === "signup" && !awaitingEmailCode && <div id="clerk-captcha" />}
+
+          {!customerGoogle && (
           <button
             type="submit"
             disabled={submitting}
@@ -746,13 +860,14 @@ export function SignInPage() {
               </>
             ) : (
               <>
-                {mode === "signin" && "Sign In"}
-                {mode === "signup" && "Create Account"}
+                {mode === "signin" && (awaitingEmailCode ? "Verify code" : "Sign In")}
+                {mode === "signup" && (awaitingEmailCode ? "Verify code" : "Create Account")}
                 {mode === "forgot" && "Send Reset Link"}
                 {mode === "reset" && "Update Password"}
               </>
             )}
           </button>
+          )}
         </form>
 
         {/* Footer */}
@@ -774,26 +889,39 @@ export function SignInPage() {
             />
           </div>
 
-          {mode === "signin" && (
+          {mode === "signin" && customerGoogle && (
             <p
               className="text-[10px] uppercase tracking-[0.15em] text-[#8a9aa3]"
               style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
             >
-              New to Shafsky Aviation Services?{" "}
               <button
-                onClick={() => changeMode("signup")}
-                className="font-bold tracking-[0.15em] transition-all duration-300 cursor-pointer px-2.5 py-1 rounded-lg ml-1"
+                type="button"
+                onClick={() => {
+                  setStaffSignIn(true);
+                  setErrorMsg(null);
+                }}
+                className="font-bold tracking-[0.15em] transition-all duration-300 cursor-pointer px-2.5 py-1 rounded-lg"
                 style={{ color: "#0d5a6e" }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "rgba(13,90,110,0.06)";
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 8px rgba(13,90,110,0.1)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "transparent";
-                  (e.currentTarget as HTMLElement).style.boxShadow = "none";
-                }}
               >
-                Sign Up
+                Staff sign in
+              </button>
+            </p>
+          )}
+          {mode === "signin" && staffSignIn && !awaitingEmailCode && (
+            <p
+              className="text-[10px] uppercase tracking-[0.15em] text-[#8a9aa3]"
+              style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setStaffSignIn(false);
+                  setErrorMsg(null);
+                }}
+                className="font-bold tracking-[0.15em] transition-all duration-300 cursor-pointer px-2.5 py-1 rounded-lg"
+                style={{ color: "#0d5a6e" }}
+              >
+                Continue with Google
               </button>
             </p>
           )}

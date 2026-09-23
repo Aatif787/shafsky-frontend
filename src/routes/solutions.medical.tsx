@@ -18,7 +18,7 @@ export const Route = createFileRoute("/solutions/medical")({
     pageHead({
       title: "VIP Special Services, Spa & Close Protection | Shafsky",
       description:
-        "Bespoke spa and wellness, curated travel, and armed PSO close protection with VIP shopping escorts. Special services by Shafsky Aviation.",
+        "Luxury spa and wellness, custom couples travel, and professional PSO close protection with shopping escorts. Special services by Shafsky Aviation.",
       path: "/solutions/medical",
       jsonLd: [
         breadcrumbJsonLd([
@@ -49,10 +49,10 @@ const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     id: "Spa & Wellness",
     label: "Spa & Wellness",
     badge: "LUXURY SPA, HYDROTHERAPY & REJUVENATION",
-    tagline: "Bespoke couple spa sanctuaries, therapeutic hot stone rituals, and 5-star wellness retreats.",
+    tagline: "Private couples spa suites, therapeutic hot stone treatments, and 5-star wellness retreats.",
     photo: spaWellnessImg,
     inclusions: [
-      "Private Couple Spa Suites with Jacuzzi & Aromatherapy Steam Sanctuary",
+      "Private Couple Spa Suites with Jacuzzi & Aromatherapy Steam Rooms",
       "Certified Ayurvedic Doctors & International Holistic Wellness Therapists",
       "Signature Volcanic Hot Stone Therapy & Deep Tissue Rejuvenation",
       "Cold-Pressed Organic Essential Oils & Customized Herbal Infusions",
@@ -63,8 +63,8 @@ const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
   {
     id: "Tours & Travel (Honeymoon/Couples)",
     label: "Tours & Travel (Honeymoon/Couples)",
-    badge: "CURATED ROMANTIC EXPEDITIONS & BESPOKE HONEYMOONS",
-    tagline: "Bespoke romantic itineraries, Paris honeymoons, private yacht charters, and luxury circuits.",
+    badge: "CURATED ROMANTIC GETAWAYS & HONEYMOONS",
+    tagline: "Curated romantic itineraries, European honeymoons, private yacht charters, and luxury stays.",
     photo: toursTravelImg,
     inclusions: [
       "Tailored Luxury Honeymoon Circuits & Private Romantic Escapes (Paris, Venice, Amalfi, Switzerland)",
@@ -87,7 +87,7 @@ const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
       "Armored Luxury Convoy Fleet, Tarmac-to-Boutique Secure Transit & Motorcade",
       "Discreet High-Net-Worth Crowd Management & Confidential Route Reconnaissance",
       "Personal Luggage & High-Value Asset Security Handling from Airside to Hotel",
-      "24/7 Command Control Center Monitoring & Dedicated Executive Detail",
+      "24/7 Operations Desk Coordination & Dedicated Executive Security Detail",
     ],
   },
 ];
@@ -267,7 +267,7 @@ function DedicatedSpecialServicesPage() {
 
             <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-lime-700 uppercase tracking-widest bg-lime-50 px-3.5 py-1.5 rounded-full border border-lime-200">
               <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
-              <span>SPECIAL CONCIERGE & BESPOKE MISSIONS</span>
+              <span>SPECIAL SERVICES & EXECUTIVE CONCIERGE</span>
             </div>
           </div>
 
@@ -280,11 +280,11 @@ function DedicatedSpecialServicesPage() {
               Special <span className="text-lime-600">Services</span>
             </h1>
             <p className="mt-3 text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Curated luxury spa retreats, bespoke romantic honeymoon tours, and certified armed close protection with private boutique shopping escorts.
+              Curated luxury spa retreats, custom romantic honeymoon tours, and certified close protection with private boutique shopping escorts.
             </p>
           </div>
 
-          {/* 3 SEPARATE 12K SERVICE SHOWCASE CARDS */}
+          {/* 3 SEPARATE SERVICE SHOWCASE CARDS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             {SPECIAL_SERVICES_OPTIONS.map((opt) => {
               const isSelected = selectedOptionId === opt.id;
@@ -302,7 +302,7 @@ function DedicatedSpecialServicesPage() {
                       : "border-slate-200 hover:border-slate-300"
                   }`}
                 >
-                  {/* 12K Photo Container */}
+                  {/* Photo Container */}
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-900">
                     <img
                       src={opt.photo}
@@ -313,10 +313,10 @@ function DedicatedSpecialServicesPage() {
                     {/* Gradient Overlay for Crisp Text Legibility */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
 
-                    {/* 12K Ultra-HD Badge */}
+                    {/* Featured Badge */}
                     <div className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/25 text-[9px] font-mono font-bold tracking-wider text-lime-400">
                       <Sparkles size={10} className="text-lime-400" />
-                      <span>12K ULTRA-HD</span>
+                      <span>FEATURED SERVICE</span>
                     </div>
 
                     {/* Badge & Title on Image Bottom */}
@@ -365,7 +365,7 @@ function DedicatedSpecialServicesPage() {
         <div className="mx-auto max-w-6xl">
           <div className="text-center max-w-2xl mx-auto mb-5">
             <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-lime-700 bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200">
-              CUSTOMIZE YOUR SPECIAL MISSION
+              SELECT YOUR SPECIAL SERVICE
             </span>
           </div>
 
@@ -414,7 +414,7 @@ function DedicatedSpecialServicesPage() {
                 <CheckCircle2 size={32} />
               </div>
               <span className="text-xs font-mono font-bold uppercase tracking-widest text-lime-700">
-                SPECIAL SERVICE REQUEST DISPATCHED
+                SPECIAL SERVICE REQUEST SUBMITTED
               </span>
               <h3 className="text-3xl font-extrabold text-slate-950 mt-1 mb-2" style={display}>
                 Reference #{submittedRef}
@@ -505,7 +505,7 @@ function DedicatedSpecialServicesPage() {
                           <option value="Deep Tissue & Herbal Body Wrap">Deep Tissue & Herbal Body Wrap</option>
                           <option value="Signature Ayurvedic Shirodhara & Healing">Signature Ayurvedic Shirodhara & Healing</option>
                           <option value="VIP Airport Transit Express Rejuvenation">VIP Airport Transit Express Rejuvenation</option>
-                          <option value="Full Day Couple Sanctuary Retreat">Full Day Couple Sanctuary Retreat</option>
+                          <option value="Full Day Couple Luxury Retreat">Full Day Couple Luxury Retreat</option>
                         </select>
                       </div>
                     </div>
@@ -776,10 +776,10 @@ function DedicatedSpecialServicesPage() {
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-12">
             <div className="inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.4em] text-lime-700 font-bold font-mono bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200">
-              <span>COMPANY CATALOG SPECIFICATIONS</span>
+              <span>SERVICES & INCLUSIONS</span>
             </div>
             <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
-              Mission Specifications & Inclusions.
+              Service Details & Inclusions.
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
               Luxury couple wellness, curated honeymoon circuits, and high-profile armed close protection escorts.
@@ -809,7 +809,7 @@ function DedicatedSpecialServicesPage() {
               </div>
             </div>
 
-            {/* Right Column: 3 Separate 12K Visual Cards */}
+            {/* Right Column: Visual Cards */}
             <div className="lg:col-span-6 space-y-4">
               {SPECIAL_SERVICES_OPTIONS.map((item, idx) => (
                 <div
@@ -828,7 +828,7 @@ function DedicatedSpecialServicesPage() {
                       className="w-full h-full object-cover object-center select-none"
                     />
                     <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-[8.5px] font-mono font-bold text-lime-400">
-                      12K HD
+                      PREMIUM
                     </div>
                   </div>
                   <div className="p-4 flex-1 flex flex-col justify-center">

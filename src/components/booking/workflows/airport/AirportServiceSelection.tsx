@@ -206,7 +206,7 @@ export function AirportServiceSelection({
             <p className="text-xs text-slate-600 font-sans max-w-md mx-auto leading-relaxed">
               We are expanding operations at{" "}
               {state.airportName || state.airportCode}. Please contact our VIP
-              Desk for assistance or custom dispatch.
+              Desk for assistance or custom arrangements.
             </p>
             <button
               type="button"

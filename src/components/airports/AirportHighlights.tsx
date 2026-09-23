@@ -37,7 +37,7 @@ export function AirportHighlights({ a }: AirportHighlightsProps) {
     {
       step: "04",
       title: "Tarmac Limousine & VIP Suite Handoff",
-      desc: "Private airside sedan transfer across the tarmac directly between the VIP lounge sanctuary and your aircraft steps.",
+      desc: "Private airside sedan transfer across the tarmac directly between the VIP lounge and your aircraft steps.",
       icon: Car,
       badge: "Tarmac Maybach",
     },
@@ -58,7 +58,7 @@ export function AirportHighlights({ a }: AirportHighlightsProps) {
           Service Highlights & <span className="italic text-[#c5a059]">Excellence.</span>
         </h2>
         <p className="mt-2 text-xs sm:text-sm text-white/60 font-sans max-w-2xl">
-          Four signature pillars of our airside guest relations protocol at {a.airport?.name || a.city}.
+          Four signature pillars of our airside guest relations service at {a.airport?.name || a.city}.
         </p>
       </div>
 

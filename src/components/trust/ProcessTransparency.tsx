@@ -20,22 +20,22 @@ export function ProcessTransparency() {
     },
     {
       step: "02",
-      title: "Command Desk Confirmation",
-      description: "Our 24/7 command desk verifies Air Waybills, flight schedule details, and issues digital guest credentials.",
+      title: "Booking Confirmation & Details",
+      description: "Our 24/7 team verifies your flight details and coordinates all airport clearances ahead of travel.",
       icon: ShieldCheck,
       badge: "Step 2: Confirmation",
     },
     {
       step: "03",
-      title: "Flight Radar & Telemetry Coordination",
-      description: "Live radar tracking monitors your aircraft in real time to stage uniformed officers at the exact gate or terminal drop-off.",
+      title: "Real-Time Flight Tracking",
+      description: "We monitor your aircraft live to ensure your dedicated host is stationed at the gate or meeting point on time.",
       icon: Radio,
       badge: "Step 3: Coordination",
     },
     {
       step: "04",
-      title: "White-Glove Service Delivery",
-      description: "Aerobridge placard greeting, fast-track diplomatic queue bypass, baggage handling, and Maybach tarmac departure.",
+      title: "Seamless Airport Service",
+      description: "Placard welcome at the aerobridge or curbside, fast-track security clearance, baggage assistance, and lounge or car handoff.",
       icon: CheckCircle2,
       badge: "Step 4: Delivery",
     },
@@ -106,7 +106,7 @@ export function ProcessTransparency() {
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-white/40 group-hover:text-[#c5a059] transition-colors">
-                    <span>Verified Protocol</span>
+                    <span>Verified Standards</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                 </div>

@@ -1,116 +1,200 @@
-import { motion } from "framer-motion";
-import { ShieldCheck, Headphones, Award, Globe2, Clock, Sparkles, Plane, Users } from "lucide-react";
+import {
+  Clock,
+  Sparkles,
+  Award,
+  Headphones,
+  ShieldCheck,
+  Plane,
+  Car,
+} from "lucide-react";
 import { display, mono } from "../theme";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export function WhyChooseUs() {
-  const items = [
+  const doorToDoorSteps = [
+    {
+      step: "01",
+      title: "Doorstep Pickup",
+      desc: "A luxury chauffeured vehicle arrives at your home or hotel on schedule, handling all luggage.",
+    },
+    {
+      step: "02",
+      title: "Curbside Host",
+      desc: "Your dedicated host meets your car at the terminal with luggage porters and check-in support.",
+    },
+    {
+      step: "03",
+      title: "Fast-Track & Lounge",
+      desc: "Breeze through priority security clearance and unwind in quiet VIP lounge suites.",
+    },
+    {
+      step: "04",
+      title: "Destination Arrival",
+      desc: "Placard greeting at the aerobridge, baggage retrieval, and seamless handoff to your onward ride.",
+    },
+  ];
+
+  const coreBenefits = [
     {
       icon: Clock,
       title: "Zero Waiting & Fast-Track",
-      body: "Skip long airport queues. We take care of your check-in, security, and luggage so you breeze right through.",
-    },
-    {
-      icon: Headphones,
-      title: "24/7 Always-On Support",
-      body: "Have a question or flight update? Our friendly team is always just one quick call or WhatsApp message away.",
+      desc: "Skip crowded terminal queues. We handle your check-in, priority security clearance, and luggage so you move through without delay.",
     },
     {
       icon: Sparkles,
       title: "Warm & Caring Hosts",
-      body: "Your personal host welcomes you with a warm smile, carries your bags, and guides you step-by-step.",
+      desc: "Your dedicated Guest Relations host welcomes you with genuine warmth, manages every bag, and guides you step-by-step through the terminal.",
     },
     {
       icon: Award,
       title: "VIP Lounge Relaxation",
-      body: "Rest in quiet luxury lounges with gourmet food, refreshing drinks, and high-speed Wi-Fi before boarding.",
+      desc: "Unwind in peaceful luxury lounge suites complete with chef-prepared dining, refreshing drinks, and high-speed Wi-Fi before boarding.",
+    },
+    {
+      icon: Headphones,
+      title: "24/7 Operations Support",
+      desc: "Our operations team tracks your aircraft in real time and is always a quick call or message away for delays or schedule changes.",
     },
     {
       icon: ShieldCheck,
       title: "100% Safe & Private",
-      body: "Top-tier safety and complete privacy for you and your family on every flight and ground journey.",
+      desc: "Strict confidentiality, verified security credentials, and private tarmac transfers for you and your family on every departure and arrival.",
     },
     {
       icon: Plane,
       title: "Private Jets On-Demand",
-      body: "Fly on your own schedule to any city without commercial crowds, delays, or stress.",
+      desc: "Fly on your own schedule with direct point-to-point private jets and helicopters to any domestic or international destination.",
     },
     {
-      icon: Users,
+      icon: Car,
       title: "Luxury Doorstep Cars",
-      body: "Clean, chauffeured luxury cars waiting right outside the terminal to take you smoothly to your hotel or home.",
-    },
-    {
-      icon: Globe2,
-      title: "All-in-One Easy Booking",
-      body: "Airport hospitality, luxury hotel stays, ground cars, and flights booked together in one simple place.",
+      desc: "Executive sedans and luxury cars ready curbside and airside to transport you smoothly between your doorstep and the aircraft.",
     },
   ];
 
-  const displayedItems = ICICI_REVIEW_MODE
-    ? items.filter(
+  const displayedBenefits = ICICI_REVIEW_MODE
+    ? coreBenefits.filter(
         (it) =>
           it.title !== "Private Jets On-Demand" &&
-          it.title !== "Luxury Doorstep Cars" &&
-          it.title !== "All-in-One Easy Booking"
+          it.title !== "Luxury Doorstep Cars"
       )
-    : items;
+    : coreBenefits;
 
   return (
     <section
       id="why"
-      className="relative px-6 py-16 md:px-14 md:py-28 bg-white border-b border-slate-200"
+      className="relative px-6 py-20 md:px-14 md:py-28 bg-white border-b border-slate-200"
     >
-      <div className="mx-auto max-w-[1480px]">
-        <div className="text-center max-w-3xl mx-auto">
-          <div
-            className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.45em] text-lime-700 font-bold"
+      <div className="mx-auto max-w-7xl">
+        {/* Section Header */}
+        <div className="text-center max-w-2xl mx-auto">
+          <p
+            className="text-[11px] uppercase tracking-[0.35em] text-lime-700 font-bold"
             style={mono}
           >
-            <span className="h-px w-10 bg-lime-500" />
-            THE SHAFSKY PROMISE
-            <span className="h-px w-10 bg-lime-500" />
-          </div>
+            THE SHAFSKY STANDARD
+          </p>
           <h2
-            className="mx-auto mt-4 text-[clamp(2.2rem,5vw,4.2rem)] leading-[1.08] text-slate-950 font-bold tracking-tight"
+            className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight"
             style={display}
           >
-            Travel Made <span className="text-lime-600 font-bold">Effortless & Simple.</span>
+            Travel Made <span className="text-lime-600">Effortless & Simple.</span>
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed font-normal">
+          <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
             Skip the airport stress — we handle every detail so you can just relax and enjoy your journey.
           </p>
         </div>
 
-        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {displayedItems.map((it, i) => {
-            const Icon = it.icon;
-            return (
-              <motion.div
-                key={it.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -6 }}
-                viewport={{ once: true, margin: "-20px" }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: (i % 4) * 0.05 }}
-                className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-slate-50/80 border border-slate-200 p-7 shadow-xs hover:border-lime-500 hover:shadow-lg hover:shadow-lime-500/10 transition-all duration-300"
-              >
-                <div>
-                  <div
-                    className="grid h-12 w-12 place-items-center rounded-xl bg-lime-50 border border-lime-300 text-lime-700 shadow-xs transition-all duration-300 group-hover:bg-slate-950 group-hover:text-lime-400 group-hover:border-slate-800"
-                  >
-                    <Icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+        {/* 1. DOOR-TO-DOOR SERVICE: Clean, open, horizontal stage progression */}
+        {!ICICI_REVIEW_MODE && (
+          <div className="mt-16 pt-10 border-t border-slate-200">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+              <div>
+                <span
+                  className="text-[10px] font-mono font-bold uppercase tracking-widest text-lime-700"
+                  style={mono}
+                >
+                  COMPLETE DOOR-TO-DOOR SERVICES
+                </span>
+                <h3
+                  className="text-xl sm:text-2xl font-bold text-slate-950 mt-1.5"
+                  style={display}
+                >
+                  From Your Doorstep Directly to Your Destination
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-md leading-relaxed">
+                One seamless itinerary connecting chauffeur pickup, airport host assistance, VIP lounge relaxation, and onward transit.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {doorToDoorSteps.map((st) => (
+                <div
+                  key={st.step}
+                  className="pt-6 border-t-2 border-slate-200 hover:border-lime-500 transition-colors duration-200 group"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span
+                      className="text-xs font-mono font-bold text-lime-600 tracking-wider"
+                      style={mono}
+                    >
+                      STAGE {st.step}
+                    </span>
                   </div>
-                  <h3 className="mt-5 text-xl font-bold leading-tight text-slate-950" style={display}>
-                    {it.title}
-                  </h3>
-                  <p className="mt-2.5 text-xs leading-relaxed text-slate-600 font-normal">
-                    {it.body}
+                  <h4
+                    className="text-base font-bold text-slate-950 group-hover:text-lime-700 transition-colors"
+                    style={display}
+                  >
+                    {st.title}
+                  </h4>
+                  <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    {st.desc}
                   </p>
                 </div>
-              </motion.div>
-            );
-          })}
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 2. CORE SERVICE PILLARS: Clean open editorial grid with zero boxes */}
+        <div className="mt-16 pt-10 border-t border-slate-200">
+          <div className="mb-10">
+            <span
+              className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400"
+              style={mono}
+            >
+              WHY CHOOSE US
+            </span>
+            <h3
+              className="text-xl sm:text-2xl font-bold text-slate-950 mt-1.5"
+              style={display}
+            >
+              Hospitality standards designed around your peace of mind
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10">
+            {displayedBenefits.map((it) => {
+              const Icon = it.icon;
+              return (
+                <div key={it.title} className="group">
+                  <div className="w-10 h-10 rounded-xl bg-lime-50 text-lime-700 flex items-center justify-center mb-4 group-hover:bg-lime-500 group-hover:text-slate-950 transition-colors duration-200">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <h4
+                    className="text-base font-bold text-slate-950 group-hover:text-lime-700 transition-colors"
+                    style={display}
+                  >
+                    {it.title}
+                  </h4>
+                  <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                    {it.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

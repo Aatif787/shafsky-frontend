@@ -53,6 +53,47 @@ export interface ApiResponse<T = any> {
 }
 
 /**
+ * Exchange a verified Clerk session token for the existing FastAPI access JWT.
+ * The Clerk token is sent only as a Bearer header. Role is never sent.
+ */
+export async function apiAuthClerkExchange(
+  clerkSessionToken: string,
+): Promise<{ data?: AuthResponseData; error?: Error }> {
+  try {
+    const res = await authFetch("/api/auth/clerk-exchange", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${clerkSessionToken}`,
+      },
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      try {
+        const errJson = JSON.parse(text);
+        return {
+          error: new Error(
+            errJson.detail || errJson.error || `Clerk exchange failed with status ${res.status}`,
+          ),
+        };
+      } catch {
+        return { error: new Error(`Clerk exchange failed with status ${res.status}`) };
+      }
+    }
+
+    const json = (await res.json()) as ApiResponse<AuthResponseData>;
+    if (!json.success || !json.data) {
+      return { error: new Error(json.error || "Clerk exchange failed: Invalid server response") };
+    }
+
+    return { data: json.data };
+  } catch (err) {
+    return { error: err as Error };
+  }
+}
+
+/**
  * Login via FastAPI endpoint: POST /api/auth/login
  */
 export async function apiAuthLogin(

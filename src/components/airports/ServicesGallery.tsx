@@ -26,7 +26,7 @@ const DEPARTURE_IMAGES = [
   },
   {
     src: depLounge,
-    title: "VVIP Lounge Sanctuary & Runway Apron Views",
+    title: "VVIP Airport Lounge & Runway Views",
     alt: "Exclusive VVIP lounge reception with flight display board and apron runway views",
   },
   {

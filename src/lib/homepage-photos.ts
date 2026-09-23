@@ -67,7 +67,7 @@ export const HOMEPAGE_PHOTOS = {
     width: 1920,
     height: 1080,
     aspectRatio: "16 / 9",
-    alt: "VVIP Lounge reception sanctuary with chandelier, flight display board, and apron runway views",
+    alt: "VVIP Lounge reception with chandelier, flight display board, and apron runway views",
     subject: "VVIP Lounge Reception & Runway Apron Views",
     orientation: "landscape" as const,
   },

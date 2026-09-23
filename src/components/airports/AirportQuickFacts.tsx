@@ -31,7 +31,7 @@ export function AirportQuickFacts({ a }: AirportQuickFactsProps) {
     {
       title: "Working Hours",
       value: "24/7 Live Operations",
-      desc: "Round-the-clock airside host staging & flight dispatch",
+      desc: "Round-the-clock airport assistance & flight coordination",
       icon: Clock,
       color: "#c5a059",
     },

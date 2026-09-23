@@ -35,14 +35,14 @@ const SPECIAL_SUB_SERVICES: {
   {
     id: "Spa & Wellness",
     label: "Spa & Wellness",
-    desc: "Bespoke couple spa sanctuaries, therapeutic hot stone rituals, and 5-star wellness retreats.",
+    desc: "Private couples spa suites, therapeutic hot stone rituals, and 5-star wellness retreats.",
     photo: spaWellnessImg,
     icon: Sparkles,
   },
   {
     id: "Tours & Travel (Honeymoon/Couples)",
     label: "Tours & Travel (Honeymoon)",
-    desc: "Bespoke romantic itineraries, Paris honeymoons, private yacht charters, and luxury circuits.",
+    desc: "Curated romantic itineraries, European honeymoons, private yacht charters, and luxury stays.",
     photo: toursTravelImg,
     icon: Globe,
   },
@@ -234,7 +234,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
           </h1>
 
           <p className="mt-3 text-sm text-slate-600 max-w-xl leading-relaxed">
-            Tailored travel solutions including armed PSO security, visa facilitation, bespoke tours, infant care, and dignified repatriation cargo handling.
+            Tailored travel solutions including security escorts, visa assistance, private tours, infant care, and dignified repatriation services.
           </p>
 
           {/* Sub-Service Option Tabs INSIDE Special Services Experience */}
@@ -271,7 +271,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
           <ExperiencePhoto
             src={activeSubObj.photo}
             alt={activeSubObj.label}
-            badge="12K Ultra-HD"
+            badge="Luxury Experience"
             caption={activeSubObj.desc}
             aspectRatio="16 / 10"
           />
@@ -361,7 +361,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                       <option value="Deep Tissue & Herbal Body Wrap">Deep Tissue & Herbal Body Wrap</option>
                       <option value="Signature Ayurvedic Shirodhara & Healing">Signature Ayurvedic Shirodhara & Healing</option>
                       <option value="VIP Airport Transit Express Rejuvenation">VIP Airport Transit Express Rejuvenation</option>
-                      <option value="Full Day Couple Sanctuary Retreat">Full Day Couple Sanctuary Retreat</option>
+                      <option value="Full Day Couple Luxury Retreat">Full Day Couple Luxury Retreat</option>
                     </select>
                   </div>
                 </div>
@@ -562,9 +562,9 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
               </div>
 
               <div>
-                <FieldLabel optional>Additional Mission / Protocol Notes</FieldLabel>
+                <FieldLabel optional>Additional Notes & Preferences</FieldLabel>
                 <textarea
-                  placeholder="e.g. Specific security threat level, consular clearance status, or preferred airport meeting point..."
+                  placeholder="e.g. Specific dietary requirements, security preferences, or preferred meeting point..."
                   value={specialNotes}
                   onChange={(e) => setSpecialNotes(e.target.value)}
                   className={TEXTAREA_CLASSES}

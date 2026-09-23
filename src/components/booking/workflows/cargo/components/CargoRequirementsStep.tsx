@@ -62,20 +62,20 @@ export function CargoRequirementsStep({
       {/* Conversational Header */}
       <div className="border-b border-slate-100 pb-5">
         <span className="text-[10px] font-mono text-purple-800 font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-purple-50 border border-purple-200">
-          Step 2 · Specialized Handling Protocols
+          Step 2 · Specialized Handling Options
         </span>
         <h2 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold mt-2">
           Cargo Service & Handling Requirements
         </h2>
         <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
-          Select ground logistics, climate controls, hazard protocols, and insurance for your shipment.
+          Select ground logistics, temperature controls, special handling, and insurance for your shipment.
         </p>
       </div>
 
       {/* 1. Ground Logistics Toggles (Pickup & Delivery) */}
       <div className="space-y-3">
         <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold">
-          Ground Logistics & Transfer Protocols
+          Ground Logistics & Transfer Options
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button

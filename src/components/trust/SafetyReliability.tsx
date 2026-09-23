@@ -29,10 +29,10 @@ export function SafetyReliability() {
       badge: "Airport Expertise",
     },
     {
-      title: "24/7 Command Support & Telemetry",
-      desc: "Our centralized command desk maintains continuous flight radar surveillance to ensure immediate host staging.",
+      title: "24/7 Flight Monitoring & Support",
+      desc: "Our operations team tracks your flight in real time so your airport host is always in position when you land.",
       icon: Headphones,
-      badge: "24/7 Command",
+      badge: "24/7 Support",
     },
   ];
 

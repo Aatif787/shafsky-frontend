@@ -1,5 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { supabaseAdmin } from "./client.server";
+import { verifyAccessToken } from "@/auth/verifyRequest.server";
 
 // Valid UUID v4 regex pattern
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -28,9 +29,9 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
       const token = authHeader.slice(7).trim();
       if (token) {
         try {
-          const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
-          if (user && !error) {
-            userId = user.id;
+          const verified = await verifyAccessToken(token);
+          if (verified?.id) {
+            userId = verified.id;
           }
         } catch {
           // ignore error and proceed with validated cookie check
@@ -63,7 +64,22 @@ export const optionalSupabaseAuth = createMiddleware({ type: "function" }).serve
     const { getRequest } = await import("@tanstack/react-start/server");
     const request = getRequest();
     const cookieHeader = request ? request.headers.get("cookie") : null;
-    const userId = getUserIdFromCookie(cookieHeader, "guest_user");
+    let userId = getUserIdFromCookie(cookieHeader, "guest_user");
+
+    const authHeader = request ? request.headers.get("authorization") : null;
+    if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
+      const token = authHeader.slice(7).trim();
+      if (token) {
+        try {
+          const verified = await verifyAccessToken(token);
+          if (verified?.id) {
+            userId = verified.id;
+          }
+        } catch {
+          // ignore error and fallback to cookie
+        }
+      }
+    }
 
     return next({
       context: {

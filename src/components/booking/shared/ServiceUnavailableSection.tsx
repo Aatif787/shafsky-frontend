@@ -35,7 +35,7 @@ export function ServiceUnavailableSection({
           </h3>
 
           <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed pt-1">
-            <strong className="text-white font-mono">{requestedServiceName}</strong> is not active for <strong className="text-white font-mono">{journeyType.toUpperCase()}</strong> at <strong className="text-white font-mono">{airportCode}</strong>. You can view all available services for this airport or contact our 24/7 VIP Command Desk for bespoke assistance.
+            <strong className="text-white font-mono">{requestedServiceName}</strong> is not active for <strong className="text-white font-mono">{journeyType.toUpperCase()}</strong> at <strong className="text-white font-mono">{airportCode}</strong>. You can view all available services for this airport or contact our 24/7 Operations Desk for assistance.
           </p>
         </div>
       </div>

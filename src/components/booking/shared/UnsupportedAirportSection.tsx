@@ -29,7 +29,7 @@ export function UnsupportedAirportSection({
         </h3>
 
         <p className="text-sm text-slate-300 font-sans max-w-2xl leading-relaxed">
-          While direct instant online booking for <strong className="text-white font-mono">{airportCode}</strong> ({cityName || "Worldwide"}) is currently undergoing expansion, our 24/7 Global VIP Dispatch team can fulfill bespoke airside escort, private tarmac transfers, and expedited diplomatic clearance upon request.
+          While online booking for <strong className="text-white font-mono">{airportCode}</strong> ({cityName || "Worldwide"}) is currently being updated, our 24/7 guest relations team can arrange airport escorts, private tarmac transfers, and expedited clearances directly upon request.
         </p>
       </div>
 
@@ -38,10 +38,10 @@ export function UnsupportedAirportSection({
         <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1.5">
           <div className="flex items-center gap-2 text-amber-400 text-xs font-mono font-bold uppercase">
             <Sparkles className="w-4 h-4" />
-            <span>On-Demand Dispatch</span>
+            <span>On-Demand Booking</span>
           </div>
           <p className="text-xs text-slate-400">
-            Dedicated officer assignment arranged via local handling partners.
+            Dedicated host assignment arranged via local airport partners.
           </p>
         </div>
 
@@ -61,7 +61,7 @@ export function UnsupportedAirportSection({
             <span>Priority Clearance</span>
           </div>
           <p className="text-xs text-slate-400">
-            Bespoke protocol assistance for VIPs, delegations, and commercial flights.
+            Personalized assistance for VIPs, delegations, and commercial flights.
           </p>
         </div>
       </div>

@@ -184,13 +184,13 @@ export function LiveTelemetryRadar() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c5a869] opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#c5a869]" />
               </span>
-              <span>LIVE AIRSIDE OPERATIONS RADAR</span>
+              <span>AIRPORT OPERATIONS STATUS</span>
             </div>
             <h2
               className="mt-4 text-[clamp(2.2rem,5vw,4.4rem)] leading-[1.05] text-white font-normal tracking-tight"
               style={display}
             >
-              Real-Time Network{" "}
+              Airport Network &{" "}
               <span
                 className="italic font-normal"
                 style={{
@@ -199,11 +199,11 @@ export function LiveTelemetryRadar() {
                   WebkitTextFillColor: "transparent",
                 }}
               >
-                Intelligence.
+                Status.
               </span>
             </h2>
             <p className="mt-4 text-xs sm:text-sm text-slate-300 max-w-xl font-light leading-relaxed">
-              Continuous telemetry across all 20+ flagship Indian airport hubs. Monitor live protocol readiness, weather METARs, fast-track throughput, and active airside service dispatch.
+              Live service overview across 20+ major Indian airport hubs. View wait times, weather conditions, on-ground guest relations teams, and lounge availability.
             </p>
           </div>
 
@@ -227,7 +227,7 @@ export function LiveTelemetryRadar() {
 
             <div className="rounded-xl bg-[#11223b] border border-[#c5a869]/40 px-4 py-3 flex items-center gap-2">
               <Activity size={16} className="text-emerald-400 animate-pulse" />
-              <span className="text-xs font-bold text-white">100% AIRSIDE DISPATCH READY</span>
+              <span className="text-xs font-bold text-white">TEAMS ON DUTY</span>
             </div>
           </div>
         </div>
@@ -293,7 +293,7 @@ export function LiveTelemetryRadar() {
                 style={mono}
               >
                 <CheckCircle2 size={13} className="text-emerald-400" />
-                <span>ALL CLEARANCES ACTIVE</span>
+                <span>SERVICES AVAILABLE</span>
               </div>
             </div>
 
@@ -343,7 +343,7 @@ export function LiveTelemetryRadar() {
             {/* Action Bar */}
             <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-xs text-slate-300 font-light text-center sm:text-left">
-                Standing slots reserved for immediate guest allocation.
+                Guest relations officers ready for upcoming flights.
               </div>
 
               <Link

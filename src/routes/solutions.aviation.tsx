@@ -109,7 +109,7 @@ const CHARTER_OPTIONS: CharterOptionDef[] = [
     inclusions: [
       "Exclusive Private Aircraft for Individual & Family Travel",
       "Depart on Your Own Exact Schedule Without Commercial Terminal Queues",
-      "Pet-Friendly Aircraft Cabins & Bespoke Luggage Allowances",
+      "Pet-Friendly Aircraft Cabins & Flexible Luggage Allowances",
       "VIP Ground Chauffeur Coordination from Curbside to Aircraft Steps",
       "Tailored Inflight Catering & Personalized Cabin Ambience",
       "Complete Anonymity & Discreet Security Handling",
@@ -183,7 +183,7 @@ const CHARTER_OPTIONS: CharterOptionDef[] = [
       "Executive Helicopter (5 - 6 Seats)",
     ],
     inclusions: [
-      "Ultra-Discreet VVIP Aviation with Maximum Privacy Protocols",
+      "Ultra-Discreet VVIP Aviation with Complete Privacy",
       "Private Hangar / Airside Apron Limousine Boarding",
       "Redacted Confidential Manifests & NDAs for Flight Crew",
       "Dedicated Armed PSO & Close Protection Coordination",
@@ -1239,13 +1239,13 @@ function DedicatedAirCharterPage() {
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-12">
             <div className="inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.4em] text-lime-700 font-bold font-mono bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200">
-              <span>COMPANY CATALOG SPECIFICATIONS</span>
+              <span>FLEET & SERVICE SPECIFICATIONS</span>
             </div>
             <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
               Private Charter Inclusions.
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-              Authoritative aircraft capabilities, airside handling, and flight protocol.
+              Comprehensive aircraft capabilities, ground handling, and flight details.
             </p>
           </div>
 

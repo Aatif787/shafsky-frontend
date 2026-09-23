@@ -143,8 +143,8 @@ export default function BookingView({ searchParams }: BookingViewProps) {
 
   const activeConfigs = [
     { title: "Service Request", sub: "Enter details", estTime: "Est. 30 sec", progress: 33 },
-    { title: "Review & Confirm", sub: "Review specifications", estTime: "Est. 30 sec", progress: 66 },
-    { title: "Request Staged", sub: "Dispatched to command desk", estTime: "Completed", progress: 100 },
+    { title: "Review & Confirm", sub: "Review details", estTime: "Est. 30 sec", progress: 66 },
+    { title: "Request Received", sub: "Assigned to operations team", estTime: "Completed", progress: 100 },
   ];
   const maxSteps = 3;
   const currentConfig = activeConfigs[Math.min(currentStep - 1, activeConfigs.length - 1)];
@@ -371,8 +371,8 @@ export default function BookingView({ searchParams }: BookingViewProps) {
           {currentStep === maxSteps && (
             <BookingSuccessPass
               badge="Request Active"
-              title={`${getWorkflowTitle()} Staged`}
-              subtitle={`Your request has been assigned to our 24/7 command desk.`}
+              title={`${getWorkflowTitle()} Confirmed`}
+              subtitle={`Your request has been received by our 24/7 operations team.`}
               bookingRef={createdBookingRef || "SHF-VIP-849201"}
               guestSummary={`${paxAdults} Guests`}
             />

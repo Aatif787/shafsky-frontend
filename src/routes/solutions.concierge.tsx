@@ -132,7 +132,7 @@ const CATALOG_DATA: CatalogItem[] = [
       { src: vvipImg, alt: "Welcome Guest from Curb Side Area" },
       { src: home2Img, alt: "Assist in Money Exchange Counter & Baggage Wrapping" },
       { src: dutyImg, alt: "Assist in Immigration & Customs Verification" },
-      { src: loungeImg, alt: "Assist in S.H.A. & VIP Lounge Sanctuary" },
+      { src: loungeImg, alt: "Assist in S.H.A. & VIP Lounge Access" },
       { src: buggyImg, alt: "Buggy Escort & Boarding Gate A12 Assistance" },
     ],
   },
@@ -165,7 +165,7 @@ const CATALOG_DATA: CatalogItem[] = [
   {
     id: "Transit Service",
     title: "TRANSIT SERVICE",
-    badge: "Transit Protocol",
+    badge: "Transit Assistance",
     tagline: "Experience a seamless, stress-free transfer between flights with our dedicated airport transit team.",
     heroBanner: transitImg,
     transitTypes: [
@@ -289,13 +289,13 @@ function MeetGreetDedicatedPage() {
               className="inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.4em] text-lime-700 font-bold font-mono bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200"
               style={mono}
             >
-              <span>COMPANY CATALOG SPECIFICATIONS</span>
+              <span>SERVICES & PACKAGES</span>
             </div>
             <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
               Service Inclusions & Workflow.
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-              Authoritative step-by-step airside protocol and operational visual catalog.
+              Step-by-step airport assistance and service overview.
             </p>
           </div>
 
@@ -354,7 +354,7 @@ function MeetGreetDedicatedPage() {
                       style={mono}
                     >
                       <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
-                      AIRSIDE EXCELLENCE SPECIFICATIONS
+                      SERVICE DETAILS
                     </div>
 
                     <h3

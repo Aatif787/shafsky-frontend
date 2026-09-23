@@ -36,7 +36,7 @@ export function TrustBar() {
     { n: 100, suf: "%", l: "Reliability", sub: "DGCA compliant airside safety record", Icon: ShieldCheck },
     { n: 20, suf: "+", l: "Airports", sub: "Live Indian hub operations", Icon: Globe2 },
     { n: 42000, suf: "+", l: "Guests", sub: "Welcomed across our network", Icon: Users },
-    { n: 12, suf: "min", l: "Response", sub: "Average 24/7 dispatch timeline", Icon: Clock },
+    { n: 12, suf: "min", l: "Response", sub: "Average 24/7 support response", Icon: Clock },
   ];
 
   return (

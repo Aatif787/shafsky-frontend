@@ -80,7 +80,7 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
       {
         id: "step_passenger_info",
         name: "Passenger Details",
-        title: "Passenger Details & Airside Protocols",
+        title: "Passenger Details & Special Requests",
         subtitle: "Lead traveler contact, headcount, and special assistance requests",
         stepType: "passenger_info",
         fields: [],
@@ -279,7 +279,7 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
     validationRules: {
       originAirport: { required: true, errorMessage: "Origin airport is required." },
       destAirport: { required: true, errorMessage: "Destination airport is required." },
-      flightDate: { required: true, errorMessage: "Dispatch date is required." },
+      flightDate: { required: true, errorMessage: "Travel date is required." },
       leadPassengerName: { required: true, errorMessage: "Shipper name is required." },
     },
   },
@@ -292,9 +292,9 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
     icon: HeartPulse,
     ctaText: "Request Emergency Evacuation",
     estimatedTime: "30 secs",
-    successTitle: "Medical ICU Flight Dispatched",
-    successMessage: "24/7 Medical Command Desk has dispatched flight doctor crew and bed-to-bed ground ambulance.",
-    badgeLabel: "ICU Crew Staged",
+    successTitle: "Medical Evacuation Request Received",
+    successMessage: "Our 24/7 medical team has received your request and is preparing the medical crew and ambulance transfer.",
+    badgeLabel: "Medical Team Notified",
     stepSequence: [
       {
         id: "step_service_select",
@@ -306,8 +306,8 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
       },
       {
         id: "step_medical_protocol",
-        name: "Emergency Protocol",
-        title: "Medical Evacuation Protocol",
+        name: "Patient Details",
+        title: "Medical Evacuation Details",
         subtitle: "Specify patient status, pickup facility, and destination hospital",
         stepType: "fields_form",
         fields: [
@@ -332,16 +332,16 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
       },
       {
         id: "step_review",
-        name: "Review Protocol",
-        title: "Evacuation Protocol Summary",
+        name: "Review Details",
+        title: "Evacuation Request Summary",
         subtitle: "Verify medical team and transit routing",
         stepType: "review_summary",
         fields: [],
       },
       {
         id: "step_confirmation",
-        name: "ICU Flight Staged",
-        title: "Medical Evacuation Staged",
+        name: "Request Confirmed",
+        title: "Medical Evacuation Confirmed",
         subtitle: "Flight doctor team on standby",
         stepType: "confirmation_pass",
         fields: [],

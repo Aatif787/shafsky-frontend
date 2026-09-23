@@ -43,7 +43,7 @@ const FLEET_CATEGORIES = [
     passengers: "10–16 Guests",
     range: "4,500 nm (Up to 9 hrs)",
     speed: "490 kts",
-    description: "Dedicated flight attendant service, dual cabin zones, and Michelin-class dining.",
+    description: "Dedicated flight attendant service, dual cabin zones, and fine inflight dining.",
   },
   {
     category: "Ultra Long Range",
@@ -59,7 +59,7 @@ const FLEET_CATEGORIES = [
     passengers: "19–50+ Guests",
     range: "Global Intercontinental",
     speed: "470 kts",
-    description: "Bespoke airborne residence featuring boardroom, master bedroom, and ensuite shower suite.",
+    description: "Airborne residence featuring boardroom, master bedroom, and ensuite shower suite.",
   },
 ];
 
@@ -72,7 +72,7 @@ const ADVANTAGES = [
   {
     icon: Lock,
     title: "100% Manifest Confidentiality",
-    desc: "Strict non-disclosure agreements, private tail registration handling, and discrete diplomatic security protocols.",
+    desc: "Strict non-disclosure agreements, private tail registration handling, and discrete privacy security standards.",
   },
   {
     icon: Globe,
@@ -293,7 +293,7 @@ export function PrivateJetHero() {
       <section id="story" className="py-20 md:py-28 px-6 md:px-8 max-w-7xl mx-auto bg-[#FAF8F5]">
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
           <span className="text-xs font-mono uppercase tracking-widest text-[#4D7C0F] font-bold">
-            Bespoke Aviation Concierge
+            Private Aviation Services
           </span>
           <h2 className="text-3xl md:text-5xl font-normal text-[#1A1715]">
             Your Flight. Your Terms.

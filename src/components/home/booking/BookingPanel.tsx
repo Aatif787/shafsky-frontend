@@ -574,22 +574,8 @@ export function BookingPanel() {
             </div>
           </motion.div>
 
-          {/* Bottom Bar: Trust Indicators & Central Super CTA */}
-          <div className="pt-5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1.5 text-[11px] text-slate-600 font-medium">
-              <span className="flex items-center gap-1.5">
-                <span className="text-lime-600 font-bold">✓</span>
-                <span>Dedicated Airside Officer</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="text-lime-600 font-bold">✓</span>
-                <span>Verified DGCA Clearance</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="text-lime-600 font-bold">✓</span>
-                <span>Priority Fast-Track</span>
-              </span>
-            </div>
+          {/* Bottom Bar: Central Super CTA */}
+          <div className="pt-5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-end gap-4">
 
             <button
               type="button"

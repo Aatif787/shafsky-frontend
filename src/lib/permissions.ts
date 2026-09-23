@@ -86,28 +86,6 @@ export async function getUserRoles(
     // FastAPI /me failed — fall through to secondary checks
   }
 
-  // 2. Try Supabase auth (legacy fallback)
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user && user.id === userId) {
-      const appRole = user.app_metadata?.role || user.user_metadata?.role;
-      if (appRole) return [appRole as Role];
-      const email = (user.email || "").toLowerCase();
-      if (
-        email === "aarizfarooqui786@gmail.com" ||
-        email === "admin@shafskyaviation.com" ||
-        email === "thegreat@050" ||
-        userId.includes("super")
-      ) {
-        return ["super_admin"];
-      }
-      if (email === "socialaviationsky@gmail.com" || userId.includes("admin")) {
-        return ["admin"];
-      }
-    }
-  } catch (e) {
-    // Fallback error handling
-  }
 
   // 3. Hardcoded UUID fallbacks (safety net)
   if (userId === "5fcaaa44-03b2-4ca3-9547-e2f98c5b7a6a" || userId.includes("super") || userId === "super_admin_user") {

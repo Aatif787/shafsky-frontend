@@ -1,6 +1,7 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { isStaffUser } from "@/lib/permissions";
+import { verifyAccessToken } from "@/auth/verifyRequest.server";
 
 function getUserIdFromCookie(cookieHeader: string | null, defaultVal = "guest_user") {
   if (!cookieHeader) return defaultVal;
@@ -20,9 +21,9 @@ export const requireAdminRole = createMiddleware({ type: "function" }).server(as
     const token = authHeader.slice(7).trim();
     if (token) {
       try {
-        const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
-        if (user && !error) {
-          userId = user.id;
+        const verified = await verifyAccessToken(token);
+        if (verified?.id) {
+          userId = verified.id;
         }
       } catch {
         // continue

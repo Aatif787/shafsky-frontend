@@ -13,7 +13,6 @@ import { LIGHT, display, SectionLabel } from "./Atoms";
 import { MeetGreetPackageComparison } from "./MeetGreetPackageComparison";
 import { ServicesGallery } from "./ServicesGallery";
 import { AirportMediaGallery } from "./AirportMediaGallery";
-import { AssistanceCTA } from "@/components/navigation/AssistanceCTA";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearch?: Record<string, unknown> }) {
@@ -78,23 +77,11 @@ export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearc
       {/* 3. Departure & Arrival Services Visual Gallery */}
       <ServicesGallery airportCity={a.city} airportCode={a.code} />
 
-      {/* 4. Book Service CTA Banner */}
-      <AssistanceCTA
-        heading={`Ready for VIP Arrival at ${a.city}?`}
-        subheading={
-          ICICI_REVIEW_MODE
-            ? `Reserve custom airside escort, fast-track, and VIP lounge access at ${a.code}.`
-            : `Reserve custom airside escort, lounge access, and chauffeured transit at ${a.code}.`
-        }
-        airportCode={a.code}
-        airportName={a.airport?.name || `${a.city} (${a.code})`}
-      />
-
-      {/* 4. Airport FAQ Section */}
+      {/* Airport FAQ Section */}
       <section className="px-4 py-16 sm:px-8 md:px-16 md:py-20 max-w-5xl mx-auto">
         <SectionLabel index="02" label="Frequently Asked Questions" />
         <h2 className="mt-4 text-[clamp(1.8rem,3vw,2.5rem)] font-serif font-bold text-slate-900" style={display}>
-          Airport Concierge FAQs.
+          Airport FAQs.
         </h2>
         <div className="mt-8 space-y-4">
           {(ICICI_REVIEW_MODE

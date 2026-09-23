@@ -38,7 +38,7 @@ const CHARTER_SUB_SERVICES: { id: AirCharterSubService; label: string; desc: str
   {
     id: "Corporate Charter",
     label: "Corporate Charter",
-    desc: "Bespoke executive aircraft itineraries for business leadership teams and business tours.",
+    desc: "Tailored executive aircraft itineraries for business leadership teams and multi-city tours.",
   },
   {
     id: "Private Charter",
@@ -249,13 +249,13 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
           </h1>
 
           <p className="mt-3 text-sm text-slate-600 max-w-xl leading-relaxed">
-            On-demand executive private jets, twin helicopters, and medical evacuation aircraft on your schedule. Receive a customized quotation directly from our flight command desk.
+            On-demand executive private jets, twin helicopters, and medical evacuation aircraft on your schedule. Receive a customized quotation directly from our charter operations team.
           </p>
 
           {/* Sub-Service Tabs INSIDE Private Charter Parent Experience */}
           <div className="mt-6">
             <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 mb-2.5">
-              Choose Charter Mission:
+              Choose Charter Service:
             </div>
             <div className="flex flex-wrap gap-2">
               {CHARTER_SUB_SERVICES.map((sub) => {
@@ -302,7 +302,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
             }
             caption={
               subService === "Private Charter"
-                ? "Bespoke executive cabin with luxury amenities & personalized service"
+                ? "Executive private cabin with luxury amenities & personalized service"
                 : "Executive fleet ready for 2-hour dispatch"
             }
             aspectRatio="16 / 10"
@@ -519,7 +519,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
             <div>
               <FieldLabel optional>Special Requests / Inflight Preferences</FieldLabel>
               <textarea
-                placeholder="e.g. Michelin-grade gourmet catering, VIP tarmac limousine transfer, medical ICU doctor on board, strict non-disclosure protocol..."
+                placeholder="e.g. Gourmet catering, airport tarmac transfer, medical staff on board, privacy preferences..."
                 value={specialRequirements}
                 onChange={(e) => setSpecialRequirements(e.target.value)}
                 className={TEXTAREA_CLASSES}
@@ -559,7 +559,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
                 Lead Contact for Charter Quotation
               </h2>
               <p className="text-xs text-slate-500 mt-1">
-                Your request is dispatched directly to our flight command officers. You will receive an all-inclusive bespoke charter quote within 30 minutes.
+                Your request is sent directly to our flight operations team. You will receive a detailed charter quote within 30 minutes.
               </p>
             </div>
 
@@ -618,7 +618,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
                 Charter Request Summary:
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Mission:</span>
+                <span>Charter Type:</span>
                 <span className="font-semibold text-slate-900">{subService}</span>
               </div>
               <div className="flex justify-between text-slate-600">
@@ -654,7 +654,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:shadow-xl transition-all font-mono cursor-pointer disabled:opacity-50"
               >
                 {isSubmitting ? (
-                  <span>Dispatching Request...</span>
+                  <span>Submitting Request...</span>
                 ) : (
                   <>
                     <Send size={15} className="text-[#d4af37]" />
@@ -682,7 +682,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
         whatsAppUrl={getWhatsAppLink()}
         isQuoteRequest={true}
         summaryItems={[
-          { label: "Mission Type", value: subService },
+          { label: "Charter Type", value: subService },
           { label: "Route", value: `${origin} → ${destination}` },
           { label: "Departure", value: `${departDate} at ${departTime}` },
           { label: "Passengers", value: `${paxCount} Guests` },

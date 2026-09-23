@@ -26,9 +26,9 @@ export function SuccessStep({
     <div className="space-y-8">
       {/* Reused BookingSuccessPass */}
       <BookingSuccessPass
-        badge="Concierge Triage Active"
+        badge="Request Confirmed"
         title="Cargo Request Submitted"
-        subtitle="Your air freight specifications have been received by Shafsky Cargo Operations Command Desk."
+        subtitle="Your air freight request has been received by the Shafsky Cargo Operations Team."
         bookingRef={bookingRef || "SHF-CRG-894201"}
         guestSummary={`${shipmentType || "Cargo"} · ${packageCount} Pkgs (${estimatedWeight} ${weightUnit}) · ${origin || "Origin"} ➔ ${destination || "Destination"}`}
       />
@@ -69,7 +69,7 @@ export function SuccessStep({
         </div>
 
         <p className="text-xs text-slate-600 font-sans leading-relaxed pt-1">
-          Our team is currently evaluating airline space availability, export documentation requirements, and customs clearance protocols for your route. We will reach out to <strong>{contactName || "you"}</strong> via phone and email shortly.
+          Our team is currently evaluating airline space availability, export documentation requirements, and customs clearance procedures for your route. We will reach out to <strong>{contactName || "you"}</strong> via phone and email shortly.
         </p>
       </div>
     </div>

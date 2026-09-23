@@ -89,7 +89,7 @@ export function BookingSuccessModal({
               </div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-[#b38a2e] text-xs font-mono font-bold">
                 <Clock size={12} />
-                <span>Duty Officer Dispatched</span>
+                <span>Host Assigned</span>
               </div>
             </div>
 

@@ -8,11 +8,11 @@ export const WORKFLOW_CONFIG: Record<BookingService, WorkflowMetadata> = {
     steps: [
       { stepNumber: 1, title: "Flight Itinerary & Aircraft Category", sub: "Specify origin/destination airports, departure date/time, and aircraft preference.", estTime: "Est. 30 sec", progress: 33 },
       { stepNumber: 2, title: "Charterer Contact & Review", sub: "Enter lead charterer details and review your private jet quotation request.", estTime: "Est. 30 sec", progress: 66 },
-      { stepNumber: 3, title: "Charter Request Staged", sub: "Your private jet charter quote request is assigned to our flight dispatch team.", estTime: "Completed", progress: 100 },
+      { stepNumber: 3, title: "Charter Request Received", sub: "Your private jet charter quote request is assigned to our operations team.", estTime: "Completed", progress: 100 },
     ],
-    successTitle: "Private Jet Quote Request Logged",
-    confirmationSubtitle: "Our flight dispatch desk is staging tail options for your route.",
-    badgeLabel: "Charter Quote Staged",
+    successTitle: "Private Jet Quote Request Received",
+    confirmationSubtitle: "Our flight operations team is preparing aircraft options for your route.",
+    badgeLabel: "Quote Request Received",
   },
   [BookingService.AIR_AMBULANCE]: {
     serviceId: BookingService.AIR_AMBULANCE,
@@ -20,7 +20,7 @@ export const WORKFLOW_CONFIG: Record<BookingService, WorkflowMetadata> = {
     steps: [
       { stepNumber: 1, title: "Patient Details", sub: "Provide patient condition and count for airborne ICU flight staging.", estTime: "Est. 20 sec", progress: 33 },
       { stepNumber: 2, title: "Transport Route", sub: "Specify origin hospital/city, receiving facility, and preferred date.", estTime: "Est. 20 sec", progress: 66 },
-      { stepNumber: 3, title: "Contact Details & Review", sub: "Enter emergency contact details and review your air ambulance dispatch request.", estTime: "Completed", progress: 100 },
+      { stepNumber: 3, title: "Contact Details & Review", sub: "Enter emergency contact details and review your air ambulance request.", estTime: "Completed", progress: 100 },
     ],
     successTitle: "Air Ambulance Request Logged",
     confirmationSubtitle: "Our 24/7 medical flight physician is evaluating fit-to-fly assessment.",
@@ -32,7 +32,7 @@ export const WORKFLOW_CONFIG: Record<BookingService, WorkflowMetadata> = {
     steps: [
       { stepNumber: 1, title: "Patient Details", sub: "Provide patient condition and count for mobile train ICU compartment staging.", estTime: "Est. 20 sec", progress: 33 },
       { stepNumber: 2, title: "Transport Route", sub: "Specify origin railway station/city, destination station, and preferred date.", estTime: "Est. 20 sec", progress: 66 },
-      { stepNumber: 3, title: "Contact Details & Review", sub: "Enter emergency contact details and review your train ambulance dispatch request.", estTime: "Completed", progress: 100 },
+      { stepNumber: 3, title: "Contact Details & Review", sub: "Enter emergency contact details and review your train ambulance request.", estTime: "Completed", progress: 100 },
     ],
     successTitle: "Train Ambulance Reserved",
     confirmationSubtitle: "Your train ambulance request is logged with our medical rail desk.",
@@ -130,7 +130,7 @@ export const WORKFLOW_CONFIG: Record<BookingService, WorkflowMetadata> = {
       { stepNumber: 3, title: "Transfer Booked", sub: "Your luxury chauffeur transfer is assigned to our ground transport fleet.", estTime: "Completed", progress: 100 },
     ],
     successTitle: "Chauffeur Transfer Reserved",
-    confirmationSubtitle: "Our ground dispatch desk is assigning a luxury vehicle and executive chauffeur.",
+    confirmationSubtitle: "Our team is assigning your luxury vehicle and professional chauffeur.",
     badgeLabel: "Chauffeur Fleet Assigned",
   },
   [BookingService.FAST_TRACK]: {

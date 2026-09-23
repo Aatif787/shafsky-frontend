@@ -3,7 +3,6 @@
  * Forwards Supabase Auth JWT Access Tokens to FastAPI Backend Services
  */
 
-import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { getAccessToken } from "@/auth/tokenStore";
 import { getBackendBaseUrl, resolveApiUrl, normalizeBackendUrl } from "@/lib/api/config";
 
@@ -45,7 +44,7 @@ export interface FlightValidationApiResponse {
 
 export class ApiClient {
   /**
-   * Helper to retrieve active auth token header (FastAPI in-memory token or Supabase JWT).
+   * Helper to retrieve active auth token header (FastAPI in-memory token).
    */
   public static async getAuthHeaders(): Promise<Record<string, string>> {
     try {
@@ -57,16 +56,6 @@ export class ApiClient {
       // ignore
     }
 
-    if (isSupabaseConfigured()) {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.access_token) {
-          return { Authorization: `Bearer ${session.access_token}` };
-        }
-      } catch (err) {
-        console.warn("[ApiClient] Failed to retrieve session access token:", err);
-      }
-    }
     return {};
   }
 

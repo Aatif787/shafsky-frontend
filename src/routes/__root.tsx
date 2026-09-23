@@ -16,6 +16,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BrandingProvider } from "../lib/branding/branding.context";
 import { BrandingHead } from "../lib/branding/BrandingHead";
 import { Toaster } from "../components/ui/sonner";
+import { ClerkProvider } from "@clerk/tanstack-react-start";
 import { AuthProvider } from "../auth-system/AuthProvider";
 import { AppErrorBoundary } from "../components/ui/AppErrorBoundary";
 import { MotionChrome } from "../components/motion/MotionChrome";
@@ -221,7 +222,8 @@ function RootComponent() {
     return setupChunkRecovery();
   }, []);
 
-  return (
+  const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+  const application = (
     <AppErrorBoundary name="RootApplication">
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
@@ -239,5 +241,13 @@ function RootComponent() {
         </AuthProvider>
       </QueryClientProvider>
     </AppErrorBoundary>
+  );
+
+  if (!publishableKey) return application;
+
+  return (
+    <ClerkProvider publishableKey={publishableKey} signInUrl="/auth" signUpUrl="/auth">
+      {application}
+    </ClerkProvider>
   );
 }

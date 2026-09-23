@@ -33,7 +33,7 @@ export const VehicleDetailsSection: React.FC<VehicleDetailsSectionProps> = ({ ve
 
   const handleRequestCall = () => {
     toast.success(
-      `Callback requested for ${vehicle.name}. Our dispatch coordinator will call you within 15 minutes.`
+      `Callback requested for ${vehicle.name}. Our transport coordinator will call you within 15 minutes.`
     );
   };
 

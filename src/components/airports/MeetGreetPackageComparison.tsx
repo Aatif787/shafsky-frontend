@@ -415,7 +415,7 @@ export function MeetGreetPackageComparison({
               No Active Packages for this Selection
             </h4>
             <p className="text-xs text-slate-600 font-sans max-w-md mx-auto leading-relaxed">
-              No concierge packages are currently active for {journeyType.toLowerCase()} {flightType.toLowerCase()} flights at {cityName} ({airportCode}). Custom reservations can be arranged directly through our 24/7 command desk.
+              No concierge packages are currently active for {journeyType.toLowerCase()} {flightType.toLowerCase()} flights at {cityName} ({airportCode}). Custom reservations can be arranged directly through our 24/7 concierge team.
             </p>
           </div>
           <div className="pt-2">

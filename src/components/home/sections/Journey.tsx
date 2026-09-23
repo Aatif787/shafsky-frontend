@@ -1,123 +1,118 @@
-import { motion } from "framer-motion";
-import { Calendar, ShieldCheck, Crown, Sparkles, Car, Headphones } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { display, mono } from "../theme";
 import { ICICI_REVIEW_MODE } from "../../../lib/config/reviewMode";
 
 export function Journey() {
   const steps = [
     {
-      title: "Reservation & Flight Details",
+      num: "01",
+      title: "Online Reservation",
       desc: ICICI_REVIEW_MODE
-        ? "Tell us your flight number and requirements — arrival, departure, or airport transit."
-        : "Tell us your flight number and requirements — arrival, departure, connection or private charter.",
-      icon: Calendar,
-      tag: "Step 01",
+        ? "Provide your flight details and travel preferences online for fast confirmation."
+        : "Provide your flight details and travel preferences online for instant booking confirmation in 60 seconds.",
     },
     {
-      title: "Officer Assignment",
-      desc: "Instant confirmation with your dedicated Guest Relations Officer assigned directly to your mission.",
-      icon: ShieldCheck,
-      tag: "Step 02",
+      num: "02",
+      title: "Dedicated Host Assigned",
+      desc: "Your personal Guest Relations host is confirmed with direct contact details for pre-flight coordination.",
     },
     {
-      title: "Personal Reception",
-      desc: "Meet your officer the moment you arrive — at the aircraft aerobridge or curbside VIP terminal gate.",
-      icon: Crown,
-      tag: "Step 03",
+      num: "03",
+      title: "Personal Placard Welcome",
+      desc: "Meet your host the moment you arrive — right at the aircraft aerobridge or terminal curbside entrance.",
     },
     {
-      title: "Fast-Track Clearance",
-      desc: "Passport control, customs clearance, and baggage retrieval expedited seamlessly with zero queuing.",
-      icon: Sparkles,
-      tag: "Step 04",
+      num: "04",
+      title: "Priority Fast-Track",
+      desc: "Passport control, security screening, and baggage collection handled smoothly so you skip long queues.",
     },
     {
-      title: ICICI_REVIEW_MODE ? "Lounge & Airside Transfer" : "Lounge & Chauffeur Transfer",
+      num: "05",
+      title: ICICI_REVIEW_MODE ? "VIP Lounge & Gate Escort" : "VIP Lounge & Transfer",
       desc: ICICI_REVIEW_MODE
-        ? "Relax in the executive lounge sanctuary or enjoy dedicated airside buggy transit directly to your gate."
-        : "Relax in the executive lounge sanctuary or step directly into your chauffeured luxury tarmac vehicle.",
-      icon: Car,
-      tag: "Step 05",
+        ? "Relax in a quiet VIP lounge suite or take a comfortable buggy transfer directly to your departure gate."
+        : "Relax in a quiet VIP lounge suite or step directly into your chauffeured vehicle waiting outside.",
     },
     {
+      num: "06",
       title: "Dedicated After-Care",
-      desc: "Our operations desk remains on watch until your onward flight and destination arrival are fully completed.",
-      icon: Headphones,
-      tag: "Step 06",
+      desc: "Our operations team stays in touch until you safely board your flight or reach your final destination.",
     },
   ];
 
   return (
-    <section className="relative px-4 py-20 sm:px-8 sm:py-28 md:px-14 md:py-36 bg-[#fbf9f5] border-b border-[#e8dfc8]">
-      <div className="mx-auto max-w-[1480px]">
+    <section className="relative px-6 py-20 md:px-14 md:py-28 bg-[#faf8f5] border-b border-slate-200">
+      <div className="mx-auto max-w-7xl">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
-          <div
-            className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.45em] text-[#a88b4a] font-bold"
+        <div className="text-center max-w-2xl mx-auto">
+          <p
+            className="text-[11px] uppercase tracking-[0.35em] text-lime-700 font-bold"
             style={mono}
           >
-            <span className="h-px w-10 bg-[#c5a869]/50" />
             THE GUEST JOURNEY
-            <span className="h-px w-10 bg-[#c5a869]/50" />
-          </div>
+          </p>
           <h2
-            className="mt-5 text-[clamp(2.2rem,5vw,4.4rem)] leading-[1.05] text-slate-950 font-normal"
+            className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight"
             style={display}
           >
-            Six steps.{" "}
-            <span
-              className="italic font-normal"
-              style={{
-                background: "linear-gradient(135deg, #a88b4a 0%, #c5a869 50%, #8c733b 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              One signature standard.
-            </span>
+            Six steps. <span className="text-lime-600">One signature standard.</span>
           </h2>
-          <p className="mt-4 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed font-normal">
-            From initial itinerary submission to final arrival, experience uninterrupted precision and warm hospitality.
+          <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+            From booking to final arrival, enjoy a smooth journey and welcoming hospitality.
           </p>
         </div>
 
-        {/* Timeline Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {steps.map((s, idx) => {
-            const SIcon = s.icon;
-            return (
-              <motion.div
-                key={s.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.08 }}
-                whileHover={{ y: -8, scale: 1.015 }}
-                className="relative rounded-2xl bg-white border border-[#e8dfc8] p-7 shadow-xs hover:border-[#c5a869] hover:shadow-xl transition-shadow duration-300 group flex flex-col justify-between"
+        {/* 6 Steps Linear Progression: Clean, open, box-free layout */}
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-12">
+          {steps.map((st) => (
+            <div
+              key={st.num}
+              className="pt-6 border-t-2 border-slate-300 hover:border-lime-500 transition-colors duration-200 group"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <span
+                  className="text-2xl font-bold font-mono text-lime-600 tracking-tight"
+                  style={mono}
+                >
+                  {st.num}
+                </span>
+                <span
+                  className="text-[10px] font-mono font-semibold uppercase tracking-widest text-slate-400"
+                  style={mono}
+                >
+                  PHASE
+                </span>
+              </div>
+              <h3
+                className="text-lg font-bold text-slate-950 group-hover:text-lime-700 transition-colors"
+                style={display}
               >
-                <div>
-                  <div className="flex items-center justify-between mb-5">
-                    <div className="h-11 w-11 rounded-xl bg-[#fbf9f5] border border-[#e8dfc8] text-[#a88b4a] flex items-center justify-center group-hover:bg-[#050b14] group-hover:text-[#d9c18b] group-hover:border-[#c5a869]/40 transition-all duration-300">
-                      <SIcon size={20} />
-                    </div>
-                    <span
-                      className="text-[9.5px] font-mono uppercase tracking-widest text-[#a88b4a] font-bold px-3 py-1 rounded-full bg-[#fbf9f5] border border-[#e8dfc8]"
-                      style={mono}
-                    >
-                      {s.tag}
-                    </span>
-                  </div>
+                {st.title}
+              </h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                {st.desc}
+              </p>
+            </div>
+          ))}
+        </div>
 
-                  <h3 className="text-xl font-normal text-slate-950 leading-snug" style={display}>
-                    {s.title}
-                  </h3>
-                  <p className="mt-2.5 text-xs text-slate-600 leading-relaxed font-normal">
-                    {s.desc}
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
+        {/* Simple Clean Action Link */}
+        <div className="mt-16 pt-8 text-center border-t border-slate-200">
+          <a
+            href="/#book"
+            onClick={(e) => {
+              const el = document.getElementById("book");
+              if (el) {
+                e.preventDefault();
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+              }
+            }}
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-900 hover:text-lime-600 transition-colors cursor-pointer"
+            style={mono}
+          >
+            <span>Ready to travel? Book your airport service</span>
+            <ArrowRight className="w-4 h-4 text-lime-600" />
+          </a>
         </div>
       </div>
     </section>
