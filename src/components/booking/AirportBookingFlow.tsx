@@ -356,6 +356,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   // 3. Payment & Security Lifecycle (Backend-Verified Only)
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [activeBookingRef, setActiveBookingRef] = useState<string | null>(null);
+  const [paymentToken, setPaymentToken] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<"IDLE" | "OPEN" | "VERIFYING" | "PAID" | "FAILED" | "DISMISSED">("IDLE");
   const [isPaymentVerified, setIsPaymentVerified] = useState<boolean>(false);
   const [paymentTransactionId, setPaymentTransactionId] = useState<string | null>(null);
@@ -835,12 +836,30 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       }
 
       bookingRefToUse = createData.data?.bookingRef || createData.data?.booking_ref;
+      const iciciRedirect = createData.data?.icici_redirect_url as string | undefined;
+      const paymentGateway = String(createData.data?.payment_gateway || "").toUpperCase();
       orderId = createData.data?.razorpay_order_id;
       keyId = createData.data?.razorpay_key_id;
       amountPaise = createData.data?.razorpay_amount_paise || (selectedCurrency === "INR" ? convertedTotalPrice * 100 : Math.round(convertedTotalPrice * 100));
 
       if (bookingRefToUse) {
         setActiveBookingRef(bookingRefToUse);
+      }
+      const issuedToken = createData.data?.payment_token as string | undefined;
+      if (issuedToken) {
+        setPaymentToken(issuedToken);
+      }
+
+      if (paymentGateway === "ICICI" || iciciRedirect) {
+        if (!iciciRedirect) {
+          toast.error("Payment gateway could not be initialized. Please retry.");
+          setSubmitting(false);
+          setPaymentStatus("FAILED");
+          return;
+        }
+        toast.loading("Redirecting to ICICI Bank secure payment…", { id: "icici-redirect" });
+        window.location.assign(iciciRedirect);
+        return;
       }
 
       if (!orderId || !keyId || String(orderId).startsWith("order_sim_")) {
@@ -965,7 +984,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     try {
       const retryRes = await ApiClient.fetchWithAuth("/api/payments/retry", {
         method: "POST",
-        body: JSON.stringify({ booking_ref: activeBookingRef }),
+        body: JSON.stringify({
+          booking_ref: activeBookingRef,
+          payment_token: paymentToken,
+        }),
       });
       const retryData = await retryRes.json().catch(() => null);
 
@@ -973,6 +995,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
         toast.error(retryData?.detail || retryData?.error || "Unable to retry payment. Re-initializing booking...");
         handleProceedToPayment();
         return;
+      }
+
+      if (retryData.data?.payment_token) {
+        setPaymentToken(String(retryData.data.payment_token));
       }
 
       const orderId = retryData.data?.razorpay_order_id;
@@ -1189,10 +1215,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             <div className="rounded-2xl border border-lime-200 bg-lime-50/50 p-4 text-xs text-slate-700 space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-lime-900">
                 <ShieldCheck size={16} className="text-lime-700" />
-                <span>Next Protocol Steps</span>
+                <span>Next Steps</span>
               </div>
               <p className="text-[11.5px] text-slate-600 leading-relaxed font-sans">
-                Our airport concierge duty officer will reach out on your contact number (<strong>{phone}</strong>) and email (<strong>{email}</strong>) prior to flight departure/arrival to coordinate curbside or aerobridge meet.
+                Our airport concierge team will reach out on your contact number (<strong>{phone}</strong>) and email (<strong>{email}</strong>) prior to flight departure or arrival to coordinate your meeting point.
               </p>
             </div>
 
@@ -1213,7 +1239,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-slate-800 hover:bg-slate-50 transition"
               >
-                <span>WhatsApp Command Desk</span>
+                <span>WhatsApp Support Desk</span>
               </a>
             </div>
           </div>
@@ -1452,7 +1478,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     <span>Urgent VIP Airport Clearance Available</span>
                   </div>
                   <p className="text-xs text-rose-900 font-sans leading-relaxed">
-                    This flight is scheduled within our standard advance notice window (less than 12h for domestic or 24h for international). Our 24/7 Airport Command Desk provides direct manual authorization for urgent flights.
+                    This flight is scheduled within our standard advance notice window (less than 12h for domestic or 24h for international). Our 24/7 team can assist with short-notice bookings.
                   </p>
                   <a
                     href={`https://wa.me/919599087959?text=${encodeURIComponent(
@@ -1463,7 +1489,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     className="inline-flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-700 px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-sm transition"
                   >
                     <MessageSquare size={14} />
-                    <span>Connect VIP Duty Officer on WhatsApp</span>
+                    <span>Connect with Support on WhatsApp</span>
                   </a>
                 </div>
               )}

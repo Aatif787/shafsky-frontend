@@ -59,7 +59,8 @@ export async function createRazorpayOrder(
   amount: number,
   currency = "INR",
   receipt?: string,
-  notes?: Record<string, any>
+  notes?: Record<string, any>,
+  paymentToken?: string,
 ): Promise<{ order_id: string; amount: number; currency: string; key_id?: string }> {
   const res = await ApiClient.fetchWithAuth("/api/create-order", {
     method: "POST",
@@ -68,6 +69,7 @@ export async function createRazorpayOrder(
       currency,
       receipt: receipt || `rcpt_${Date.now()}`,
       notes,
+      payment_token: paymentToken,
     }),
   });
 

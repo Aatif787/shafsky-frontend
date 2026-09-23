@@ -20,6 +20,7 @@ interface AirportWorkflowProps {
 
 export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
   const navigate = useNavigate();
+  const [paymentToken, setPaymentToken] = useState<string | null>(null);
 
   const {
     currentStep,
@@ -404,9 +405,14 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       if (res.ok && result && result.success) {
         const confirmedRef = result.data?.bookingRef || result.data?.booking_ref || ref;
         setBookingRef(confirmedRef);
+        if (result.data?.payment_token) {
+          setPaymentToken(String(result.data.payment_token));
+        }
 
         const orderId = result.data?.razorpay_order_id;
         const keyId = result.data?.razorpay_key_id;
+        const iciciRedirect = result.data?.icici_redirect_url;
+        const paymentGateway = String(result.data?.payment_gateway || "").toUpperCase();
         const authoritativeAmount = Number(result.data?.totalAmount || reviewTotal);
         const currency = result.data?.currency || state.catalogCurrency || "INR";
         const amountPaise = result.data?.razorpay_amount_paise;
@@ -419,6 +425,19 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
           console.warn(
             `[AirportWorkflow] Charge ₹${authoritativeAmount} differs from review ₹${reviewTotal}`
           );
+        }
+
+        if (paymentGateway === "ICICI" || iciciRedirect) {
+          if (!iciciRedirect || typeof iciciRedirect !== "string") {
+            setPaymentStatus("DISMISSED");
+            toast.error(apiError || result?.error || "Booking saved. ICICI payment could not be started — use Retry Payment.");
+            setBusy(false);
+            return;
+          }
+          setPaymentStatus("OPEN");
+          toast.loading("Redirecting to ICICI Bank secure payment…", { id: "icici-redirect" });
+          window.location.assign(iciciRedirect);
+          return;
         }
 
         if (orderId && keyId && !String(orderId).startsWith("order_sim_")) {
@@ -449,7 +468,10 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
     try {
       const res = await ApiClient.fetchWithAuth("/api/payments/retry", {
         method: "POST",
-        body: JSON.stringify({ booking_ref: bookingRef }),
+        body: JSON.stringify({
+          booking_ref: bookingRef,
+          payment_token: paymentToken,
+        }),
       });
       const result = await res.json().catch(() => null);
       const apiError = (() => {
@@ -461,11 +483,27 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       })();
 
       if (res.ok && result && result.success) {
+        if (result.data?.payment_token) {
+          setPaymentToken(String(result.data.payment_token));
+        }
         const orderId = result.data?.razorpay_order_id;
         const keyId = result.data?.razorpay_key_id;
+        const iciciRedirect = result.data?.icici_redirect_url;
+        const paymentGateway = String(result.data?.gateway || result.data?.payment_gateway || "").toUpperCase();
         const authoritativeAmount = Number(result.data?.totalAmount || totalPrice);
         const currency = result.data?.currency || state.catalogCurrency || "INR";
         const amountPaise = result.data?.razorpay_amount_paise;
+
+        if (paymentGateway === "ICICI" || iciciRedirect) {
+          if (!iciciRedirect || typeof iciciRedirect !== "string") {
+            toast.error(apiError || "Unable to generate ICICI payment session for retry.");
+            setBusy(false);
+            return;
+          }
+          toast.loading("Redirecting to ICICI Bank secure payment…", { id: "icici-redirect" });
+          window.location.assign(iciciRedirect);
+          return;
+        }
 
         if (orderId && keyId && !String(orderId).startsWith("order_sim_")) {
           await launchRazorpayModal(orderId, keyId, authoritativeAmount, currency, bookingRef, amountPaise);
@@ -482,7 +520,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       toast.error("Failed to retry payment.");
       setBusy(false);
     }
-  }, [bookingRef, totalPrice, state.catalogCurrency, launchRazorpayModal, setBusy]);
+  }, [bookingRef, paymentToken, totalPrice, state.catalogCurrency, launchRazorpayModal, setBusy]);
 
 
   const handleGoBack = useCallback(() => {
@@ -831,7 +869,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                             : `We currently do not offer services at ${state.airportName || state.airportCode} for ${state.direction} journeys.`}
                         </h3>
                         <p className="text-xs text-slate-400 font-sans leading-relaxed">
-                          Shafsky Aviation Services VIP concierge services are rapidly expanding. Contact our 24/7 Command Desk for bespoke arrangement or custom airport dispatch.
+                          Shafsky Aviation VIP concierge services are rapidly expanding. Contact our 24/7 support team for custom arrangements or special airport requests.
                         </p>
                       </div>
 

@@ -31,6 +31,8 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authenticated/super-admin'
 import { Route as AirportsCodeRouteImport } from './routes/airports.$code'
 import { Route as ApiProcessQueueRouteImport } from './routes/api.process-queue'
+import { Route as AuthSsoCallbackRouteImport } from './routes/auth.sso-callback'
+import { Route as BookPaymentResultRouteImport } from './routes/book.payment-result'
 import { Route as HotelsAirportHotelRouteImport } from './routes/hotels.airport-hotel'
 import { Route as HotelsCastleBlueRouteImport } from './routes/hotels.castle-blue'
 import { Route as HotelsClassicDiplomatRouteImport } from './routes/hotels.classic-diplomat'
@@ -187,6 +189,16 @@ const ApiProcessQueueRoute = ApiProcessQueueRouteImport.update({
   id: '/api/process-queue',
   path: '/api/process-queue',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSsoCallbackRoute = AuthSsoCallbackRouteImport.update({
+  id: '/sso-callback',
+  path: '/sso-callback',
+  getParentRoute: () => AuthRoute,
+} as any)
+const BookPaymentResultRoute = BookPaymentResultRouteImport.update({
+  id: '/payment-result',
+  path: '/payment-result',
+  getParentRoute: () => BookRoute,
 } as any)
 const HotelsAirportHotelRoute = HotelsAirportHotelRouteImport.update({
   id: '/hotels/airport-hotel',
@@ -458,8 +470,8 @@ export interface FileRoutesByFullPath {
   '/about-us': typeof AboutUsRoute
   '/account': typeof AccountRoute
   '/airports': typeof AirportsRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/book': typeof BookRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/book': typeof BookRouteWithChildren
   '/cancellation-and-refund': typeof CancellationAndRefundRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
@@ -475,6 +487,8 @@ export interface FileRoutesByFullPath {
   '/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
+  '/auth/sso-callback': typeof AuthSsoCallbackRoute
+  '/book/payment-result': typeof BookPaymentResultRoute
   '/hotels/airport-hotel': typeof HotelsAirportHotelRoute
   '/hotels/castle-blue': typeof HotelsCastleBlueRoute
   '/hotels/classic-diplomat': typeof HotelsClassicDiplomatRoute
@@ -528,8 +542,8 @@ export interface FileRoutesByTo {
   '/about-us': typeof AboutUsRoute
   '/account': typeof AccountRoute
   '/airports': typeof AirportsRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/book': typeof BookRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/book': typeof BookRouteWithChildren
   '/cancellation-and-refund': typeof CancellationAndRefundRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
@@ -543,6 +557,8 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
+  '/auth/sso-callback': typeof AuthSsoCallbackRoute
+  '/book/payment-result': typeof BookPaymentResultRoute
   '/hotels/airport-hotel': typeof HotelsAirportHotelRoute
   '/hotels/castle-blue': typeof HotelsCastleBlueRoute
   '/hotels/classic-diplomat': typeof HotelsClassicDiplomatRoute
@@ -598,8 +614,8 @@ export interface FileRoutesById {
   '/about-us': typeof AboutUsRoute
   '/account': typeof AccountRoute
   '/airports': typeof AirportsRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/book': typeof BookRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/book': typeof BookRouteWithChildren
   '/cancellation-and-refund': typeof CancellationAndRefundRoute
   '/charter': typeof CharterRoute
   '/contact': typeof ContactRoute
@@ -615,6 +631,8 @@ export interface FileRoutesById {
   '/_authenticated/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
+  '/auth/sso-callback': typeof AuthSsoCallbackRoute
+  '/book/payment-result': typeof BookPaymentResultRoute
   '/hotels/airport-hotel': typeof HotelsAirportHotelRoute
   '/hotels/castle-blue': typeof HotelsCastleBlueRoute
   '/hotels/classic-diplomat': typeof HotelsClassicDiplomatRoute
@@ -687,6 +705,8 @@ export interface FileRouteTypes {
     | '/super-admin'
     | '/airports/$code'
     | '/api/process-queue'
+    | '/auth/sso-callback'
+    | '/book/payment-result'
     | '/hotels/airport-hotel'
     | '/hotels/castle-blue'
     | '/hotels/classic-diplomat'
@@ -755,6 +775,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/airports/$code'
     | '/api/process-queue'
+    | '/auth/sso-callback'
+    | '/book/payment-result'
     | '/hotels/airport-hotel'
     | '/hotels/castle-blue'
     | '/hotels/classic-diplomat'
@@ -826,6 +848,8 @@ export interface FileRouteTypes {
     | '/_authenticated/super-admin'
     | '/airports/$code'
     | '/api/process-queue'
+    | '/auth/sso-callback'
+    | '/book/payment-result'
     | '/hotels/airport-hotel'
     | '/hotels/castle-blue'
     | '/hotels/classic-diplomat'
@@ -881,8 +905,8 @@ export interface RootRouteChildren {
   AboutUsRoute: typeof AboutUsRoute
   AccountRoute: typeof AccountRoute
   AirportsRoute: typeof AirportsRouteWithChildren
-  AuthRoute: typeof AuthRoute
-  BookRoute: typeof BookRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  BookRoute: typeof BookRouteWithChildren
   CancellationAndRefundRoute: typeof CancellationAndRefundRoute
   CharterRoute: typeof CharterRoute
   ContactRoute: typeof ContactRoute
@@ -1066,6 +1090,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/process-queue'
       preLoaderRoute: typeof ApiProcessQueueRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/auth/sso-callback': {
+      id: '/auth/sso-callback'
+      path: '/sso-callback'
+      fullPath: '/auth/sso-callback'
+      preLoaderRoute: typeof AuthSsoCallbackRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/book/payment-result': {
+      id: '/book/payment-result'
+      path: '/payment-result'
+      fullPath: '/book/payment-result'
+      preLoaderRoute: typeof BookPaymentResultRouteImport
+      parentRoute: typeof BookRoute
     }
     '/hotels/airport-hotel': {
       id: '/hotels/airport-hotel'
@@ -1525,14 +1563,34 @@ const AirportsRouteWithChildren = AirportsRoute._addFileChildren(
   AirportsRouteChildren,
 )
 
+interface AuthRouteChildren {
+  AuthSsoCallbackRoute: typeof AuthSsoCallbackRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthSsoCallbackRoute: AuthSsoCallbackRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface BookRouteChildren {
+  BookPaymentResultRoute: typeof BookPaymentResultRoute
+}
+
+const BookRouteChildren: BookRouteChildren = {
+  BookPaymentResultRoute: BookPaymentResultRoute,
+}
+
+const BookRouteWithChildren = BookRoute._addFileChildren(BookRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutUsRoute: AboutUsRoute,
   AccountRoute: AccountRoute,
   AirportsRoute: AirportsRouteWithChildren,
-  AuthRoute: AuthRoute,
-  BookRoute: BookRoute,
+  AuthRoute: AuthRouteWithChildren,
+  BookRoute: BookRouteWithChildren,
   CancellationAndRefundRoute: CancellationAndRefundRoute,
   CharterRoute: CharterRoute,
   ContactRoute: ContactRoute,
