@@ -1003,7 +1003,32 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
       const orderId = retryData.data?.razorpay_order_id;
       const keyId = retryData.data?.razorpay_key_id;
-      const amountPaise = retryData.data?.razorpay_amount_paise || (selectedCurrency === "INR" ? convertedTotalPrice * 100 : Math.round(convertedTotalPrice * 100));
+      const iciciRedirect = retryData.data?.icici_redirect_url as string | undefined;
+      const paymentGateway = String(
+        retryData.data?.gateway || retryData.data?.payment_gateway || "",
+      ).toUpperCase();
+      const amountPaise =
+        retryData.data?.razorpay_amount_paise ||
+        (selectedCurrency === "INR" ? convertedTotalPrice * 100 : Math.round(convertedTotalPrice * 100));
+
+      if (paymentGateway === "ICICI" || iciciRedirect) {
+        if (!iciciRedirect) {
+          toast.error("Unable to start ICICI payment. Please try again.");
+          setSubmitting(false);
+          setPaymentStatus("FAILED");
+          return;
+        }
+        toast.loading("Redirecting to ICICI Bank secure payment…", { id: "icici-redirect" });
+        window.location.assign(iciciRedirect);
+        return;
+      }
+
+      if (!orderId || !keyId || String(orderId).startsWith("order_sim_")) {
+        toast.error("Payment gateway could not be initialized. Please retry.");
+        setSubmitting(false);
+        setPaymentStatus("FAILED");
+        return;
+      }
 
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
