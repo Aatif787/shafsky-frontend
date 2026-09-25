@@ -217,9 +217,31 @@ export function BookingPanel() {
         </div>
 
         <div className="p-6 md:p-8 space-y-6">
-          {/* Top Control Bar: Direction Tabs + Domestic/International */}
+          {/* Top Control Bar: Domestic/International (Upper) + Direction Tabs (Services) */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
-            {/* Direction Tabs */}
+            {/* Domestic / International Toggle (Upper on Mobile) */}
+            <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200 self-start sm:self-auto w-full sm:w-auto">
+              {(["domestic", "international"] as const).map((kind) => {
+                const active = travelType === kind;
+                return (
+                  <button
+                    key={kind}
+                    type="button"
+                    onClick={() => setTravelType(kind)}
+                    className={`relative z-10 flex-1 sm:flex-initial h-9 sm:px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                      active
+                        ? "text-white bg-slate-950 shadow-xs"
+                        : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50"
+                    }`}
+                    style={mono}
+                  >
+                    <span>{kind}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Direction Tabs (Services: After Domestic/International) */}
             <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200">
               {tabs.map(([k, label, Icon]) => {
                 const active = tab === k;
@@ -237,28 +259,6 @@ export function BookingPanel() {
                   >
                     <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-white md:text-slate-950" : "text-slate-500"}`} />
                     <span className="truncate">{label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Domestic / International Toggle */}
-            <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200 self-start sm:self-auto w-full sm:w-auto">
-              {(["domestic", "international"] as const).map((kind) => {
-                const active = travelType === kind;
-                return (
-                  <button
-                    key={kind}
-                    type="button"
-                    onClick={() => setTravelType(kind)}
-                    className={`relative z-10 flex-1 sm:flex-initial h-9 sm:px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
-                      active
-                        ? "text-white bg-slate-950 shadow-xs"
-                        : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50"
-                    }`}
-                    style={mono}
-                  >
-                    <span>{kind}</span>
                   </button>
                 );
               })}
