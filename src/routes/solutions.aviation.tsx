@@ -548,9 +548,9 @@ function DedicatedAirCharterPage() {
           </div>
         </div>
 
-        {/* Subtle Scrim Gradients for Contrast */}
-        <div className="absolute inset-x-0 top-0 h-24 sm:h-32 bg-gradient-to-b from-black/75 via-black/30 to-transparent pointer-events-none z-10" />
-        <div className="absolute inset-x-0 bottom-0 h-24 sm:h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none z-10" />
+        {/* Subtle Scrim Gradients for Contrast (Clean Sky Integration without Muddy Shadows) */}
+        <div className="absolute inset-x-0 top-0 h-20 sm:h-28 bg-gradient-to-b from-slate-950/50 via-slate-950/15 to-transparent pointer-events-none z-10" />
+        <div className="absolute inset-x-0 bottom-0 h-20 sm:h-28 bg-gradient-to-t from-slate-950/60 via-slate-950/20 to-transparent pointer-events-none z-10" />
 
         {/* Full-Width & Perfect 16:9 Mobile Aspect Ratio Media Gallery (0% Cut, 0% Crop) */}
         <div
@@ -576,16 +576,27 @@ function DedicatedAirCharterPage() {
                 className="w-full h-full shrink-0 relative flex items-center justify-center overflow-hidden bg-slate-950"
               >
                 {slide.type === "video" ? (
-                  <video
-                    ref={videoRef}
-                    src={slide.src}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="w-full h-full object-cover object-center select-none pointer-events-none"
-                    aria-label={slide.alt}
-                  />
+                  <>
+                    <video
+                      ref={videoRef}
+                      src={slide.src}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="w-full h-full object-cover object-center select-none pointer-events-none"
+                      aria-label={slide.alt}
+                    />
+
+                    {/* Atmospheric Cloud Density Reducer: Decreases heavy white cloud opacity without touching the aircraft */}
+                    <div
+                      className="absolute inset-0 pointer-events-none select-none mix-blend-multiply opacity-45"
+                      style={{
+                        background:
+                          "radial-gradient(ellipse at 46% 26%, rgba(135, 175, 215, 0.8) 0%, rgba(175, 205, 235, 0.4) 45%, transparent 75%)",
+                      }}
+                    />
+                  </>
                 ) : (
                   <img
                     src={slide.src}
@@ -627,41 +638,8 @@ function DedicatedAirCharterPage() {
             </button>
           </div>
 
-          {/* Media Caption Badge on Bottom-Left */}
-          <div className="absolute bottom-2.5 sm:bottom-6 left-3 sm:left-8 z-20 flex items-center gap-2 pointer-events-none">
-            <div className="bg-slate-950/80 backdrop-blur-md text-white text-[10px] sm:text-xs font-mono px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-white/15 shadow-md flex items-center gap-1.5 sm:gap-2">
-              {CHARTER_HERO_SLIDES[heroSlideIndex]?.type === "video" && (
-                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-lime-400 animate-pulse" />
-              )}
-              <span>{CHARTER_HERO_SLIDES[heroSlideIndex]?.badge}</span>
-            </div>
-          </div>
-
-          {/* Desktop 4-Slide Thumbnail / Pill Selectors Floating Centered at Bottom */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 hidden lg:flex items-center justify-center gap-2.5 bg-slate-950/80 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/15 shadow-2xl">
-            {CHARTER_HERO_SLIDES.map((item, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setHeroSlideIndex(idx)}
-                className={`whitespace-nowrap flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition cursor-pointer ${
-                  heroSlideIndex === idx
-                    ? "bg-lime-500 text-slate-950 border-lime-400 shadow-sm"
-                    : "bg-slate-900/60 text-slate-300 border-slate-700/60 hover:border-lime-500 hover:text-white"
-                }`}
-              >
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    heroSlideIndex === idx ? "bg-slate-950" : "bg-slate-500"
-                  }`}
-                />
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Swipe Pagination Dots on Bottom Right */}
-          <div className="absolute bottom-2.5 sm:bottom-6 right-3 sm:right-8 z-20 flex items-center gap-1 sm:gap-1.5 bg-slate-950/60 backdrop-blur-md px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/15">
+          {/* Slide Pagination Indicator Dots (Centered at Bottom, Clean & Text-Free) */}
+          <div className="absolute bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 bg-slate-950/60 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/15 shadow-xl">
             {CHARTER_HERO_SLIDES.map((_, idx) => (
               <button
                 key={idx}
@@ -670,36 +648,11 @@ function DedicatedAirCharterPage() {
                   e.stopPropagation();
                   setHeroSlideIndex(idx);
                 }}
-                className={`h-1 sm:h-1.5 rounded-full transition-all cursor-pointer ${
-                  heroSlideIndex === idx ? "w-4 sm:w-6 bg-lime-400" : "w-1 sm:w-1.5 bg-white/40 hover:bg-white/70"
+                className={`h-1.5 sm:h-2 rounded-full transition-all cursor-pointer ${
+                  heroSlideIndex === idx ? "w-5 sm:w-7 bg-lime-400" : "w-1.5 sm:w-2 bg-white/40 hover:bg-white/70"
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
               />
-            ))}
-          </div>
-        </div>
-
-        {/* Mobile & Tablet 4-Slide Thumbnail / Pill Selectors Bar (Directly below 16:9 media, 100% accessible with no overlap) */}
-        <div className="lg:hidden w-full bg-slate-900/95 border-t border-slate-800/90 py-2 px-3">
-          <div className="flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5">
-            {CHARTER_HERO_SLIDES.map((item, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setHeroSlideIndex(idx)}
-                className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg border text-[10px] sm:text-xs font-mono font-bold transition cursor-pointer ${
-                  heroSlideIndex === idx
-                    ? "bg-lime-500 text-slate-950 border-lime-400 shadow-sm"
-                    : "bg-slate-800/80 text-slate-300 border-slate-700/80 hover:border-lime-500 hover:text-white"
-                }`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    heroSlideIndex === idx ? "bg-slate-950" : "bg-slate-500"
-                  }`}
-                />
-                <span>{item.label}</span>
-              </button>
             ))}
           </div>
         </div>
