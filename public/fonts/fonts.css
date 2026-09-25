@@ -9,10 +9,10 @@
  * 1. CSS Font Variables
  * ─────────────────────────────────────────────────────────────────────────── */
 :root {
-  --font-sans: "Plus Jakarta Sans", "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-heading: "Plus Jakarta Sans", "Outfit", "Inter", sans-serif;
-  --font-service: "Outfit", "Plus Jakarta Sans", "Inter", sans-serif;
-  --font-body: "Plus Jakarta Sans", "Inter", sans-serif;
+  --font-sans: "DM Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "DM Sans", "Inter", sans-serif;
+  --font-service: "DM Sans", "Inter", sans-serif;
+  --font-body: "DM Sans", "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
   --font-serif-luxury: "Fraunces", "Playfair Display", serif;
 }

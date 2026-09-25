@@ -12,7 +12,7 @@ interface IntelligentAirlineAutocompleteProps {
 }
 
 const monoFont = { fontFamily: "'JetBrains Mono', monospace" };
-const sansFont = { fontFamily: "'Plus Jakarta Sans', sans-serif" };
+const sansFont = { fontFamily: "'DM Sans', sans-serif" };
 
 export function IntelligentAirlineAutocomplete({
   value,

@@ -1,5 +1,5 @@
-export const display = { fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif", letterSpacing: "-0.02em" };
-export const sans = { fontFamily: "'Plus Jakarta Sans', sans-serif" };
+export const display = { fontFamily: "'DM Sans', 'Inter', system-ui, sans-serif", letterSpacing: "-0.015em" };
+export const sans = { fontFamily: "'DM Sans', sans-serif" };
 export const mono = { fontFamily: "'JetBrains Mono', monospace" };
 
 export const C = {

@@ -27,7 +27,7 @@ interface IntelligentAirportAutocompleteProps {
 
 const UNSUPPORTED_MESSAGE = "This airport is currently not supported for online booking.";
 const monoFont = { fontFamily: "'JetBrains Mono', monospace" };
-const sansFont = { fontFamily: "'Plus Jakarta Sans', sans-serif" };
+const sansFont = { fontFamily: "'DM Sans', sans-serif" };
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

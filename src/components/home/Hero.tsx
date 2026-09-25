@@ -39,7 +39,7 @@ export function Hero({ visible = true }: { visible?: boolean }) {
   return (
     <div
       className="sticky-safe relative min-h-screen"
-      style={{ background: C.bg, color: C.ink, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+      style={{ background: C.bg, color: C.ink, fontFamily: "'DM Sans', sans-serif" }}
     >
       <Navigation visible={visible} />
       <main id="main-content">
