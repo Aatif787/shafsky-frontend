@@ -18,8 +18,12 @@ import {
   PhoneCall,
   MessageSquare, Building2,
   Minus,
-  Plus
+  Plus,
+  CalendarDays
 } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Calendar as CalendarPicker } from "@/components/ui/calendar";
+import { format, parseISO, isValid } from "date-fns";
 import { ApiClient } from "@/lib/ApiClient";
 import { resolveApiUrl } from "@/lib/api/config";
 import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegistry";
@@ -139,7 +143,40 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   const [originCode, setOriginCode] = useState<string>(initialOrigin);
   const [destCode, setDestCode] = useState<string>(initialDestination);
 
-  const serviceDate = searchParams?.depart_date || searchParams?.service_date || new Date().toISOString().split("T")[0];
+  const [serviceDate, setServiceDate] = useState<string>(() => {
+    const rawParam = String(searchParams?.depart_date || searchParams?.service_date || "").trim();
+    if (rawParam && /^\d{4}-\d{2}-\d{2}$/.test(rawParam) && isValid(parseISO(rawParam))) {
+      return rawParam;
+    }
+    return format(new Date(), "yyyy-MM-dd");
+  });
+  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  const [manualDatePopoverOpen, setManualDatePopoverOpen] = useState(false);
+
+  const todayStart = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const dateValue = useMemo(() => {
+    if (serviceDate && isValid(parseISO(serviceDate))) {
+      return parseISO(serviceDate);
+    }
+    return todayStart;
+  }, [serviceDate, todayStart]);
+
+  const handleDateChange = (newDate: Date | undefined) => {
+    if (!newDate) return;
+    const formatted = format(newDate, "yyyy-MM-dd");
+    setServiceDate(formatted);
+    setIsFlightVerified(false);
+    setVerifiedFlight(null);
+    setFlightFetchError(null);
+    setIsCutoffUrgent(false);
+    setDatePopoverOpen(false);
+    setManualDatePopoverOpen(false);
+  };
 
   const [paxAdults, setPaxAdults] = useState<number>(() => Math.min(10, Math.max(1, Number(searchParams?.pax_adults) || 1)));
   const paxChildren = Math.max(0, Number(searchParams?.pax_children) || 0);
@@ -1211,7 +1248,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                   {travelType} {direction}
                 </span>
                 <span className="font-mono text-[11px] text-slate-600 font-medium">
-                  {serviceDate}
+                  {format(dateValue, "dd MMM yyyy")}
                 </span>
               </div>
 
@@ -1314,8 +1351,9 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             {travelType} {direction}
           </span>
           <span>•</span>
-          <span>
-            Date: <strong>{serviceDate}</strong>
+          <span className="inline-flex items-center gap-1.5 bg-lime-50 text-slate-900 border border-lime-300/80 px-2 py-0.5 rounded-md font-bold">
+            <CalendarDays size={12} className="text-lime-700" />
+            <span>{format(dateValue, "dd MMM yyyy")}</span>
           </span>
           <span>•</span>
           <span>
@@ -1405,49 +1443,85 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
           {/* PATH A: AUTOMATIC FLIGHT FETCH */}
           {!isManualMode && (
             <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Flight Number <span className="text-red-500">*</span>
-                </label>
-                <div className="flex gap-2.5">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      value={flightNumber}
-                      onChange={(e) => {
-                        setFlightNumber(e.target.value.toUpperCase());
-                        setIsFlightVerified(false);
-                        setVerifiedFlight(null);
-                        setFlightFetchError(null);
-                        setIsCutoffUrgent(false);
-                      }}
-                      placeholder="e.g. AI101, 6E202, EK504, BA142, AIC101"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          handleVerifyFlight();
-                        }
-                      }}
-                      className="h-12 w-full rounded-2xl border border-slate-300 bg-transparent px-4 font-mono text-sm font-bold text-slate-900 uppercase tracking-wider placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleVerifyFlight}
-                    disabled={isFlightFetching || !flightNumber.trim()}
-                    className="h-12 px-6 rounded-2xl bg-slate-900 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-slate-800 disabled:opacity-50 transition cursor-pointer flex items-center gap-2 shrink-0"
-                  >
-                    {isFlightFetching ? (
-                      <>
-                        <Loader2 size={14} className="animate-spin text-lime-400" />
-                        <span>Fetching...</span>
-                      </>
-                    ) : (
-                      <>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                {/* Flight Number */}
+                <div className="md:col-span-7">
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                    Flight Number <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex gap-2.5">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        value={flightNumber}
+                        onChange={(e) => {
+                          setFlightNumber(e.target.value.toUpperCase());
+                          setIsFlightVerified(false);
+                          setVerifiedFlight(null);
+                          setFlightFetchError(null);
+                          setIsCutoffUrgent(false);
+                        }}
+                        placeholder="e.g. AI101, 6E202, EK504, BA142, AIC101"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleVerifyFlight();
+                          }
+                        }}
+                        className="h-12 w-full rounded-2xl border border-slate-300 bg-transparent px-4 font-mono text-sm font-bold text-slate-900 uppercase tracking-wider placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleVerifyFlight}
+                      disabled={isFlightFetching || !flightNumber.trim()}
+                      className="h-12 px-6 rounded-2xl bg-slate-900 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-slate-800 disabled:opacity-50 transition cursor-pointer flex items-center gap-2 shrink-0"
+                    >
+                      {isFlightFetching ? (
+                        <>
+                          <Loader2 size={14} className="animate-spin text-lime-400" />
+                          <span>Fetching...</span>
+                        </>
+                      ) : (
                         <span>Fetch Flight</span>
-                      </>
-                    )}
-                  </button>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Service / Travel Date Selection */}
+                <div className="md:col-span-5">
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                    Flight / Service Date <span className="text-red-500">*</span>
+                  </label>
+                  <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="relative flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300 bg-transparent px-4 text-left text-xs font-semibold text-slate-900 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 cursor-pointer shadow-none"
+                      >
+                        <div className="flex items-center gap-2.5 truncate">
+                          <CalendarDays className="h-4 w-4 text-lime-600 shrink-0" />
+                          <span className="font-mono text-xs font-bold text-slate-900">
+                            {format(dateValue, "dd MMMM yyyy")}
+                          </span>
+                        </div>
+                        <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.12),0_0_30px_rgba(132,204,22,0.15)] rounded-3xl z-50"
+                      align="start"
+                    >
+                      <CalendarPicker
+                        mode="single"
+                        selected={dateValue}
+                        onSelect={handleDateChange}
+                        disabled={{ before: todayStart }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
 
@@ -1588,6 +1662,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5">
+                      <span className="rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-0.5 font-mono text-[9.5px] font-bold flex items-center gap-1">
+                        <CalendarDays size={10} className="text-lime-600" />
+                        {format(dateValue, "dd MMM yyyy")}
+                      </span>
                       <span className="rounded-full bg-slate-900 text-lime-400 px-2.5 py-0.5 font-mono text-[9.5px] font-bold uppercase tracking-wider">
                         {travelType === "international" ? "International" : "Domestic"}
                       </span>
@@ -1702,8 +1780,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 </div>
               )}
 
-              {/* Row: Airline & Flight Number */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Row: Airline, Flight Number & Service Date */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
                     Airline <span className="text-red-500">*</span>
@@ -1744,6 +1822,40 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase tracking-wider focus:border-lime-500 focus:outline-none"
                     required
                   />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Flight / Service Date <span className="text-red-500">*</span>
+                  </label>
+                  <Popover open={manualDatePopoverOpen} onOpenChange={setManualDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="relative flex h-11 w-full items-center justify-between rounded-xl border border-slate-300 bg-white px-3 text-left text-xs font-semibold text-slate-900 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 cursor-pointer shadow-none"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <CalendarDays className="h-4 w-4 text-lime-600 shrink-0" />
+                          <span className="font-mono text-xs font-bold text-slate-900">
+                            {format(dateValue, "dd MMM yyyy")}
+                          </span>
+                        </div>
+                        <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-slate-200 shadow-xl rounded-2xl z-50"
+                      align="start"
+                    >
+                      <CalendarPicker
+                        mode="single"
+                        selected={dateValue}
+                        onSelect={handleDateChange}
+                        disabled={{ before: todayStart }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
 
@@ -2114,7 +2226,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               <span className="font-mono font-bold text-slate-900 block truncate mt-0.5">
                 {isFlightVerified && verifiedFlight ? verifiedFlight.flightNum : manualFlightNum || flightNumber || "—"}
               </span>
-              <span className="font-mono text-[10px] text-slate-400">{serviceDate}</span>
+              <span className="font-mono text-[10px] text-slate-400">{format(dateValue, "dd MMM yyyy")}</span>
             </div>
             <div>
               <span className="font-mono text-[10px] uppercase tracking-wider text-sky-500 font-bold block">Guest</span>
