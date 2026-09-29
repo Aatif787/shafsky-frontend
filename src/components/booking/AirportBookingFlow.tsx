@@ -254,10 +254,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
   // Policy: Children & Infants are complimentary / free. Only Adults are billable.
   const billablePax = paxAdults;
-  const totalPrice = numericUnitPrice * billablePax;
-  const baseInrTotalPrice = totalPrice;
+  const baseInrTotalPrice = numericUnitPrice * billablePax;
   const convertedUnitPrice = useMemo(() => convertFromINR(numericUnitPrice, selectedCurrency), [numericUnitPrice, selectedCurrency]);
-  const convertedTotalPrice = useMemo(() => convertFromINR(totalPrice, selectedCurrency), [totalPrice, selectedCurrency]);
 
   // 2. Flight Verification State & Fuzzy Parsing
   const [flightNumber, setFlightNumber] = useState<string>(searchParams?.flight_number || "");
@@ -286,6 +284,85 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     }
     return searchParams?.terminal || "";
   });
+
+  // Mumbai Airport Express Fee rule:
+  // For Mumbai Airport (BOM), if booking is created less than 24 hours before actual service start time:
+  // - Domestic departure: service start = scheduled departure - 1 hour 30 minutes
+  // - International departure: service start = scheduled departure - 3 hours
+  // - Domestic arrival: service start = scheduled arrival
+  // - International arrival: service start = scheduled arrival
+  // If advance time < 24 hours (strictly less): add Express Fee = 50% of applicable service fee.
+  // Exactly 24 hours does NOT trigger the fee.
+  const expressFeeDetails = useMemo(() => {
+    const isBom = (airportCode || "").toUpperCase() === "BOM";
+    if (!isBom) return { feeInr: 0, isApplicable: false, advanceHours: null };
+
+    const rawDep = isFlightVerified && verifiedFlight?.departure?.scheduledTime
+      ? verifiedFlight.departure.scheduledTime
+      : manualDepTime
+      ? buildAnchoredServiceClock(serviceDate, manualDepTime, "10:00")
+      : null;
+
+    const rawArr = isFlightVerified && verifiedFlight?.arrival?.scheduledTime
+      ? verifiedFlight.arrival.scheduledTime
+      : manualArrTime
+      ? buildAnchoredServiceClock(serviceDate, manualArrTime, "12:30")
+      : null;
+
+    const dir = (direction || "departure").toLowerCase();
+    const isInternational = (travelType || "domestic").toLowerCase() === "international";
+
+    let targetTimeStr: string | null = null;
+    let offsetMs = 0;
+
+    if (dir === "departure") {
+      targetTimeStr = rawDep;
+      if (!targetTimeStr) return { feeInr: 0, isApplicable: false, advanceHours: null };
+      offsetMs = isInternational ? 3 * 60 * 60 * 1000 : (1 * 60 + 30) * 60 * 1000;
+    } else {
+      // arrival or transit
+      targetTimeStr = rawArr || rawDep;
+      if (!targetTimeStr) return { feeInr: 0, isApplicable: false, advanceHours: null };
+      offsetMs = 0;
+    }
+
+    try {
+      // Parse strictly in Indian Standard Time (IST / UTC+05:30)
+      const hasOffset = /[Zz]|[+-]\d{2}:?\d{2}$/.test(targetTimeStr);
+      const normalizedStr = hasOffset ? targetTimeStr : `${targetTimeStr}+05:30`;
+      const flightTimestamp = new Date(normalizedStr).getTime();
+      if (isNaN(flightTimestamp)) return { feeInr: 0, isApplicable: false, advanceHours: null };
+
+      const serviceStartMs = flightTimestamp - offsetMs;
+      const advanceMs = serviceStartMs - Date.now();
+      const advanceHours = advanceMs / (1000 * 60 * 60);
+
+      // Advance time strictly less than 24 hours, and service is in future
+      if (advanceMs > 0 && advanceMs < 24 * 60 * 60 * 1000) {
+        const fee = Math.round(baseInrTotalPrice * 0.50 * 100) / 100;
+        return { feeInr: fee, isApplicable: true, advanceHours };
+      }
+      return { feeInr: 0, isApplicable: false, advanceHours };
+    } catch {
+      return { feeInr: 0, isApplicable: false, advanceHours: null };
+    }
+  }, [
+    airportCode,
+    direction,
+    travelType,
+    serviceDate,
+    isFlightVerified,
+    verifiedFlight,
+    manualDepTime,
+    manualArrTime,
+    baseInrTotalPrice,
+  ]);
+
+  const expressFeeInr = expressFeeDetails.feeInr;
+  const isExpressFeeApplicable = expressFeeDetails.isApplicable;
+  const totalPrice = baseInrTotalPrice + expressFeeInr;
+  const convertedExpressFee = useMemo(() => convertFromINR(expressFeeInr, selectedCurrency), [expressFeeInr, selectedCurrency]);
+  const convertedTotalPrice = useMemo(() => convertFromINR(totalPrice, selectedCurrency), [totalPrice, selectedCurrency]);
 
   // Dynamic Multi-Passenger State
   interface PassengerDetail {
@@ -841,6 +918,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             unit_price: convertedUnitPrice,
             currency: selectedCurrency,
             base_inr_price: baseInrTotalPrice,
+            express_fee: convertedExpressFee,
             gst_company_name: showGst && gstCompanyName.trim() ? gstCompanyName.trim() : undefined,
             gst_number: showGst && gstNumber.trim() ? gstNumber.trim().toUpperCase() : undefined,
             gst_billing_address: showGst && gstBillingAddress.trim() ? gstBillingAddress.trim() : undefined,
@@ -2247,6 +2325,11 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               </div>
               <span className="text-[11px] text-slate-500">
                 {formatPrice(convertedUnitPrice, selectedCurrency)} × {paxAdults} adult{paxAdults > 1 ? "s" : ""}
+                {isExpressFeeApplicable && (
+                  <span className="text-amber-700 font-bold ml-1">
+                    + {formatPrice(convertedExpressFee, selectedCurrency)} (50% Express Fee)
+                  </span>
+                )}
                 {paxChildren + paxInfants > 0 && (
                   <span className="text-emerald-600 font-medium ml-1">
                     ({[
@@ -2257,6 +2340,11 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 )}
                 , taxes included
               </span>
+              {isExpressFeeApplicable && (
+                <div className="mt-2 flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-2.5 py-1 text-[11px] text-amber-900 font-medium">
+                  <span>⚡ <strong>50% Express Fee Applied:</strong> Mumbai Airport booking under 24 hours before service start time.</span>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-wrap items-center gap-1.5">
