@@ -211,13 +211,13 @@ function DedicatedTransportServicePage() {
           <div className="text-center max-w-3xl mx-auto mb-14">
             <div className="inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.35em] text-lime-700 font-bold font-mono bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200 mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-lime-500 inline-block" />
-              <span>COMPANY CATALOG SPECIFICATIONS</span>
+              <span>FLEET CATEGORIES & DETAILS</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
               Transport Inclusions & Fleet.
             </h2>
             <p className="mt-3 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
-              Authoritative chauffeured tarmac, executive MPV, and inter-city fleet specifications.
+              Chauffeured tarmac transfers, executive MPVs, and luxury inter-city transport.
             </p>
           </div>
 

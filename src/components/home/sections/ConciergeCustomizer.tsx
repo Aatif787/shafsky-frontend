@@ -101,20 +101,20 @@ export function ConciergeCustomizer() {
             style={mono}
           >
             <span className="h-px w-8 bg-lime-500" />
-            <span>INTERACTIVE PROTOCOL BUILDER</span>
+            <span>CUSTOMIZE YOUR SERVICE</span>
             <span className="h-px w-8 bg-lime-500" />
           </div>
           <h2
             className="mt-4 text-[clamp(2.2rem,5vw,4.4rem)] leading-[1.05] text-slate-950 font-bold tracking-tight"
             style={display}
           >
-            Design Your Bespoke{" "}
+            Design Your{" "}
             <span className="text-lime-600 font-bold">
-              Airside Experience.
+              Airport Experience.
             </span>
           </h2>
           <p className="mt-4 text-xs sm:text-sm md:text-base text-slate-600 max-w-2xl mx-auto font-normal leading-relaxed">
-            Customize personal escort officers, curbside tarmac sedans, luggage porters, and executive lounge suites tailored precisely to your flight.
+            Select dedicated escorts, tarmac transfers, luggage porters, and executive lounge access tailored to your flight.
           </p>
         </div>
 
@@ -274,7 +274,7 @@ export function ConciergeCustomizer() {
                     style={mono}
                   >
                     <Crown size={13} className="text-lime-400" />
-                    <span>Suswagatam Protocol Summary</span>
+                    <span>Suswagatam Booking Summary</span>
                   </div>
                   <span className="h-2 w-2 rounded-full bg-lime-400 animate-pulse" />
                 </div>
@@ -300,13 +300,13 @@ export function ConciergeCustomizer() {
 
                 <div className="mt-8 p-5 rounded-2xl bg-white/5 border border-white/10 text-center">
                   <div className="text-[10px] uppercase tracking-wider text-slate-400 font-mono" style={mono}>
-                    Service Protocol Pricing
+                    Service Pricing
                   </div>
                   <div className="text-2xl sm:text-3xl font-bold font-serif text-white mt-1 tracking-tight" style={display}>
                     Live Quote at Booking
                   </div>
                   <div className="text-[10px] text-slate-400 mt-1 font-mono" style={mono}>
-                    Authoritative airport packages verified upon flight selection
+                    Exact packages calculated when you enter flight details
                   </div>
                 </div>
               </div>

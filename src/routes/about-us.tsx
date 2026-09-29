@@ -8,7 +8,7 @@ export const Route = createFileRoute("/about-us")({
       {
         name: "description",
         content:
-          "Learn about Shafsky Aviation Services Pvt. Ltd. and brand SUSWAGATAM – delivering bespoke airport Meet & Greet and concierge experiences with a legacy dating back to 1986.",
+          "Learn about Shafsky Aviation Services Pvt. Ltd. and brand SUSWAGATAM – delivering personalized airport Meet & Greet and concierge services with a legacy dating back to 1986.",
       },
     ],
   }),
@@ -49,20 +49,20 @@ function AboutUsPage() {
           </div>
 
           <p>
-            Shafsky Aviation Services Pvt. Ltd., under the distinguished brand SUSWAGATAM &ndash; Welcome &amp; Assist Services, delivers bespoke airport concierge experiences for discerning domestic and international travelers.
+            Shafsky Aviation Services Pvt. Ltd., under the distinguished brand SUSWAGATAM &ndash; Welcome &amp; Assist Services, delivers personalized airport assistance and concierge services for domestic and international travelers.
           </p>
 
           <p>
-            With a rich aviation legacy dating back to 1986, we bring unparalleled expertise across Safety &amp; Security, Operations, Commercial Services, and Ground Handling. Our highly trained professionals ensure every interaction reflects precision, discretion, and world-class service standards.
+            With a rich aviation legacy dating back to 1986, we bring extensive hands-on experience across Safety &amp; Security, Operations, Commercial Services, and Ground Handling. Our professional team ensures every interaction reflects care, discretion, and reliable hospitality standards.
           </p>
 
           {ICICI_REVIEW_MODE ? (
             <p>
-              From personalized Meet &amp; Greet and exclusive lounge access to seamless airport assistance&mdash;our services are designed to elevate every airport journey into a seamless and refined experience.
+              From personalized Meet &amp; Greet and exclusive lounge access to airport assistance&mdash;our services ensure every airport journey is smooth, comfortable, and effortless.
             </p>
           ) : (
             <p>
-              From personalized Meet &amp; Greet and exclusive lounge access to curated travel, luxury transport, hotel arrangements, air charters, and event management&mdash;our services are designed to elevate every journey into a seamless and refined experience.
+              From personalized Meet &amp; Greet and exclusive lounge access to curated travel, luxury transport, hotel arrangements, air charters, and event management&mdash;our services ensure every journey is smooth, comfortable, and effortless.
             </p>
           )}
 
@@ -82,7 +82,7 @@ function AboutUsPage() {
             </div>
             <div className="p-5 border border-gray-100 rounded-lg bg-gray-50/60 text-center">
               <span className="block text-2xl font-bold text-[#cca028] font-serif mb-1">VIP &amp; CIP</span>
-              <span className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Bespoke Concierge</span>
+              <span className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Airport Concierge</span>
             </div>
           </div>
         </article>

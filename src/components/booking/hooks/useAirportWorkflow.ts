@@ -171,7 +171,7 @@ export function formatFlightLookupError(error: unknown, status?: number): string
       upper.includes("MINIMUM_LEAD_TIME") ||
       upper.includes("BOOKING_WINDOW")
     ) {
-      return `This flight departs too soon for online service booking. Please contact our 24/7 VIP Command Desk at +1-800-VIP-DESK for instant manual dispatch.`;
+      return `This flight departs too soon for standard online booking. Please contact our 24/7 VIP support desk at +91 9599087959 for short-notice assistance.`;
     }
 
     // ===== FLIGHT DATA PROVIDER ERRORS (External API failures) =====

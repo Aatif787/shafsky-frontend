@@ -65,7 +65,7 @@ export function ServicesSelectorBar({
                     ? "text-[#050b14] font-bold bg-[#c5a869]/20 border border-[#c5a869]/40"
                     : "text-slate-700 group-hover:text-[#050b14]"
                 }`}
-                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {s.t}
               </span>

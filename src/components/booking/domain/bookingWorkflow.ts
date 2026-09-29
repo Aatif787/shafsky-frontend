@@ -70,19 +70,19 @@ export function getWorkflowStepConfigs(workflow: KnownWorkflow): StepConfig[] {
       return [
         { title: "Flight Itinerary & Aircraft Category", sub: "Specify origin/destination airports, departure date/time, and aircraft preference.", estTime: "Est. 30 sec", progress: 33 },
         { title: "Charterer Contact & Review", sub: "Enter lead charterer details and review your private jet quotation request.", estTime: "Est. 30 sec", progress: 66 },
-        { title: "Charter Request Staged", sub: "Your private jet charter quote request is assigned to our flight dispatch team.", estTime: "Completed", progress: 100 },
+        { title: "Charter Request Received", sub: "Your private jet charter quote request is assigned to our operations team.", estTime: "Completed", progress: 100 },
       ];
     case "isAirAmbulanceWorkflow":
       return [
         { title: "Patient Details", sub: "Provide patient condition and count for airborne ICU flight staging.", estTime: "Est. 20 sec", progress: 33 },
         { title: "Transport Route", sub: "Specify origin hospital/city, receiving facility, and preferred date.", estTime: "Est. 20 sec", progress: 66 },
-        { title: "Contact Details & Review", sub: "Enter emergency contact details and review your air ambulance dispatch request.", estTime: "Completed", progress: 100 },
+        { title: "Contact Details & Review", sub: "Enter emergency contact details and review your air ambulance request.", estTime: "Completed", progress: 100 },
       ];
     case "isTrainAmbulanceWorkflow":
       return [
         { title: "Patient Details", sub: "Provide patient condition and count for mobile train ICU compartment staging.", estTime: "Est. 20 sec", progress: 33 },
         { title: "Transport Route", sub: "Specify origin railway station/city, destination station, and preferred date.", estTime: "Est. 20 sec", progress: 66 },
-        { title: "Contact Details & Review", sub: "Enter emergency contact details and review your train ambulance dispatch request.", estTime: "Completed", progress: 100 },
+        { title: "Contact Details & Review", sub: "Enter emergency contact details and review your train ambulance request.", estTime: "Completed", progress: 100 },
       ];
     case "isHumWorkflow":
       return [

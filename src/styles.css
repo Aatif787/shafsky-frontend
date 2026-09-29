@@ -375,7 +375,7 @@ html {
 body {
   background-color: #faf9f5 !important;
   color: #0f172a !important;
-  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* ── 2. Glassmorphism & Light Panels ───────────────────────────── */
@@ -401,7 +401,7 @@ body {
   display: block;
   width: 100%;
   padding: 0.75rem 1rem;
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   color: #0f172a !important;

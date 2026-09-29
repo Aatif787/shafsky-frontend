@@ -98,7 +98,7 @@ export interface FlightTimePickerProps {
   ariaLabel?: string;
 }
 
-const sansFont = { fontFamily: "'Plus Jakarta Sans', sans-serif" };
+const sansFont = { fontFamily: "'DM Sans', sans-serif" };
 
 export function FlightTimePicker({
   id,
@@ -253,6 +253,13 @@ export function FlightTimePicker({
           type="text"
           value={query}
           onChange={handleInputChange}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!disabled) {
+              setIsOpen(true);
+              updateMenuPos();
+            }
+          }}
           onFocus={() => {
             if (!disabled) {
               setIsOpen(true);

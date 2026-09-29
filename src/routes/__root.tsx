@@ -16,6 +16,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BrandingProvider } from "../lib/branding/branding.context";
 import { BrandingHead } from "../lib/branding/BrandingHead";
 import { Toaster } from "../components/ui/sonner";
+import { ClerkProvider } from "@clerk/tanstack-react-start";
 import { AuthProvider } from "../auth-system/AuthProvider";
 import { AppErrorBoundary } from "../components/ui/AppErrorBoundary";
 import { MotionChrome } from "../components/motion/MotionChrome";
@@ -184,7 +185,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,700&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;700&display=swap",
       },
     ],
   }),
@@ -221,7 +222,8 @@ function RootComponent() {
     return setupChunkRecovery();
   }, []);
 
-  return (
+  const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+  const application = (
     <AppErrorBoundary name="RootApplication">
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
@@ -239,5 +241,13 @@ function RootComponent() {
         </AuthProvider>
       </QueryClientProvider>
     </AppErrorBoundary>
+  );
+
+  if (!publishableKey) return application;
+
+  return (
+    <ClerkProvider publishableKey={publishableKey} signInUrl="/auth" signUpUrl="/auth">
+      {application}
+    </ClerkProvider>
   );
 }

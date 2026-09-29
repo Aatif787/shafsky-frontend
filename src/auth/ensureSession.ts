@@ -9,6 +9,7 @@
  */
 
 import { apiAuthRefresh, type AuthResponseData } from "./authClient";
+import { roleFromFastApiClaims } from "./clerkSession";
 import { getAccessToken, setAccessToken, clearAccessToken } from "./tokenStore";
 
 /** Non-authoritative hint that a refresh cookie probably exists. Never trusted server-side. */
@@ -90,4 +91,43 @@ export async function ensureAccessToken(): Promise<string | null> {
   if (existing) return existing;
   const session = await ensureSession();
   return session ? getAccessToken() : null;
+}
+
+export type ApplicationRoute = "/dashboard" | "/admin";
+
+/** Client route after FastAPI /api/auth/me. Does not reload the document. */
+export function applicationRouteForRole(role: string | null | undefined): ApplicationRoute {
+  if (role === "super_admin" || role === "admin") return "/admin";
+  return "/dashboard";
+}
+
+/**
+ * Session already established in this page by exchange + /api/auth/me.
+ * Identity comes from that FastAPI user, not from Clerk or hint cookies.
+ */
+export function readApplicationSession(): {
+  userId: string;
+  roles: string[];
+  isStaff: boolean;
+} | null {
+  if (!getAccessToken()) return null;
+  const user = getLastSession()?.user;
+  if (!user?.id) return null;
+  const role = roleFromFastApiClaims(user.role);
+  return {
+    userId: user.id,
+    roles: [role],
+    isStaff: role === "admin" || role === "super_admin" || role === "staff",
+  };
+}
+
+/** null means the dashboard may render. A path is a redirect. */
+export function dashboardRedirectTarget(
+  session: { userId?: string | null; roles?: string[] } | null,
+): "/auth?mode=signin" | "/admin" | "/super-admin" | null {
+  if (!session?.userId || session.userId === "guest_user") return "/auth?mode=signin";
+  const roles = session.roles || [];
+  if (roles.includes("super_admin")) return "/super-admin";
+  if (roles.includes("admin")) return "/admin";
+  return null;
 }

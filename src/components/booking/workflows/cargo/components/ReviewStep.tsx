@@ -94,7 +94,7 @@ export function ReviewStep({
           Lead Contact & Request Summary
         </h2>
         <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
-          Verify your air cargo concierge request parameters before dispatching to our 24/7 air operations desk.
+          Verify your air cargo details before submitting your request to our operations team.
         </p>
       </div>
 
@@ -157,11 +157,11 @@ export function ReviewStep({
           { label: "Route", value: `${origin || "Origin"} ➔ ${destination || "Destination"}` },
           { label: "Weight", value: `${estimatedWeight || "0"} ${weightUnit} (${packageCount} Pkgs)` },
           { label: "Category", value: shipmentType || "General Cargo" },
-          { label: "Dispatch Date", value: preferredShippingDate || "Asap" },
+          { label: "Shipping Date", value: preferredShippingDate || "Asap" },
         ]}
         totalPrice={0}
         currencySymbol="₹"
-        submitLabel="Dispatch Request to Cargo Operations"
+        submitLabel="Submit Request to Cargo Operations"
         busy={busy}
         onEdit={onBack}
         onSubmit={onSubmit}

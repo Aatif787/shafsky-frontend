@@ -169,7 +169,7 @@ function ContactPage() {
                   Feel Free to Contact
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-                  Connect with Shafsky Aviation Services for 24/7 dedicated support and bespoke concierge assistance.
+                  Connect with Shafsky Aviation Services for 24/7 dedicated support and airport assistance.
                 </p>
 
                 <div className="mt-6 space-y-4 text-xs text-slate-700">

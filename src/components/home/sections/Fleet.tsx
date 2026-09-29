@@ -12,7 +12,7 @@ export function Fleet() {
       pax: "14 – 16 Pax",
       range: "7,000+ nm",
       speed: "Mach 0.90",
-      desc: "Intercontinental non-stop flight capability with private master stateroom and bespoke Michelin dining.",
+      desc: "Intercontinental non-stop flights with a private stateroom and full premium catering.",
     },
     {
       name: "Super Midsize Executive Jets",

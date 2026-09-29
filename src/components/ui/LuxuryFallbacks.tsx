@@ -93,8 +93,8 @@ interface NoServicesStateProps {
 }
 
 export function NoServicesState({
-  title = "Bespoke Airside Staging Available",
-  message = "Standard automated packages for this hub are undergoing seasonal updates. Our 24/7 command desk can stage bespoke guest handling, tarmac limousines, and fast-track escorts immediately.",
+  title = "Custom Airport Assistance Available",
+  message = "Packages for this airport are currently being updated. Our 24/7 team can arrange tailored airport assistance, tarmac transfers, and fast-track escorts directly.",
   locationName = "Selected Location",
   onContactClick,
 }: NoServicesStateProps) {
@@ -112,7 +112,7 @@ export function NoServicesState({
       </div>
 
       <span className="relative z-10 px-3.5 py-1 rounded-full bg-[#c5a059]/20 border border-[#c5a059]/40 text-[#c5a059] text-[10px] font-mono uppercase tracking-[0.3em]">
-        Custom Staging Staged
+        Personalized Assistance
       </span>
 
       <h3
@@ -185,11 +185,11 @@ export function FlightNotFoundState({
             className="text-lg font-serif text-white font-medium mt-1"
             style={{ fontFamily: "'Fraunces', serif" }}
           >
-            Flight radar auto-detect pending for {flightNumber || "this flight"}.
+            Flight schedule check pending for {flightNumber || "this flight"}.
           </h4>
 
           <p className="mt-1.5 text-xs text-white/70 leading-relaxed font-sans">
-            Our live telemetry radar is fetching schedule updates. You can seamlessly continue your reservation manually with zero delay — our 24/7 command desk will confirm flight telemetry before staging.
+            Flight details are being retrieved. You can continue your reservation manually without waiting — our 24/7 operations team will confirm your flight details ahead of time.
           </p>
 
           <div className="mt-5 flex flex-wrap items-center gap-4">

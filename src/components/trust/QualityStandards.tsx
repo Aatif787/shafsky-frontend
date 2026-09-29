@@ -27,16 +27,16 @@ export function QualityStandards({
       badge: "Seamless Flow",
     },
     {
-      title: "24/7 Real-Time Radar Telemetry",
-      description: "Flight radar tracking guarantees host staging at aerobridges regardless of flight delays or early landings.",
+      title: "24/7 Real-Time Flight Tracking",
+      description: "Live flight tracking ensures your host is in position at the gate regardless of early arrivals or unexpected delays.",
       icon: Headphones,
-      badge: "24/7 Staged",
+      badge: "24/7 Tracking",
     },
     {
-      title: "Experienced Officer Team",
-      description: "Uniformed Guest Relations Officers trained under diplomatic protocol and VIP hospitality benchmarks.",
+      title: "Experienced Airport Hosts",
+      description: "Dedicated Guest Relations Officers trained in personalized VIP hospitality and airport procedures.",
       icon: Award,
-      badge: "Trained Escort",
+      badge: "Trained Escorts",
     },
     {
       title: "Premium Service Quality",
@@ -71,7 +71,7 @@ export function QualityStandards({
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-white/60 font-sans max-w-xl">
-            Built on strict operational SOPs, diplomatic discretion, and round-the-clock telemetry monitoring.
+            Built on reliable operational standards, complete privacy, and continuous flight tracking.
           </p>
         </div>
       </FadeInView>

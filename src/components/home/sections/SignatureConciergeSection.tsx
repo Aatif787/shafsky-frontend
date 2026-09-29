@@ -51,7 +51,7 @@ export function SignatureConciergeSection() {
             </span>
           </h2>
           <p className="mt-4 text-xs sm:text-sm md:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed font-normal">
-            Shafsky Aviation's flagship airside hospitality experience — engineered to eliminate every queue, counter, and uncertainty across 20+ airport hubs.
+            Shafsky Aviation's personalized airport hospitality — smooth check-in, priority clearance, and comfortable lounge access across 20+ airports.
           </p>
         </div>
 
@@ -120,7 +120,7 @@ export function SignatureConciergeSection() {
                   <span>Personal Officer Escort</span>
                 </div>
                 <h3 className="mt-2 text-xl sm:text-2xl font-bold text-slate-900" style={display}>
-                  Concourse & Tarmac Liaison
+                  Terminal & Concourse Escort
                 </h3>
                 <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                   Personal guest relations officer walking alongside you from the aerobridge through expedited passport control to baggage claim.
@@ -160,18 +160,18 @@ export function SignatureConciergeSection() {
               <div>
                 <div className="inline-flex items-center gap-2 text-[10px] font-bold tracking-widest text-lime-700 uppercase" style={mono}>
                   <ShieldCheck size={14} className="text-lime-600" />
-                  <span>Exclusive Lounge Sanctuary</span>
+                  <span>Airport Lounge Access</span>
                 </div>
                 <h3 className="mt-3 text-2xl sm:text-3xl font-bold text-slate-900" style={display}>
                   Private Tarmac-View Lounges
                 </h3>
                 <p className="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                  High-speed private Wi-Fi, à la carte dining, private rest suites, and real-time boarding alerts while our team monitors your flight dispatch.
+                  High-speed private Wi-Fi, à la carte dining, private rest suites, and real-time boarding alerts while our team monitors your flight schedule.
                 </p>
 
                 <div className="mt-6 grid grid-cols-2 gap-4 text-xs">
                   <div className="p-3 rounded-xl bg-lime-50 border border-lime-200">
-                    <span className="font-bold text-slate-900 block">Flight Radar Monitored</span>
+                    <span className="font-bold text-slate-900 block">Real-Time Flight Tracking</span>
                     <span className="text-slate-600 text-[11px]">Direct gate alert updates</span>
                   </div>
                   <div className="p-3 rounded-xl bg-lime-50 border border-lime-200">
@@ -230,7 +230,7 @@ export function SignatureConciergeSection() {
                   </p>
                 </div>
                 <div className="mt-4 pt-3 border-t border-slate-100 text-[10px] font-mono text-slate-500" style={mono}>
-                  GUARANTEED PROTOCOL
+                  CONFIRMED BOOKING
                 </div>
               </div>
             );

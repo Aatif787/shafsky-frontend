@@ -19,7 +19,7 @@ export function ServiceFAQ({ serviceName, faqs }: ServiceFAQProps) {
   const defaultFaqs: FAQPair[] = [
     {
       q: `How far in advance should I book ${serviceName}?`,
-      a: `We recommend booking at least 12–24 hours prior to flight departure or arrival to guarantee host staging. For emergency requests within 4 hours, contact our 24/7 command hotline directly.`,
+      a: `We recommend booking at least 12–24 hours prior to flight departure or arrival to guarantee host availability. For short-notice requests within 4 hours, contact our 24/7 support line directly.`,
     },
     {
       q: `Where will my Guest Relations Officer meet me?`,
@@ -27,7 +27,7 @@ export function ServiceFAQ({ serviceName, faqs }: ServiceFAQProps) {
     },
     {
       q: `What happens if my flight is delayed or arrives early?`,
-      a: `Our operations desk actively monitors real-time flight telemetry radar. Your officer's staging time automatically adjusts to your actual flight arrival, ensuring seamless greeting regardless of flight schedule changes.`,
+      a: `Our operations desk actively tracks your flight in real time. Your host's schedule automatically adjusts to your actual flight landing, ensuring a smooth greeting regardless of delays or early arrivals.`,
     },
     {
       q: `Can I book for multiple family members or a VIP delegation?`,

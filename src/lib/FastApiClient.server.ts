@@ -137,7 +137,7 @@ export async function apiDelete<T = any>(
 }
 
 /**
- * Extract the Supabase JWT from the cookie header of the current request.
+ * Extract the Bearer JWT from the incoming request.
  * Used by server functions to forward the token to FastAPI.
  */
 export function getTokenFromRequest(): string | undefined {
@@ -152,20 +152,6 @@ export function getTokenFromRequest(): string | undefined {
     const authHeader = request.headers.get("authorization");
     if (authHeader?.startsWith("Bearer ")) {
       return authHeader.split(" ")[1];
-    }
-
-    // Try to get the Supabase access token from cookies
-    const cookies = request.headers.get("cookie") || "";
-    const match = cookies.match(/sb-[^-]+-auth-token=([^;]+)/);
-    if (match?.[1]) {
-      try {
-        const decoded = decodeURIComponent(match[1]);
-        const parsed = JSON.parse(decoded);
-        if (Array.isArray(parsed) && parsed[0]) return parsed[0];
-        if (parsed.access_token) return parsed.access_token;
-      } catch {
-        return match[1];
-      }
     }
 
     return undefined;

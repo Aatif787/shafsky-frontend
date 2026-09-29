@@ -30,10 +30,10 @@ const AIRCRAFT_FLEET: AircraftModel[] = [
     pax: 16,
     baggageCuFt: 195,
     altitudeFt: "51,000 ft (FL510)",
-    hourlyRateEstimate: "Bespoke Quote on Request",
+    hourlyRateEstimate: "Custom Quote on Request",
     features: [
       "Master private stateroom with double bed",
-      "Bespoke Michelin-curated in-flight galley",
+      "Full private galley with curated dining",
       "Ultra-quiet cabin with 100% fresh air replenishment every 2 mins",
       "Intercontinental non-stop capability (Delhi to London/Tokyo)",
     ],
@@ -48,7 +48,7 @@ const AIRCRAFT_FLEET: AircraftModel[] = [
     pax: 9,
     baggageCuFt: 106,
     altitudeFt: "45,000 ft (FL450)",
-    hourlyRateEstimate: "Bespoke Quote on Request",
+    hourlyRateEstimate: "Custom Quote on Request",
     features: [
       "Flat-floor stand-up cabin with hand-stitched leather club seating",
       "High-speed Ka-band satellite Wi-Fi & entertainment",
@@ -66,7 +66,7 @@ const AIRCRAFT_FLEET: AircraftModel[] = [
     pax: 7,
     baggageCuFt: 84,
     altitudeFt: "45,000 ft (FL450)",
-    hourlyRateEstimate: "Bespoke Quote on Request",
+    hourlyRateEstimate: "Custom Quote on Request",
     features: [
       "Best-in-class light jet speed and cabin pressurization",
       "Ideal for rapid domestic city pairs & same-day return trips",
@@ -84,7 +84,7 @@ const AIRCRAFT_FLEET: AircraftModel[] = [
     pax: 6,
     baggageCuFt: 45,
     altitudeFt: "15,000 ft",
-    hourlyRateEstimate: "Bespoke Quote on Request",
+    hourlyRateEstimate: "Custom Quote on Request",
     features: [
       "Point-to-point urban & remote helipad access",
       "Full VIP soundproofing & leather captain chairs",
@@ -151,7 +151,7 @@ export function FleetRangeCalculator() {
             style={mono}
           >
             <span className="h-px w-8 bg-[#c5a869]/50" />
-            <span>INTERACTIVE PRIVATE CHARTER TELEMETRY</span>
+            <span>PRIVATE CHARTER FLIGHT CALCULATOR</span>
             <span className="h-px w-8 bg-[#c5a869]/50" />
           </div>
           <h2
@@ -209,7 +209,7 @@ export function FleetRangeCalculator() {
             <div className="lg:col-span-6 space-y-6">
               <div>
                 <div className="text-[10px] uppercase tracking-[0.3em] text-[#d9c18b] font-mono font-bold mb-3" style={mono}>
-                  Select Mission Route
+                  Select Sample Route
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {POPULAR_ROUTES.map((route) => {
@@ -346,7 +346,7 @@ export function FleetRangeCalculator() {
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-xl bg-[#c5a869] hover:bg-[#d9c18b] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-[#050b14] shadow-md transition-all hover:scale-[1.02] active:scale-98 cursor-pointer shrink-0"
                   style={mono}
                 >
-                  <span>Request Bespoke Quote</span>
+                  <span>Request Flight Quote</span>
                   <ArrowRight size={14} />
                 </Link>
               </div>

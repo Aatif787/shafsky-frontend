@@ -106,7 +106,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
       },
       {
         id: "passenger",
-        title: "Passenger Details & Protocols",
+        title: "Passenger Details & Special Requests",
         subtitle: "Lead contact info, headcount, and airside assistance requests",
         fields: [],
         customComponent: "passenger_experience",
@@ -120,7 +120,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
     serviceName: "VIP Airport Lounge",
     category: "concierge",
     icon: Hotel,
-    tagline: "Private Sanctuary & Gourmet Buffets",
+    tagline: "Private Lounges & Gourmet Dining",
     description: "Enjoy private lounge suites, hot buffet dining, high-speed Wi-Fi, and luxury shower facilities away from commercial terminal crowds.",
     ctaText: "Reserve Lounge Pass",
     steps: [
@@ -166,7 +166,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
     category: "concierge",
     icon: Car,
     tagline: "Chauffeured Mercedes-Maybach Tarmac & City Transfers",
-    description: "Private executive sedan transfers across the tarmac directly between the VIP lounge sanctuary and your aircraft steps.",
+    description: "Private executive sedan transfers across the tarmac directly between the VIP lounge and your aircraft steps.",
     ctaText: "Book Chauffeur Transfer",
     steps: [
       {
@@ -255,7 +255,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
     category: "travel",
     icon: Hotel,
     tagline: "Curated Hotel Stays & Exclusive Concierge Perks",
-    description: "Bespoke hotel reservations with room upgrades, complimentary breakfast, flexible late check-out, and dedicated concierge support.",
+    description: "Curated luxury hotel reservations with room upgrades, complimentary breakfast, flexible late check-out, and dedicated concierge support.",
     ctaText: "Request Hotel Reservation",
     steps: [
       {
@@ -409,7 +409,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
     steps: [
       {
         id: "medical_protocol",
-        title: "Emergency Evacuation Protocol",
+        title: "Emergency Evacuation Details",
         subtitle: "Specify patient status, pickup hospital, and destination facility",
         fields: [
           { id: "originAirport", label: "Pickup Hospital & City", type: "text", placeholder: "e.g. Apollo Hospital, Delhi", required: true, gridCols: 2 },
@@ -472,7 +472,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
           { id: "leadPassengerName", label: "Lead Passenger Full Name", type: "text", placeholder: "e.g. Marcus Vance", required: true, gridCols: 2 },
           { id: "passengerEmail", label: "Email Address", type: "text", placeholder: "marcus@vancecapital.com", required: true, gridCols: 2 },
           { id: "passengerPhone", label: "Phone / WhatsApp", type: "phone_input", placeholder: "+91 98765 43210", required: true, gridCols: 2 },
-          { id: "specialRequests", label: "In-Flight Catering & Special Protocol", type: "textarea", placeholder: "e.g. Specific wine pairing, tarmac security detail", required: false, gridCols: 1 },
+          { id: "specialRequests", label: "In-Flight Catering & Special Requests", type: "textarea", placeholder: "e.g. Specific refreshments, dietary preferences, special luggage", required: false, gridCols: 1 },
         ],
       },
     ],
@@ -490,7 +490,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
     steps: [
       {
         id: "security_needs",
-        title: "Security & Convoy Protocol",
+        title: "Security & Convoy Arrangements",
         subtitle: "Specify location, transit route, and threat level assessment",
         fields: [
           { id: "destAirport", label: "Location / City of Escort", type: "text", placeholder: "e.g. New Delhi, London, Dubai", required: true, gridCols: 2 },

@@ -415,7 +415,7 @@ export function MeetGreetPackageComparison({
               No Active Packages for this Selection
             </h4>
             <p className="text-xs text-slate-600 font-sans max-w-md mx-auto leading-relaxed">
-              No concierge packages are currently active for {journeyType.toLowerCase()} {flightType.toLowerCase()} flights at {cityName} ({airportCode}). Custom reservations can be arranged directly through our 24/7 command desk.
+              No concierge packages are currently active for {journeyType.toLowerCase()} {flightType.toLowerCase()} flights at {cityName} ({airportCode}). Custom reservations can be arranged directly through our 24/7 concierge team.
             </p>
           </div>
           <div className="pt-2">
@@ -541,11 +541,18 @@ export function MeetGreetPackageComparison({
                           source: "airport_page",
                           airport: airportCode,
                           airport_name: cityName,
-                          origin: (bookingSearch?.origin as string) || airportCode,
-                          destination: (bookingSearch?.destination as string) || airportCode,
-                          pax_adults: Number(bookingSearch?.pax_adults) || 1,
-                          pax_children: Number(bookingSearch?.pax_children) || 0,
-                          pax_infants: Number(bookingSearch?.pax_infants) || 0,
+                          origin:
+                            journeyType === "DEPARTURE"
+                              ? airportCode
+                              : (bookingSearch?.origin as string) && (bookingSearch?.origin as string).toUpperCase() !== airportCode.toUpperCase()
+                                ? (bookingSearch?.origin as string)
+                                : "",
+                          destination:
+                            journeyType === "ARRIVAL"
+                              ? airportCode
+                              : (bookingSearch?.destination as string) && (bookingSearch?.destination as string).toUpperCase() !== airportCode.toUpperCase()
+                                ? (bookingSearch?.destination as string)
+                                : "",
                           direction:
                             journeyType === "TRANSIT"
                               ? "transit"

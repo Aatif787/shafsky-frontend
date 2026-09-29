@@ -145,7 +145,7 @@ export function SummaryCard({
       {/* Special Protocols Summary */}
       <div className="pt-2">
         <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-bold block mb-2">
-          Special Services & Logistics Protocols
+          Special Services & Logistics Options
         </span>
         <div className="flex flex-wrap gap-2">
           {pickupRequired && (

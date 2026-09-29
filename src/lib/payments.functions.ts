@@ -37,7 +37,7 @@ export const confirmPayment = createServerFn({ method: "POST" })
     const token = getTokenFromRequest();
     
     // Route to authoritative cryptographic verification
-    const orderId = data.razorpayOrderId || data.transactionId;
+    const orderId = data.razorpayOrderId;
     const paymentId = data.razorpayPaymentId || data.transactionId;
     const signature = data.razorpaySignature || data.signature;
     const bookingRef = data.bookingRef || data.bookingId;

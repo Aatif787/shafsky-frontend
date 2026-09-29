@@ -68,7 +68,7 @@ export const PRIMARY_SERVICES: ServiceCategoryMeta[] = [
     shortTitle: "Special Services",
     icon: Shield,
     subtitle: "Armed PSO, Tours & Repatriation",
-    badge: "Specialized Missions",
+    badge: "VIP Care & Security",
   },
 ];
 

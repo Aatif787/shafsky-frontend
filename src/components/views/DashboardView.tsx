@@ -34,10 +34,18 @@ import type {
   NotesData,
 } from "@/components/dashboard/types";
 
+function formatAccountRole(role: string): string {
+  return role
+    .split("_")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+}
+
 export default function DashboardView({ userId }: { userId: string }) {
   const queryClient = useQueryClient();
   const submitBookingFn = useServerFn(createBooking);
-  const { updatePassword, profile: authProfile, signOut } = useAuth();
+  const { user, updatePassword, profile: authProfile, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<DashboardTab>("home");
 
   // Profile data & notes fallback state
@@ -645,6 +653,24 @@ export default function DashboardView({ userId }: { userId: string }) {
   if (notesData.passengers && notesData.passengers.length > 0) profileCompletion += 15;
   if (notesData.documents && notesData.documents.length > 0) profileCompletion += 10;
 
+  const loadedProfile = profile as {
+    email?: string;
+    phone?: string;
+    company?: string;
+    role?: string;
+  } | null;
+  const accountEmail = loadedProfile?.email || user?.email || "";
+  const accountPhone = phone || loadedProfile?.phone || "";
+  const accountCompany = company || loadedProfile?.company || "";
+  const accountRole = formatAccountRole(authProfile?.role || loadedProfile?.role || "customer");
+  const accountFields = [
+    { label: "Full Name", value: fullName || "—" },
+    { label: "Email", value: accountEmail || "—" },
+    { label: "Phone", value: accountPhone || "—" },
+    { label: "Company", value: accountCompany || "—" },
+    { label: "Role", value: accountRole },
+  ];
+
   if (loadingProfile || loadingBookings) {
     return (
       <div className="min-h-screen bg-[#faf5ea] flex flex-col items-center justify-center p-6">
@@ -684,8 +710,11 @@ export default function DashboardView({ userId }: { userId: string }) {
                 <div className="text-[13px] font-bold text-[#0d2a36] truncate">
                   {fullName || "Aviation Client"}
                 </div>
+                <div className="text-[10px] text-[#5b6b75] truncate mt-0.5">
+                  {accountEmail || "—"}
+                </div>
                 <div className="text-[9px] uppercase tracking-widest text-[#5b6b75] font-mono mt-0.5">
-                  Elite Guest Gold
+                  {accountRole}
                 </div>
               </div>
             </div>
@@ -701,7 +730,7 @@ export default function DashboardView({ userId }: { userId: string }) {
                 { id: "documents", label: "Secure Locker", icon: FileText },
                 { id: "billing", label: "Billing & Invoices", icon: CreditCard },
                 { id: "support", label: "Support Desk", icon: Headphones },
-                { id: "settings", label: "Console Settings", icon: Settings },
+                { id: "settings", label: "Account", icon: Settings },
               ].map((item) => {
                 const isActive = activeTab === item.id;
                 return (
@@ -2000,6 +2029,22 @@ export default function DashboardView({ userId }: { userId: string }) {
                     className="p-6 rounded-2xl bg-[#faf5ea] border border-white/50 space-y-4"
                     style={{ boxShadow: "4px 4px 12px #e8e0d0, -4px -4px 12px #ffffff" }}
                   >
+                    <h3 className="text-xs font-bold uppercase tracking-widest font-mono text-[#0d2a36]">
+                      Account
+                    </h3>
+                    <dl className="space-y-2">
+                      {accountFields.map((field) => (
+                        <div key={field.label} className="flex items-baseline justify-between gap-3">
+                          <dt className="text-[9px] uppercase tracking-widest text-[#5b6b75] font-bold shrink-0">
+                            {field.label}
+                          </dt>
+                          <dd className="text-xs font-semibold text-[#0d2a36] text-right truncate">
+                            {field.value}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+
                     <h3 className="text-xs font-bold uppercase tracking-widest font-mono text-[#0d2a36]">
                       Update Profile Information
                     </h3>

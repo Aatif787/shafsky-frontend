@@ -3,7 +3,6 @@
  * Forwards Supabase Auth JWT Access Tokens to FastAPI Backend Services
  */
 
-import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { getAccessToken } from "@/auth/tokenStore";
 import { getBackendBaseUrl, resolveApiUrl, normalizeBackendUrl } from "@/lib/api/config";
 
@@ -45,7 +44,7 @@ export interface FlightValidationApiResponse {
 
 export class ApiClient {
   /**
-   * Helper to retrieve active auth token header (FastAPI in-memory token or Supabase JWT).
+   * Helper to retrieve active auth token header (FastAPI in-memory token).
    */
   public static async getAuthHeaders(): Promise<Record<string, string>> {
     try {
@@ -57,16 +56,6 @@ export class ApiClient {
       // ignore
     }
 
-    if (isSupabaseConfigured()) {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.access_token) {
-          return { Authorization: `Bearer ${session.access_token}` };
-        }
-      } catch (err) {
-        console.warn("[ApiClient] Failed to retrieve session access token:", err);
-      }
-    }
     return {};
   }
 
@@ -75,7 +64,21 @@ export class ApiClient {
    */
   public static async fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
     const authHeaders = await ApiClient.getAuthHeaders();
-    const primaryUrl = resolveApiUrl(endpoint);
+    
+    // Proxy routes that are handled by the frontend server
+    const proxyRoutes = [
+      "/api/flight/validate",
+      "/api/charter/requests",
+      "/api/v1/charter/requests",
+      "/api/process-queue"
+    ];
+    
+    let primaryUrl = resolveApiUrl(endpoint);
+    
+    // If hitting a proxy route from the browser, use the relative endpoint to hit the frontend server
+    if (typeof window !== "undefined" && proxyRoutes.some(route => endpoint.startsWith(route))) {
+      primaryUrl = endpoint;
+    }
     
     const method = (options.method || "GET").toUpperCase();
     const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;

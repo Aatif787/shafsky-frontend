@@ -37,7 +37,7 @@ export function AssistanceCTA({
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-purple-50 border border-purple-100 text-[#7c3aed] text-[10px] font-mono font-bold uppercase tracking-widest">
               <Headphones className="w-3.5 h-3.5" />
-              <span>24/7 Global Aviation Command Desk</span>
+              <span>24/7 Airport Support & Concierge</span>
             </div>
 
             <h2
@@ -49,8 +49,8 @@ export function AssistanceCTA({
 
             <p className="mt-3 text-sm text-slate-600 leading-relaxed font-sans max-w-xl">
               {ICICI_REVIEW_MODE
-                ? "Our operational command is staged 24 hours a day to orchestrate your flight meet & greet escort, fast-track clearance, and VIP lounge access with zero delays."
-                : "Our operational command is staged 24 hours a day to orchestrate your flight, meet & greet escort, medevac, or cargo clearance with zero delays."}
+                ? "Our guest relations team is available 24 hours a day to arrange your airport meet & greet escort, fast-track clearance, and VIP lounge access seamlessly."
+                : "Our team is available 24 hours a day to assist with your flights, airport escorts, medical transfers, and air cargo requirements seamlessly."}
             </p>
 
             <div className="mt-5 flex flex-wrap items-center gap-6 text-xs text-slate-500 font-mono tracking-wider font-bold">

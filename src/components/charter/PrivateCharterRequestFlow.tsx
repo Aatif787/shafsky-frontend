@@ -103,7 +103,7 @@ const AIRCRAFT_OPTIONS = [
 ];
 
 const TRAVEL_REQUIREMENTS_LIST = [
-  { id: "Catering & Fine Dining", label: "Catering & Fine Dining", icon: Utensils, desc: "Michelin-inspired custom culinary menus & fine wines" },
+  { id: "Catering & Fine Dining", label: "Catering & Fine Dining", icon: Utensils, desc: "Gourmet inflight dining menus & fine refreshments" },
   { id: "Tarmac Maybach / Chauffeur", label: "Tarmac Maybach Transfer", icon: Car, desc: "Direct airside vehicle pickup at aircraft steps" },
   { id: "Pet in Cabin (AVI)", label: "Pet in Cabin (AVI)", icon: Dog, desc: "Fly alongside your pets in total comfort without crates" },
   { id: "Special Assistance / Medical", label: "Special Assistance / Medical", icon: HeartHandshake, desc: "Airside wheelchair, medical escort, or priority escort" },
@@ -795,7 +795,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
           <div className="space-y-1">
             <h2 className="text-2xl md:text-3xl font-semibold text-[#1A1715]">Travel Requirements</h2>
             <p className="text-sm text-[#78716C]">
-              Customize your private aviation experience with bespoke concierge and inflight amenities.
+              Customize your flight experience with premium concierge and inflight amenities.
             </p>
           </div>
 
@@ -846,7 +846,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
               rows={3}
               value={specialRequests}
               onChange={(e) => setSpecialRequests(e.target.value)}
-              placeholder="Tell us anything that would help us tailor your charter (e.g. dietary preferences, diplomatic protocol, connection timeline, security details)..."
+              placeholder="Tell us anything that would help us tailor your charter (e.g. dietary preferences, VIP preferences, connection timeline, luggage details)..."
               className="w-full bg-white border border-[#DCD5C9] rounded-xl p-3.5 text-xs text-[#1A1715] placeholder-[#A8A29E] focus:border-[#84CC16] focus:outline-none transition-colors"
             />
           </div>
@@ -962,7 +962,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
           <div className="space-y-1">
             <h2 className="text-2xl md:text-3xl font-semibold text-[#1A1715]">Review Your Charter Request</h2>
             <p className="text-sm text-[#78716C]">
-              Please verify your flight parameters before our operations desk dispatches your options.
+              Please verify your flight details before our operations team prepares your options.
             </p>
           </div>
 
@@ -1028,7 +1028,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
                 </div>
               </div>
               <div>
-                <span className="text-[#78716C] font-semibold block mb-1">Contact Dispatch</span>
+                <span className="text-[#78716C] font-semibold block mb-1">Contact Details</span>
                 <span className="text-[#1A1715] font-bold block">{customerName}</span>
                 <span className="text-[#57534E] block">
                   {countryCode} {phone} • {email}

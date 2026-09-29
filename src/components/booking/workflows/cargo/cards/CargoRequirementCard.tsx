@@ -30,7 +30,7 @@ export function CargoRequirementCard({
     doorDeliveryRequired ? "Door Delivery Included" : airportCollection ? "Airport Station Pickup" : null,
     temperatureControlled ? `Cold Chain (${temperatureRange || "Temperature Controlled"})` : null,
     insuranceRequired ? "All-Risk Cargo Insurance" : null,
-    fragile ? "Fragile Airside Protocol" : null,
+    fragile ? "Fragile Cargo Handling" : null,
     dangerousGoods ? "Dangerous Goods (IATA DGR)" : null,
   ].filter(Boolean) as string[];
 
@@ -43,7 +43,7 @@ export function CargoRequirementCard({
           </div>
           <div>
             <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold block">
-              Handling & Logistics Protocols
+              Handling & Logistics Options
             </span>
             <h4 className="text-sm font-serif font-bold text-slate-900">
               Specialized Care Requirements

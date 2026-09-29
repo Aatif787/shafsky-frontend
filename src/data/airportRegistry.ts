@@ -91,7 +91,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     timezone: "Asia/Kolkata",
     heroTitle: "Delhi Airport Concierge",
     heroSubtitle: "Indira Gandhi International Airport (DEL) — Airside Escort & Airport Services",
-    shortDescription: "India's premier international gateway. Enjoy dedicated aerobridge placard greeting, VIP lounge sanctuary, diplomatic fast-track clearance, and luxury Maybach tarmac transfers.",
+    shortDescription: "India's premier international gateway. Enjoy dedicated aerobridge placard greeting, premium lounge access, priority fast-track clearance, and luxury tarmac transfers.",
     coverImage: dekDelAir,
     mobCoverImage: mobDelAir,
     galleryImages: [
@@ -133,7 +133,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     countryCode: "IN",
     timezone: "Asia/Kolkata",
     heroTitle: "Mumbai Airport Concierge",
-    heroSubtitle: "Chhatrapati Shivaji Maharaj International Airport (BOM) — Concierge Sanctuary",
+    heroSubtitle: "Chhatrapati Shivaji Maharaj International Airport (BOM) — Airside Escort & Airport Services",
     shortDescription: "Financial capital gateway of India. Experience seamless aerobridge escorts, luxury lounge suites, expedited customs, and private chauffeur transfers.",
     coverImage: dekMumAir,
     galleryImages: [
@@ -204,8 +204,8 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     countryCode: "IN",
     timezone: "Asia/Kolkata",
     heroTitle: "Bengaluru Airport Concierge",
-    heroSubtitle: "Kempegowda International Airport (BLR) — VIP Escort & Lounge Sanctuary",
-    shortDescription: "Tech capital hub of Asia. Award-winning garden sanctuary with fast-track immigration and private lounge suites.",
+    heroSubtitle: "Kempegowda International Airport (BLR) — VIP Escort & Lounge Service",
+    shortDescription: "Tech capital hub of Asia. Award-winning garden terminal with fast-track immigration and private lounge suites.",
     coverImage: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
     galleryImages: [
       "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
@@ -219,7 +219,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     availableServiceIds: ["meet_greet", "lounge", "fast_track", "transport"],
     meetGreetPackages: [],
     faqs: [
-      ["Does BLR Airport support VIP escort services?", "Yes, full Meet & Greet and lounge sanctuary access is available at Bengaluru Airport."],
+      ["Does BLR Airport support VIP escort services?", "Yes, full Meet & Greet and lounge access is available at Bengaluru Airport."],
     ],
     relatedAirportCodes: ["DEL", "BOM", "HYD"],
     seo: {
@@ -538,7 +538,7 @@ export const AIRPORT_REGISTRY: Record<string, AirportRegistryEntry> = {
     relatedAirportCodes: ["BLR", "MAA", "TRV"],
     seo: {
       title: "Cochin Airport Concierge & Meet & Greet (COK) — Shafsky Aviation Services",
-      description: "Book VIP Meet & Greet escort and lounge sanctuary at Cochin Airport (COK).",
+      description: "Book VIP Meet & Greet escort and lounge access at Cochin Airport (COK).",
       keywords: ["cochin airport meet and greet", "cok lounge access"],
     },
   },

@@ -40,16 +40,16 @@ export function ServiceFeatures({ serviceName, features }: ServiceFeaturesProps)
       tag: "Airside Mobility",
     },
     {
-      title: "VIP Lounge Sanctuary",
-      desc: "Complimentary access to private lounge suites with hot dining, quiet workspaces, and shower facilities.",
+      title: "VIP Airport Lounge",
+      desc: "Access to comfortable lounge suites with dining, quiet workspaces, and relaxation facilities.",
       icon: Globe,
       tag: "Hospitality",
     },
     {
-      title: "Flight Telemetry Tracking",
-      desc: "Automatic flight tracking guarantees officer staging even if your flight lands early or experiences delays.",
+      title: "Real-Time Flight Tracking",
+      desc: "Automatic flight monitoring ensures your escort is waiting even if your flight lands early or experiences delays.",
       icon: Sparkles,
-      tag: "Real-Time Radar",
+      tag: "Live Tracking",
     },
   ];
 
@@ -62,14 +62,14 @@ export function ServiceFeatures({ serviceName, features }: ServiceFeaturesProps)
           <div>
             <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.3em] text-[#5fb5ad]">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Technical Capabilities</span>
+              <span>Service Highlights</span>
             </div>
             <h2 className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-white">
               Signature Features & <span className="text-[#c5a059]">Inclusions.</span>
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-white/60 font-sans max-w-xl">
-            Comprehensive white-glove features included in every {serviceName} reservation.
+            Key hospitality features included in every {serviceName} reservation.
           </p>
         </div>
       </FadeInView>

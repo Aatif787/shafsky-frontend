@@ -22,8 +22,19 @@ export interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
-  signInWithPassword: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
+  signInWithPassword: (
+    email: string,
+    password: string,
+  ) => Promise<{ error: Error | null; verificationRequired?: boolean }>;
+  verifySignInCode: (code: string) => Promise<{ error: Error | null }>;
+  signInWithGoogle: () => Promise<{ error: Error | null; role?: Role }>;
+  completeGoogleReturn: () => Promise<{ error: Error | null; role?: Role }>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string,
+  ) => Promise<{ error: Error | null; verificationRequired?: boolean }>;
+  verifySignUpCode: (code: string) => Promise<{ error: Error | null }>;
   resetPasswordForEmail: (email: string) => Promise<{ error: Error | null }>;
   updatePassword: (password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<{ error: Error | null }>;

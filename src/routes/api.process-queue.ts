@@ -19,12 +19,13 @@ async function handleProcessRequest(request: Request): Promise<Response> {
   const secretParam = url.searchParams.get("secret") || request.headers.get("x-queue-secret");
   const expectedSecret = process.env.PROCESS_QUEUE_SECRET;
 
-  // If a secret key is defined in the server configuration, validate it
-  if (expectedSecret && secretParam !== expectedSecret) {
+  // Enforce secret validation to prevent unauthorized queue executions
+  const isProd = process.env.NODE_ENV === "production";
+  if ((!expectedSecret && isProd) || (expectedSecret && secretParam !== expectedSecret)) {
     return new Response(
       JSON.stringify({
         success: false,
-        error: "Unauthorized: Invalid queue processing secret key.",
+        error: "Unauthorized: Invalid or missing queue processing secret key.",
       }),
       {
         status: 401,

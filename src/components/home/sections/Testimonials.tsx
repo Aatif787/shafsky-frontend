@@ -41,7 +41,7 @@ const REVIEWS: Review[] = [
     role: "Embassy Operations",
     affiliation: "New Delhi",
     quote:
-      "During state visits and high-level international delegations, Shafsky's round-the-clock airside coordination and DGCA compliant protocol execution have been exceptional.",
+      "During state visits and high-level international delegations, Shafsky's round-the-clock airside coordination and DGCA-compliant service execution have been exceptional.",
     hub: "DEL · Embassy Protocol",
   },
 ];

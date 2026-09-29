@@ -258,7 +258,7 @@ export function EnterpriseFAQ() {
           </h3>
 
           <p className="mt-2 text-xs sm:text-sm text-slate-600 font-medium max-w-lg mx-auto leading-relaxed font-sans">
-            Our 24/7 aviation command desk is ready to answer specific questions regarding custom airside staging, diplomatic clearance, or flight itineraries.
+            Our 24/7 concierge team is ready to answer specific questions regarding custom airport arrangements, VIP requirements, or flight itineraries.
           </p>
 
           {/* CONTACT & RELATED SERVICE TRIGGERS */}

@@ -304,7 +304,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
                 <div>
                   <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.3em] text-amber-800 font-bold mb-2">
                     <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                    <span>{activeService.categoryName} Protocol</span>
+                    <span>{activeService.categoryName} Service</span>
                   </div>
 
                   <h3 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-bold text-slate-900 leading-tight">

@@ -18,9 +18,9 @@ export function ServiceHowItWorks({ serviceName, steps }: ServiceHowItWorksProps
   const defaultSteps: TimelineStep[] = [
     {
       number: "01",
-      title: "Reservation & Flight Manifest Liaison",
-      description: "Submit flight details online or via 24/7 desk. Our operations team coordinates directly with airport security and ground handlers.",
-      badge: "Step 1: Staging",
+      title: "Booking & Flight Coordination",
+      description: "Submit flight details online or via our 24/7 desk. Our operations team coordinates directly with airport teams and ground staff.",
+      badge: "Step 1: Booking",
     },
     {
       number: "02",
@@ -31,13 +31,13 @@ export function ServiceHowItWorks({ serviceName, steps }: ServiceHowItWorksProps
     {
       number: "03",
       title: "Fast-Track Clearance & Porter Handling",
-      description: "Bypass main immigration and security lines via diplomatic lanes while dedicated porters deliver check-in/arrival luggage.",
-      badge: "Step 3: Expedite",
+      description: "Bypass main immigration and security lines via priority lanes while dedicated porters assist with check-in and arrival luggage.",
+      badge: "Step 3: Fast-Track",
     },
     {
       number: "04",
-      title: "Lounge Sanctuary or Limousine Handoff",
-      description: "Relax in a private VIP lounge or proceed directly to your chauffeured tarmac Maybach transfer for destination arrival.",
+      title: "Lounge Access or Chauffeur Transfer",
+      description: "Relax in a comfortable airport lounge or proceed smoothly to your chauffeured vehicle for onward travel.",
       badge: "Step 4: Completion",
     },
   ];
@@ -50,7 +50,7 @@ export function ServiceHowItWorks({ serviceName, steps }: ServiceHowItWorksProps
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-mono uppercase tracking-[0.3em] font-bold">
             <Compass className="w-3.5 h-3.5 text-emerald-600" />
-            <span>End-to-End Execution Protocol</span>
+            <span>Simple 4-Step Process</span>
           </div>
 
           <h2 className="mt-4 text-3xl sm:text-5xl font-heading font-bold text-slate-900">
@@ -58,7 +58,7 @@ export function ServiceHowItWorks({ serviceName, steps }: ServiceHowItWorksProps
           </h2>
 
           <p className="mt-3 text-xs sm:text-sm text-slate-600 font-sans font-medium">
-            A seamless 4-step concierge journey designed for absolute precision and zero effort.
+            A simple 4-step airport journey designed for comfort and peace of mind.
           </p>
         </div>
       </FadeInView>

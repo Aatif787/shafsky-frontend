@@ -24,14 +24,14 @@ export function TrustStats({
     {
       number: "12+",
       label: "Years Excellence",
-      description: "Over a decade of orchestrating flagship airside concierge services and private aviation logistics.",
+      description: "Over a decade of delivering premium airport concierge services and private aviation support.",
       icon: Award,
       highlight: "Established 2014",
     },
     {
       number: "20",
       label: "Flagship Hubs",
-      description: "24/7 dedicated airside host staging across major Indian airports.",
+      description: "24/7 dedicated airport host presence across major Indian airports.",
       icon: Building2,
       highlight: "India Network",
     },

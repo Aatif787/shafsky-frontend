@@ -16,7 +16,7 @@
  *   .btn-primary-luxury — Primary CTA button
  *   .btn-secondary-luxury — Secondary / outlined button
  *   .font-display-luxury — Fraunces display headings
- *   .font-body-luxury  — Plus Jakarta Sans body text
+ *   .font-body-luxury  — DM Sans body text
  *   .font-mono-luxury  — JetBrains Mono labels / codes
  *   .animate-fadeIn    — Smooth fade-in entrance
  */

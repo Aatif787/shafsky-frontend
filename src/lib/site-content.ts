@@ -26,23 +26,23 @@ export const HERO_CONTENT = {
 export const HOMEPAGE_FAQS = [
   {
     q: "What is Suswagatam Meet & Greet?",
-    a: "Suswagatam is Shafsky Aviation Services' signature welcome and assistance protocol for domestic and international passengers across Indian airports — encompassing personal aerobridge escorts, security fast-track, VIP lounge sanctuary, dedicated baggage porterage, and tarmac vehicle transfers.",
+    a: "Suswagatam is Shafsky Aviation Services' signature welcome and airport assistance service across Indian airports — including personal aerobridge escorts, security fast-track, VIP lounge access, dedicated baggage assistance, and tarmac vehicle transfers.",
   },
   {
     q: "Which airports are covered in your pan-India network?",
-    a: "We maintain live airside operations across 20+ Indian airports including Delhi (DEL), Mumbai (BOM), Bengaluru (BLR), Hyderabad (HYD), Chennai (MAA), Kolkata (CCU), Goa Dabolim (GOI), Goa Mopa (GOX), Kochi (COK), Jaipur (JAI), Ahmedabad (AMD), Lucknow (LKO), and Amritsar (ATQ).",
+    a: "We operate across 20+ Indian airports including Delhi (DEL), Mumbai (BOM), Bengaluru (BLR), Hyderabad (HYD), Chennai (MAA), Kolkata (CCU), Goa Dabolim (GOI), Goa Mopa (GOX), Kochi (COK), Jaipur (JAI), Ahmedabad (AMD), Lucknow (LKO), and Amritsar (ATQ).",
   },
   {
     q: "How does the Private Charter quotation workflow function?",
-    a: "Private Charter requests are processed through our 24/7 Flight Operations Desk. Once you submit your origin, destination, date, and passenger manifest, our team evaluates airframe availability, FBO terminal slots, and in-flight catering preferences to deliver a tailored mission brief and quotation within 45 minutes.",
+    a: "Private Charter requests are handled through our 24/7 Flight Operations Desk. Once you submit your origin, destination, date, and passenger count, our team checks aircraft availability, airport slots, and catering preferences to deliver a clear flight quote within 45 minutes.",
   },
   {
     q: "What is the advance booking window for airport services?",
-    a: "Standard airport services should ideally be reserved at least 12 hours in advance for domestic itineraries and 24 hours for international flights to guarantee airside security clearance. For short-notice urgent dispatch, our 24/7 operations line is directly accessible at +91 9599087959.",
+    a: "Standard airport services should ideally be booked at least 12 hours in advance for domestic flights and 24 hours for international flights. For urgent or last-minute requests, our 24/7 team is directly available at +91 9599087959.",
   },
   {
     q: "Are services customizable for diplomatic delegations and large families?",
-    a: "Yes. We regularly handle state delegations, corporate boards, and multi-generational families with synchronized multiple-escort teams, dedicated airside coaches, and specialized luggage handling protocols.",
+    a: "Yes. We regularly assist government delegations, corporate groups, and large families with dedicated team escorts, private terminal coaches, and coordinated luggage handling.",
   },
 ] as const;
 

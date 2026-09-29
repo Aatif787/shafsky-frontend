@@ -49,7 +49,7 @@ const HOTEL_OPTIONS: HotelOptionDef[] = [
     inclusions: [
       "Ultra-Luxury Palace Suites, Royal Heritage Villas & Presidential Stays",
       "24/7 Dedicated Butler Service & Private Valet Attention",
-      "Bespoke In-Suite Fine Dining by Master Chefs",
+      "Curated In-Suite Dining by Master Chefs",
       "VIP Chauffeur & Direct Airport Tarmac Limousine Transfers",
       "Priority Early Check-in & Guaranteed Late Check-out",
       "Confidential VIP Guest Manifests & Private Security Access",
@@ -525,13 +525,13 @@ function DedicatedLuxuryHotelsPage() {
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-12">
             <div className="inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.4em] text-lime-700 font-bold font-mono bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200">
-              <span>COMPANY CATALOG SPECIFICATIONS</span>
+              <span>HOTEL CATEGORIES & INCLUSIONS</span>
             </div>
             <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
               Hospitality Inclusions.
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-              Authoritative palace, executive suite, and transit hotel privileges.
+              Premium palace, executive suite, and transit hotel amenities.
             </p>
           </div>
 

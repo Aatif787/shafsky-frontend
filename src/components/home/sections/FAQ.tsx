@@ -20,10 +20,12 @@ export function FAQ() {
         <div className="lg:col-span-5 flex flex-col justify-between">
           <div>
             <div
-              className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.45em] text-lime-700 font-bold"
+              className="inline-flex items-center gap-2.5 text-[10px] uppercase tracking-[0.35em] text-lime-700 font-bold"
               style={mono}
             >
               <span className="h-px w-8 bg-lime-500" />
+              <span>SHAFSKY AVIATION SERVICES</span>
+              <span className="text-slate-300">·</span>
               <span>FREQUENTLY ASKED</span>
             </div>
             <h2
@@ -32,11 +34,11 @@ export function FAQ() {
             >
               Everything you need to know about{" "}
               <span className="text-lime-600 font-bold">
-                our operations.
+                our airport services.
               </span>
             </h2>
             <p className="mt-4 text-xs sm:text-sm md:text-base text-slate-600 leading-relaxed font-normal max-w-md">
-              Have specific protocol questions or require bespoke group clearances? Our 24/7 duty officers are on standby around the clock.
+              Have questions about your upcoming trip or need arrangements for a large group? Our team is available 24/7.
             </p>
           </div>
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { createBooking } from "@/lib/bookings.functions";
@@ -95,13 +96,13 @@ export default function BookingView({ searchParams }: BookingViewProps) {
 
   // Shared Route & Contact State
   const [pickupCity, setPickupCity] = useState<string>(searchParams?.origin || "");
-  const [flightDate] = useState<string>(searchParams?.depart_date || "");
+  const [destinationCity, setDestinationCity] = useState<string>(searchParams?.destination || "");
   const [flightDate, setFlightDate] = useState<string>(searchParams?.depart_date || "");
   const [leadPassengerName, setLeadPassengerName] = useState<string>("");
   const [passengerEmail, setPassengerEmail] = useState<string>("");
+  const [passengerPhone, setPassengerPhone] = useState<string>("");
   const [paxAdults] = useState<number>(searchParams?.pax_adults || 1);
   const [flightNumber] = useState<string>(searchParams?.flight_number || "");
-  const [specialRequests] = useState<string>(searchParams?.notes || "");
   const [specialRequests, setSpecialRequests] = useState<string>(searchParams?.notes || "");
 
   useEffect(() => {
@@ -142,8 +143,8 @@ export default function BookingView({ searchParams }: BookingViewProps) {
 
   const activeConfigs = [
     { title: "Service Request", sub: "Enter details", estTime: "Est. 30 sec", progress: 33 },
-    { title: "Review & Confirm", sub: "Review specifications", estTime: "Est. 30 sec", progress: 66 },
-    { title: "Request Staged", sub: "Dispatched to command desk", estTime: "Completed", progress: 100 },
+    { title: "Review & Confirm", sub: "Review details", estTime: "Est. 30 sec", progress: 66 },
+    { title: "Request Received", sub: "Assigned to operations team", estTime: "Completed", progress: 100 },
   ];
   const maxSteps = 3;
   const currentConfig = activeConfigs[Math.min(currentStep - 1, activeConfigs.length - 1)];
@@ -165,7 +166,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
   };
 
   const executeSubmission = async () => {
-    if (!leadPassengerName || !passengerPhone || !passengerEmail) {
+    if (!leadPassengerName.trim() || !passengerPhone.trim() || !passengerEmail.trim()) {
       toast.error("Please fill in Lead Guest Name, Phone Number, and Email.");
       return;
     }
@@ -174,27 +175,30 @@ export default function BookingView({ searchParams }: BookingViewProps) {
     const generatedRef = `${prefix}${Math.floor(100000 + Math.random() * 900000)}`;
 
     try {
-      await submitBookingFn({
+      const res = await submitBookingFn({
         data: {
-          flight_number: flightNumber || `SHF-[#${getServiceKey().toUpperCase()}]`,
-          departure_airport: pickupCity,
-          arrival_airport: destinationCity,
-          depart_date: flightDate,
-          lead_passenger_name: leadPassengerName,
-          passenger_email: passengerEmail,
-          passenger_phone: passengerPhone,
-          total_price: totalPrice,
-          special_requests: specialRequests || getWorkflowTitle(),
+          contact_name: leadPassengerName.trim(),
+          contact_email: passengerEmail.trim(),
+          contact_phone: passengerPhone.trim(),
+          origin: pickupCity.trim() || "DEL",
+          destination: destinationCity.trim() || "BOM",
+          trip_type: "one_way",
+          depart_date: flightDate || new Date().toISOString().split("T")[0],
+          pax_adults: paxAdults || 1,
+          pax_children: 0,
+          pax_infants: 0,
           service_type: getServiceKey(),
+          special_requests: specialRequests || getWorkflowTitle(),
+          notes: `Flight: ${flightNumber || "TBD"} | Total Price: ₹${totalPrice}`,
         } as any,
       });
-      setCreatedBookingRef(generatedRef);
+      const returnedRef = (res as any)?.booking_ref || (res as any)?.reference || (res as any)?.data?.booking_ref || generatedRef;
+      setCreatedBookingRef(returnedRef);
       setCurrentStep(maxSteps);
       toast.success("Booking request submitted successfully!");
-    } catch {
-      setCreatedBookingRef(generatedRef);
-      setCurrentStep(maxSteps);
-      toast.success("Booking request submitted!");
+    } catch (err: any) {
+      console.error("[BookingView] Submission error:", err);
+      toast.error(err?.message || "Failed to submit booking request. Please try again or contact our VIP desk.");
     } finally {
       setBusy(false);
     }
@@ -367,8 +371,8 @@ export default function BookingView({ searchParams }: BookingViewProps) {
           {currentStep === maxSteps && (
             <BookingSuccessPass
               badge="Request Active"
-              title={`${getWorkflowTitle()} Staged`}
-              subtitle={`Your request has been assigned to our 24/7 command desk.`}
+              title={`${getWorkflowTitle()} Confirmed`}
+              subtitle={`Your request has been received by our 24/7 operations team.`}
               bookingRef={createdBookingRef || "SHF-VIP-849201"}
               guestSummary={`${paxAdults} Guests`}
             />

@@ -34,14 +34,14 @@ export function TimelineStep({
           When should your cargo move?
         </h2>
         <p className="text-xs sm:text-sm text-slate-600 font-sans mt-1 font-medium">
-          Select your target dispatch date and urgency priority so our operations desk can stage optimal flight capacity.
+          Select your preferred shipping date and urgency level so our team can arrange optimal flight capacity.
         </p>
       </div>
 
       {/* Target Shipping Date */}
       <div>
         <label className="block text-xs font-mono text-slate-700 uppercase tracking-wider font-bold mb-1.5">
-          Preferred Dispatch Date *
+          Preferred Shipping Date *
         </label>
         <div className="relative">
           <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -81,7 +81,7 @@ export function TimelineStep({
             </div>
           </div>
           <p className="text-xs text-slate-600 font-sans leading-relaxed">
-            My dispatch timeline is flexible by ±3 days for lower air freight rates or optimal direct flights.
+            My shipping timeline is flexible by ±3 days for lower air freight rates or optimal direct flights.
           </p>
         </button>
 
@@ -110,7 +110,7 @@ export function TimelineStep({
             </div>
           </div>
           <p className="text-xs text-slate-600 font-sans leading-relaxed">
-            Time-critical AOG, medical supply, or urgent production line recovery — priority dispatch desk.
+            Time-critical AOG, medical supply, or urgent replacement parts — priority handling.
           </p>
         </button>
       </div>

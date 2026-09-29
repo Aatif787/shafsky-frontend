@@ -86,8 +86,8 @@ export function Footer() {
               </p>
               <p className="text-xs sm:text-[13.5px] text-white/80 leading-relaxed">
                 With an aviation legacy dating back to 1986, our highly trained
-                professionals deliver bespoke airport concierge, ensuring every
-                interaction reflects precision, discretion, and world-class service.
+                professionals deliver personalized airport assistance, ensuring every
+                interaction reflects care, discretion, and dependable service.
               </p>
             </div>
 

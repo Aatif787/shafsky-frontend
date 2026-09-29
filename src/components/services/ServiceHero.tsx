@@ -141,15 +141,15 @@ export function ServiceHero({
         >
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>Guaranteed White-Glove Escort</span>
+            <span>Guaranteed Dedicated Escort</span>
           </div>
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-[#7c3aed]" />
-            <span>Flight Radar Precision Tracking</span>
+            <span>Live Flight Tracking</span>
           </div>
           <div className="flex items-center gap-2">
             <Headphones className="w-4 h-4 text-amber-600" />
-            <span>24/7 Staged Command Desk</span>
+            <span>24/7 Dedicated Support</span>
           </div>
         </motion.div>
 

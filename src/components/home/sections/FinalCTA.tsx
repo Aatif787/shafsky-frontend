@@ -169,41 +169,11 @@ export function FinalCTA() {
           >
             <span className="h-px w-8 bg-lime-400" />
             <Sparkles size={12} className="text-lime-400 animate-pulse" />
-            <span className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">ENGINEERING THE EDGE OF FLIGHT</span>
+            <span className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">SEAMLESS AIRPORT ASSISTANCE</span>
             <span className="h-px w-8 bg-lime-400" />
           </motion.div>
 
-          {/* Main Headline — crystal transparent text, no container */}
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.85, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[clamp(2.4rem,5.5vw,4.8rem)] leading-[1.05] font-bold tracking-tight"
-            style={display}
-          >
-            <motion.span
-              animate={{ opacity: [0.92, 1, 0.92] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="inline-block text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]"
-              style={{ WebkitTextStroke: "0.3px rgba(255,255,255,0.15)" }}
-            >
-              Your Journey Deserves{" "}
-            </motion.span>
-            <motion.span
-              animate={{
-                textShadow: [
-                  "0 0 20px rgba(163,230,53,0.3), 0 0 40px rgba(163,230,53,0.15), 0 2px 10px rgba(0,0,0,0.8)",
-                  "0 0 35px rgba(163,230,53,0.6), 0 0 70px rgba(163,230,53,0.3), 0 2px 10px rgba(0,0,0,0.8)",
-                  "0 0 20px rgba(163,230,53,0.3), 0 0 40px rgba(163,230,53,0.15), 0 2px 10px rgba(0,0,0,0.8)",
-                ],
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="inline-block text-lime-400"
-            >
-              Flawless Execution.
-            </motion.span>
-          </motion.h2>
+
 
           {/* Description — clean transparent text, no container */}
           <motion.p
@@ -214,8 +184,8 @@ export function FinalCTA() {
             className="mt-6 text-sm sm:text-base md:text-lg text-white font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]"
           >
             {ICICI_REVIEW_MODE
-              ? "Experience personal airside escorts, dedicated buggy transfers, VIP lounge access, and seamless airport fast-track assistance across 20+ Indian hubs and global destinations."
-              : "Experience personal airside escorts, priority customs clearance, and bespoke private jet charter across 20+ Indian hubs and global destinations."}
+              ? "Experience personal airport hosts, dedicated buggy transfers, VIP lounge access, and seamless fast-track assistance across 20+ Indian airports and global destinations."
+              : "Experience personal airport hosts, fast-track checkpoint clearance, and private jet charters across 20+ Indian airports and global destinations."}
           </motion.p>
         </motion.div>
 
@@ -250,7 +220,7 @@ export function FinalCTA() {
         {/* Verification Guarantee */}
         <div className="mt-10 inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-xs text-white/95 font-mono shadow-[0_4px_16px_rgba(0,0,0,0.5)]" style={mono}>
           <ShieldCheck size={14} className="text-lime-400 drop-shadow-[0_0_6px_rgba(163,230,53,0.6)]" />
-          <span>Official Airside Compliance · DGCA Protocol Authorized</span>
+          <span>Airport-Authorized Team · Dedicated On-Ground Support</span>
         </div>
       </div>
     </section>

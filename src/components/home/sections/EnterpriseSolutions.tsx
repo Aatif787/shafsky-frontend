@@ -34,8 +34,8 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     title: "Meet & Greet and Lounge Service",
     photo: meetGreetImg,
     alt: "Shafsky Meet & Greet and Lounge Service Departure and Arrival Airport Team",
-    badge: "Airside Concierge",
-    description: "End-to-end airside hospitality with dedicated personal escorts, security fast-track, and premier VIP lounge access.",
+    badge: "Airport Concierge",
+    description: "Personal airport assistance with dedicated hosts, security fast-track, and premier VIP lounge access.",
     subServices: [
       { label: "Domestic Departure", subParam: "Domestic Departure", tagline: "Curbside greeting, baggage porter & lounge access" },
       { label: "Domestic Arrival", subParam: "Domestic Arrival", tagline: "Aerobridge greeting & baggage claim assistance" },
@@ -50,8 +50,8 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     title: "Private Charter",
     photo: HOMEPAGE_PHOTOS.privateCharter.src,
     alt: "Shafsky Private Jet and Helicopter Private Charter",
-    badge: "VIP Aviation",
-    description: "On-demand executive private jets, twin helicopters, and specialized mission aircraft on your schedule.",
+    badge: "Private Aviation",
+    description: "On-demand private jets, helicopters, and group aircraft tailored completely to your schedule.",
     subServices: [
       { label: "Domestic and International Charter", subParam: "Domestic and International Charter", tagline: "Long-range private jets and executive airliners" },
       { label: "Corporate Charter", subParam: "Corporate Charter", tagline: "Executive travel for leadership teams and business tours" },
@@ -72,7 +72,7 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     photo: HOMEPAGE_PHOTOS.luxuryFleet.src,
     alt: "Chauffeured Airport and Tarmac Luxury Transport Vehicles",
     badge: "Ground Fleet",
-    description: "Immaculate chauffeured tarmac sedans, Mercedes-Benz Maybach, and luxury passenger coaches.",
+    description: "Comfortable chauffeured sedans, Mercedes-Benz Maybach, and luxury passenger vans.",
     subServices: [
       { label: "Luxury Vehicles", subParam: "Luxury Vehicles", tagline: "Chauffeured Mercedes-Maybach, S-Class & BMW 7-Series" },
       { label: "MUV / Large Vehicles", subParam: "MUV / Large Vehicles", tagline: "Spacious Toyota Vellfire & Mercedes V-Class vans" },
@@ -85,8 +85,8 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     title: "Luxury Hotels",
     photo: HOMEPAGE_PHOTOS.luxuryHotel.src,
     alt: "Shafsky Luxury 7 Star 5 Star Hotel Suites and Transfers",
-    badge: "VIP Accommodations",
-    description: "Preferred partner rates at distinguished palace resorts, 5-star executive suites, and airport transit hotels.",
+    badge: "Hotel Stays",
+    description: "Curated partner rates at distinguished palace resorts, 5-star suites, and airport transit hotels.",
     subServices: [
       { label: "7 Star Hotels", subParam: "7 Star Hotels", tagline: "Royal palace estates, heritage suites & private villas" },
       { label: "5 Star Hotels", subParam: "5 Star Hotels", tagline: "Premier luxury city hotels & airport transit properties" },
@@ -99,12 +99,12 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     title: "Special Services",
     photo: HOMEPAGE_PHOTOS.destinationCelebration.src,
     alt: "Luxury Couple Spa & Wellness, Romantic Honeymoon Tours, and Armed PSO Close Protection",
-    badge: "Specialized Missions",
-    description: "Ultra-luxury couple spa sanctuaries, bespoke romantic honeymoon expeditions, and certified armed PSO close protection escorts.",
+    badge: "Special Services",
+    description: "Relaxing couple spa retreats, curated romantic honeymoon tours, and professional personal security officers.",
     subServices: [
-      { label: "Spa & Wellness", subParam: "Spa & Wellness", tagline: "Luxury couple spa sanctuaries, hydrotherapy & rejuvenating retreats" },
-      { label: "Tours & Travel (Honeymoon/Couples)", subParam: "Tours & Travel (Honeymoon/Couples)", tagline: "Bespoke romantic itineraries, Paris honeymoons & private circuits" },
-      { label: "PSO (Personal Security / VIP Shopping)", subParam: "PSO (Personal Security Officer / VIP Shopping)", tagline: "Armed VIP close protection & private luxury boutique shopping escort" },
+      { label: "Spa & Wellness", subParam: "Spa & Wellness", tagline: "Luxury couple spas, hydrotherapy & rejuvenating retreats" },
+      { label: "Tours & Travel (Honeymoon/Couples)", subParam: "Tours & Travel (Honeymoon/Couples)", tagline: "Romantic itineraries, Paris honeymoons & private tours" },
+      { label: "PSO (Personal Security / VIP Shopping)", subParam: "PSO (Personal Security Officer / VIP Shopping)", tagline: "Personal security officers & private shopping escort" },
     ],
   },
 ];
@@ -191,13 +191,13 @@ export function EnterpriseSolutions() {
                   style={mono}
                 >
                   <Sparkles size={13} className="text-amber-700" />
-                  <span>Airside Concierge & Lounge</span>
+                  <span>Airport Assistance & Lounge</span>
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-bold text-slate-950 tracking-tight" style={display}>
                   Meet & Greet and Lounge Service
                 </h3>
                 <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-                  End-to-end airside hospitality with dedicated personal escorts, security fast-track, VIP lounge sanctuary, and dedicated baggage porterage across 20+ Indian airports.
+                  Personal airport assistance with dedicated hosts, security fast-track, VIP lounge access, and baggage assistance across 20+ Indian airports.
                 </p>
                 <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
                   <Link
@@ -567,7 +567,7 @@ export function EnterpriseSolutions() {
                     onClick={() => setSelectedService(null)}
                     className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 hover:bg-slate-800 px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all font-mono cursor-pointer"
                   >
-                    <span>Open Experience</span>
+                    <span>Book Service</span>
                     <ArrowRight size={14} className="text-[#d4af37]" />
                   </Link>
                 </div>

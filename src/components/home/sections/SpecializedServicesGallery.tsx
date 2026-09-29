@@ -48,7 +48,7 @@ const SPECIALIZED_SERVICES: GalleryService[] = [
   },
   {
     title: "Destination & Celebration Service",
-    category: "BESPOKE TRAVEL",
+    category: "CURATED TRAVEL",
     desc: "Private helicopter transfers and five-star arrangements for destination weddings, VIP retreats, and milestones.",
     photo: HOMEPAGE_PHOTOS.destinationCelebration,
     icon: Compass,
@@ -73,7 +73,7 @@ export function SpecializedServicesGallery() {
             </span>
           </h2>
           <p className="mt-4 text-xs sm:text-sm md:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed font-normal">
-            Every traveler requires tailored attention. From swift airside buggy transfers to compassionate special assistance and bespoke destination services.
+            Every traveler requires personal care. From electric buggy transfers to dedicated wheelchair assistance and custom travel planning.
           </p>
         </div>
 

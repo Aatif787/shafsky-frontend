@@ -83,7 +83,7 @@ export class AppErrorBoundary extends Component<Props, State> {
               <p className="text-xs text-white/70 leading-relaxed font-sans">
                 {isChunk
                   ? "A new version of Shafsky Aviation Services was recently deployed. Please refresh to load the latest application assets."
-                  : "Our operational command desk has automatically isolated this view to maintain uninterrupted site navigation. Click below to refresh this component."}
+                  : "We encountered a temporary display issue. Click below to reload this section and continue browsing smoothly."}
               </p>
             </div>
 

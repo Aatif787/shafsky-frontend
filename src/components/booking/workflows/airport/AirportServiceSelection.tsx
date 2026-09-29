@@ -101,7 +101,7 @@ export function AirportServiceSelection({
           type="button"
           onClick={() => {
             window.open(
-              "https://wa.me/919876543210?text=" +
+              "https://wa.me/919599087959?text=" +
                 encodeURIComponent(
                   `VIP Package Request for ${state.resolvedAirport?.name || state.airportName} (${state.resolvedAirport?.code || state.airportCode}) ${state.direction} journey`
                 ),
@@ -206,13 +206,13 @@ export function AirportServiceSelection({
             <p className="text-xs text-slate-600 font-sans max-w-md mx-auto leading-relaxed">
               We are expanding operations at{" "}
               {state.airportName || state.airportCode}. Please contact our VIP
-              Desk for assistance or custom dispatch.
+              Desk for assistance or custom arrangements.
             </p>
             <button
               type="button"
               onClick={() => {
                 window.open(
-                  "https://wa.me/919876543210?text=" +
+                  "https://wa.me/919599087959?text=" +
                     encodeURIComponent(
                       `VIP Package Request for ${state.airportName || state.airportCode} (${state.direction})`
                     ),

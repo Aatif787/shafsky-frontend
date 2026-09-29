@@ -18,8 +18,12 @@ import {
   PhoneCall,
   MessageSquare, Building2,
   Minus,
-  Plus
+  Plus,
+  CalendarDays
 } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Calendar as CalendarPicker } from "@/components/ui/calendar";
+import { format, parseISO, isValid } from "date-fns";
 import { ApiClient } from "@/lib/ApiClient";
 import { resolveApiUrl } from "@/lib/api/config";
 import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegistry";
@@ -123,13 +127,56 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   const registryEntry = getAirportRegistryEntry(airportCode);
   const airportCityName = searchParams?.airport_name || registryEntry?.city || registryEntry?.name || airportCode;
 
-  const initialOrigin = extractIata(searchParams?.origin) || (direction === "departure" ? airportCode : "");
-  const initialDestination = extractIata(searchParams?.destination) || (direction === "arrival" ? airportCode : "");
+  const rawOrigin = extractIata(searchParams?.origin);
+  const rawDest = extractIata(searchParams?.destination);
+
+  const initialOrigin =
+    direction === "arrival"
+      ? (rawOrigin && rawOrigin !== airportCode ? rawOrigin : "")
+      : (rawOrigin || (direction === "departure" ? airportCode : ""));
+
+  const initialDestination =
+    direction === "departure"
+      ? (rawDest && rawDest !== airportCode ? rawDest : "")
+      : (rawDest || (direction === "arrival" ? airportCode : ""));
 
   const [originCode, setOriginCode] = useState<string>(initialOrigin);
   const [destCode, setDestCode] = useState<string>(initialDestination);
 
-  const serviceDate = searchParams?.depart_date || searchParams?.service_date || new Date().toISOString().split("T")[0];
+  const [serviceDate, setServiceDate] = useState<string>(() => {
+    const rawParam = String(searchParams?.depart_date || searchParams?.service_date || "").trim();
+    if (rawParam && /^\d{4}-\d{2}-\d{2}$/.test(rawParam) && isValid(parseISO(rawParam))) {
+      return rawParam;
+    }
+    return format(new Date(), "yyyy-MM-dd");
+  });
+  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  const [manualDatePopoverOpen, setManualDatePopoverOpen] = useState(false);
+
+  const todayStart = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const dateValue = useMemo(() => {
+    if (serviceDate && isValid(parseISO(serviceDate))) {
+      return parseISO(serviceDate);
+    }
+    return todayStart;
+  }, [serviceDate, todayStart]);
+
+  const handleDateChange = (newDate: Date | undefined) => {
+    if (!newDate) return;
+    const formatted = format(newDate, "yyyy-MM-dd");
+    setServiceDate(formatted);
+    setIsFlightVerified(false);
+    setVerifiedFlight(null);
+    setFlightFetchError(null);
+    setIsCutoffUrgent(false);
+    setDatePopoverOpen(false);
+    setManualDatePopoverOpen(false);
+  };
 
   const [paxAdults, setPaxAdults] = useState<number>(() => Math.min(10, Math.max(1, Number(searchParams?.pax_adults) || 1)));
   const paxChildren = Math.max(0, Number(searchParams?.pax_children) || 0);
@@ -207,10 +254,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
   // Policy: Children & Infants are complimentary / free. Only Adults are billable.
   const billablePax = paxAdults;
-  const totalPrice = numericUnitPrice * billablePax;
-  const baseInrTotalPrice = totalPrice;
+  const baseInrTotalPrice = numericUnitPrice * billablePax;
   const convertedUnitPrice = useMemo(() => convertFromINR(numericUnitPrice, selectedCurrency), [numericUnitPrice, selectedCurrency]);
-  const convertedTotalPrice = useMemo(() => convertFromINR(totalPrice, selectedCurrency), [totalPrice, selectedCurrency]);
 
   // 2. Flight Verification State & Fuzzy Parsing
   const [flightNumber, setFlightNumber] = useState<string>(searchParams?.flight_number || "");
@@ -239,6 +284,85 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     }
     return searchParams?.terminal || "";
   });
+
+  // Mumbai Airport Express Fee rule:
+  // For Mumbai Airport (BOM), if booking is created less than 24 hours before actual service start time:
+  // - Domestic departure: service start = scheduled departure - 1 hour 30 minutes
+  // - International departure: service start = scheduled departure - 3 hours
+  // - Domestic arrival: service start = scheduled arrival
+  // - International arrival: service start = scheduled arrival
+  // If advance time < 24 hours (strictly less): add Express Fee = 50% of applicable service fee.
+  // Exactly 24 hours does NOT trigger the fee.
+  const expressFeeDetails = useMemo(() => {
+    const isBom = (airportCode || "").toUpperCase() === "BOM";
+    if (!isBom) return { feeInr: 0, isApplicable: false, advanceHours: null };
+
+    const rawDep = isFlightVerified && verifiedFlight?.departure?.scheduledTime
+      ? verifiedFlight.departure.scheduledTime
+      : manualDepTime
+      ? buildAnchoredServiceClock(serviceDate, manualDepTime, "10:00")
+      : null;
+
+    const rawArr = isFlightVerified && verifiedFlight?.arrival?.scheduledTime
+      ? verifiedFlight.arrival.scheduledTime
+      : manualArrTime
+      ? buildAnchoredServiceClock(serviceDate, manualArrTime, "12:30")
+      : null;
+
+    const dir = (direction || "departure").toLowerCase();
+    const isInternational = (travelType || "domestic").toLowerCase() === "international";
+
+    let targetTimeStr: string | null = null;
+    let offsetMs = 0;
+
+    if (dir === "departure") {
+      targetTimeStr = rawDep;
+      if (!targetTimeStr) return { feeInr: 0, isApplicable: false, advanceHours: null };
+      offsetMs = isInternational ? 3 * 60 * 60 * 1000 : (1 * 60 + 30) * 60 * 1000;
+    } else {
+      // arrival or transit
+      targetTimeStr = rawArr || rawDep;
+      if (!targetTimeStr) return { feeInr: 0, isApplicable: false, advanceHours: null };
+      offsetMs = 0;
+    }
+
+    try {
+      // Parse strictly in Indian Standard Time (IST / UTC+05:30)
+      const hasOffset = /[Zz]|[+-]\d{2}:?\d{2}$/.test(targetTimeStr);
+      const normalizedStr = hasOffset ? targetTimeStr : `${targetTimeStr}+05:30`;
+      const flightTimestamp = new Date(normalizedStr).getTime();
+      if (isNaN(flightTimestamp)) return { feeInr: 0, isApplicable: false, advanceHours: null };
+
+      const serviceStartMs = flightTimestamp - offsetMs;
+      const advanceMs = serviceStartMs - Date.now();
+      const advanceHours = advanceMs / (1000 * 60 * 60);
+
+      // Advance time strictly less than 24 hours, and service is in future
+      if (advanceMs > 0 && advanceMs < 24 * 60 * 60 * 1000) {
+        const fee = Math.round(baseInrTotalPrice * 0.50 * 100) / 100;
+        return { feeInr: fee, isApplicable: true, advanceHours };
+      }
+      return { feeInr: 0, isApplicable: false, advanceHours };
+    } catch {
+      return { feeInr: 0, isApplicable: false, advanceHours: null };
+    }
+  }, [
+    airportCode,
+    direction,
+    travelType,
+    serviceDate,
+    isFlightVerified,
+    verifiedFlight,
+    manualDepTime,
+    manualArrTime,
+    baseInrTotalPrice,
+  ]);
+
+  const expressFeeInr = expressFeeDetails.feeInr;
+  const isExpressFeeApplicable = expressFeeDetails.isApplicable;
+  const totalPrice = baseInrTotalPrice + expressFeeInr;
+  const convertedExpressFee = useMemo(() => convertFromINR(expressFeeInr, selectedCurrency), [expressFeeInr, selectedCurrency]);
+  const convertedTotalPrice = useMemo(() => convertFromINR(totalPrice, selectedCurrency), [totalPrice, selectedCurrency]);
 
   // Dynamic Multi-Passenger State
   interface PassengerDetail {
@@ -346,6 +470,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   // 3. Payment & Security Lifecycle (Backend-Verified Only)
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [activeBookingRef, setActiveBookingRef] = useState<string | null>(null);
+  const [paymentToken, setPaymentToken] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<"IDLE" | "OPEN" | "VERIFYING" | "PAID" | "FAILED" | "DISMISSED">("IDLE");
   const [isPaymentVerified, setIsPaymentVerified] = useState<boolean>(false);
   const [paymentTransactionId, setPaymentTransactionId] = useState<string | null>(null);
@@ -385,8 +510,14 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
           flightNum: cleaned,
           departDate: serviceDate,
           tripType: direction === "transit" ? "multi_city" : "one_way",
-          originCode: originCode || airportCode,
-          destCode: destCode || airportCode,
+          originCode:
+            direction === "arrival"
+              ? (originCode && originCode !== airportCode ? originCode : "")
+              : (originCode || airportCode),
+          destCode:
+            direction === "departure"
+              ? (destCode && destCode !== airportCode ? destCode : "")
+              : (destCode || airportCode),
           airportCode,
           direction,
         }),
@@ -432,14 +563,24 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               logo: flightObj?.airline?.logo || null,
             },
             origin: {
-              code: (flightObj?.departure?.airport || flightObj?.origin?.code || originCode || "").toUpperCase(),
+              code: (
+                flightObj?.departure?.airport ||
+                flightObj?.origin?.code ||
+                (direction === "departure" ? airportCode : (originCode !== airportCode ? originCode : "")) ||
+                ""
+              ).toUpperCase(),
               name: flightObj?.departure?.airport_name || flightObj?.origin?.name || null,
               city: flightObj?.departure?.city || flightObj?.origin?.city || null,
               country: flightObj?.departure?.country || null,
               timezone: flightObj?.departure?.timezone || null,
             },
             destination: {
-              code: (flightObj?.arrival?.airport || flightObj?.destination?.code || destCode || "").toUpperCase(),
+              code: (
+                flightObj?.arrival?.airport ||
+                flightObj?.destination?.code ||
+                (direction === "arrival" ? airportCode : (destCode !== airportCode ? destCode : "")) ||
+                ""
+              ).toUpperCase(),
               name: flightObj?.arrival?.airport_name || flightObj?.destination?.name || null,
               city: flightObj?.arrival?.city || flightObj?.destination?.city || null,
               country: flightObj?.arrival?.country || null,
@@ -637,17 +778,37 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     }
 
     const packageSlug = (selectedPackageId || "gold").toLowerCase();
-    const cleanOrigin = (
+    let cleanOrigin = (
       (isFlightVerified && verifiedFlight?.origin?.code) ||
-      originCode ||
+      (originCode && originCode !== airportCode ? originCode : "") ||
       (direction === "departure" ? airportCode : "")
     ).trim().toUpperCase();
 
-    const cleanDest = (
+    let cleanDest = (
       (isFlightVerified && verifiedFlight?.destination?.code) ||
-      destCode ||
+      (destCode && destCode !== airportCode ? destCode : "") ||
       (direction === "arrival" ? airportCode : "")
     ).trim().toUpperCase();
+
+    if (direction !== "transit") {
+      if (direction === "arrival") {
+        if (!cleanDest) cleanDest = airportCode;
+        if (cleanOrigin === cleanDest) cleanOrigin = "";
+      } else if (direction === "departure") {
+        if (!cleanOrigin) cleanOrigin = airportCode;
+        if (cleanOrigin === cleanDest) cleanDest = "";
+      }
+    }
+
+    if (direction === "arrival" && !cleanOrigin) {
+      toast.error("Please enter the departure airport (where your flight is departing from).");
+      return;
+    }
+
+    if (direction === "departure" && !cleanDest) {
+      toast.error("Please enter the destination airport (where your flight is flying to).");
+      return;
+    }
 
     if (
       direction !== "transit" &&
@@ -757,6 +918,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             unit_price: convertedUnitPrice,
             currency: selectedCurrency,
             base_inr_price: baseInrTotalPrice,
+            express_fee: convertedExpressFee,
             gst_company_name: showGst && gstCompanyName.trim() ? gstCompanyName.trim() : undefined,
             gst_number: showGst && gstNumber.trim() ? gstNumber.trim().toUpperCase() : undefined,
             gst_billing_address: showGst && gstBillingAddress.trim() ? gstBillingAddress.trim() : undefined,
@@ -789,12 +951,30 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       }
 
       bookingRefToUse = createData.data?.bookingRef || createData.data?.booking_ref;
+      const iciciRedirect = createData.data?.icici_redirect_url as string | undefined;
+      const paymentGateway = String(createData.data?.payment_gateway || "").toUpperCase();
       orderId = createData.data?.razorpay_order_id;
       keyId = createData.data?.razorpay_key_id;
       amountPaise = createData.data?.razorpay_amount_paise || (selectedCurrency === "INR" ? convertedTotalPrice * 100 : Math.round(convertedTotalPrice * 100));
 
       if (bookingRefToUse) {
         setActiveBookingRef(bookingRefToUse);
+      }
+      const issuedToken = createData.data?.payment_token as string | undefined;
+      if (issuedToken) {
+        setPaymentToken(issuedToken);
+      }
+
+      if (paymentGateway === "ICICI" || iciciRedirect) {
+        if (!iciciRedirect) {
+          toast.error("Payment gateway could not be initialized. Please retry.");
+          setSubmitting(false);
+          setPaymentStatus("FAILED");
+          return;
+        }
+        toast.loading("Redirecting to ICICI Bank secure payment…", { id: "icici-redirect" });
+        window.location.assign(iciciRedirect);
+        return;
       }
 
       if (!orderId || !keyId || String(orderId).startsWith("order_sim_")) {
@@ -919,7 +1099,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     try {
       const retryRes = await ApiClient.fetchWithAuth("/api/payments/retry", {
         method: "POST",
-        body: JSON.stringify({ booking_ref: activeBookingRef }),
+        body: JSON.stringify({
+          booking_ref: activeBookingRef,
+          payment_token: paymentToken,
+        }),
       });
       const retryData = await retryRes.json().catch(() => null);
 
@@ -929,9 +1112,38 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
         return;
       }
 
+      if (retryData.data?.payment_token) {
+        setPaymentToken(String(retryData.data.payment_token));
+      }
+
       const orderId = retryData.data?.razorpay_order_id;
       const keyId = retryData.data?.razorpay_key_id;
-      const amountPaise = retryData.data?.razorpay_amount_paise || (selectedCurrency === "INR" ? convertedTotalPrice * 100 : Math.round(convertedTotalPrice * 100));
+      const iciciRedirect = retryData.data?.icici_redirect_url as string | undefined;
+      const paymentGateway = String(
+        retryData.data?.gateway || retryData.data?.payment_gateway || "",
+      ).toUpperCase();
+      const amountPaise =
+        retryData.data?.razorpay_amount_paise ||
+        (selectedCurrency === "INR" ? convertedTotalPrice * 100 : Math.round(convertedTotalPrice * 100));
+
+      if (paymentGateway === "ICICI" || iciciRedirect) {
+        if (!iciciRedirect) {
+          toast.error("Unable to start ICICI payment. Please try again.");
+          setSubmitting(false);
+          setPaymentStatus("FAILED");
+          return;
+        }
+        toast.loading("Redirecting to ICICI Bank secure payment…", { id: "icici-redirect" });
+        window.location.assign(iciciRedirect);
+        return;
+      }
+
+      if (!orderId || !keyId || String(orderId).startsWith("order_sim_")) {
+        toast.error("Payment gateway could not be initialized. Please retry.");
+        setSubmitting(false);
+        setPaymentStatus("FAILED");
+        return;
+      }
 
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
@@ -1114,7 +1326,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                   {travelType} {direction}
                 </span>
                 <span className="font-mono text-[11px] text-slate-600 font-medium">
-                  {serviceDate}
+                  {format(dateValue, "dd MMM yyyy")}
                 </span>
               </div>
 
@@ -1143,10 +1355,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             <div className="rounded-2xl border border-lime-200 bg-lime-50/50 p-4 text-xs text-slate-700 space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-lime-900">
                 <ShieldCheck size={16} className="text-lime-700" />
-                <span>Next Protocol Steps</span>
+                <span>Next Steps</span>
               </div>
               <p className="text-[11.5px] text-slate-600 leading-relaxed font-sans">
-                Our airport concierge duty officer will reach out on your contact number (<strong>{phone}</strong>) and email (<strong>{email}</strong>) prior to flight departure/arrival to coordinate curbside or aerobridge meet.
+                Our airport concierge team will reach out on your contact number (<strong>{phone}</strong>) and email (<strong>{email}</strong>) prior to flight departure or arrival to coordinate your meeting point.
               </p>
             </div>
 
@@ -1167,7 +1379,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-slate-800 hover:bg-slate-50 transition"
               >
-                <span>WhatsApp Command Desk</span>
+                <span>WhatsApp Support Desk</span>
               </a>
             </div>
           </div>
@@ -1217,8 +1429,9 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             {travelType} {direction}
           </span>
           <span>•</span>
-          <span>
-            Date: <strong>{serviceDate}</strong>
+          <span className="inline-flex items-center gap-1.5 bg-lime-50 text-slate-900 border border-lime-300/80 px-2 py-0.5 rounded-md font-bold">
+            <CalendarDays size={12} className="text-lime-700" />
+            <span>{format(dateValue, "dd MMM yyyy")}</span>
           </span>
           <span>•</span>
           <span>
@@ -1308,51 +1521,131 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
           {/* PATH A: AUTOMATIC FLIGHT FETCH */}
           {!isManualMode && (
             <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Flight Number <span className="text-red-500">*</span>
-                </label>
-                <div className="flex gap-2.5">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      value={flightNumber}
-                      onChange={(e) => {
-                        setFlightNumber(e.target.value.toUpperCase());
-                        setIsFlightVerified(false);
-                        setVerifiedFlight(null);
-                        setFlightFetchError(null);
-                        setIsCutoffUrgent(false);
-                      }}
-                      placeholder="e.g. AI101, 6E202, EK504, BA142, AIC101"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          handleVerifyFlight();
-                        }
-                      }}
-                      className="h-12 w-full rounded-2xl border border-slate-300 bg-transparent px-4 font-mono text-sm font-bold text-slate-900 uppercase tracking-wider placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleVerifyFlight}
-                    disabled={isFlightFetching || !flightNumber.trim()}
-                    className="h-12 px-6 rounded-2xl bg-slate-900 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-slate-800 disabled:opacity-50 transition cursor-pointer flex items-center gap-2 shrink-0"
-                  >
-                    {isFlightFetching ? (
-                      <>
-                        <Loader2 size={14} className="animate-spin text-lime-400" />
-                        <span>Fetching...</span>
-                      </>
-                    ) : (
-                      <>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                {/* Flight Number */}
+                <div className="md:col-span-7">
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                    Flight Number <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex gap-2.5">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        value={flightNumber}
+                        onChange={(e) => {
+                          setFlightNumber(e.target.value.toUpperCase());
+                          setIsFlightVerified(false);
+                          setVerifiedFlight(null);
+                          setFlightFetchError(null);
+                          setIsCutoffUrgent(false);
+                        }}
+                        placeholder="e.g. AI101, 6E202, EK504, BA142, AIC101"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleVerifyFlight();
+                          }
+                        }}
+                        className="h-12 w-full rounded-2xl border border-slate-300 bg-transparent px-4 font-mono text-sm font-bold text-slate-900 uppercase tracking-wider placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleVerifyFlight}
+                      disabled={isFlightFetching || !flightNumber.trim()}
+                      className="h-12 px-6 rounded-2xl bg-slate-900 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-slate-800 disabled:opacity-50 transition cursor-pointer flex items-center gap-2 shrink-0"
+                    >
+                      {isFlightFetching ? (
+                        <>
+                          <Loader2 size={14} className="animate-spin text-lime-400" />
+                          <span>Fetching...</span>
+                        </>
+                      ) : (
                         <span>Fetch Flight</span>
-                      </>
-                    )}
-                  </button>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Service / Travel Date Selection */}
+                <div className="md:col-span-5">
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                    Flight / Service Date <span className="text-red-500">*</span>
+                  </label>
+                  <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="relative flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300 bg-transparent px-4 text-left text-xs font-semibold text-slate-900 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 cursor-pointer shadow-none"
+                      >
+                        <div className="flex items-center gap-2.5 truncate">
+                          <CalendarDays className="h-4 w-4 text-lime-600 shrink-0" />
+                          <span className="font-mono text-xs font-bold text-slate-900">
+                            {format(dateValue, "dd MMMM yyyy")}
+                          </span>
+                        </div>
+                        <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.12),0_0_30px_rgba(132,204,22,0.15)] rounded-3xl z-50"
+                      align="start"
+                    >
+                      <CalendarPicker
+                        mode="single"
+                        selected={dateValue}
+                        onSelect={handleDateChange}
+                        disabled={{ before: todayStart }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
+
+              {/* Route Endpoints: Origin & Destination (Shown when not auto-verified) */}
+              {!isFlightVerified && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      {direction === "arrival" ? "Flying From (Departure Airport)" : "Departure Airport"}
+                      {direction === "arrival" && <span className="text-red-500"> *</span>}
+                    </label>
+                    {direction === "departure" ? (
+                      <div className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                        {airportCode} ({airportCityName})
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        value={originCode}
+                        onChange={(e) => setOriginCode(e.target.value.toUpperCase())}
+                        placeholder="e.g. DEL, BOM, BLR, CCU"
+                        className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      />
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      {direction === "departure" ? "Flying To (Destination Airport)" : "Arrival Service Airport"}
+                      {direction === "departure" && <span className="text-red-500"> *</span>}
+                    </label>
+                    {direction === "arrival" ? (
+                      <div className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                        {airportCode} ({airportCityName})
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        value={destCode}
+                        onChange={(e) => setDestCode(e.target.value.toUpperCase())}
+                        placeholder="e.g. DEL, BOM, BLR, CCU"
+                        className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* URGENT CUTOFF VIP FAST-TRACK BANNER */}
               {isCutoffUrgent && (
@@ -1362,7 +1655,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     <span>Urgent VIP Airport Clearance Available</span>
                   </div>
                   <p className="text-xs text-rose-900 font-sans leading-relaxed">
-                    This flight is scheduled within our standard advance notice window (less than 12h for domestic or 24h for international). Our 24/7 Airport Command Desk provides direct manual authorization for urgent flights.
+                    This flight is scheduled within our standard advance notice window (less than 12h for domestic or 24h for international). Our 24/7 team can assist with short-notice bookings.
                   </p>
                   <a
                     href={`https://wa.me/919599087959?text=${encodeURIComponent(
@@ -1373,7 +1666,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     className="inline-flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-700 px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-sm transition"
                   >
                     <MessageSquare size={14} />
-                    <span>Connect VIP Duty Officer on WhatsApp</span>
+                    <span>Connect with Support on WhatsApp</span>
                   </a>
                 </div>
               )}
@@ -1447,6 +1740,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5">
+                      <span className="rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-0.5 font-mono text-[9.5px] font-bold flex items-center gap-1">
+                        <CalendarDays size={10} className="text-lime-600" />
+                        {format(dateValue, "dd MMM yyyy")}
+                      </span>
                       <span className="rounded-full bg-slate-900 text-lime-400 px-2.5 py-0.5 font-mono text-[9.5px] font-bold uppercase tracking-wider">
                         {travelType === "international" ? "International" : "Domestic"}
                       </span>
@@ -1561,8 +1858,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 </div>
               )}
 
-              {/* Row: Airline & Flight Number */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Row: Airline, Flight Number & Service Date */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
                     Airline <span className="text-red-500">*</span>
@@ -1603,6 +1900,84 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase tracking-wider focus:border-lime-500 focus:outline-none"
                     required
                   />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Flight / Service Date <span className="text-red-500">*</span>
+                  </label>
+                  <Popover open={manualDatePopoverOpen} onOpenChange={setManualDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="relative flex h-11 w-full items-center justify-between rounded-xl border border-slate-300 bg-white px-3 text-left text-xs font-semibold text-slate-900 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 cursor-pointer shadow-none"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <CalendarDays className="h-4 w-4 text-lime-600 shrink-0" />
+                          <span className="font-mono text-xs font-bold text-slate-900">
+                            {format(dateValue, "dd MMM yyyy")}
+                          </span>
+                        </div>
+                        <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-slate-200 shadow-xl rounded-2xl z-50"
+                      align="start"
+                    >
+                      <CalendarPicker
+                        mode="single"
+                        selected={dateValue}
+                        onSelect={handleDateChange}
+                        disabled={{ before: todayStart }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+              {/* Row: Flight Route (Origin & Destination) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    {direction === "arrival" ? "Flying From (Departure Airport)" : "Departure Airport"}
+                    {direction === "arrival" && <span className="text-red-500"> *</span>}
+                  </label>
+                  {direction === "departure" ? (
+                    <div className="h-11 rounded-xl border border-slate-200 bg-slate-100/70 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                      {airportCode} ({airportCityName})
+                    </div>
+                  ) : (
+                    <input
+                      type="text"
+                      value={originCode}
+                      onChange={(e) => setOriginCode(e.target.value.toUpperCase())}
+                      placeholder="e.g. DEL, BOM, BLR, CCU"
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      required={direction === "arrival"}
+                    />
+                  )}
+                </div>
+                <div>
+                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    {direction === "departure" ? "Flying To (Destination Airport)" : "Arrival Service Airport"}
+                    {direction === "departure" && <span className="text-red-500"> *</span>}
+                  </label>
+                  {direction === "arrival" ? (
+                    <div className="h-11 rounded-xl border border-slate-200 bg-slate-100/70 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                      {airportCode} ({airportCityName})
+                    </div>
+                  ) : (
+                    <input
+                      type="text"
+                      value={destCode}
+                      onChange={(e) => setDestCode(e.target.value.toUpperCase())}
+                      placeholder="e.g. DEL, BOM, BLR, CCU"
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      required={direction === "departure"}
+                    />
+                  )}
                 </div>
               </div>
 
@@ -1929,7 +2304,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               <span className="font-mono font-bold text-slate-900 block truncate mt-0.5">
                 {isFlightVerified && verifiedFlight ? verifiedFlight.flightNum : manualFlightNum || flightNumber || "—"}
               </span>
-              <span className="font-mono text-[10px] text-slate-400">{serviceDate}</span>
+              <span className="font-mono text-[10px] text-slate-400">{format(dateValue, "dd MMM yyyy")}</span>
             </div>
             <div>
               <span className="font-mono text-[10px] uppercase tracking-wider text-sky-500 font-bold block">Guest</span>
@@ -1950,6 +2325,11 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               </div>
               <span className="text-[11px] text-slate-500">
                 {formatPrice(convertedUnitPrice, selectedCurrency)} × {paxAdults} adult{paxAdults > 1 ? "s" : ""}
+                {isExpressFeeApplicable && (
+                  <span className="text-amber-700 font-bold ml-1">
+                    + {formatPrice(convertedExpressFee, selectedCurrency)} (50% Express Fee)
+                  </span>
+                )}
                 {paxChildren + paxInfants > 0 && (
                   <span className="text-emerald-600 font-medium ml-1">
                     ({[
@@ -1960,6 +2340,11 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 )}
                 , taxes included
               </span>
+              {isExpressFeeApplicable && (
+                <div className="mt-2 flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-2.5 py-1 text-[11px] text-amber-900 font-medium">
+                  <span>⚡ <strong>50% Express Fee Applied:</strong> Mumbai Airport booking under 24 hours before service start time.</span>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-wrap items-center gap-1.5">

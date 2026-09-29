@@ -14,7 +14,7 @@ export function UrgentAssistanceSection({
 }: UrgentAssistanceSectionProps) {
   const message =
     urgentInfo?.message ||
-    `Online booking requires at least ${minNoticeHours} hours advance notice. Please contact our 24/7 VIP Command Desk for instant manual dispatch.`;
+    `Online booking requires at least ${minNoticeHours} hours advance notice. Please contact our 24/7 Operations Desk for urgent flight assistance.`;
 
   return (
     <div className="rounded-3xl bg-gradient-to-br from-amber-950 via-slate-900 to-slate-950 border border-amber-500/30 p-6 sm:p-8 text-white shadow-2xl space-y-6 relative overflow-hidden">
@@ -34,7 +34,7 @@ export function UrgentAssistanceSection({
           </div>
 
           <h3 className="text-xl sm:text-2xl font-serif font-bold text-white">
-            Urgent Dispatch Required for {serviceName}
+            Urgent Assistance Available for {serviceName}
           </h3>
 
           <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed pt-1">
@@ -47,28 +47,28 @@ export function UrgentAssistanceSection({
       <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3 relative z-10">
         <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
         <p className="text-xs text-slate-300 font-sans">
-          Our command desk can dispatch on-ground officers in under 45 minutes for urgent flights upon manual confirmation.
+          Our operations desk can arrange on-ground officers quickly for urgent flights upon confirmation.
         </p>
       </div>
 
       {/* Action Buttons: Call, WhatsApp, Request Callback */}
       <div className="pt-2 flex flex-col sm:flex-row items-center gap-3 relative z-10">
         <a
-          href={`tel:${urgentInfo?.contact_phone || "+919876543210"}`}
+          href={`tel:${urgentInfo?.contact_phone || "+919599087959"}`}
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-lg transition-all"
         >
           <Phone className="w-4 h-4" />
-          <span>Call Desk ({urgentInfo?.contact_phone || "+91-9876543210"})</span>
+          <span>Call Desk ({urgentInfo?.contact_phone || "+91-9599087959"})</span>
         </a>
 
         <a
-          href={`https://wa.me/${(urgentInfo?.contact_whatsapp || "919876543210").replace(/[^0-9]/g, "")}?text=Urgent%20Booking%20Notice%20for%20${encodeURIComponent(serviceName)}`}
+          href={`https://wa.me/${(urgentInfo?.contact_whatsapp || "919599087959").replace(/[^0-9]/g, "")}?text=Urgent%20Booking%20Notice%20for%20${encodeURIComponent(serviceName)}`}
           target="_blank"
           rel="noreferrer"
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all"
         >
           <MessageSquare className="w-4 h-4" />
-          <span>WhatsApp Command Desk</span>
+          <span>WhatsApp 24/7 Support</span>
         </a>
 
         <button
