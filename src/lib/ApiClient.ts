@@ -64,7 +64,21 @@ export class ApiClient {
    */
   public static async fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
     const authHeaders = await ApiClient.getAuthHeaders();
-    const primaryUrl = resolveApiUrl(endpoint);
+    
+    // Proxy routes that are handled by the frontend server
+    const proxyRoutes = [
+      "/api/flight/validate",
+      "/api/charter/requests",
+      "/api/v1/charter/requests",
+      "/api/process-queue"
+    ];
+    
+    let primaryUrl = resolveApiUrl(endpoint);
+    
+    // If hitting a proxy route from the browser, use the relative endpoint to hit the frontend server
+    if (typeof window !== "undefined" && proxyRoutes.some(route => endpoint.startsWith(route))) {
+      primaryUrl = endpoint;
+    }
     
     const method = (options.method || "GET").toUpperCase();
     const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
