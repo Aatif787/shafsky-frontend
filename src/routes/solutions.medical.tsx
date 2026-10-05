@@ -822,7 +822,7 @@ function DedicatedSpecialServicesPage() {
                   }`}
                 >
                   <div className="w-full sm:w-48 h-36 relative overflow-hidden bg-slate-900 shrink-0">
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={item.photo}
                       alt={item.label}
                       className="w-full h-full object-cover object-center select-none"

@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useState } from "react";
 import { useAuth as useClerkAuth, useClerk, useSignIn, useSignUp } from "@clerk/tanstack-react-start";
 import type { Profile, Role, User, AuthContextType } from "./types";
 import { setAccessToken, getAccessToken, clearAccessToken } from "@/auth/tokenStore";
-import { apiAuthRefresh } from "@/auth/authClient";
+import { apiAuthRefresh, apiAuthMe } from "@/auth/authClient";
 import type { AuthUser } from "@/auth/authClient";
 import {
   completeApplicationLogout,
@@ -10,7 +10,7 @@ import {
   roleFromFastApiClaims,
 } from "@/auth/clerkSession";
 import { beginClerkSignUp, verifyClerkEmailCode, type ClerkSignUpClient } from "@/auth/clerkSignUpFlow";
-import { rememberSession, setSessionHint } from "@/auth/ensureSession";
+import { rememberSession, setSessionHint, hasSessionHint } from "@/auth/ensureSession";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -23,6 +23,7 @@ type ClerkBridge = {
   getFreshSessionToken: () => Promise<string | null>;
   setActiveSession: (sessionId: string) => Promise<void>;
   signOut: () => Promise<void>;
+  getUserName?: () => string | null;
 };
 
 function clerkFieldError(errors: {
@@ -86,6 +87,7 @@ function ClerkAuthSession({ children }: { children: React.ReactNode }) {
         signOut: async () => {
           await clerk.signOut();
         },
+        getUserName: () => clerk.user?.fullName || clerk.user?.firstName || null,
       }}
     >
       {children}
@@ -126,9 +128,19 @@ function AuthSession({
       role = "admin";
     }
 
+    const clerkName = clerk?.getUserName ? clerk.getUserName() : null;
+    const rawName =
+      apiUser.fullName ||
+      apiUser.full_name ||
+      meta.full_name ||
+      meta.name ||
+      clerkName ||
+      (email ? email.split("@")[0] : "") ||
+      "User";
+
     return {
       id: apiUser.id || "user_id",
-      name: meta.full_name || apiUser.full_name || email.split("@")[0] || "User",
+      name: rawName,
       avatar_url: meta.avatar_url || null,
       role,
       created_at: apiUser.created_at || new Date().toISOString(),
@@ -138,16 +150,20 @@ function AuthSession({
 
   const applyApiUser = (apiUser: AuthUser, accessToken: string) => {
     setAccessToken(accessToken);
-    const userObj: User = {
-      id: apiUser.id,
-      email: apiUser.email,
-      user_metadata: { role: apiUser.role },
-      app_metadata: { role: apiUser.role },
-    };
     const prof = fetchProfile(apiUser);
     if (apiUser.role) {
       prof.role = roleFromFastApiClaims(apiUser.role);
     }
+    const userObj: User = {
+      id: apiUser.id,
+      email: apiUser.email,
+      user_metadata: {
+        ...apiUser.user_metadata,
+        full_name: prof.name,
+        role: apiUser.role,
+      },
+      app_metadata: { role: apiUser.role },
+    };
     syncAuthCookie(apiUser.id);
     setSessionHint(true);
     rememberSession({ accessToken, user: apiUser });
@@ -171,11 +187,14 @@ function AuthSession({
 
     // Restore session on mount via HttpOnly Refresh Cookie -> POST /api/auth/refresh
     const restoreSession = async () => {
-      const hasSessionCookie =
-        typeof document !== "undefined" &&
-        (document.cookie.includes("shafsky_user_id") || document.cookie.includes("shafsky_auth"));
+      const hasCookie =
+        hasSessionHint() ||
+        (typeof document !== "undefined" &&
+          (document.cookie.includes("shafsky_user_id") ||
+            document.cookie.includes("shafsky_auth") ||
+            document.cookie.includes("shafsky_session")));
 
-      if (!hasSessionCookie && !getAccessToken()) {
+      if (!hasCookie && !getAccessToken()) {
         if (active) {
           setUser(null);
           setProfile(null);
@@ -188,7 +207,7 @@ function AuthSession({
         const { data, error } = await apiAuthRefresh();
         const tokenStr = data?.accessToken || data?.access_token;
 
-        if (error || !tokenStr || !data?.user) {
+        if (error || !tokenStr) {
           if (active) {
             syncAuthCookie(null);
             clearAccessToken();
@@ -198,9 +217,21 @@ function AuthSession({
           return;
         }
 
-        console.log("[AuthProvider] Session restored for user:", data.user.email);
+        // Fetch application user profile with the freshly obtained access token
+        const me = await apiAuthMe(tokenStr);
+        if (me.error || !me.user) {
+          if (active) {
+            syncAuthCookie(null);
+            clearAccessToken();
+            setUser(null);
+            setProfile(null);
+          }
+          return;
+        }
+
+        console.log("[AuthProvider] Session restored for user:", me.user.email);
         if (active) {
-          applyApiUser(data.user, tokenStr);
+          applyApiUser(me.user, tokenStr);
         }
       } catch (err) {
         console.error("[AuthProvider] Session restore exception:", err);

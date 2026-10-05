@@ -572,7 +572,7 @@ function DedicatedLuxuryHotelsPage() {
                     className="w-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white group hover:border-lime-400 transition-all"
                   >
                     <div className="w-full aspect-[4/3] bg-slate-50 overflow-hidden flex items-center justify-center">
-                      <img
+                      <img loading="lazy" decoding="async"
                         src={img.src}
                         alt={img.alt}
                         className="w-full h-full object-cover object-center select-none block group-hover:scale-102 transition-transform duration-500"

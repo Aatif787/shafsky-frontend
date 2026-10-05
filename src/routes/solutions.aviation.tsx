@@ -1221,7 +1221,7 @@ function DedicatedAirCharterPage() {
 
             {activeOption.id === "Private Charter" && (
               <div className="mb-6 rounded-2xl overflow-hidden border border-amber-200/80 shadow-sm bg-slate-900">
-                <img
+                <img loading="lazy" decoding="async"
                   src="/images/charter/luxury-cabin.webp"
                   alt="Shafsky Ultra-Luxury Private Jet Executive VIP Cabin"
                   className="w-full h-56 sm:h-72 object-cover object-center"

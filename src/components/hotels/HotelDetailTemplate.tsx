@@ -292,7 +292,7 @@ export function HotelDetailTemplate({
                       onClick={() => openLightbox(category.image, category.name)}
                       className="relative rounded-2xl overflow-hidden bg-slate-100 mb-5 group/img cursor-pointer border border-slate-200/80 shadow-xs"
                     >
-                      <img
+                      <img loading="lazy" decoding="async"
                         src={category.image}
                         alt={category.name}
                         className="w-full h-56 sm:h-64 object-cover transition-transform duration-500 group-hover/img:scale-105"

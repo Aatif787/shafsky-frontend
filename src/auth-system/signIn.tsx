@@ -58,10 +58,6 @@ export function SignInPage() {
       if (modeParam === "forgot" || modeParam === "reset") {
         setStaffSignIn(true);
         setMode(modeParam);
-      } else if (!staff) {
-        // Customers only use Google on this screen.
-        setMode("signin");
-        setStaffSignIn(false);
       } else if (modeParam === "signup" || modeParam === "signin") {
         setMode(modeParam);
       }
@@ -74,7 +70,7 @@ export function SignInPage() {
     }
   }, [user, profile, loading, mode, navigate]);
 
-  const customerGoogle = mode === "signin" && !staffSignIn && !awaitingEmailCode;
+  const showGoogleOption = !awaitingEmailCode && (mode === "signin" || mode === "signup");
 
   const continueWithGoogle = async () => {
     setErrorMsg(null);
@@ -392,8 +388,8 @@ export function SignInPage() {
             className="text-[9px] uppercase tracking-[0.4em] mt-1 font-semibold"
             style={{ color: "#8a9aa3", fontFamily: "'Inter', system-ui, sans-serif" }}
           >
-            {mode === "signin" && (customerGoogle ? "Continue with Google" : "Staff Entry Console")}
-            {mode === "signup" && "Guest Register Portal"}
+            {mode === "signin" && (staffSignIn ? "Staff Entry Console" : "Client & Operations Portal")}
+            {mode === "signup" && "Create an Account"}
             {mode === "forgot" && "Reset Link Dispatcher"}
             {mode === "reset" && "Credential Update Console"}
           </p>
@@ -461,14 +457,14 @@ export function SignInPage() {
           </div>
         )}
 
-        {/* Credentials Form */}
-        {customerGoogle && (
-          <div className="space-y-4">
+        {/* Google SSO Option */}
+        {showGoogleOption && (
+          <div className="space-y-4 mb-4">
             <button
               type="button"
               onClick={() => void continueWithGoogle()}
               disabled={submitting}
-              className="w-full h-12 rounded-2xl text-white text-[11px] font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              className="w-full h-12 rounded-2xl text-white text-[11px] font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer transition-all duration-300 hover:scale-[1.01]"
               style={{
                 background: "linear-gradient(145deg, #0e6378, #0c5264)",
                 boxShadow: "5px 5px 12px #d8d0c1, -5px -5px 12px #ffffff",
@@ -477,6 +473,12 @@ export function SignInPage() {
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               Continue with Google
             </button>
+            <div className="relative flex items-center justify-center my-2">
+              <div className="border-t border-[#e0d9ca] w-full" />
+              <span className="bg-[#faf5ea] px-3 text-[10px] font-bold uppercase tracking-widest text-[#8a9aa3] absolute">
+                or continue with email
+              </span>
+            </div>
           </div>
         )}
 
@@ -548,7 +550,7 @@ export function SignInPage() {
             </div>
           )}
 
-          {mode !== "reset" && !awaitingEmailCode && !customerGoogle && (
+          {mode !== "reset" && !awaitingEmailCode && (
             <div className="space-y-1.5">
               <label
                 className="text-[10px] uppercase tracking-widest text-[#5b6b75] font-bold block"
@@ -583,7 +585,7 @@ export function SignInPage() {
             </div>
           )}
 
-          {mode !== "forgot" && !awaitingEmailCode && !customerGoogle && (
+          {mode !== "forgot" && !awaitingEmailCode && (
             <div className="space-y-1.5">
               <label
                 className="text-[10px] uppercase tracking-widest text-[#5b6b75] font-bold block"
@@ -802,7 +804,7 @@ export function SignInPage() {
             </div>
           )}
 
-          {mode === "signin" && staffSignIn && !awaitingEmailCode && (
+          {mode === "signin" && !awaitingEmailCode && (
             <div className="text-right">
               <button
                 type="button"
@@ -827,7 +829,6 @@ export function SignInPage() {
 
           {mode === "signup" && !awaitingEmailCode && <div id="clerk-captcha" />}
 
-          {!customerGoogle && (
           <button
             type="submit"
             disabled={submitting}
@@ -867,7 +868,6 @@ export function SignInPage() {
               </>
             )}
           </button>
-          )}
         </form>
 
         {/* Footer */}
@@ -889,50 +889,39 @@ export function SignInPage() {
             />
           </div>
 
-          {mode === "signin" && customerGoogle && (
+          {mode === "signin" && !awaitingEmailCode && (
             <p
               className="text-[10px] uppercase tracking-[0.15em] text-[#8a9aa3]"
               style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
             >
+              Don't have an account?{" "}
               <button
                 type="button"
-                onClick={() => {
-                  setStaffSignIn(true);
-                  setErrorMsg(null);
-                }}
-                className="font-bold tracking-[0.15em] transition-all duration-300 cursor-pointer px-2.5 py-1 rounded-lg"
+                onClick={() => changeMode("signup")}
+                className="font-bold tracking-[0.15em] transition-all duration-300 cursor-pointer px-2.5 py-1 rounded-lg ml-1"
                 style={{ color: "#0d5a6e" }}
-              >
-                Staff sign in
-              </button>
-            </p>
-          )}
-          {mode === "signin" && staffSignIn && !awaitingEmailCode && (
-            <p
-              className="text-[10px] uppercase tracking-[0.15em] text-[#8a9aa3]"
-              style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-            >
-              <button
-                type="button"
-                onClick={() => {
-                  setStaffSignIn(false);
-                  setErrorMsg(null);
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "rgba(13,90,110,0.06)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 8px rgba(13,90,110,0.1)";
                 }}
-                className="font-bold tracking-[0.15em] transition-all duration-300 cursor-pointer px-2.5 py-1 rounded-lg"
-                style={{ color: "#0d5a6e" }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "transparent";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "none";
+                }}
               >
-                Continue with Google
+                Sign Up
               </button>
             </p>
           )}
 
-          {mode === "signup" && (
+          {mode === "signup" && !awaitingEmailCode && (
             <p
               className="text-[10px] uppercase tracking-[0.15em] text-[#8a9aa3]"
               style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
             >
               Already have an account?{" "}
               <button
+                type="button"
                 onClick={() => changeMode("signin")}
                 className="font-bold tracking-[0.15em] transition-all duration-300 cursor-pointer px-2.5 py-1 rounded-lg ml-1"
                 style={{ color: "#0d5a6e" }}

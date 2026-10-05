@@ -1,14 +1,15 @@
 import React, { Suspense } from "react";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { dashboardRedirectTarget, readApplicationSession } from "@/auth/ensureSession";
+import { dashboardRedirectTarget, ensureApplicationSession } from "@/auth/ensureSession";
 import { getSessionInfo } from "@/lib/session";
 import { DashboardSkeleton } from "@/components/ui/SkeletonLoader";
 
 const DashboardView = React.lazy(() => import("@/components/views/DashboardView"));
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
+  ssr: false,
   loader: async () => {
-    const live = readApplicationSession();
+    const live = await ensureApplicationSession();
     const session = live ?? (await getSessionInfo().catch(() => null));
     const target = dashboardRedirectTarget(session);
     if (!session || target) {
@@ -16,7 +17,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
     }
     return session;
   },
-  ssr: true,
   component: UserDashboardComponent,
 });
 

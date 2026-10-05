@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { getSessionInfo } from "@/lib/session";
 import { AuthContext } from "@/auth-system/AuthProvider";
@@ -107,7 +107,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
   const auth = useContext(AuthContext);
   const authUser = auth?.user;
   const authRole = auth?.profile?.role;
-  const isLoggedIn = Boolean(authUser || roles.length > 0);
+  const isLoggedIn = Boolean(authUser || auth?.profile || roles.length > 0);
 
   const activePrimaryServices = ICICI_REVIEW_MODE
     ? PRIMARY_SERVICES.filter((srv) => srv.href === "/solutions/concierge")
@@ -121,14 +121,16 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     if (authRole === "super_admin" || roles.includes("super_admin")) return "/super-admin/dashboard";
     if (authRole === "staff" || roles.includes("staff")) return "/staff/dashboard";
     if (authRole === "admin" || roles.includes("admin")) return "/admin/dashboard";
-    return "/account";
+    return "/dashboard";
   };
 
   const getDashboardLabel = () => {
     if (authRole === "super_admin" || roles.includes("super_admin")) return "Super Admin";
     if (authRole === "staff" || roles.includes("staff")) return "Operations";
     if (authRole === "admin" || roles.includes("admin")) return "Admin Portal";
-    return "My Account";
+    const meta = authUser?.user_metadata || {};
+    const name = String(auth?.profile?.name || meta.full_name || meta.name || "").trim();
+    return name && !name.includes("@") && name.toLowerCase() !== "user" ? name : "My Account";
   };
 
   useEffect(() => {
@@ -155,6 +157,44 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const megaMenuRef = useRef<HTMLDivElement | null>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMouseEnter = (label: string) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setHoveredCategory(label);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredCategory(null);
+    }, 140);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        megaMenuRef.current &&
+        !megaMenuRef.current.contains(event.target as Node)
+      ) {
+        setHoveredCategory(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Close mobile & hover menus on route change
@@ -233,90 +273,135 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
             {activeNavStructure.map((item) => {
               const isMega = !!item.isMega;
               const isHovered = hoveredCategory === item.label;
-              const isActive =
-                item.href === "/"
-                  ? location.pathname === "/"
-                  : location.pathname.startsWith(item.href);
+              const isServiceActive = isMega && location.pathname.startsWith("/solutions/");
+              const isActive = isMega
+                ? isServiceActive
+                : item.href === "/"
+                ? location.pathname === "/"
+                : location.pathname.startsWith(item.href);
 
               return (
                 <div
                   key={item.label}
                   className="relative py-2"
-                  onMouseEnter={() => isMega && setHoveredCategory(item.label)}
-                  onMouseLeave={() => isMega && setHoveredCategory(null)}
+                  onMouseEnter={() => isMega && handleMouseEnter(item.label)}
+                  onMouseLeave={() => isMega && handleMouseLeave()}
                 >
-                  <Link
-                    to={item.href}
-                    className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-semibold transition-all duration-200 ${
-                      isActive
-                        ? "text-slate-950 bg-slate-100 border border-slate-300"
-                        : "text-slate-700 hover:text-slate-950 hover:bg-slate-50"
-                    }`}
-                  >
-                    <span>{item.label}</span>
-                    {isMega && (
+                  {isMega ? (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setHoveredCategory(isHovered ? null : item.label);
+                      }}
+                      aria-expanded={isHovered}
+                      aria-haspopup="true"
+                      className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-semibold transition-all duration-200 cursor-pointer ${
+                        isActive || isHovered
+                          ? "text-slate-950 bg-slate-100 border border-slate-300"
+                          : "text-slate-700 hover:text-slate-950 hover:bg-slate-50 border border-transparent"
+                      }`}
+                    >
+                      <span>{item.label}</span>
                       <ChevronDown
                         size={13}
-                        className={`transition-transform duration-200 text-[#0a196f] ${
-                          isHovered ? "rotate-180" : ""
+                        className={`transition-transform duration-200 text-slate-500 ${
+                          isHovered ? "rotate-180 text-slate-900" : ""
                         }`}
                       />
-                    )}
-                  </Link>
+                    </button>
+                  ) : (
+                    <Link
+                      to={item.href}
+                      className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-semibold transition-all duration-200 ${
+                        isActive
+                          ? "text-slate-950 bg-slate-100 border border-slate-300"
+                          : "text-slate-700 hover:text-slate-950 hover:bg-slate-50 border border-transparent"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                    </Link>
+                  )}
 
                   {/* Enterprise Services Mega Menu Dropdown */}
                   <AnimatePresence>
                     {isMega && isHovered && (
                       <motion.div
+                        ref={megaMenuRef}
                         key="services-mega"
-                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        initial={{ opacity: 0, y: 6, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 6, scale: 0.98 }}
-                        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                        className={`absolute top-full left-1/2 -translate-x-1/2 rounded-2xl bg-white border border-[#0a196f]/15 shadow-[0_16px_40px_rgba(10,25,111,0.08)] p-[clamp(12px,1.2vw,18px)] z-50 ${
-                          ICICI_REVIEW_MODE ? "w-[clamp(340px,28vw,420px)]" : "w-[clamp(560px,46vw,660px)]"
+                        exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                        transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+                        onMouseEnter={() => handleMouseEnter(item.label)}
+                        onMouseLeave={() => handleMouseLeave()}
+                        className={`absolute top-[calc(100%-2px)] left-1/2 -translate-x-1/2 rounded-[18px] bg-white border border-slate-200/90 shadow-[0_16px_40px_-8px_rgba(15,23,42,0.12),0_4px_12px_-2px_rgba(15,23,42,0.06)] p-3.5 z-50 before:absolute before:-top-3 before:left-0 before:w-full before:h-3 before:content-[''] ${
+                          ICICI_REVIEW_MODE ? "w-[360px]" : "w-[660px]"
                         }`}
                       >
-                      <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3 px-1">
-                        <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#c5a059] font-bold">
-                          Shafsky Enterprise Services
-                        </span>
-                        <span className="text-[10px] font-mono text-slate-400 font-medium">
-                          {ICICI_REVIEW_MODE ? "Airside Concierge" : "5 Core Portfolios"}
-                        </span>
-                      </div>
+                        <div className="flex items-center justify-between pb-2 mb-2 px-1 border-b border-slate-100">
+                          <span className="text-[10px] font-mono uppercase tracking-[0.22em] text-[#0a196f] font-bold">
+                            Shafsky Aviation Services
+                          </span>
+                          <span className="text-[10.5px] font-mono text-slate-400">
+                            {ICICI_REVIEW_MODE ? "Airside Concierge" : "5 Core Portfolios"}
+                          </span>
+                        </div>
 
-                      <div className={ICICI_REVIEW_MODE ? "grid grid-cols-1 gap-2" : "grid grid-cols-1 sm:grid-cols-2 gap-[clamp(6px,0.7vw,10px)]"}>
-                        {activePrimaryServices.map((srv) => {
-                          const SrvIcon = srv.icon;
-                          return (
-                            <Link
-                              key={srv.title}
-                              to={srv.href}
-                              className="group/item flex items-start gap-3 p-[clamp(8px,0.8vw,12px)] rounded-xl bg-slate-50/60 hover:bg-[#faf9f5] border border-slate-200/70 hover:border-[#c5a059]/60 transition-all duration-200"
-                            >
-                              <div className="h-8 w-8 rounded-lg bg-[#0a196f]/5 border border-[#0a196f]/10 flex items-center justify-center text-[#0a196f] group-hover/item:bg-[#0a196f] group-hover/item:text-[#c5a059] transition-colors shrink-0 mt-0.5">
-                                <SrvIcon size={16} />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-1">
-                                  <span className="text-[clamp(12px,0.95vw,13.5px)] font-bold text-slate-900 group-hover/item:text-[#0a196f] transition-colors leading-tight">
-                                    {srv.title}
-                                  </span>
-                                  <ArrowRight
-                                    size={12}
-                                    className="text-slate-300 group-hover/item:text-[#c5a059] group-hover/item:translate-x-0.5 transition-all shrink-0 opacity-0 group-hover/item:opacity-100"
-                                  />
+                        <div className={ICICI_REVIEW_MODE ? "grid grid-cols-1 gap-1.5" : "grid grid-cols-1 sm:grid-cols-2 gap-1.5"}>
+                          {activePrimaryServices.map((srv, idx) => {
+                            const SrvIcon = srv.icon;
+                            const isCurrent = location.pathname === srv.href;
+                            const isSpanTwo = !ICICI_REVIEW_MODE && idx === activePrimaryServices.length - 1 && activePrimaryServices.length % 2 !== 0;
+
+                            return (
+                              <Link
+                                key={srv.title}
+                                to={srv.href}
+                                onClick={() => setHoveredCategory(null)}
+                                className={`group/item flex items-start gap-3 p-2.5 rounded-xl border transition-all duration-150 ${
+                                  isSpanTwo ? "sm:col-span-2" : ""
+                                } ${
+                                  isCurrent
+                                    ? "bg-slate-100/90 border-slate-300 shadow-xs"
+                                    : "bg-slate-50/50 hover:bg-slate-100/80 border-slate-200/60 hover:border-slate-300"
+                                }`}
+                              >
+                                <div
+                                  className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200 ${
+                                    isCurrent
+                                      ? "bg-[#0a196f] text-white"
+                                      : "bg-white border border-slate-200 text-slate-700 group-hover/item:bg-[#0a196f] group-hover/item:text-[#c5a059] group-hover/item:border-[#0a196f]"
+                                  }`}
+                                >
+                                  <SrvIcon size={15} />
                                 </div>
-                                <p className="text-[clamp(10px,0.8vw,11px)] text-slate-500 font-mono mt-1 leading-snug group-hover/item:text-slate-700">
-                                  {srv.descriptor}
-                                </p>
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between gap-1">
+                                    <span
+                                      className={`text-[13px] font-semibold leading-tight transition-colors ${
+                                        isCurrent
+                                          ? "text-[#0a196f]"
+                                          : "text-slate-900 group-hover/item:text-[#0a196f]"
+                                      }`}
+                                    >
+                                      {srv.title}
+                                    </span>
+                                    <ArrowRight
+                                      size={12}
+                                      className="text-slate-300 group-hover/item:text-[#0a196f] group-hover/item:translate-x-0.5 transition-all shrink-0 opacity-0 group-hover/item:opacity-100"
+                                    />
+                                  </div>
+                                  <p className="text-[10.5px] sm:text-[11px] text-slate-500 font-mono mt-0.5 leading-snug group-hover/item:text-slate-700">
+                                    {srv.descriptor}
+                                  </p>
+                                </div>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
@@ -383,7 +468,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 rounded-lg bg-slate-100 border border-slate-300 text-slate-900 hover:border-[#6e22db] active:bg-purple-50 transition-colors"
+            className="lg:hidden p-2 rounded-lg bg-slate-100 border border-slate-300 text-slate-900 hover:border-[#0a196f] active:bg-slate-200 transition-colors"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -398,18 +483,18 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
             className="lg:hidden fixed inset-x-0 top-full h-[calc(100vh-70px)] bg-white border-t border-slate-200 p-6 flex flex-col justify-between overflow-y-auto z-50 shadow-xl"
           >
           <div className="space-y-4">
             <div
-              className="text-[10px] uppercase tracking-[0.3em] text-[#6e22db] font-bold pb-2 border-b border-slate-200"
+              className="text-[10px] uppercase tracking-[0.3em] text-[#0a196f] font-bold pb-2 border-b border-slate-200"
               style={mono}
             >
               Navigation Menu
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               {activeNavStructure.map((item) => {
                 const isMega = !!item.isMega;
                 const isExpanded = expandedMobileCategory === item.label;
@@ -428,24 +513,27 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                           <span>{item.label}</span>
                           <ChevronDown
                             size={16}
-                            className={`text-[#6e22db] transition-transform duration-200 ${
-                              isExpanded ? "rotate-180" : ""
+                            className={`text-slate-500 transition-transform duration-200 ${
+                              isExpanded ? "rotate-180 text-slate-900" : ""
                             }`}
                           />
                         </button>
                         {isExpanded && (
-                          <div className="pl-3 mt-2 space-y-2 border-l-2 border-[#6e22db]/60">
+                          <div className="pl-3 mt-2 space-y-2 border-l-2 border-[#0a196f]/40">
                             {activePrimaryServices.map((srv) => {
                               const SIcon = srv.icon;
                               return (
                                 <Link
                                   key={srv.title}
                                   to={srv.href}
-                                  onClick={() => setMobileOpen(false)}
+                                  onClick={() => {
+                                    setMobileOpen(false);
+                                    setExpandedMobileCategory(null);
+                                  }}
                                   className="block py-2 group"
                                 >
-                                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 group-hover:text-[#6e22db]">
-                                    <SIcon size={15} className="text-[#6e22db]" />
+                                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 group-hover:text-[#0a196f]">
+                                    <SIcon size={15} className="text-[#0a196f]" />
                                     <span>{srv.title}</span>
                                   </div>
                                   <p className="text-[10.5px] text-slate-500 font-mono mt-0.5 pl-6 leading-tight">
@@ -478,17 +566,17 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               <Link
                 to={getDashboardPath()}
                 onClick={() => setMobileOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-[#6e22db] transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-[#0a196f] transition-colors"
                 style={mono}
               >
-                <User size={14} className="text-[#6e22db]" />
+                <User size={14} className="text-[#0a196f]" />
                 <span>{getDashboardLabel()}</span>
               </Link>
             ) : (
               <Link
                 to="/login"
                 onClick={() => setMobileOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-[#6e22db] transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 border border-slate-300 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-[#0a196f] transition-colors"
                 style={mono}
               >
                 <LogIn size={14} className="text-slate-600" />
@@ -498,10 +586,10 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
             <a
               href="tel:+919599087959"
-              className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-purple-50 border border-purple-200 text-xs font-bold text-slate-900 tracking-wider uppercase"
+              className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900 tracking-wider uppercase hover:border-slate-300"
               style={mono}
             >
-              <PhoneCall size={14} className="text-[#6e22db]" />
+              <PhoneCall size={14} className="text-[#0a196f]" />
               <span>Call 24/7 Desk (+91 9599087959)</span>
             </a>
 
@@ -515,11 +603,11 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                   el.scrollIntoView({ behavior: "smooth", block: "center" });
                 }
               }}
-              className="group/btn relative overflow-hidden w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#6e22db] text-white text-xs font-bold tracking-wider uppercase shadow-md shadow-purple-600/30 transition-all duration-300 hover:shadow-lg hover:shadow-purple-600/45 hover:-translate-y-0.5 cursor-pointer"
+              className="group/btn relative overflow-hidden w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#84cc16] text-slate-950 text-xs font-bold tracking-wider uppercase shadow-md shadow-lime-500/20 transition-all duration-300 hover:shadow-lg hover:shadow-lime-500/35 hover:-translate-y-0.5 cursor-pointer"
               style={mono}
             >
               <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
-              <div className="absolute inset-0 bg-[#7c3aed] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
+              <div className="absolute inset-0 bg-[#a3e635] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
               <span className="relative z-10">Book Now</span>
               <ArrowRight size={14} className="relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" />
             </a>

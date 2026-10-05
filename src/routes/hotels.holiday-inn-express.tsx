@@ -450,7 +450,7 @@ function HolidayInnExpressDetailPage() {
                 onClick={() => setLightboxIndex(1)}
                 className="w-full h-[145px] sm:h-[175px] rounded-xl overflow-hidden bg-slate-100 group relative cursor-pointer"
               >
-                <img
+                <img loading="lazy" decoding="async"
                   src="/images/hotels/holiday-inn/couple-tablet.jpg"
                   alt="Couple Relaxing in Guest Room"
                   className="w-full h-full object-cover object-center select-none block group-hover:scale-105 transition-transform duration-500"
@@ -461,7 +461,7 @@ function HolidayInnExpressDetailPage() {
                 onClick={() => setLightboxIndex(2)}
                 className="w-full h-[145px] sm:h-[175px] rounded-xl overflow-hidden bg-slate-100 group relative cursor-pointer"
               >
-                <img
+                <img loading="lazy" decoding="async"
                   src="/images/hotels/holiday-inn/room-night.jpg"
                   alt="Guest Room Evening Atmosphere"
                   className="w-full h-full object-cover object-center select-none block group-hover:scale-105 transition-transform duration-500"
@@ -750,7 +750,7 @@ function HolidayInnExpressDetailPage() {
                   onClick={() => setLightboxIndex(3)}
                   className="w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200 mb-3 group cursor-pointer"
                 >
-                  <img
+                  <img loading="lazy" decoding="async"
                     src="/images/hotels/holiday-inn/twin-beds-1.jpg"
                     alt="Standard Twin Bed Configuration"
                     className="w-full h-auto object-cover select-none block group-hover:scale-102 transition-transform duration-500"
@@ -765,7 +765,7 @@ function HolidayInnExpressDetailPage() {
                   onClick={() => setLightboxIndex(4)}
                   className="w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200 mb-4 group cursor-pointer"
                 >
-                  <img
+                  <img loading="lazy" decoding="async"
                     src="/images/hotels/holiday-inn/room-apples.jpg"
                     alt="King Suite with Desk and Glass Table"
                     className="w-full h-auto object-cover select-none block group-hover:scale-102 transition-transform duration-500"
@@ -996,7 +996,7 @@ function HolidayInnExpressDetailPage() {
                   onClick={() => setLightboxIndex(4)}
                   className="w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200 mb-4 group cursor-pointer"
                 >
-                  <img
+                  <img loading="lazy" decoding="async"
                     src="/images/hotels/holiday-inn/room-apples.jpg"
                     alt="Standard Room International Wing"
                     className="w-full h-auto object-cover select-none block group-hover:scale-102 transition-transform duration-500"
