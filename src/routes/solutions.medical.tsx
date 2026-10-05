@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
-  ArrowLeft, Sparkles,
+  ArrowLeft,
+  Sparkles,
   Send,
   CheckCircle2,
   MessageSquare
@@ -284,7 +285,7 @@ function DedicatedSpecialServicesPage() {
             </p>
           </div>
 
-          {/* 3 SEPARATE SERVICE SHOWCASE CARDS */}
+          {/* 3 SEPARATE SERVICE SHOWCASE CARDS (PURE PHOTOGRAPHY, ZERO TEXT) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             {SPECIAL_SERVICES_OPTIONS.map((opt) => {
               const isSelected = selectedOptionId === opt.id;
@@ -296,10 +297,10 @@ function DedicatedSpecialServicesPage() {
                     const el = document.getElementById("request-form");
                     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                   }}
-                  className={`group relative rounded-2xl overflow-hidden bg-white border-2 transition-all duration-300 cursor-pointer shadow-md hover:shadow-xl hover:-translate-y-1 flex flex-col ${
+                  className={`group relative rounded-2xl overflow-hidden bg-slate-100 border-2 transition-all duration-300 cursor-pointer shadow-md hover:shadow-xl hover:-translate-y-1 ${
                     isSelected
-                      ? "border-lime-500 ring-2 ring-lime-400/50 shadow-lime-500/10"
-                      : "border-slate-200 hover:border-slate-300"
+                      ? "border-lime-500 ring-4 ring-lime-400/40 shadow-lime-500/15 -translate-y-1"
+                      : "border-slate-200 hover:border-lime-400"
                   }`}
                 >
                   {/* Photo Container - 100% Pure, Unobstructed Image */}
@@ -312,49 +313,12 @@ function DedicatedSpecialServicesPage() {
                     />
                   </div>
 
-                  {/* Card Body - Clean Typography & Badges Safely Below Image */}
-                  <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between bg-white">
-                    <div>
-                      {/* Top Badges Row */}
-                      <div className="flex items-center justify-between gap-2 mb-2.5">
-                        <span className="inline-block px-2.5 py-1 rounded-md text-[9px] font-mono font-bold tracking-wider uppercase text-lime-800 bg-lime-50 border border-lime-200">
-                          {opt.badge}
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-[9px] font-mono font-bold tracking-wider text-slate-400 uppercase">
-                          <Sparkles size={10} className="text-lime-500" />
-                          <span>Featured</span>
-                        </span>
-                      </div>
-
-                      {/* Service Title */}
-                      <h3
-                        className="text-lg sm:text-xl font-bold text-slate-950 tracking-tight leading-snug group-hover:text-lime-700 transition-colors mb-2"
-                        style={display}
-                      >
-                        {opt.label}
-                      </h3>
-
-                      {/* Description Tagline */}
-                      <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed line-clamp-2 mb-4 font-normal">
-                        {opt.tagline}
-                      </p>
+                  {/* Active Indicator Checkmark (Clean & Non-text) */}
+                  {isSelected && (
+                    <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-lime-500 text-slate-950 flex items-center justify-center shadow-lg transition-transform duration-200 animate-in fade-in zoom-in-75">
+                      <CheckCircle2 size={18} className="stroke-[2.5]" />
                     </div>
-
-                    <div className="pt-3.5 border-t border-slate-100 flex items-center justify-between">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-semibold">
-                        {isSelected ? "Active Service" : "Click to Configure"}
-                      </span>
-                      <span
-                        className={`text-xs font-mono font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all ${
-                          isSelected
-                            ? "bg-lime-500 text-slate-950 font-extrabold shadow-xs"
-                            : "bg-slate-100 text-slate-700 group-hover:bg-lime-100 group-hover:text-lime-800"
-                        }`}
-                      >
-                        {isSelected ? "Selected ✓" : "Select"}
-                      </span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
