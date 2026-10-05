@@ -403,7 +403,7 @@ function MeetGreetDedicatedPage() {
                           className="w-full rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 bg-white group hover:border-lime-400 transition-all"
                         >
                           <div className="w-full bg-slate-50 overflow-hidden flex items-center justify-center">
-                            <img
+                            <img loading="lazy" decoding="async"
                               src={img.src}
                               alt={img.alt}
                               className="w-full h-auto object-contain object-center select-none block group-hover:scale-102 transition-transform duration-500"
