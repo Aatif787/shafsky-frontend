@@ -27,7 +27,7 @@ describe("post sign-up application navigation", () => {
     const session = readApplicationSession();
     expect(session?.userId).toBe("11111111-1111-4111-8111-111111111111");
     expect(session?.roles).toEqual(["customer"]);
-    expect(applicationRouteForRole("customer")).toBe("/dashboard");
+    expect(applicationRouteForRole("customer")).toBe("/");
     expect(dashboardRedirectTarget(session)).toBeNull();
     expect(getAccessToken()).toBe(FASTAPI_ACCESS);
   });

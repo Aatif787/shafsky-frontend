@@ -128,7 +128,9 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     if (authRole === "super_admin" || roles.includes("super_admin")) return "Super Admin";
     if (authRole === "staff" || roles.includes("staff")) return "Operations";
     if (authRole === "admin" || roles.includes("admin")) return "Admin Portal";
-    return "My Account";
+    const meta = authUser?.user_metadata || {};
+    const name = String(auth?.profile?.name || meta.full_name || meta.name || "").trim();
+    return name && !name.includes("@") ? name : "My Account";
   };
 
   useEffect(() => {

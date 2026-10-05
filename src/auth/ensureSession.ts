@@ -93,12 +93,12 @@ export async function ensureAccessToken(): Promise<string | null> {
   return session ? getAccessToken() : null;
 }
 
-export type ApplicationRoute = "/dashboard" | "/admin";
+export type ApplicationRoute = "/" | "/admin";
 
 /** Client route after FastAPI /api/auth/me. Does not reload the document. */
 export function applicationRouteForRole(role: string | null | undefined): ApplicationRoute {
   if (role === "super_admin" || role === "admin") return "/admin";
-  return "/dashboard";
+  return "/";
 }
 
 /**
