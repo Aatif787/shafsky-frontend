@@ -9,8 +9,8 @@ export function HeroSection({}: { visible: boolean }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Pure White Background with Crisp 3-Up Auto-scrolling Photography Stream */}
-      <div className="relative z-10 mx-auto max-w-[1600px] w-full px-4 sm:px-6 md:px-10 lg:px-12">
+      {/* Full-Bleed Responsive Auto-scrolling Photography Stream */}
+      <div className="relative z-10 w-full overflow-hidden">
         <HomepagePhotoCarousel />
       </div>
     </motion.section>

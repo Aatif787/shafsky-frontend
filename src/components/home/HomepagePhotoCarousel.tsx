@@ -133,7 +133,7 @@ export function HomepagePhotoCarousel() {
       <div
         ref={containerRef}
         // Removed scroll-smooth from here so we can control instant jumps in JS
-        className="flex items-center gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-4 px-4 sm:px-8 md:px-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex items-center gap-3 sm:gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory py-4 px-2 sm:px-4 md:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{
           scrollSnapType: "x mandatory",
         }}

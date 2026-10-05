@@ -302,46 +302,50 @@ function DedicatedSpecialServicesPage() {
                       : "border-slate-200 hover:border-slate-300"
                   }`}
                 >
-                  {/* Photo Container */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-900">
+                  {/* Photo Container - 100% Pure, Unobstructed Image */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
                     <img
                       src={opt.photo}
                       alt={opt.label}
                       className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105 select-none"
                       loading="eager"
                     />
-                    {/* Gradient Overlay for Crisp Text Legibility */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-
-                    {/* Featured Badge */}
-                    <div className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/25 text-[9px] font-mono font-bold tracking-wider text-lime-400">
-                      <Sparkles size={10} className="text-lime-400" />
-                      <span>FEATURED SERVICE</span>
-                    </div>
-
-                    {/* Badge & Title on Image Bottom */}
-                    <div className="absolute bottom-3 left-3 right-3">
-                      <span className="inline-block px-2 py-0.5 rounded text-[8.5px] font-mono font-bold tracking-wider uppercase text-lime-300 bg-black/65 backdrop-blur-xs border border-lime-400/40 mb-1">
-                        {opt.badge}
-                      </span>
-                      <h3 className="text-lg font-bold text-white drop-shadow-md leading-snug">
-                        {opt.label}
-                      </h3>
-                    </div>
                   </div>
 
-                  {/* Card Body */}
-                  <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between bg-white">
-                    <p className="text-xs text-slate-600 leading-relaxed line-clamp-2 mb-4 font-normal">
-                      {opt.tagline}
-                    </p>
+                  {/* Card Body - Clean Typography & Badges Safely Below Image */}
+                  <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between bg-white">
+                    <div>
+                      {/* Top Badges Row */}
+                      <div className="flex items-center justify-between gap-2 mb-2.5">
+                        <span className="inline-block px-2.5 py-1 rounded-md text-[9px] font-mono font-bold tracking-wider uppercase text-lime-800 bg-lime-50 border border-lime-200">
+                          {opt.badge}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-[9px] font-mono font-bold tracking-wider text-slate-400 uppercase">
+                          <Sparkles size={10} className="text-lime-500" />
+                          <span>Featured</span>
+                        </span>
+                      </div>
 
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                      {/* Service Title */}
+                      <h3
+                        className="text-lg sm:text-xl font-bold text-slate-950 tracking-tight leading-snug group-hover:text-lime-700 transition-colors mb-2"
+                        style={display}
+                      >
+                        {opt.label}
+                      </h3>
+
+                      {/* Description Tagline */}
+                      <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed line-clamp-2 mb-4 font-normal">
+                        {opt.tagline}
+                      </p>
+                    </div>
+
+                    <div className="pt-3.5 border-t border-slate-100 flex items-center justify-between">
                       <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-semibold">
                         {isSelected ? "Active Service" : "Click to Configure"}
                       </span>
                       <span
-                        className={`text-xs font-mono font-bold uppercase tracking-wider px-3.5 py-1 rounded-full transition-all ${
+                        className={`text-xs font-mono font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all ${
                           isSelected
                             ? "bg-lime-500 text-slate-950 font-extrabold shadow-xs"
                             : "bg-slate-100 text-slate-700 group-hover:bg-lime-100 group-hover:text-lime-800"
