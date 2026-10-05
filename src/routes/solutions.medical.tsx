@@ -10,7 +10,7 @@ import {
 import { display } from "@/components/home/theme";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
-import toursTravelImg from "@/assets/others/tours-travel.jpg";
+import tajMahalImg from "@/assets/homepage/widescreen/home3.jpeg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
@@ -66,7 +66,7 @@ const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     label: "Tours & Travel (Honeymoon/Couples)",
     badge: "CURATED ROMANTIC GETAWAYS & HONEYMOONS",
     tagline: "Curated romantic itineraries, European honeymoons, private yacht charters, and luxury stays.",
-    photo: toursTravelImg,
+    photo: tajMahalImg,
     inclusions: [
       "Tailored Luxury Honeymoon Circuits & Private Romantic Escapes (Paris, Venice, Amalfi, Switzerland)",
       "Private Aircraft Charter & Chauffeured Luxury Ground Fleet Synchronization",
