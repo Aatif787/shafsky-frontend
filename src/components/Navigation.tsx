@@ -14,7 +14,8 @@ import {
   ArrowLeft,
   User,
   LogIn,
-  ShieldCheck
+  ShieldCheck,
+  Sparkles
 } from "lucide-react";
 import { useBranding } from "@/lib/branding/branding.context";
 import { mono, display } from "@/components/home/theme";
@@ -26,6 +27,9 @@ interface ServiceMenuItem {
   href: string;
   descriptor: string;
   icon: React.ComponentType<{ size?: number; className?: string }>;
+  badge: string;
+  image: string;
+  features: string[];
 }
 
 export const PRIMARY_SERVICES: ServiceMenuItem[] = [
@@ -34,30 +38,45 @@ export const PRIMARY_SERVICES: ServiceMenuItem[] = [
     href: "/solutions/concierge",
     descriptor: "Airport assistance • Domestic • International • Transit",
     icon: Crown,
+    badge: "Signature Concierge",
+    image: "/images/services-gallery/aerobridge-welcome.webp",
+    features: ["Aerobridge Meet", "Baggage Porter", "Fast-Track Security", "VIP Lounge Access"],
   },
   {
     title: "Private Charter",
     href: "/solutions/aviation",
     descriptor: "Private • Corporate • Helicopter • Charter services",
     icon: Plane,
+    badge: "Executive Fleet",
+    image: "/images/charter/luxury-cabin.webp",
+    features: ["Private Jet Charter", "Helicopter Transfers", "Empty Leg Flights", "Air Ambulance"],
   },
   {
     title: "Transport Service",
     href: "/solutions/cargo",
     descriptor: "Luxury • MUV / Large • Standard",
     icon: Car,
+    badge: "Chauffeur & Fleet",
+    image: "/images/transport/tarmac-chauffeur.webp",
+    features: ["Mercedes Maybach & S-Class", "Large MUV & Coach", "Tarmac Escort", "24/7 Curbside Meet"],
   },
   {
     title: "Luxury Hotels",
     href: "/solutions/travel",
     descriptor: "7 Star • 5 Star • 3 Star",
     icon: Hotel,
+    badge: "Curated Stays",
+    image: "/images/hotels/de-pavilion.jpg",
+    features: ["7 Star & 5 Star Suites", "Transit Airport Hotels", "Day-Use Rooms", "Express Check-In"],
   },
   {
     title: "Special Services",
     href: "/solutions/medical",
     descriptor: "Tours • Passport & VISA • PSO • Sightseeing • Infant Care • HUM",
     icon: ShieldCheck,
+    badge: "Protocol & Care",
+    image: "/images/services-gallery/family-arrival.webp",
+    features: ["Passport & VISA Assist", "Armed PSO Escorts", "Sightseeing Tours", "Infant Care & HUM Support"],
   },
 ];
 
@@ -116,6 +135,14 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
   const activeNavStructure = ICICI_REVIEW_MODE
     ? NAV_STRUCTURE.filter((item) => item.href !== "/solutions/aviation")
     : NAV_STRUCTURE;
+
+  const [previewServiceTitle, setPreviewServiceTitle] = useState<string>(
+    "Meet & Greet and Lounge Service"
+  );
+
+  const activePreview =
+    activePrimaryServices.find((s) => s.title === previewServiceTitle) ||
+    activePrimaryServices[0];
 
   const getDashboardPath = (): any => {
     if (authRole === "super_admin" || roles.includes("super_admin")) return "/super-admin/dashboard";
@@ -330,77 +357,217 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                       <motion.div
                         ref={megaMenuRef}
                         key="services-mega"
-                        initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                        initial={{ opacity: 0, y: 8, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 4, scale: 0.98 }}
-                        transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+                        exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                        transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
                         onMouseEnter={() => handleMouseEnter(item.label)}
                         onMouseLeave={() => handleMouseLeave()}
-                        className={`absolute top-[calc(100%-2px)] left-1/2 -translate-x-1/2 rounded-[18px] bg-white border border-slate-200/90 shadow-[0_16px_40px_-8px_rgba(15,23,42,0.12),0_4px_12px_-2px_rgba(15,23,42,0.06)] p-3.5 z-50 before:absolute before:-top-3 before:left-0 before:w-full before:h-3 before:content-[''] ${
-                          ICICI_REVIEW_MODE ? "w-[360px]" : "w-[660px]"
+                        className={`absolute top-[calc(100%-2px)] left-1/2 -translate-x-1/2 rounded-[22px] bg-white border border-[#c5a059]/25 shadow-[0_24px_65px_-12px_rgba(10,25,111,0.16),0_0_0_1px_rgba(197,160,89,0.12)] p-3.5 z-50 before:absolute before:-top-3 before:left-0 before:w-full before:h-3 before:content-[''] ${
+                          ICICI_REVIEW_MODE ? "w-[380px]" : "w-[840px] max-w-[calc(100vw-32px)]"
                         }`}
                       >
-                        <div className="flex items-center justify-between pb-2 mb-2 px-1 border-b border-slate-100">
-                          <span className="text-[10px] font-mono uppercase tracking-[0.22em] text-[#0a196f] font-bold">
-                            Shafsky Aviation Services
-                          </span>
-                          <span className="text-[10.5px] font-mono text-slate-400">
-                            {ICICI_REVIEW_MODE ? "Airside Concierge" : "5 Core Portfolios"}
-                          </span>
-                        </div>
-
-                        <div className={ICICI_REVIEW_MODE ? "grid grid-cols-1 gap-1.5" : "grid grid-cols-1 sm:grid-cols-2 gap-1.5"}>
-                          {activePrimaryServices.map((srv, idx) => {
-                            const SrvIcon = srv.icon;
-                            const isCurrent = location.pathname === srv.href;
-                            const isSpanTwo = !ICICI_REVIEW_MODE && idx === activePrimaryServices.length - 1 && activePrimaryServices.length % 2 !== 0;
-
-                            return (
-                              <Link
-                                key={srv.title}
-                                to={srv.href}
-                                onClick={() => setHoveredCategory(null)}
-                                className={`group/item flex items-start gap-3 p-2.5 rounded-xl border transition-all duration-150 ${
-                                  isSpanTwo ? "sm:col-span-2" : ""
-                                } ${
-                                  isCurrent
-                                    ? "bg-slate-100/90 border-slate-300 shadow-xs"
-                                    : "bg-slate-50/50 hover:bg-slate-100/80 border-slate-200/60 hover:border-slate-300"
-                                }`}
-                              >
-                                <div
-                                  className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200 ${
-                                    isCurrent
-                                      ? "bg-[#0a196f] text-white"
-                                      : "bg-white border border-slate-200 text-slate-700 group-hover/item:bg-[#0a196f] group-hover/item:text-[#c5a059] group-hover/item:border-[#0a196f]"
-                                  }`}
+                        {ICICI_REVIEW_MODE ? (
+                          <div className="flex flex-col gap-2">
+                            {activePrimaryServices.map((srv) => {
+                              const SrvIcon = srv.icon;
+                              return (
+                                <Link
+                                  key={srv.title}
+                                  to={srv.href}
+                                  onClick={() => setHoveredCategory(null)}
+                                  className="group/item flex items-start gap-3 p-3 rounded-xl bg-slate-50/80 hover:bg-[#faf9f5] border border-slate-200/80 hover:border-[#c5a059]/60 transition-all duration-200"
                                 >
-                                  <SrvIcon size={15} />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center justify-between gap-1">
-                                    <span
-                                      className={`text-[13px] font-semibold leading-tight transition-colors ${
-                                        isCurrent
-                                          ? "text-[#0a196f]"
-                                          : "text-slate-900 group-hover/item:text-[#0a196f]"
-                                      }`}
-                                    >
-                                      {srv.title}
-                                    </span>
-                                    <ArrowRight
-                                      size={12}
-                                      className="text-slate-300 group-hover/item:text-[#0a196f] group-hover/item:translate-x-0.5 transition-all shrink-0 opacity-0 group-hover/item:opacity-100"
-                                    />
+                                  <div className="h-9 w-9 rounded-lg bg-[#0a196f] text-[#c5a059] flex items-center justify-center shrink-0">
+                                    <SrvIcon size={16} />
                                   </div>
-                                  <p className="text-[10.5px] sm:text-[11px] text-slate-500 font-mono mt-0.5 leading-snug group-hover/item:text-slate-700">
-                                    {srv.descriptor}
-                                  </p>
+                                  <div>
+                                    <h4 className="text-[13.5px] font-bold text-slate-900 group-hover/item:text-[#0a196f]">
+                                      {srv.title}
+                                    </h4>
+                                    <p className="text-[11px] text-slate-500 font-mono mt-0.5">
+                                      {srv.descriptor}
+                                    </p>
+                                  </div>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-stretch">
+                            {/* Left Column: Refined Navigation List */}
+                            <div className="md:col-span-7 flex flex-col justify-between pr-1">
+                              <div>
+                                <div className="flex items-center justify-between pb-2 mb-1 px-2 border-b border-slate-100">
+                                  <div className="flex items-center gap-2">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-[#c5a059]" />
+                                    <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#0a196f] font-bold">
+                                      Shafsky Aviation Portfolios
+                                    </span>
+                                  </div>
+                                  <span className="text-[10px] font-mono text-slate-400 font-medium">
+                                    5 Core Services
+                                  </span>
                                 </div>
-                              </Link>
-                            );
-                          })}
-                        </div>
+
+                                <div className="flex flex-col gap-1">
+                                  {activePrimaryServices.map((srv) => {
+                                    const SrvIcon = srv.icon;
+                                    const isSelected = activePreview?.title === srv.title;
+
+                                    return (
+                                      <Link
+                                        key={srv.title}
+                                        to={srv.href}
+                                        onClick={() => setHoveredCategory(null)}
+                                        onMouseEnter={() => setPreviewServiceTitle(srv.title)}
+                                        className={`group/item relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
+                                          isSelected
+                                            ? "bg-slate-100/90 shadow-xs"
+                                            : "hover:bg-slate-50/90 text-slate-700"
+                                        }`}
+                                      >
+                                        {/* Left luxury gold accent indicator */}
+                                        <div
+                                          className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-200 ${
+                                            isSelected
+                                              ? "h-6 bg-[#c5a059]"
+                                              : "h-0 bg-transparent group-hover/item:h-3 group-hover/item:bg-[#c5a059]/50"
+                                          }`}
+                                        />
+
+                                        <div
+                                          className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200 ${
+                                            isSelected
+                                              ? "bg-[#0a196f] text-[#c5a059] shadow-xs"
+                                              : "bg-white border border-slate-200/90 text-slate-600 group-hover/item:bg-[#0a196f] group-hover/item:text-white group-hover/item:border-[#0a196f]"
+                                          }`}
+                                        >
+                                          <SrvIcon size={15} />
+                                        </div>
+
+                                        <div className="flex-1 min-w-0">
+                                          <div className="flex items-center justify-between gap-1">
+                                            <span
+                                              className={`text-[13px] font-semibold tracking-tight transition-colors ${
+                                                isSelected
+                                                  ? "text-[#0a196f] font-bold"
+                                                  : "text-slate-900 group-hover/item:text-[#0a196f]"
+                                              }`}
+                                            >
+                                              {srv.title}
+                                            </span>
+                                            <ArrowRight
+                                              size={12}
+                                              className={`transition-all duration-200 shrink-0 ${
+                                                isSelected
+                                                  ? "text-[#c5a059] opacity-100 translate-x-0"
+                                                  : "text-slate-300 opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                                              }`}
+                                            />
+                                          </div>
+                                          <p className="text-[10.5px] text-slate-500 font-mono mt-0.5 leading-snug group-hover/item:text-slate-700">
+                                            {srv.descriptor}
+                                          </p>
+                                        </div>
+                                      </Link>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Bottom concierge contact hotline strip */}
+                              <div className="pt-2 px-2 border-t border-slate-100 flex items-center justify-between text-[10.5px] font-mono text-slate-500">
+                                <span className="flex items-center gap-1.5">
+                                  <span className="relative flex h-1.5 w-1.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                                  </span>
+                                  Direct Airside Coordination
+                                </span>
+                                <a
+                                  href="tel:+919599087959"
+                                  className="text-[#0a196f] font-bold hover:underline"
+                                >
+                                  +91 9599087959
+                                </a>
+                              </div>
+                            </div>
+
+                            {/* Right Column: Classical Luxury Showcase Preview */}
+                            <div className="md:col-span-5 relative flex flex-col">
+                              <AnimatePresence mode="wait">
+                                <motion.div
+                                  key={activePreview.title}
+                                  initial={{ opacity: 0, scale: 0.98 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  exit={{ opacity: 0, scale: 0.98 }}
+                                  transition={{ duration: 0.18, ease: "easeOut" }}
+                                  className="relative flex-1 min-h-[350px] rounded-2xl overflow-hidden border border-[#c5a059]/30 shadow-md flex flex-col justify-end p-4 text-white group/preview bg-[#071328]"
+                                >
+                                  {/* Background Image with Cinematic Gradient */}
+                                  <img
+                                    src={activePreview.image}
+                                    alt={activePreview.title}
+                                    className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover/preview:scale-105"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-[#071328] via-[#071328]/70 to-[#071328]/25" />
+                                  <div className="absolute inset-0 bg-[#0a196f]/15 mix-blend-multiply" />
+
+                                  {/* Top Floating Badge */}
+                                  <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between">
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#071328]/85 backdrop-blur-md border border-[#c5a059]/40 text-[9.5px] font-mono font-bold tracking-wider text-[#c5a059] uppercase shadow-sm">
+                                      <Sparkles size={11} className="text-[#c5a059]" />
+                                      <span>{activePreview.badge || "VIP Showcase"}</span>
+                                    </span>
+                                    <span className="text-[9px] font-mono tracking-widest text-slate-300 uppercase px-2 py-0.5 rounded bg-black/40 backdrop-blur-xs">
+                                      Airside
+                                    </span>
+                                  </div>
+
+                                  {/* Content */}
+                                  <div className="relative z-10 flex flex-col gap-2.5">
+                                    <div>
+                                      <h4
+                                        className="text-[17px] font-bold tracking-tight text-white leading-tight drop-shadow-sm"
+                                        style={display}
+                                      >
+                                        {activePreview.title}
+                                      </h4>
+                                      <p className="text-[11px] text-slate-200/90 font-mono mt-1 leading-snug line-clamp-2">
+                                        {activePreview.descriptor}
+                                      </p>
+                                    </div>
+
+                                    {/* Feature Tags */}
+                                    {activePreview.features && (
+                                      <div className="flex flex-wrap gap-1.5 pt-0.5">
+                                        {activePreview.features.map((feat) => (
+                                          <span
+                                            key={feat}
+                                            className="px-2 py-0.5 rounded-md bg-white/10 backdrop-blur-sm border border-white/15 text-[9.5px] font-mono text-slate-200"
+                                          >
+                                            {feat}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {/* Action Link Button */}
+                                    <Link
+                                      to={activePreview.href}
+                                      onClick={() => setHoveredCategory(null)}
+                                      className="mt-1 w-full inline-flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-[#c5a059] to-[#d4af37] text-slate-950 text-xs font-bold font-mono tracking-wider uppercase shadow-md shadow-black/30 hover:brightness-105 active:scale-[0.99] transition-all cursor-pointer"
+                                    >
+                                      <span>Explore Service & Book</span>
+                                      <ArrowRight size={13} className="text-slate-950 transition-transform group-hover/preview:translate-x-1" />
+                                    </Link>
+                                  </div>
+                                </motion.div>
+                              </AnimatePresence>
+                            </div>
+                          </div>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>

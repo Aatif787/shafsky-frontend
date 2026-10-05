@@ -66,7 +66,7 @@ export function SignInPage() {
 
   useEffect(() => {
     if (!loading && user && profile && mode !== "reset") {
-      void navigate({ to: profile.role === "customer" ? "/" : applicationRouteForRole(profile.role) });
+      void navigate({ to: applicationRouteForRole(profile.role) });
     }
   }, [user, profile, loading, mode, navigate]);
 
