@@ -8,7 +8,7 @@
  * never two concurrent refreshes (refresh tokens may rotate).
  */
 
-import { apiAuthRefresh, type AuthResponseData } from "./authClient";
+import { apiAuthRefresh, apiAuthMe, type AuthResponseData } from "./authClient";
 import { roleFromFastApiClaims } from "./clerkSession";
 import { getAccessToken, setAccessToken, clearAccessToken } from "./tokenStore";
 
@@ -54,34 +54,48 @@ export function rememberSession(data: AuthResponseData | null): void {
  * Returns the current session, refreshing once if needed. Resolves to null when
  * there is no session hint or the refresh fails.
  */
-export function ensureSession(): Promise<AuthResponseData | null> {
-  if (getAccessToken() && lastSession) return Promise.resolve(lastSession);
-  if (typeof document === "undefined") return Promise.resolve(null);
-  if (!hasSessionHint()) return Promise.resolve(null);
+export async function ensureSession(): Promise<AuthResponseData | null> {
+  if (getAccessToken() && lastSession) return lastSession;
+  if (typeof document === "undefined") return null;
+  if (!hasSessionHint()) return null;
 
   if (!inflight) {
-    inflight = apiAuthRefresh()
-      .then(({ data, error }) => {
+    inflight = (async () => {
+      try {
+        const { data, error } = await apiAuthRefresh();
         const token = data?.accessToken || data?.access_token;
-        if (error || !token || !data?.user) {
+        if (error || !token) {
           clearAccessToken();
           lastSession = null;
           setSessionHint(false);
           return null;
         }
         setAccessToken(token);
-        lastSession = data;
+
+        // Fetch application user profile with the freshly obtained access token
+        const me = await apiAuthMe(token);
+        if (me.error || !me.user) {
+          clearAccessToken();
+          lastSession = null;
+          setSessionHint(false);
+          return null;
+        }
+
+        const sessionData: AuthResponseData = {
+          accessToken: token,
+          user: me.user,
+        };
+        lastSession = sessionData;
         setSessionHint(true);
-        return data;
-      })
-      .catch(() => {
+        return sessionData;
+      } catch {
         clearAccessToken();
         lastSession = null;
         return null;
-      })
-      .finally(() => {
+      } finally {
         inflight = null;
-      });
+      }
+    })();
   }
   return inflight;
 }
@@ -119,6 +133,20 @@ export function readApplicationSession(): {
     roles: [role],
     isStaff: role === "admin" || role === "super_admin" || role === "staff",
   };
+}
+
+/**
+ * Ensures session is loaded asynchronously if in-memory token is absent.
+ */
+export async function ensureApplicationSession(): Promise<{
+  userId: string;
+  roles: string[];
+  isStaff: boolean;
+} | null> {
+  const live = readApplicationSession();
+  if (live) return live;
+  await ensureSession();
+  return readApplicationSession();
 }
 
 /** null means the dashboard may render. A path is a redirect. */

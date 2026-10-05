@@ -107,7 +107,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
   const auth = useContext(AuthContext);
   const authUser = auth?.user;
   const authRole = auth?.profile?.role;
-  const isLoggedIn = Boolean(authUser || roles.length > 0);
+  const isLoggedIn = Boolean(authUser || auth?.profile || roles.length > 0);
 
   const activePrimaryServices = ICICI_REVIEW_MODE
     ? PRIMARY_SERVICES.filter((srv) => srv.href === "/solutions/concierge")
@@ -121,7 +121,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     if (authRole === "super_admin" || roles.includes("super_admin")) return "/super-admin/dashboard";
     if (authRole === "staff" || roles.includes("staff")) return "/staff/dashboard";
     if (authRole === "admin" || roles.includes("admin")) return "/admin/dashboard";
-    return "/account";
+    return "/dashboard";
   };
 
   const getDashboardLabel = () => {
@@ -130,7 +130,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     if (authRole === "admin" || roles.includes("admin")) return "Admin Portal";
     const meta = authUser?.user_metadata || {};
     const name = String(auth?.profile?.name || meta.full_name || meta.name || "").trim();
-    return name && !name.includes("@") ? name : "My Account";
+    return name && !name.includes("@") && name.toLowerCase() !== "user" ? name : "My Account";
   };
 
   useEffect(() => {
