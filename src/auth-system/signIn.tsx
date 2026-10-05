@@ -66,7 +66,7 @@ export function SignInPage() {
 
   useEffect(() => {
     if (!loading && user && profile && mode !== "reset") {
-      void navigate({ to: applicationRouteForRole(profile.role) });
+      void navigate({ to: profile.role === "customer" ? "/" : applicationRouteForRole(profile.role) });
     }
   }, [user, profile, loading, mode, navigate]);
 
@@ -86,7 +86,7 @@ export function SignInPage() {
       // Existing Clerk session was exchanged in-place (no OAuth redirect).
       if (result.role) {
         setSubmitting(false);
-        void navigate({ to: applicationRouteForRole(result.role) });
+        void navigate({ to: result.role === "customer" ? "/" : applicationRouteForRole(result.role) });
       }
       // Otherwise SSO redirect is in progress; leave the button loading.
     } catch (err) {
