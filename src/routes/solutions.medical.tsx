@@ -272,18 +272,7 @@ function DedicatedSpecialServicesPage() {
             </div>
           </div>
 
-          {/* Title & Description */}
-          <div className="text-center max-w-3xl mx-auto mb-10">
-            <h1
-              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
-              style={display}
-            >
-              Special <span className="text-lime-600">Services</span>
-            </h1>
-            <p className="mt-3 text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Curated luxury spa retreats, custom romantic honeymoon tours, and certified close protection with private boutique shopping escorts.
-            </p>
-          </div>
+          <h1 className="sr-only">Special Services</h1>
 
           {/* 3 SEPARATE SERVICE SHOWCASE CARDS (PURE PHOTOGRAPHY, ZERO TEXT) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
