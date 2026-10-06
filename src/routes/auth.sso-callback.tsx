@@ -17,13 +17,14 @@ export const Route = createFileRoute("/auth/sso-callback")({
 });
 
 function GoogleSsoCallbackPage() {
-  const { completeGoogleReturn, loading } = useAuth();
+  const { completeGoogleReturn, loading, clerkLoaded } = useAuth();
   const navigate = useNavigate();
   const hasRun = useRef(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    if (loading || hasRun.current) return;
+    // Stay on the loading state until Clerk is fully loaded; run exactly once.
+    if (loading || !clerkLoaded || hasRun.current) return;
     hasRun.current = true;
 
     void (async () => {
@@ -32,9 +33,10 @@ function GoogleSsoCallbackPage() {
         setErrorMsg(result.error.message);
         return;
       }
-      await navigate({ to: applicationRouteForRole(result.role) });
+      // Application session (token + hint + user) is established at this point.
+      await navigate({ to: applicationRouteForRole(result.role), replace: true });
     })();
-  }, [completeGoogleReturn, loading, navigate]);
+  }, [completeGoogleReturn, loading, clerkLoaded, navigate]);
 
   return (
     <div className="min-h-screen bg-[#faf5ea] flex flex-col items-center justify-center p-6 text-center">
