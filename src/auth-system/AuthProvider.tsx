@@ -216,6 +216,8 @@ function AuthSession({
         if (error || !tokenStr) {
           if (active) {
             syncAuthCookie(null);
+            setSessionHint(false);
+            rememberSession(null);
             clearAccessToken();
             setUser(null);
             setProfile(null);
@@ -228,6 +230,8 @@ function AuthSession({
         if (me.error || !me.user) {
           if (active) {
             syncAuthCookie(null);
+            setSessionHint(false);
+            rememberSession(null);
             clearAccessToken();
             setUser(null);
             setProfile(null);
@@ -243,6 +247,8 @@ function AuthSession({
         console.error("[AuthProvider] Session restore exception:", err);
         if (active) {
           syncAuthCookie(null);
+          setSessionHint(false);
+          rememberSession(null);
           clearAccessToken();
           setUser(null);
           setProfile(null);

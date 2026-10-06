@@ -35,10 +35,10 @@ export function setSessionHint(present: boolean): void {
     document.cookie = `${SESSION_HINT_COOKIE}=1; path=/; max-age=31536000; SameSite=Lax${secure}`;
   } else {
     document.cookie = `${SESSION_HINT_COOKIE}=; path=/; max-age=0; SameSite=Lax${secure}`;
-  }
-  // Always clear legacy identity cookies; they must never be relied on again.
-  for (const name of LEGACY_HINT_COOKIES) {
-    document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax${secure}`;
+    // Clear legacy identity cookies only when logging out or invalidating session
+    for (const name of LEGACY_HINT_COOKIES) {
+      document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax${secure}`;
+    }
   }
 }
 

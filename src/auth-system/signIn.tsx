@@ -226,13 +226,18 @@ export function SignInPage() {
 
   const translateError = (error: Error) => {
     const msg = error.message.toLowerCase();
-    if (msg.includes("invalid login credentials")) {
+    if (
+      msg.includes("invalid login credentials") ||
+      msg.includes("identifier or password is invalid") ||
+      msg.includes("password is incorrect") ||
+      msg.includes("couldn't find your account")
+    ) {
       setErrorMsg("Incorrect email or password. Please try again.");
     } else if (msg.includes("email not confirmed")) {
       setErrorMsg("Your email address has not been confirmed yet. Please verify your inbox.");
-    } else if (msg.includes("rate limit")) {
+    } else if (msg.includes("rate limit") || msg.includes("too many requests")) {
       setErrorMsg("Too many login attempts. Please wait a few moments and try again.");
-    } else if (msg.includes("user already registered")) {
+    } else if (msg.includes("user already registered") || msg.includes("identifier already exists")) {
       setErrorMsg("An account with this email address already exists.");
     } else {
       setErrorMsg(error.message);
