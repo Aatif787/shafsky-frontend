@@ -77,7 +77,22 @@ export function SignInPage() {
     setSuccessMsg(null);
     setSubmitting(true);
     try {
-      const result = await signInWithGoogle();
+      // Never leave the login button spinning forever if the browser/Clerk
+      // OAuth redirect fails to start or a provider request hangs.
+      const result = await Promise.race([
+        signInWithGoogle(),
+        new Promise<{ error: Error; role?: never }>((resolve) =>
+          window.setTimeout(
+            () =>
+              resolve({
+                error: new Error(
+                  "Google sign-in timed out. Please try again.",
+                ),
+              }),
+            20000,
+          ),
+        ),
+      ]);
       if (result.error) {
         translateError(result.error);
         setSubmitting(false);
