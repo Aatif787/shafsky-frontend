@@ -24,9 +24,19 @@ import {
 } from "lucide-react";
 import { saTheme, saMono, saDisplay } from "@/components/super-admin/SAComponents";
 import { checkSuperAdminAccess } from "@/lib/super-admin.functions";
+import { ensureApplicationSession } from "@/auth/ensureSession";
 
 export const Route = createFileRoute("/_authenticated/super-admin")({
   beforeLoad: async () => {
+    const appSession = await ensureApplicationSession();
+    if (appSession?.userId && appSession.userId !== "guest_user") {
+      if (!appSession.roles.includes("super_admin")) {
+        if (appSession.roles.includes("admin")) throw redirect({ to: `/admin` } as any);
+        throw redirect({ to: `/dashboard` } as any);
+      }
+      return appSession;
+    }
+
     const res = await checkSuperAdminAccess().catch(() => null);
     const { roles, userId } = res || { roles: [], userId: null };
     if (!userId || userId === "guest_user") {
@@ -39,6 +49,15 @@ export const Route = createFileRoute("/_authenticated/super-admin")({
     return { roles, userId };
   },
   loader: async () => {
+    const appSession = await ensureApplicationSession();
+    if (appSession?.userId && appSession.userId !== "guest_user") {
+      if (!appSession.roles.includes("super_admin")) {
+        if (appSession.roles.includes("admin")) throw redirect({ to: `/admin` } as any);
+        throw redirect({ to: `/dashboard` } as any);
+      }
+      return appSession;
+    }
+
     const res = await checkSuperAdminAccess().catch(() => null);
     const { roles, userId } = res || { roles: [], userId: null };
     if (!userId || userId === "guest_user") {

@@ -18,9 +18,18 @@ import {
 } from "lucide-react";
 import { pageDisplay, pageMono, Panel } from "@/components/site/PageShell";
 import { checkStaffAccess } from "@/lib/admin.functions";
+import { ensureApplicationSession } from "@/auth/ensureSession";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   loader: async () => {
+    const appSession = await ensureApplicationSession();
+    if (appSession?.userId && appSession.userId !== "guest_user") {
+      if (!appSession.roles.includes("admin") && !appSession.roles.includes("super_admin")) {
+        throw redirect({ to: `/dashboard` } as any);
+      }
+      return appSession;
+    }
+
     const res = await checkStaffAccess().catch((err) => {
       console.error("checkStaffAccess CLIENT ERROR:", err);
       return null;

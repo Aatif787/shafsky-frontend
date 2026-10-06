@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import { useAuth as useClerkAuth, useClerk, useSignIn, useSignUp } from "@clerk/tanstack-react-start";
 import type { Profile, Role, User, AuthContextType } from "./types";
 import { setAccessToken, getAccessToken, clearAccessToken } from "@/auth/tokenStore";
@@ -10,7 +10,13 @@ import {
   roleFromFastApiClaims,
 } from "@/auth/clerkSession";
 import { beginClerkSignUp, verifyClerkEmailCode, type ClerkSignUpClient } from "@/auth/clerkSignUpFlow";
-import { rememberSession, setSessionHint, hasSessionHint } from "@/auth/ensureSession";
+import {
+  rememberSession,
+  setSessionHint,
+  hasSessionHint,
+  readApplicationSession,
+} from "@/auth/ensureSession";
+import { completeGoogleCallback, type GoogleCallbackResult } from "@/auth/googleCallback";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -210,6 +216,8 @@ function AuthSession({
         if (error || !tokenStr) {
           if (active) {
             syncAuthCookie(null);
+            setSessionHint(false);
+            rememberSession(null);
             clearAccessToken();
             setUser(null);
             setProfile(null);
@@ -222,6 +230,8 @@ function AuthSession({
         if (me.error || !me.user) {
           if (active) {
             syncAuthCookie(null);
+            setSessionHint(false);
+            rememberSession(null);
             clearAccessToken();
             setUser(null);
             setProfile(null);
@@ -237,6 +247,8 @@ function AuthSession({
         console.error("[AuthProvider] Session restore exception:", err);
         if (active) {
           syncAuthCookie(null);
+          setSessionHint(false);
+          rememberSession(null);
           clearAccessToken();
           setUser(null);
           setProfile(null);
@@ -439,71 +451,42 @@ function AuthSession({
     return new Error("Google sign-in could not be completed.");
   };
 
-  const completeGoogleReturn = async () => {
+  // Single-flight: concurrent/duplicate callback invocations share one exchange.
+  const googleReturnInflight = useRef<Promise<GoogleCallbackResult> | null>(null);
+
+  const completeGoogleReturn = async (): Promise<GoogleCallbackResult> => {
     if (!clerk) {
       return { error: new Error("Clerk publishable key is not configured.") };
     }
-    if (!clerk.isLoaded) {
-      return { error: new Error("Authentication is not ready.") };
+    if (googleReturnInflight.current) {
+      return googleReturnInflight.current;
     }
+    const run = (async (): Promise<GoogleCallbackResult> => {
+      try {
+        return await completeGoogleCallback({
+          isLoaded: clerk.isLoaded,
+          isSignedIn: clerk.isSignedIn,
+          signIn: clerk.signIn.signIn,
+          signUp: clerk.signUp.signUp,
+          reuseApplicationSession: () => {
+            const live = readApplicationSession();
+            return live ? (live.roles[0] as Role) : null;
+          },
+          exchangeFreshClerkSession,
+          finalizeSignInAndExchange: establishFreshClerkSignIn,
+          setActiveSession: clerk.setActiveSession,
+          missingRequirementsError: googleMissingRequirementsError,
+        });
+      } catch (err) {
+        console.error("[AuthProvider] Clerk Google return exception:", err);
+        return { error: clerkErrorMessage(err, "Google sign-in failed") };
+      }
+    })();
+    googleReturnInflight.current = run;
     try {
-      const signInResource = clerk.signIn.signIn;
-      const signUpResource = clerk.signUp.signUp;
-
-      const finishNewGoogleUser = async () => {
-        if (signUpResource.status !== "complete") {
-          return { error: googleMissingRequirementsError([...signUpResource.missingFields]) };
-        }
-        const finalized = await signUpResource.finalize();
-        if (finalized.error) {
-          return { error: finalized.error };
-        }
-        return await exchangeFreshClerkSession();
-      };
-
-      if (signInResource.status === "complete") {
-        return await establishFreshClerkSignIn();
-      }
-
-      if (signInResource.isTransferable) {
-        const created = await signUpResource.create({ transfer: true });
-        if (created.error) {
-          return { error: created.error };
-        }
-        return await finishNewGoogleUser();
-      }
-
-      if (signUpResource.isTransferable) {
-        const created = await signInResource.create({ transfer: true });
-        if (created.error) {
-          return { error: created.error };
-        }
-        const transferredStatus = String(signInResource.status);
-        if (transferredStatus !== "complete") {
-          return { error: new Error("Google sign-in could not be completed.") };
-        }
-        return await establishFreshClerkSignIn();
-      }
-
-      if (signUpResource.status === "complete") {
-        return await finishNewGoogleUser();
-      }
-
-      if (signUpResource.status === "missing_requirements") {
-        return { error: googleMissingRequirementsError([...signUpResource.missingFields]) };
-      }
-
-      const sessionId =
-        signInResource.existingSession?.sessionId || signUpResource.existingSession?.sessionId;
-      if (sessionId) {
-        await clerk.setActiveSession(sessionId);
-        return await exchangeFreshClerkSession();
-      }
-
-      return { error: new Error("Google sign-in could not be completed.") };
-    } catch (err) {
-      console.error("[AuthProvider] Clerk Google return exception:", err);
-      return { error: clerkErrorMessage(err, "Google sign-in failed") };
+      return await run;
+    } finally {
+      googleReturnInflight.current = null;
     }
   };
 
@@ -643,6 +626,7 @@ function AuthSession({
     user,
     profile,
     loading,
+    clerkLoaded: clerk ? clerk.isLoaded : true,
     signInWithPassword,
     verifySignInCode,
     signInWithGoogle,

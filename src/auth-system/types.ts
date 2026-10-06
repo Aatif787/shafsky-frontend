@@ -22,6 +22,8 @@ export interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
+  /** True once Clerk has finished loading (always true when Clerk is not configured). */
+  clerkLoaded: boolean;
   signInWithPassword: (
     email: string,
     password: string,
