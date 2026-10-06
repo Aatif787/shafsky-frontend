@@ -71,11 +71,15 @@ export async function completeGoogleCallback(
   }
 
   if (deps.handleRedirectCallback) {
+    const search = typeof window !== "undefined" ? window.location.search : "";
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
     const hasRedirectParams =
-      typeof window !== "undefined" &&
-      (window.location.search.includes("__clerk") ||
-        window.location.search.includes("code=") ||
-        window.location.search.includes("state="));
+      search.includes("__clerk") ||
+      hash.includes("__clerk") ||
+      search.includes("code=") ||
+      hash.includes("code=") ||
+      search.includes("state=") ||
+      hash.includes("state=");
     if (hasRedirectParams) {
       try {
         await deps.handleRedirectCallback();

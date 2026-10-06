@@ -246,7 +246,13 @@ function RootComponent() {
   if (!publishableKey) return application;
 
   return (
-    <ClerkProvider publishableKey={publishableKey} signInUrl="/auth" signUpUrl="/auth">
+    <ClerkProvider
+      publishableKey={publishableKey}
+      signInUrl="/auth"
+      signUpUrl="/auth"
+      signInFallbackRedirectUrl="/"
+      signUpFallbackRedirectUrl="/"
+    >
       {application}
     </ClerkProvider>
   );

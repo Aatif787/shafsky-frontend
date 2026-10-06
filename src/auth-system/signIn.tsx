@@ -93,10 +93,10 @@ export function SignInPage() {
         setSubmitting(false);
         return;
       }
-      // Existing Clerk session was exchanged in-place (no OAuth redirect).
       if (result.role) {
         setSubmitting(false);
-        void navigate({ to: result.role === "customer" ? "/" : applicationRouteForRole(result.role) });
+        const destination = applicationRouteForRole(result.role);
+        await navigate({ to: destination });
         return;
       }
       // If no role and no error, Google OAuth redirect has been dispatched.

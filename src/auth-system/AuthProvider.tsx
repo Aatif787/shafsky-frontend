@@ -96,7 +96,15 @@ function ClerkAuthSession({ children }: { children: React.ReactNode }) {
         },
         getUserName: () => clerk.user?.fullName || clerk.user?.firstName || null,
         handleRedirectCallback: async () => {
-          await clerk.handleRedirectCallback({});
+          await clerk.handleRedirectCallback(
+            {
+              signInFallbackRedirectUrl: "/",
+              signUpFallbackRedirectUrl: "/",
+            },
+            async () => {
+              // Overrides Clerk default navigation so FastAPI session can be established first
+            },
+          );
         },
       }}
     >
@@ -385,6 +393,13 @@ function AuthSession({
     }
     return await exchangeActiveClerkSession(freshToken);
   };
+
+  useEffect(() => {
+    if (!clerk || !clerk.isLoaded) return;
+    if (clerk.isSignedIn && !user && !loading) {
+      void exchangeFreshClerkSession();
+    }
+  }, [clerk?.isLoaded, clerk?.isSignedIn, user, loading]);
 
   const isSessionExistsError = (error: unknown) => {
     if (!error || typeof error !== "object") return false;
