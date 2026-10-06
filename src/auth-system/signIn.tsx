@@ -72,7 +72,17 @@ export function SignInPage() {
 
   const showGoogleOption = !awaitingEmailCode && (mode === "signin" || mode === "signup");
 
+  // Reset loading state if the user navigates back via bfcache or cancels Google OAuth
+  useEffect(() => {
+    const onPageShow = () => {
+      setSubmitting(false);
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
   const continueWithGoogle = async () => {
+    if (submitting) return; // Prevent duplicate clicks (single-flight)
     setErrorMsg(null);
     setSuccessMsg(null);
     setSubmitting(true);
@@ -87,8 +97,9 @@ export function SignInPage() {
       if (result.role) {
         setSubmitting(false);
         void navigate({ to: result.role === "customer" ? "/" : applicationRouteForRole(result.role) });
+        return;
       }
-      // Otherwise SSO redirect is in progress; leave the button loading.
+      // If no role and no error, Google OAuth redirect has been dispatched.
     } catch (err) {
       translateError(err instanceof Error ? err : new Error("Google sign-in failed"));
       setSubmitting(false);
@@ -224,8 +235,29 @@ export function SignInPage() {
     }
   };
 
-  const translateError = (error: Error) => {
-    const msg = error.message.toLowerCase();
+  const translateError = (error: unknown) => {
+    let rawMsg = "";
+    if (error instanceof Error) {
+      rawMsg = error.message;
+    } else if (error && typeof error === "object") {
+      const candidate = error as {
+        message?: string;
+        longMessage?: string;
+        errors?: { message?: string; longMessage?: string }[];
+      };
+      rawMsg =
+        candidate.errors?.[0]?.longMessage ||
+        candidate.errors?.[0]?.message ||
+        candidate.longMessage ||
+        candidate.message ||
+        "Authentication failed";
+    } else if (typeof error === "string") {
+      rawMsg = error;
+    } else {
+      rawMsg = "Authentication failed. Please try again.";
+    }
+
+    const msg = rawMsg.toLowerCase();
     if (
       msg.includes("invalid login credentials") ||
       msg.includes("identifier or password is invalid") ||
@@ -240,7 +272,7 @@ export function SignInPage() {
     } else if (msg.includes("user already registered") || msg.includes("identifier already exists")) {
       setErrorMsg("An account with this email address already exists.");
     } else {
-      setErrorMsg(error.message);
+      setErrorMsg(rawMsg);
     }
   };
 

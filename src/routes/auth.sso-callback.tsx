@@ -28,13 +28,21 @@ function GoogleSsoCallbackPage() {
     hasRun.current = true;
 
     void (async () => {
-      const result = await completeGoogleReturn();
-      if (result.error) {
-        setErrorMsg(result.error.message);
-        return;
+      try {
+        const result = await completeGoogleReturn();
+        if (result.error) {
+          setErrorMsg(result.error.message);
+          return;
+        }
+        // Application session (token + hint + user) is established at this point.
+        await navigate({ to: applicationRouteForRole(result.role), replace: true });
+      } catch (err) {
+        setErrorMsg(
+          err instanceof Error
+            ? err.message
+            : "Google authentication failed. Please try signing in again.",
+        );
       }
-      // Application session (token + hint + user) is established at this point.
-      await navigate({ to: applicationRouteForRole(result.role), replace: true });
     })();
   }, [completeGoogleReturn, loading, clerkLoaded, navigate]);
 

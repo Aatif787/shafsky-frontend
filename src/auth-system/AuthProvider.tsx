@@ -30,6 +30,7 @@ type ClerkBridge = {
   setActiveSession: (sessionId: string) => Promise<void>;
   signOut: () => Promise<void>;
   getUserName?: () => string | null;
+  handleRedirectCallback?: () => Promise<void>;
 };
 
 function clerkFieldError(errors: {
@@ -94,6 +95,9 @@ function ClerkAuthSession({ children }: { children: React.ReactNode }) {
           await clerk.signOut();
         },
         getUserName: () => clerk.user?.fullName || clerk.user?.firstName || null,
+        handleRedirectCallback: async () => {
+          await clerk.handleRedirectCallback({});
+        },
       }}
     >
       {children}
@@ -111,6 +115,7 @@ function AuthSession({
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const googleSignInInflight = useRef<Promise<{ error: Error | null; role?: Role }> | null>(null);
 
   // Helper function to resolve the user's profile and role from backend metadata
   const fetchProfile = (apiUser: any): Profile => {
@@ -301,7 +306,7 @@ function AuthSession({
     }
     const finalized = await clerk.signIn.signIn.finalize();
     if (finalized.error) {
-      return { error: finalized.error };
+      return { error: clerkErrorMessage(finalized.error, "Sign in failed") };
     }
     const freshToken = await clerk.getFreshSessionToken();
     if (!freshToken) {
@@ -323,7 +328,7 @@ function AuthSession({
         password,
       });
       if (attempt.error) {
-        return { error: attempt.error };
+        return { error: clerkErrorMessage(attempt.error, "Invalid login credentials") };
       }
       if (clerk.signIn.signIn.status === "complete") {
         return await establishFreshClerkSignIn();
@@ -358,7 +363,7 @@ function AuthSession({
     try {
       const verified = await clerk.signIn.signIn.mfa.verifyEmailCode({ code: code.trim() });
       if (verified.error) {
-        return { error: verified.error };
+        return { error: clerkErrorMessage(verified.error, "Invalid verification code") };
       }
       if (clerk.signIn.signIn.status !== "complete") {
         return { error: new Error("Additional verification is required before signing in.") };
@@ -399,7 +404,7 @@ function AuthSession({
     return code === "session_exists" || /already signed in/i.test(String(message));
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (): Promise<{ error: Error | null; role?: Role }> => {
     if (!clerk) {
       return { error: new Error("Clerk publishable key is not configured.") };
     }
@@ -409,28 +414,54 @@ function AuthSession({
     if (typeof window === "undefined") {
       return { error: new Error("Google sign-in is only available in the browser.") };
     }
-    try {
-      // Existing Clerk session: exchange it instead of starting a new OAuth sign-in.
-      if (clerk.isSignedIn) {
-        return await exchangeFreshClerkSession();
-      }
+    if (googleSignInInflight.current) {
+      return googleSignInInflight.current;
+    }
 
-      const callback = `${window.location.origin}/auth/sso-callback`;
-      const result = await clerk.signIn.signIn.sso({
-        strategy: "oauth_google",
-        redirectCallbackUrl: callback,
-        redirectUrl: callback,
-      });
-      if (result.error && isSessionExistsError(result.error)) {
-        return await exchangeFreshClerkSession();
+    const run = (async (): Promise<{ error: Error | null; role?: Role }> => {
+      try {
+        // Requirement 3: Existing active Clerk session: exchange it instead of starting a new OAuth sign-in.
+        if (clerk.isSignedIn) {
+          return await exchangeFreshClerkSession();
+        }
+
+        // Clean any partial uncompleted sign-in state before beginning a new SSO attempt
+        try {
+          if (typeof clerk.signIn.signIn.reset === "function") {
+            await clerk.signIn.signIn.reset();
+          }
+        } catch {
+          // Ignore reset errors
+        }
+
+        const callback = `${window.location.origin}/auth/sso-callback`;
+        const result = await clerk.signIn.signIn.sso({
+          strategy: "oauth_google",
+          redirectCallbackUrl: callback,
+          redirectUrl: callback,
+          oidcPrompt: "select_account",
+        });
+        if (result?.error && isSessionExistsError(result.error)) {
+          return await exchangeFreshClerkSession();
+        }
+        if (result?.error) {
+          return { error: clerkErrorMessage(result.error, "Google sign-in failed") };
+        }
+        return { error: null };
+      } catch (err) {
+        if (isSessionExistsError(err)) {
+          return await exchangeFreshClerkSession();
+        }
+        console.error("[AuthProvider] Clerk Google sign-in exception:", err);
+        return { error: clerkErrorMessage(err, "Google sign-in failed") };
       }
-      return { error: result.error };
-    } catch (err) {
-      if (isSessionExistsError(err)) {
-        return await exchangeFreshClerkSession();
-      }
-      console.error("[AuthProvider] Clerk Google sign-in exception:", err);
-      return { error: clerkErrorMessage(err, "Google sign-in failed") };
+    })();
+
+    googleSignInInflight.current = run;
+    try {
+      return await run;
+    } finally {
+      googleSignInInflight.current = null;
     }
   };
 
@@ -476,6 +507,7 @@ function AuthSession({
           finalizeSignInAndExchange: establishFreshClerkSignIn,
           setActiveSession: clerk.setActiveSession,
           missingRequirementsError: googleMissingRequirementsError,
+          handleRedirectCallback: clerk.handleRedirectCallback,
         });
       } catch (err) {
         console.error("[AuthProvider] Clerk Google return exception:", err);

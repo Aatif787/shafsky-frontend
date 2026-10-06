@@ -51,6 +51,7 @@ export interface GoogleCallbackDeps {
   finalizeSignInAndExchange: () => Promise<GoogleCallbackResult>;
   setActiveSession: (sessionId: string) => Promise<void>;
   missingRequirementsError: (missingFields: string[]) => Error;
+  handleRedirectCallback?: () => Promise<unknown>;
 }
 
 export async function completeGoogleCallback(
@@ -67,6 +68,28 @@ export async function completeGoogleCallback(
 
   if (deps.isSignedIn) {
     return await deps.exchangeFreshClerkSession();
+  }
+
+  if (deps.handleRedirectCallback) {
+    const hasRedirectParams =
+      typeof window !== "undefined" &&
+      (window.location.search.includes("__clerk") ||
+        window.location.search.includes("code=") ||
+        window.location.search.includes("state="));
+    if (hasRedirectParams) {
+      try {
+        await deps.handleRedirectCallback();
+        return await deps.exchangeFreshClerkSession();
+      } catch (err) {
+        if (deps.isSignedIn) {
+          return await deps.exchangeFreshClerkSession();
+        }
+        return {
+          error:
+            err instanceof Error ? err : new Error("Google authentication callback failed."),
+        };
+      }
+    }
   }
 
   const signInResource = deps.signIn;
