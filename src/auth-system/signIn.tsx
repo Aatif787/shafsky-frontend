@@ -108,7 +108,7 @@ export function SignInPage() {
       // if OAuth redirect was delayed, cancelled, or returned in-page
       setTimeout(() => {
         setSubmitting(false);
-      }, 2500);
+      }, 6000);
     }
   };
 

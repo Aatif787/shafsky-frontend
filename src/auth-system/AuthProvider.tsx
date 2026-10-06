@@ -98,12 +98,43 @@ function ClerkAuthSession({ children }: { children: React.ReactNode }) {
         getUserName: () => clerk.user?.fullName || clerk.user?.firstName || null,
         authenticateWithRedirect: async (params: any) => {
           const clerkAny = clerk as any;
-          const signInAny = signIn.signIn as any;
+          const clientSignIn = clerkAny?.client?.signIn;
+          const clientSignUp = clerkAny?.client?.signUp;
+          const windowClerk = typeof window !== "undefined" ? (window as any).Clerk : null;
+
+          if (clientSignIn && typeof clientSignIn.authenticateWithRedirect === "function") {
+            await clientSignIn.authenticateWithRedirect(params);
+            return;
+          }
+          if (clientSignUp && typeof clientSignUp.authenticateWithRedirect === "function") {
+            await clientSignUp.authenticateWithRedirect(params);
+            return;
+          }
+          if (windowClerk?.client?.signIn && typeof windowClerk.client.signIn.authenticateWithRedirect === "function") {
+            await windowClerk.client.signIn.authenticateWithRedirect(params);
+            return;
+          }
+          if (windowClerk && typeof windowClerk.authenticateWithRedirect === "function") {
+            await windowClerk.authenticateWithRedirect(params);
+            return;
+          }
+          if (typeof signIn.signIn?.sso === "function") {
+            const res = await (signIn.signIn as any).sso({
+              strategy: params.strategy || "oauth_google",
+              redirectCallbackUrl: params.redirectUrl || params.redirectCallbackUrl,
+              redirectUrl: params.redirectUrlComplete || params.redirectUrl,
+              oidcPrompt: params.oidcPrompt || "select_account",
+            });
+            if (res?.error) {
+              throw res.error;
+            }
+            return;
+          }
           if (typeof clerkAny?.authenticateWithRedirect === "function") {
             await clerkAny.authenticateWithRedirect(params);
-          } else if (typeof signInAny?.authenticateWithRedirect === "function") {
-            await signInAny.authenticateWithRedirect(params);
+            return;
           }
+          throw new Error("No OAuth redirect method available on Clerk client.");
         },
         handleRedirectCallback: async () => {
           await clerk.handleRedirectCallback(
