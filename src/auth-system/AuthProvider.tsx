@@ -98,54 +98,69 @@ function ClerkAuthSession({ children }: { children: React.ReactNode }) {
         getUserName: () => clerk.user?.fullName || clerk.user?.firstName || null,
         authenticateWithRedirect: async (params: any) => {
           const clerkAny = clerk as any;
-          const clientSignIn = clerkAny?.client?.signIn;
-          const clientSignUp = clerkAny?.client?.signUp;
+          if (typeof clerkAny?.authenticateWithRedirect === "function") {
+            await clerkAny.authenticateWithRedirect(params);
+            return;
+          }
+          if (typeof (signIn.signIn as any)?.authenticateWithRedirect === "function") {
+            await (signIn.signIn as any).authenticateWithRedirect(params);
+            return;
+          }
+          if (typeof clerkAny?.client?.signIn?.authenticateWithRedirect === "function") {
+            await clerkAny.client.signIn.authenticateWithRedirect(params);
+            return;
+          }
           const windowClerk = typeof window !== "undefined" ? (window as any).Clerk : null;
-
-          if (clientSignIn && typeof clientSignIn.authenticateWithRedirect === "function") {
-            await clientSignIn.authenticateWithRedirect(params);
-            return;
-          }
-          if (clientSignUp && typeof clientSignUp.authenticateWithRedirect === "function") {
-            await clientSignUp.authenticateWithRedirect(params);
-            return;
-          }
-          if (windowClerk?.client?.signIn && typeof windowClerk.client.signIn.authenticateWithRedirect === "function") {
-            await windowClerk.client.signIn.authenticateWithRedirect(params);
-            return;
-          }
           if (windowClerk && typeof windowClerk.authenticateWithRedirect === "function") {
             await windowClerk.authenticateWithRedirect(params);
             return;
           }
+          // Fallback for older Clerk versions that only expose sso()
           if (typeof signIn.signIn?.sso === "function") {
+            console.log("[AuthProvider] Falling back to sso()");
             const res = await (signIn.signIn as any).sso({
               strategy: params.strategy || "oauth_google",
               redirectCallbackUrl: params.redirectUrl || params.redirectCallbackUrl,
               redirectUrl: params.redirectUrlComplete || params.redirectUrl,
               oidcPrompt: params.oidcPrompt || "select_account",
             });
+            // If the sso() call requires manual redirection, check the response
+            if (res && typeof res.redirectUrl === "string") {
+              window.location.href = res.redirectUrl;
+              return;
+            }
             if (res?.error) {
               throw res.error;
             }
-            return;
-          }
-          if (typeof clerkAny?.authenticateWithRedirect === "function") {
-            await clerkAny.authenticateWithRedirect(params);
+            // Give the browser a moment to redirect before returning
+            await new Promise((resolve) => setTimeout(resolve, 2000));
             return;
           }
           throw new Error("No OAuth redirect method available on Clerk client.");
         },
         handleRedirectCallback: async () => {
-          await clerk.handleRedirectCallback(
-            {
-              signInFallbackRedirectUrl: "/",
-              signUpFallbackRedirectUrl: "/",
-            },
-            async () => {
-              // Overrides Clerk default navigation so FastAPI session can be established first
-            },
-          );
+          return new Promise<void>((resolve, reject) => {
+            try {
+              clerk.handleRedirectCallback(
+                {
+                  signInFallbackRedirectUrl: "/",
+                  signUpFallbackRedirectUrl: "/",
+                },
+                (url: string) => {
+                  console.log("[AuthProvider] Intercepted Clerk redirect to:", url);
+                  resolve();
+                  return Promise.resolve();
+                },
+              ).catch((err: any) => {
+                // If Clerk resolves/rejects instead of calling the custom navigate function
+                reject(err);
+              }).then(() => {
+                resolve(); // In case it resolves without calling the navigate function
+              });
+            } catch (err) {
+              reject(err);
+            }
+          });
         },
       }}
     >
