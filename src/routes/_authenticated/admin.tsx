@@ -46,7 +46,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
     }
     return { isStaff, roles, userId };
   },
-  ssr: true,
+  ssr: false,
   errorComponent: ({ error }: { error: Error }) => (
     <div className="flex min-h-screen items-center justify-center bg-[#06090f] p-6 text-white text-center">
       <div className="max-w-md w-full p-8 rounded-2xl border border-red-500/20 bg-red-500/5 space-y-4">

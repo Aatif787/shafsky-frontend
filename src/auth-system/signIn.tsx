@@ -103,6 +103,12 @@ export function SignInPage() {
     } catch (err) {
       translateError(err instanceof Error ? err : new Error("Google sign-in failed"));
       setSubmitting(false);
+    } finally {
+      // Auto-unlock safeguard: ensure the button is never permanently frozen
+      // if OAuth redirect was delayed, cancelled, or returned in-page
+      setTimeout(() => {
+        setSubmitting(false);
+      }, 2500);
     }
   };
 

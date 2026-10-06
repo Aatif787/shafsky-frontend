@@ -31,6 +31,7 @@ type ClerkBridge = {
   signOut: () => Promise<void>;
   getUserName?: () => string | null;
   handleRedirectCallback?: () => Promise<void>;
+  authenticateWithRedirect?: (params: any) => Promise<void>;
 };
 
 function clerkFieldError(errors: {
@@ -95,6 +96,15 @@ function ClerkAuthSession({ children }: { children: React.ReactNode }) {
           await clerk.signOut();
         },
         getUserName: () => clerk.user?.fullName || clerk.user?.firstName || null,
+        authenticateWithRedirect: async (params: any) => {
+          const clerkAny = clerk as any;
+          const signInAny = signIn.signIn as any;
+          if (typeof clerkAny?.authenticateWithRedirect === "function") {
+            await clerkAny.authenticateWithRedirect(params);
+          } else if (typeof signInAny?.authenticateWithRedirect === "function") {
+            await signInAny.authenticateWithRedirect(params);
+          }
+        },
         handleRedirectCallback: async () => {
           await clerk.handleRedirectCallback(
             {
@@ -450,19 +460,35 @@ function AuthSession({
         }
 
         const callback = `${window.location.origin}/auth/sso-callback`;
-        const result = await clerk.signIn.signIn.sso({
-          strategy: "oauth_google",
-          redirectCallbackUrl: callback,
+        const redirectParams = {
+          strategy: "oauth_google" as const,
           redirectUrl: callback,
+          redirectUrlComplete: callback,
           oidcPrompt: "select_account",
-        });
-        if (result?.error && isSessionExistsError(result.error)) {
-          return await exchangeFreshClerkSession();
+          continueSignUp: true,
+        };
+
+        if (typeof clerk.authenticateWithRedirect === "function") {
+          await clerk.authenticateWithRedirect(redirectParams);
+          return { error: null };
+        } else if (typeof (clerk.signIn.signIn as any)?.authenticateWithRedirect === "function") {
+          await (clerk.signIn.signIn as any).authenticateWithRedirect(redirectParams);
+          return { error: null };
+        } else {
+          const result = await clerk.signIn.signIn.sso({
+            strategy: "oauth_google",
+            redirectCallbackUrl: callback,
+            redirectUrl: callback,
+            oidcPrompt: "select_account",
+          });
+          if (result?.error && isSessionExistsError(result.error)) {
+            return await exchangeFreshClerkSession();
+          }
+          if (result?.error) {
+            return { error: clerkErrorMessage(result.error, "Google sign-in failed") };
+          }
+          return { error: null };
         }
-        if (result?.error) {
-          return { error: clerkErrorMessage(result.error, "Google sign-in failed") };
-        }
-        return { error: null };
       } catch (err) {
         if (isSessionExistsError(err)) {
           return await exchangeFreshClerkSession();

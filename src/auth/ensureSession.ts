@@ -57,11 +57,26 @@ export function rememberSession(data: AuthResponseData | null): void {
 export async function ensureSession(): Promise<AuthResponseData | null> {
   if (getAccessToken() && lastSession) return lastSession;
   if (typeof document === "undefined") return null;
-  if (!hasSessionHint()) return null;
 
   if (!inflight) {
     inflight = (async () => {
       try {
+        const existingToken = getAccessToken();
+        if (existingToken) {
+          const me = await apiAuthMe(existingToken);
+          if (me.user && !me.error) {
+            const sessionData: AuthResponseData = {
+              accessToken: existingToken,
+              user: me.user,
+            };
+            lastSession = sessionData;
+            setSessionHint(true);
+            return sessionData;
+          }
+        }
+
+        if (!hasSessionHint()) return null;
+
         const { data, error } = await apiAuthRefresh();
         const token = data?.accessToken || data?.access_token;
         if (error || !token) {
