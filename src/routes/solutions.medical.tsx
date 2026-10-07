@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { createFileRoute, useNavigate, Link, useLocation } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useLocation } from "@tanstack/react-router";
 import {
   ArrowLeft,
   ArrowRight,
   Sparkles,
   Send,
   CheckCircle2,
-  MessageSquare,
-  Plane
+  MessageSquare
 } from "lucide-react";
 import { display } from "@/components/home/theme";
 import { enquiryApi } from "@/lib/api/enquiryApi";
@@ -1518,31 +1517,6 @@ function DedicatedSpecialServicesPage() {
                 {/* 9. Air Ticketing Services Form */}
                 {selectedOptionId === "Air Ticketing Services" && (
                   <>
-                    {/* Instant booking shortcut banner */}
-                    <div className="bg-lime-50 border border-lime-300 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-lime-500 text-slate-950 flex items-center justify-center shrink-0 shadow-xs">
-                          <Plane size={20} />
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-bold text-slate-900">
-                            Instant Commercial Flight Engine
-                          </h4>
-                          <p className="text-xs text-slate-600">
-                            Search live availability & compare 500+ airlines in real-time.
-                          </p>
-                        </div>
-                      </div>
-                      <Link
-                        to="/book"
-                        search={{ service_id: "air_ticketing" } as any}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-950 hover:bg-slate-900 text-white text-xs font-mono font-bold tracking-wider shadow-sm transition-all whitespace-nowrap cursor-pointer"
-                      >
-                        <span>Launch Flight Booking Engine</span>
-                        <ArrowRight size={13} className="text-lime-400" />
-                      </Link>
-                    </div>
-
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
