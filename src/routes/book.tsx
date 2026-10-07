@@ -87,6 +87,21 @@ function BookRoutePage() {
     }
   }
 
+  // If no airport or flight parameters are selected yet, redirect to the homepage booking panel:
+  const hasSelectedAirportOrFlight = Boolean(
+    search.airport ||
+    search.origin ||
+    search.destination ||
+    search.transit ||
+    search.flight_number ||
+    search.sub ||
+    search.service_id
+  );
+
+  if (!hasSelectedAirportOrFlight) {
+    return <Navigate to="/" hash="book" />;
+  }
+
   // DEFAULT & AIRPORT CONCIERGE FLOW:
   // Directly opens AirportBookingFlow (Flight -> Passenger -> Confirm Booking)
   return (

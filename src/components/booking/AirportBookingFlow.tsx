@@ -118,7 +118,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       : initialDirection === "arrival"
       ? extractIata(searchParams?.destination)
       : extractIata(searchParams?.transit)) ||
-    "DEL";
+    "";
 
   const [airportCode] = useState<string>(rawAirportCode);
   const [direction] = useState<"arrival" | "departure" | "transit">(initialDirection);

@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, PhoneCall, ShieldCheck, Sparkles } from "lucide-react";
-import { mono, display } from "../theme";
-import { ICICI_REVIEW_MODE } from "../../../lib/config/reviewMode";
+import { mono } from "../theme";
 
 const CTA_VIDEOS = [
   {
@@ -74,7 +73,7 @@ export function FinalCTA() {
         if ((e.target as HTMLElement).closest("a, button")) return;
         resetFadeTimer();
       }}
-      className="relative min-h-[620px] md:min-h-[720px] w-full overflow-hidden flex items-center justify-center bg-black text-white border-b border-slate-800"
+      className="relative min-h-[620px] md:min-h-[720px] w-full overflow-hidden flex flex-col justify-between bg-black text-white border-b border-slate-800"
     >
       {/* 12K Cinema Master Video Stream Container */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
@@ -105,10 +104,9 @@ export function FinalCTA() {
         ))}
       </div>
 
-      {/* Main Crisp Editorial Content */}
-      <div className="relative z-30 mx-auto w-full max-w-5xl px-4 py-20 text-center sm:px-8 sm:py-28 md:py-32 flex flex-col items-center">
-        {/* Video Switcher Buttons with Luxury Frosted Crystal Capsule */}
-        <div className="flex items-center justify-center gap-3 sm:gap-6 flex-wrap mb-8 pb-3 pt-2.5 px-6 rounded-full bg-black/45 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.2)]">
+      {/* Top Bar: Video Switcher Buttons */}
+      <div className="relative z-30 w-full pt-8 sm:pt-10 flex justify-center px-4">
+        <div className="flex items-center justify-center gap-3 sm:gap-6 flex-wrap pb-3 pt-2.5 px-6 rounded-full bg-black/45 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.2)]">
           {CTA_VIDEOS.map((vid) => {
             const isActive = activeVideo === vid.id;
             return (
@@ -142,55 +140,38 @@ export function FinalCTA() {
             );
           })}
         </div>
+      </div>
 
-        {/* Animated Editorial Text Container - Disappears after 5 seconds to reveal unobstructed direct 4K video stream */}
+      {/* Bottom Area: Eyebrow + Buttons + Guarantee */}
+      <div className="relative z-30 mx-auto w-full max-w-5xl px-4 pb-8 sm:pb-12 md:pb-14 text-center flex flex-col items-center">
+        {/* Animated Eyebrow */}
         <motion.div
           animate={{
             opacity: isTextVisible ? 1 : 0,
-            y: isTextVisible ? 0 : -14,
+            y: isTextVisible ? 0 : 10,
             filter: isTextVisible ? "blur(0px)" : "blur(8px)",
           }}
           transition={{
-            duration: 1.1,
+            duration: 0.8,
             ease: [0.16, 1, 0.3, 1],
           }}
           className={`flex flex-col items-center w-full transition-all ${
             !isTextVisible ? "pointer-events-none select-none" : ""
           }`}
         >
-          {/* Eyebrow */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="inline-flex items-center gap-3 text-[9.5px] sm:text-[11px] uppercase tracking-[0.35em] sm:tracking-[0.45em] text-lime-400 font-bold mb-6"
+          <div
+            className="inline-flex items-center gap-3 text-[9.5px] sm:text-[11px] uppercase tracking-[0.35em] sm:tracking-[0.45em] text-lime-400 font-bold mb-4 sm:mb-5"
             style={mono}
           >
             <span className="h-px w-8 bg-lime-400" />
             <Sparkles size={12} className="text-lime-400 animate-pulse" />
             <span className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">SEAMLESS AIRPORT ASSISTANCE</span>
             <span className="h-px w-8 bg-lime-400" />
-          </motion.div>
-
-
-
-          {/* Description — clean transparent text, no container */}
-          <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 text-sm sm:text-base md:text-lg text-white font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]"
-          >
-            {ICICI_REVIEW_MODE
-              ? "Experience personal airport hosts, dedicated buggy transfers, VIP lounge access, and seamless fast-track assistance across 20+ Indian airports and global destinations."
-              : "Experience personal airport hosts, fast-track checkpoint clearance, and private jet charters across 20+ Indian airports and global destinations."}
-          </motion.p>
+          </div>
         </motion.div>
 
         {/* Dual Luxury Action Buttons */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
           <a
             href="/#book"
             onClick={(e) => {
@@ -200,7 +181,7 @@ export function FinalCTA() {
                 el.scrollIntoView({ behavior: "smooth", block: "center" });
               }
             }}
-            className="group/btn relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#84cc16] to-[#a3e635] px-8 py-4 text-xs font-bold uppercase tracking-[0.22em] text-slate-950 transition-all duration-300 hover:brightness-110 hover:-translate-y-0.5 cursor-pointer font-mono shadow-[0_0_30px_rgba(163,230,53,0.35),0_10px_25px_rgba(0,0,0,0.6)] hover:shadow-[0_0_45px_rgba(163,230,53,0.6),0_14px_30px_rgba(0,0,0,0.8)]"
+            className="group/btn relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#84cc16] to-[#a3e635] px-7 py-3 text-xs font-bold uppercase tracking-[0.22em] text-slate-950 transition-all duration-300 hover:brightness-110 hover:-translate-y-0.5 cursor-pointer font-mono shadow-[0_0_30px_rgba(163,230,53,0.35),0_10px_25px_rgba(0,0,0,0.6)] hover:shadow-[0_0_45px_rgba(163,230,53,0.6),0_14px_30px_rgba(0,0,0,0.8)]"
             style={mono}
           >
             <span className="relative z-10">Book Now</span>
@@ -209,7 +190,7 @@ export function FinalCTA() {
 
           <a
             href="tel:+919599087959"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-full bg-black/60 hover:bg-black/85 backdrop-blur-xl border border-white/30 hover:border-lime-400 px-8 py-4 text-xs font-bold uppercase tracking-[0.22em] text-white transition-all hover:-translate-y-0.5 cursor-pointer font-mono shadow-[0_10px_25px_rgba(0,0,0,0.6)] hover:shadow-[0_0_25px_rgba(163,230,53,0.25)]"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-full bg-black/60 hover:bg-black/85 backdrop-blur-xl border border-white/30 hover:border-lime-400 px-7 py-3 text-xs font-bold uppercase tracking-[0.22em] text-white transition-all hover:-translate-y-0.5 cursor-pointer font-mono shadow-[0_10px_25px_rgba(0,0,0,0.6)] hover:shadow-[0_0_25px_rgba(163,230,53,0.25)]"
             style={mono}
           >
             <PhoneCall size={15} className="text-lime-400 drop-shadow-[0_0_8px_rgba(163,230,53,0.6)]" />
@@ -218,7 +199,7 @@ export function FinalCTA() {
         </div>
 
         {/* Verification Guarantee */}
-        <div className="mt-10 inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-xs text-white/95 font-mono shadow-[0_4px_16px_rgba(0,0,0,0.5)]" style={mono}>
+        <div className="mt-4 sm:mt-5 inline-flex items-center justify-center gap-2.5 px-4 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-xs text-white/95 font-mono shadow-[0_4px_16px_rgba(0,0,0,0.5)]" style={mono}>
           <ShieldCheck size={14} className="text-lime-400 drop-shadow-[0_0_6px_rgba(163,230,53,0.6)]" />
           <span>Airport-Authorized Team · Dedicated On-Ground Support</span>
         </div>

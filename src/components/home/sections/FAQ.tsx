@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Plus, Minus, MessageSquare, PhoneCall } from "lucide-react";
-import { display, mono } from "../theme";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "@tanstack/react-router";
+import { Plus, Minus, MessageSquare, PhoneCall, ArrowRight } from "lucide-react";
 import { HOMEPAGE_FAQS } from "@/lib/site-content";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
@@ -14,105 +14,148 @@ export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section className="relative px-4 py-16 sm:px-8 sm:py-24 md:px-14 md:py-32 bg-white border-b border-slate-200">
-      <div className="mx-auto grid max-w-[1480px] gap-12 lg:gap-16 lg:grid-cols-12">
-        {/* Left Column: Title & 24/7 Support Info */}
-        <div className="lg:col-span-5 flex flex-col justify-between">
-          <div>
-            <div
-              className="inline-flex items-center gap-2.5 text-[10px] uppercase tracking-[0.35em] text-lime-700 font-bold"
-              style={mono}
-            >
-              <span className="h-px w-8 bg-lime-500" />
-              <span>SHAFSKY AVIATION SERVICES</span>
-              <span className="text-slate-300">·</span>
-              <span>FREQUENTLY ASKED</span>
-            </div>
-            <h2
-              className="mt-4 text-[clamp(2.2rem,4.5vw,3.8rem)] leading-[1.05] text-slate-950 font-bold tracking-tight"
-              style={display}
-            >
-              Everything you need to know about{" "}
-              <span className="text-lime-600 font-bold">
-                our airport services.
-              </span>
-            </h2>
-            <p className="mt-4 text-xs sm:text-sm md:text-base text-slate-600 leading-relaxed font-normal max-w-md">
-              Have questions about your upcoming trip or need arrangements for a large group? Our team is available 24/7.
-            </p>
+    <section className="relative px-4 py-20 sm:px-8 sm:py-28 md:px-12 bg-white border-b border-slate-200">
+      <div className="mx-auto max-w-4xl">
+        {/* Upper Side Header (Classical & Centered) */}
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center justify-center gap-2.5 text-[11px] uppercase tracking-[0.3em] text-lime-700 font-semibold font-mono">
+            <span className="h-px w-6 bg-lime-600/50" />
+            <span>SHAFSKY AVIATION SERVICES</span>
+            <span className="text-slate-300">·</span>
+            <span>FAQ</span>
+            <span className="h-px w-6 bg-lime-600/50" />
           </div>
 
-          <div className="mt-8 pt-8 border-t border-slate-200 space-y-3">
-            <a
-              href="tel:+919599087959"
-              className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-lime-700 transition-colors"
-              style={mono}
-            >
-              <PhoneCall size={15} className="text-lime-600" />
-              <span>24/7 Operations: +91 9599087959</span>
-            </a>
-            <div className="block">
-              <a
-                href="https://wa.me/919599087959"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-lime-700 transition-colors"
-                style={mono}
-              >
-                <MessageSquare size={15} className="text-lime-600" />
-                <span>WhatsApp Service Desk</span>
-              </a>
-            </div>
-          </div>
+          <h2 className="mt-4 text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-slate-950 font-raleway leading-[1.15]">
+            Frequently Asked{" "}
+            <span className="text-lime-700 font-bold">
+              Questions
+            </span>
+          </h2>
+
+          <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+            Need help with your trip? We're here 24/7.
+          </p>
         </div>
 
-        {/* Right Column: Accordion Items */}
-        <div className="lg:col-span-7 space-y-4">
+        {/* Accordion List (Classical & Simple Hairline Design) */}
+        <div className="border-t border-slate-200 divide-y divide-slate-200">
           {faqs.map((faq, i) => {
             const isOpen = open === i;
             return (
-              <div
-                key={faq.q}
-                className="rounded-2xl bg-slate-50/80 border border-slate-200 transition-all duration-300 overflow-hidden shadow-xs hover:border-lime-500 hover:shadow-md hover:shadow-lime-500/10"
-              >
+              <div key={faq.q} className="transition-colors">
                 <button
                   type="button"
-                  className="flex w-full items-center justify-between gap-4 p-6 text-left cursor-pointer"
+                  className="flex w-full items-center justify-between gap-6 py-5 sm:py-6 text-left cursor-pointer group"
                   onClick={() => setOpen(isOpen ? null : i)}
                   aria-expanded={isOpen}
                 >
-                  <span className="flex items-center gap-4">
-                    <span
-                      className="text-[11px] font-mono text-lime-700 font-bold"
-                      style={mono}
-                    >
+                  <div className="flex items-start sm:items-center gap-3.5 sm:gap-5 min-w-0">
+                    <span className="text-xs sm:text-sm font-mono text-lime-700 font-semibold shrink-0 pt-0.5 sm:pt-0">
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    <span
-                      className="text-base sm:text-lg text-slate-950 font-bold"
-                      style={display}
-                    >
+                    <span className="text-base sm:text-lg md:text-[18px] text-slate-900 font-semibold font-raleway leading-snug group-hover:text-lime-700 transition-colors">
                       {faq.q}
                     </span>
-                  </span>
-                  <span className="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-lime-700 shrink-0">
-                    {isOpen ? <Minus size={14} /> : <Plus size={14} />}
+                  </div>
+
+                  <span
+                    className={`h-7 w-7 sm:h-8 sm:w-8 rounded-full border flex items-center justify-center shrink-0 transition-all duration-200 ${
+                      isOpen
+                        ? "bg-lime-50 border-lime-600 text-lime-700"
+                        : "bg-white border-slate-200 text-slate-400 group-hover:border-slate-300 group-hover:text-slate-700"
+                    }`}
+                  >
+                    {isOpen ? <Minus size={13} strokeWidth={2.2} /> : <Plus size={13} strokeWidth={2.2} />}
                   </span>
                 </button>
 
-                <motion.div
-                  initial={false}
-                  animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
-                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  className="overflow-hidden"
-                >
-                  <p className="px-6 pb-6 pl-14 text-xs sm:text-sm leading-relaxed text-slate-600 font-normal">
-                    {faq.a}
-                  </p>
-                </motion.div>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="content"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pb-6 pl-7 sm:pl-10 space-y-4">
+                        <p className="text-sm sm:text-base leading-relaxed text-slate-600 font-normal">
+                          {faq.a}
+                        </p>
+
+                        {"cta" in faq && faq.cta && (
+                          <div className="pt-1">
+                            {faq.cta.external ? (
+                              <a
+                                href={faq.cta.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white text-xs sm:text-sm font-semibold hover:bg-lime-700 transition-colors shadow-xs group/btn cursor-pointer"
+                              >
+                                <span>{faq.cta.label}</span>
+                                <ArrowRight size={14} className="transition-transform group-hover/btn:translate-x-0.5" />
+                              </a>
+                            ) : (
+                              <a
+                                href={faq.cta.href}
+                                onClick={(e) => {
+                                  if (faq.cta?.href === "/#book" || faq.cta?.href === "#book") {
+                                    const el = document.getElementById("book");
+                                    if (el) {
+                                      e.preventDefault();
+                                      el.scrollIntoView({ behavior: "smooth", block: "start" });
+                                      window.history.replaceState(null, "", "#book");
+                                    }
+                                  }
+                                }}
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white text-xs sm:text-sm font-semibold hover:bg-lime-700 transition-colors shadow-xs group/btn cursor-pointer"
+                              >
+                                <span>{faq.cta.label}</span>
+                                <ArrowRight size={14} className="transition-transform group-hover/btn:translate-x-0.5" />
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             );
           })}
+        </div>
+
+        {/* Bottom Concierge & Support Line */}
+        <div className="mt-12 pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div>
+            <p className="text-sm font-semibold text-slate-900 font-raleway">
+              Need assistance or special arrangements?
+            </p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Our 24/7 flight operations desk is ready to assist your journey.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <a
+              href="tel:+919599087959"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs font-semibold uppercase tracking-wider text-slate-800 hover:text-lime-700 hover:border-lime-500/50 transition-colors font-mono"
+            >
+              <PhoneCall size={13} className="text-lime-600" />
+              <span>+91 9599087959</span>
+            </a>
+            <a
+              href="https://wa.me/919599087959"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-xs font-semibold uppercase tracking-wider text-slate-800 hover:text-lime-700 hover:border-lime-500/50 transition-colors font-mono"
+            >
+              <MessageSquare size={13} className="text-lime-600" />
+              <span>WhatsApp</span>
+            </a>
+          </div>
         </div>
       </div>
     </section>

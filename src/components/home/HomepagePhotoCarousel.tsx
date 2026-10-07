@@ -159,10 +159,10 @@ export function HomepagePhotoCarousel() {
                 height={item.photo.height}
                 aspectRatio="16 / 9"
                 priority={idx < 4} // Eager load first visible images
-                objectFit="cover" // 100% flush fit with matching 16:9 aspect ratio
+                objectFit="contain" // 100% uncropped full ratio
                 containerBg="bg-transparent"
                 className="w-full h-full"
-                imageClassName="w-full h-full object-cover transition-transform duration-700"
+                imageClassName="w-full h-full object-contain transition-transform duration-700"
               />
             </div>
           </motion.div>

@@ -523,137 +523,137 @@ function DedicatedAirCharterPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-lime-200">
       {/* ─────────────────────────────────────────────────────────────
-          1. FULL SCREEN WIDTH & PERFECT RATIO HERO MEDIA STAGE
+          1. CLASSICAL FRAMED CINEMATIC HERO MEDIA STAGE (100% RATIO, WHITE BACKGROUND)
           ───────────────────────────────────────────────────────────── */}
-      <section className="relative w-full overflow-hidden bg-slate-950 border-b border-slate-200">
-        {/* Top Header Overlay Bar: Back Button & VIP Aviation Desk Badge */}
-        <div className="absolute top-3 sm:top-6 left-3 sm:left-8 right-3 sm:right-8 z-20 flex items-center justify-between pointer-events-none">
-          <button
-            onClick={() => {
-              if (window.history.length > 1) {
-                window.history.back();
-              } else {
-                navigate({ to: "/" });
-              }
-            }}
-            className="pointer-events-auto inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-slate-950/80 hover:bg-slate-900 text-white backdrop-blur-md border border-white/20 text-[11px] sm:text-xs font-bold shadow-lg transition-all cursor-pointer"
-          >
-            <ArrowLeft size={14} className="text-lime-400" />
-            <span>Back</span>
-          </button>
+      <section className="relative w-full overflow-hidden bg-white border-b border-slate-200 py-6 sm:py-8 md:py-10">
+        <div className="relative z-10 mx-auto w-full max-w-[1040px] xl:max-w-[1100px] 2xl:max-w-[1140px] px-4 sm:px-6 md:px-8">
+          {/* Top Header Row: Back Button & VIP Aviation Desk Status Badge */}
+          <div className="w-full mb-3.5 sm:mb-5 flex items-center justify-between gap-3">
+            <button
+              onClick={() => {
+                if (window.history.length > 1) {
+                  window.history.back();
+                } else {
+                  navigate({ to: "/" });
+                }
+              }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/90 text-xs font-semibold shadow-xs hover:border-lime-500 transition-all cursor-pointer"
+            >
+              <ArrowLeft size={14} className="text-lime-600" />
+              <span>Back</span>
+            </button>
 
-          <div className="pointer-events-auto inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono font-bold text-lime-400 uppercase tracking-wider sm:tracking-widest bg-slate-950/80 backdrop-blur-md px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-lime-400/30 shadow-lg">
-            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-lime-400 inline-block animate-pulse" />
-            <span>VIP AVIATION & PRIVATE FLIGHT DESK</span>
+            <div className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-mono font-bold text-lime-800 uppercase tracking-widest bg-lime-50 px-3.5 sm:px-4 py-1.5 rounded-full border border-lime-300 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-lime-500 inline-block animate-pulse" />
+              <span>VIP AVIATION & PRIVATE FLIGHT DESK</span>
+            </div>
           </div>
-        </div>
 
-        {/* Subtle Scrim Gradients for Contrast (Clean Sky Integration without Muddy Shadows) */}
-        <div className="absolute inset-x-0 top-0 h-20 sm:h-28 bg-gradient-to-b from-slate-950/50 via-slate-950/15 to-transparent pointer-events-none z-10" />
-        <div className="absolute inset-x-0 bottom-0 h-20 sm:h-28 bg-gradient-to-t from-slate-950/60 via-slate-950/20 to-transparent pointer-events-none z-10" />
-
-        {/* Full-Width & Perfect 16:9 Mobile Aspect Ratio Media Gallery (0% Cut, 0% Crop) */}
-        <div
-          className="relative w-full aspect-video lg:aspect-auto lg:h-screen lg:min-h-[600px] overflow-hidden flex items-center justify-center select-none cursor-grab active:cursor-grabbing touch-pan-y"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-        >
-          {/* Swipeable Track */}
+          {/* Framed Media Container with Strict 16:9 Aspect Ratio (100% Full Ratio, ZERO CROP) */}
           <div
-            className={`flex w-full h-full absolute inset-0 ${isDragging ? "transition-none" : "transition-transform duration-500 ease-out"}`}
-            style={{
-              transform: `translateX(calc(-${heroSlideIndex * 100}% + ${dragOffset}px))`,
-            }}
+            className="relative w-full aspect-[16/9] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none cursor-grab active:cursor-grabbing touch-pan-y"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
           >
-            {CHARTER_HERO_SLIDES.map((slide, idx) => (
-              <div
-                key={idx}
-                className="w-full h-full shrink-0 relative flex items-center justify-center overflow-hidden bg-slate-950"
-              >
-                {slide.type === "video" ? (
-                  <>
-                    <video
-                      ref={videoRef}
+            {/* Swipeable Track */}
+            <div
+              className={`flex w-full h-full absolute inset-0 ${isDragging ? "transition-none" : "transition-transform duration-500 ease-out"}`}
+              style={{
+                transform: `translateX(calc(-${heroSlideIndex * 100}% + ${dragOffset}px))`,
+              }}
+            >
+              {CHARTER_HERO_SLIDES.map((slide, idx) => (
+                <div
+                  key={idx}
+                  className="w-full h-full shrink-0 relative flex items-center justify-center overflow-hidden bg-white"
+                >
+                  {slide.type === "video" ? (
+                    <>
+                      <video
+                        ref={videoRef}
+                        src={slide.src}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="w-full h-full object-contain object-center select-none pointer-events-none bg-white"
+                        aria-label={slide.alt}
+                      />
+
+                      {/* Atmospheric Cloud Density Reducer: Decreases heavy white cloud opacity without touching the aircraft */}
+                      <div
+                        className="absolute inset-0 pointer-events-none select-none mix-blend-multiply opacity-45"
+                        style={{
+                          background:
+                            "radial-gradient(ellipse at 46% 26%, rgba(135, 175, 215, 0.8) 0%, rgba(175, 205, 235, 0.4) 45%, transparent 75%)",
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <img
                       src={slide.src}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      className="w-full h-full object-cover object-center select-none pointer-events-none"
-                      aria-label={slide.alt}
+                      alt={slide.alt}
+                      className="w-full h-full object-contain object-center select-none block pointer-events-none bg-white"
+                      loading={idx <= 1 ? "eager" : "lazy"}
+                      draggable={false}
                     />
+                  )}
+                </div>
+              ))}
+            </div>
 
-                    {/* Atmospheric Cloud Density Reducer: Decreases heavy white cloud opacity without touching the aircraft */}
-                    <div
-                      className="absolute inset-0 pointer-events-none select-none mix-blend-multiply opacity-45"
-                      style={{
-                        background:
-                          "radial-gradient(ellipse at 46% 26%, rgba(135, 175, 215, 0.8) 0%, rgba(175, 205, 235, 0.4) 45%, transparent 75%)",
-                      }}
-                    />
-                  </>
-                ) : (
-                  <img
-                    src={slide.src}
-                    alt={slide.alt}
-                    className="w-full h-full object-cover object-center select-none block pointer-events-none"
-                    loading={idx <= 1 ? "eager" : "lazy"}
-                    draggable={false}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Slide Navigation Overlay Buttons */}
-          <div className="absolute inset-y-0 left-2 sm:left-6 right-2 sm:right-6 flex items-center justify-between pointer-events-none z-10">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setHeroSlideIndex((prev) => (prev - 1 + CHARTER_HERO_SLIDES.length) % CHARTER_HERO_SLIDES.length);
-              }}
-              className="pointer-events-auto p-2 sm:p-3 rounded-full bg-slate-950/70 hover:bg-slate-900 text-white backdrop-blur-md transition shadow-xl cursor-pointer border border-white/15"
-              aria-label="Previous slide"
-            >
-              <ArrowLeft size={15} className="sm:hidden text-white" />
-              <ArrowLeft size={18} className="hidden sm:block text-white" />
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setHeroSlideIndex((prev) => (prev + 1) % CHARTER_HERO_SLIDES.length);
-              }}
-              className="pointer-events-auto p-2 sm:p-3 rounded-full bg-slate-950/70 hover:bg-slate-900 text-white backdrop-blur-md transition shadow-xl cursor-pointer border border-white/15"
-              aria-label="Next slide"
-            >
-              <ArrowRight size={15} className="sm:hidden text-white" />
-              <ArrowRight size={18} className="hidden sm:block text-white" />
-            </button>
-          </div>
-
-          {/* Slide Pagination Indicator Dots (Centered at Bottom, Clean & Text-Free) */}
-          <div className="absolute bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 bg-slate-950/60 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/15 shadow-xl">
-            {CHARTER_HERO_SLIDES.map((_, idx) => (
+            {/* Slide Navigation Overlay Buttons */}
+            <div className="absolute inset-y-0 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between pointer-events-none z-10">
               <button
-                key={idx}
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setHeroSlideIndex(idx);
+                  setHeroSlideIndex((prev) => (prev - 1 + CHARTER_HERO_SLIDES.length) % CHARTER_HERO_SLIDES.length);
                 }}
-                className={`h-1.5 sm:h-2 rounded-full transition-all cursor-pointer ${
-                  heroSlideIndex === idx ? "w-5 sm:w-7 bg-lime-400" : "w-1.5 sm:w-2 bg-white/40 hover:bg-white/70"
-                }`}
-                aria-label={`Go to slide ${idx + 1}`}
-              />
-            ))}
+                className="pointer-events-auto p-2 sm:p-2.5 rounded-full bg-white/90 hover:bg-white text-slate-800 backdrop-blur-md transition shadow-md cursor-pointer border border-slate-200 hover:border-lime-500 hover:text-lime-700"
+                aria-label="Previous slide"
+              >
+                <ArrowLeft size={16} className="sm:hidden text-slate-800" />
+                <ArrowLeft size={18} className="hidden sm:block text-slate-800" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setHeroSlideIndex((prev) => (prev + 1) % CHARTER_HERO_SLIDES.length);
+                }}
+                className="pointer-events-auto p-2 sm:p-2.5 rounded-full bg-white/90 hover:bg-white text-slate-800 backdrop-blur-md transition shadow-md cursor-pointer border border-slate-200 hover:border-lime-500 hover:text-lime-700"
+                aria-label="Next slide"
+              >
+                <ArrowRight size={16} className="sm:hidden text-slate-800" />
+                <ArrowRight size={18} className="hidden sm:block text-slate-800" />
+              </button>
+            </div>
+          </div>
+
+          {/* Slide Pagination Indicator Dots Below the Frame */}
+          <div className="mt-3 sm:mt-4 flex items-center justify-center">
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200 shadow-xs">
+              {CHARTER_HERO_SLIDES.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setHeroSlideIndex(idx);
+                  }}
+                  className={`h-1.5 sm:h-2 rounded-full transition-all cursor-pointer ${
+                    heroSlideIndex === idx ? "w-5 sm:w-7 bg-lime-500" : "w-1.5 sm:w-2 bg-slate-300 hover:bg-slate-400"
+                  }`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>

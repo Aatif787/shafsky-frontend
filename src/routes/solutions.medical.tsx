@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
+  ArrowRight,
   Sparkles,
   Send,
   CheckCircle2,
@@ -96,6 +97,81 @@ const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
 function DedicatedSpecialServicesPage() {
   const navigate = useNavigate();
   const [selectedOptionId, setSelectedOptionId] = useState<SpecialServiceOptionId>("Spa & Wellness");
+  const [heroSlideIndex, setHeroSlideIndex] = useState<number>(0);
+  const [dragStartX, setDragStartX] = useState<number | null>(null);
+  const [dragOffset, setDragOffset] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setDragStartX(e.touches[0].clientX);
+    setDragOffset(0);
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (dragStartX === null) return;
+    const currentX = e.touches[0].clientX;
+    setDragOffset(currentX - dragStartX);
+  };
+
+  const handleTouchEnd = () => {
+    if (dragStartX !== null) {
+      if (dragOffset < -45) {
+        setHeroSlideIndex((prev) => {
+          const next = (prev + 1) % SPECIAL_SERVICES_OPTIONS.length;
+          setSelectedOptionId(SPECIAL_SERVICES_OPTIONS[next].id);
+          return next;
+        });
+      } else if (dragOffset > 45) {
+        setHeroSlideIndex((prev) => {
+          const next = (prev - 1 + SPECIAL_SERVICES_OPTIONS.length) % SPECIAL_SERVICES_OPTIONS.length;
+          setSelectedOptionId(SPECIAL_SERVICES_OPTIONS[next].id);
+          return next;
+        });
+      }
+    }
+    setDragStartX(null);
+    setDragOffset(0);
+    setIsDragging(false);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setDragStartX(e.clientX);
+    setDragOffset(0);
+    setIsDragging(true);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || dragStartX === null) return;
+    setDragOffset(e.clientX - dragStartX);
+  };
+
+  const handleMouseUp = () => {
+    if (isDragging && dragStartX !== null) {
+      if (dragOffset < -45) {
+        setHeroSlideIndex((prev) => {
+          const next = (prev + 1) % SPECIAL_SERVICES_OPTIONS.length;
+          setSelectedOptionId(SPECIAL_SERVICES_OPTIONS[next].id);
+          return next;
+        });
+      } else if (dragOffset > 45) {
+        setHeroSlideIndex((prev) => {
+          const next = (prev - 1 + SPECIAL_SERVICES_OPTIONS.length) % SPECIAL_SERVICES_OPTIONS.length;
+          setSelectedOptionId(SPECIAL_SERVICES_OPTIONS[next].id);
+          return next;
+        });
+      }
+    }
+    setDragStartX(null);
+    setDragOffset(0);
+    setIsDragging(false);
+  };
+
+  const handleSelectOption = (optId: SpecialServiceOptionId) => {
+    setSelectedOptionId(optId);
+    const idx = SPECIAL_SERVICES_OPTIONS.findIndex((o) => o.id === optId);
+    if (idx !== -1) setHeroSlideIndex(idx);
+  };
 
   const activeOption =
     SPECIAL_SERVICES_OPTIONS.find((o) => o.id === selectedOptionId) ||
@@ -246,12 +322,12 @@ function DedicatedSpecialServicesPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-lime-200">
       {/* ─────────────────────────────────────────────────────────────
-          1. HERO HEADER & 3 SEPARATE 12K SERVICE CARDS
+          1. CLASSICAL FRAMED CINEMATIC HERO MEDIA STAGE (100% RATIO, WHITE BACKGROUND)
           ───────────────────────────────────────────────────────────── */}
-      <section className="relative px-4 pt-6 pb-12 sm:px-6 lg:px-8 border-b border-slate-100 bg-gradient-to-b from-slate-50/70 to-white">
-        <div className="mx-auto max-w-6xl">
-          {/* Header Bar with Back Button & Breadcrumbs */}
-          <div className="flex items-center justify-between gap-4 mb-8">
+      <section className="relative w-full overflow-hidden bg-white border-b border-slate-200 py-6 sm:py-8 md:py-10">
+        <div className="relative z-10 mx-auto w-full max-w-[1040px] xl:max-w-[1100px] 2xl:max-w-[1140px] px-4 sm:px-6 md:px-8">
+          {/* Top Header Row: Back Button & Status Badge */}
+          <div className="w-full mb-3.5 sm:mb-5 flex items-center justify-between gap-3">
             <button
               onClick={() => {
                 if (window.history.length > 1) {
@@ -260,57 +336,108 @@ function DedicatedSpecialServicesPage() {
                   navigate({ to: "/" });
                 }
               }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-lime-500 hover:text-lime-700 hover:bg-lime-50/50 shadow-sm transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/90 text-xs font-semibold shadow-xs hover:border-lime-500 transition-all cursor-pointer"
             >
               <ArrowLeft size={14} className="text-lime-600" />
               <span>Back</span>
             </button>
 
-            <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-lime-700 uppercase tracking-widest bg-lime-50 px-3.5 py-1.5 rounded-full border border-lime-200">
-              <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
+            <div className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-mono font-bold text-lime-800 uppercase tracking-widest bg-lime-50 px-3.5 sm:px-4 py-1.5 rounded-full border border-lime-300 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-lime-500 inline-block animate-pulse" />
               <span>SPECIAL SERVICES & EXECUTIVE CONCIERGE</span>
             </div>
           </div>
 
-          <h1 className="sr-only">Special Services</h1>
-
-          {/* 3 SEPARATE SERVICE SHOWCASE CARDS (PURE PHOTOGRAPHY, ZERO TEXT) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {SPECIAL_SERVICES_OPTIONS.map((opt) => {
-              const isSelected = selectedOptionId === opt.id;
-              return (
+          {/* Framed Media Container with Strict 16:9 Aspect Ratio (100% Full Ratio, ZERO CROP) */}
+          <div
+            className="relative w-full aspect-[16/9] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none cursor-grab active:cursor-grabbing touch-pan-y"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
+            {/* Swipeable Track */}
+            <div
+              className={`flex w-full h-full absolute inset-0 ${isDragging ? "transition-none" : "transition-transform duration-500 ease-out"}`}
+              style={{
+                transform: `translateX(calc(-${heroSlideIndex * 100}% + ${dragOffset}px))`,
+              }}
+            >
+              {SPECIAL_SERVICES_OPTIONS.map((opt, idx) => (
                 <div
                   key={opt.id}
-                  onClick={() => {
-                    setSelectedOptionId(opt.id);
-                    const el = document.getElementById("request-form");
-                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }}
-                  className={`group relative rounded-2xl overflow-hidden bg-slate-100 border-2 transition-all duration-300 cursor-pointer shadow-md hover:shadow-xl hover:-translate-y-1 ${
-                    isSelected
-                      ? "border-lime-500 ring-4 ring-lime-400/40 shadow-lime-500/15 -translate-y-1"
-                      : "border-slate-200 hover:border-lime-400"
-                  }`}
+                  className="w-full h-full shrink-0 relative flex items-center justify-center overflow-hidden bg-white"
                 >
-                  {/* Photo Container - 100% Pure, Unobstructed Image */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
-                    <img
-                      src={opt.photo}
-                      alt={opt.label}
-                      className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105 select-none"
-                      loading="eager"
-                    />
-                  </div>
-
-                  {/* Active Indicator Checkmark (Clean & Non-text) */}
-                  {isSelected && (
-                    <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-lime-500 text-slate-950 flex items-center justify-center shadow-lg transition-transform duration-200 animate-in fade-in zoom-in-75">
-                      <CheckCircle2 size={18} className="stroke-[2.5]" />
-                    </div>
-                  )}
+                  <img
+                    src={opt.photo}
+                    alt={opt.label}
+                    className="w-full h-full object-contain object-center select-none block pointer-events-none bg-white"
+                    loading={idx <= 1 ? "eager" : "lazy"}
+                    draggable={false}
+                  />
                 </div>
-              );
-            })}
+              ))}
+            </div>
+
+            {/* Slide Navigation Overlay Buttons */}
+            <div className="absolute inset-y-0 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between pointer-events-none z-10">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setHeroSlideIndex((prev) => {
+                    const next = (prev - 1 + SPECIAL_SERVICES_OPTIONS.length) % SPECIAL_SERVICES_OPTIONS.length;
+                    setSelectedOptionId(SPECIAL_SERVICES_OPTIONS[next].id);
+                    return next;
+                  });
+                }}
+                className="pointer-events-auto p-2 sm:p-2.5 rounded-full bg-white/90 hover:bg-white text-slate-800 backdrop-blur-md transition shadow-md cursor-pointer border border-slate-200 hover:border-lime-500 hover:text-lime-700"
+                aria-label="Previous slide"
+              >
+                <ArrowLeft size={16} className="sm:hidden text-slate-800" />
+                <ArrowLeft size={18} className="hidden sm:block text-slate-800" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setHeroSlideIndex((prev) => {
+                    const next = (prev + 1) % SPECIAL_SERVICES_OPTIONS.length;
+                    setSelectedOptionId(SPECIAL_SERVICES_OPTIONS[next].id);
+                    return next;
+                  });
+                }}
+                className="pointer-events-auto p-2 sm:p-2.5 rounded-full bg-white/90 hover:bg-white text-slate-800 backdrop-blur-md transition shadow-md cursor-pointer border border-slate-200 hover:border-lime-500 hover:text-lime-700"
+                aria-label="Next slide"
+              >
+                <ArrowRight size={16} className="sm:hidden text-slate-800" />
+                <ArrowRight size={18} className="hidden sm:block text-slate-800" />
+              </button>
+            </div>
+          </div>
+
+          {/* Slide Pagination Indicator Dots Below the Frame */}
+          <div className="mt-3 sm:mt-4 flex items-center justify-center">
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200 shadow-xs">
+              {SPECIAL_SERVICES_OPTIONS.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setHeroSlideIndex(idx);
+                    setSelectedOptionId(SPECIAL_SERVICES_OPTIONS[idx].id);
+                  }}
+                  className={`h-1.5 sm:h-2 rounded-full transition-all cursor-pointer ${
+                    heroSlideIndex === idx ? "w-5 sm:w-7 bg-lime-500" : "w-1.5 sm:w-2 bg-slate-300 hover:bg-slate-400"
+                  }`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -331,7 +458,7 @@ function DedicatedSpecialServicesPage() {
             {SPECIAL_SERVICES_OPTIONS.map((opt) => (
               <button
                 key={opt.id}
-                onClick={() => setSelectedOptionId(opt.id)}
+                onClick={() => handleSelectOption(opt.id)}
                 className={`px-6 py-3 rounded-full text-xs font-bold font-mono uppercase tracking-wider transition-all cursor-pointer ${
                   selectedOptionId === opt.id
                     ? "bg-lime-500 text-slate-950 shadow-md ring-2 ring-lime-400 border border-lime-600"

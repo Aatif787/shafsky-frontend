@@ -23,26 +23,56 @@ export const HERO_CONTENT = {
   ctaWhatsApp: "WhatsApp Us",
 } as const;
 
-export const HOMEPAGE_FAQS = [
+export interface FAQItem {
+  q: string;
+  a: string;
+  cta?: {
+    label: string;
+    href: string;
+    external?: boolean;
+  };
+}
+
+export const HOMEPAGE_FAQS: readonly FAQItem[] = [
   {
-    q: "What is Suswagatam Meet & Greet?",
-    a: "Suswagatam is Shafsky Aviation Services' signature welcome and airport assistance service across Indian airports — including personal aerobridge escorts, security fast-track, VIP lounge access, dedicated baggage assistance, and tarmac vehicle transfers.",
+    q: "What does the airport Meet and Greet service include?",
+    a: "A dedicated host greets you at the terminal curbside for departures, or right as you exit the aerobridge on arrival. They take care of your luggage, guide you through check-in and security, and escort you smoothly to your lounge or waiting car.",
+    cta: {
+      label: "Book Airport Service",
+      href: "/#book",
+    },
   },
   {
-    q: "Which airports are covered in your pan-India network?",
-    a: "We operate across 20+ Indian airports including Delhi (DEL), Mumbai (BOM), Bengaluru (BLR), Hyderabad (HYD), Chennai (MAA), Kolkata (CCU), Goa Dabolim (GOI), Goa Mopa (GOX), Kochi (COK), Jaipur (JAI), Ahmedabad (AMD), Lucknow (LKO), and Amritsar (ATQ).",
+    q: "Which airports are your services available at?",
+    a: "We operate in more than 20 airports across India, including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi, and Ahmedabad.",
+    cta: {
+      label: "View Covered Airports",
+      href: "/airports",
+    },
   },
   {
-    q: "How does the Private Charter quotation workflow function?",
-    a: "Private Charter requests are handled through our 24/7 Flight Operations Desk. Once you submit your origin, destination, date, and passenger count, our team checks aircraft availability, airport slots, and catering preferences to deliver a clear flight quote within 45 minutes.",
+    q: "How do I book a private charter flight?",
+    a: "Simply share your travel dates, route, and passenger count with us. We check aircraft availability right away and send you a transparent charter quote within 45 minutes.",
+    cta: {
+      label: "Explore Private Charters",
+      href: "/solutions/aviation",
+    },
   },
   {
-    q: "What is the advance booking window for airport services?",
-    a: "Standard airport services should ideally be booked at least 12 hours in advance for domestic flights and 24 hours for international flights. For urgent or last-minute requests, our 24/7 team is directly available at +91 9599087959.",
+    q: "How early do I need to book my airport service?",
+    a: "We recommend booking at least 12 hours in advance for domestic flights and 24 hours for international flights. If your trip is last minute, reach out to our team directly and we will do our best to arrange it.",
+    cta: {
+      label: "Book Your Service",
+      href: "/#book",
+    },
   },
   {
-    q: "Are services customizable for diplomatic delegations and large families?",
-    a: "Yes. We regularly assist government delegations, corporate groups, and large families with dedicated team escorts, private terminal coaches, and coordinated luggage handling.",
+    q: "Can you assist large families, groups, or VIP travelers?",
+    a: "Yes, definitely. We regularly coordinate travel for large families, corporate delegations, and VIP guests with multiple dedicated airport hosts, group luggage handling, and private tarmac vehicles.",
+    cta: {
+      label: "Contact Concierge Desk",
+      href: "/contact",
+    },
   },
 ] as const;
 
