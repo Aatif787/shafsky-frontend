@@ -17,7 +17,7 @@ import {
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
-import tajMahalImg from "@/assets/homepage/widescreen/home3.jpeg";
+import toursTravelImg from "@/assets/others/tours-travel.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 
 export type SpecialSubService =
@@ -43,7 +43,7 @@ const SPECIAL_SUB_SERVICES: {
     id: "Tours & Travel (Honeymoon/Couples)",
     label: "Tours & Travel (Honeymoon)",
     desc: "Curated romantic itineraries, European honeymoons, private yacht charters, and luxury stays.",
-    photo: tajMahalImg,
+    photo: toursTravelImg,
     icon: Globe,
   },
   {
@@ -273,7 +273,8 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
             alt={activeSubObj.label}
             badge="Luxury Experience"
             caption={activeSubObj.desc}
-            aspectRatio="16 / 10"
+            aspectRatio="16 / 9"
+            objectFit="contain"
           />
         </div>
       </div>

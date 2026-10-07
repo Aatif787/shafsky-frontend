@@ -6,6 +6,7 @@ interface ExperiencePhotoProps {
   caption?: string;
   aspectRatio?: string;
   className?: string;
+  objectFit?: "cover" | "contain";
 }
 
 export function ExperiencePhoto({
@@ -15,6 +16,7 @@ export function ExperiencePhoto({
   caption,
   aspectRatio = "16 / 10",
   className = "",
+  objectFit = "cover",
 }: ExperiencePhotoProps) {
   return (
     <div className={`flex flex-col gap-2.5 ${className}`}>
@@ -30,7 +32,7 @@ export function ExperiencePhoto({
             alt={alt}
             loading="eager"
             decoding="async"
-            className="w-full h-full object-cover select-none"
+            className={`w-full h-full ${objectFit === "contain" ? "object-contain bg-white" : "object-cover"} select-none`}
           />
         </picture>
       </div>

@@ -883,6 +883,17 @@ function DedicatedSpecialServicesPage() {
                 {activeOption.label}
               </h3>
 
+              {/* Active Option Full-Ratio Featured Photo */}
+              <div className="mb-6 rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm bg-white aspect-[16/9]">
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  src={activeOption.photo}
+                  alt={activeOption.label}
+                  className="w-full h-full object-contain object-center select-none bg-white"
+                />
+              </div>
+
               <div className="space-y-4">
                 {activeOption.inclusions.map((inc, i) => (
                   <div key={i} className="flex items-start gap-3.5 text-sm sm:text-[15px] text-slate-900 leading-snug">
@@ -893,7 +904,7 @@ function DedicatedSpecialServicesPage() {
               </div>
             </div>
 
-            {/* Right Column: Visual Cards */}
+            {/* Right Column: Visual Cards with Full 16:9 Aspect Ratio (Zero Crop) */}
             <div className="lg:col-span-6 space-y-4">
               {SPECIAL_SERVICES_OPTIONS.map((item, idx) => (
                 <div
@@ -905,11 +916,13 @@ function DedicatedSpecialServicesPage() {
                       : "border-slate-200/80 hover:border-lime-300"
                   }`}
                 >
-                  <div className="w-full sm:w-48 h-36 relative overflow-hidden bg-slate-900 shrink-0">
-                    <img loading="lazy" decoding="async"
+                  <div className="w-full sm:w-56 aspect-[16/9] relative overflow-hidden bg-white shrink-0 flex items-center justify-center border-b sm:border-b-0 sm:border-r border-slate-100">
+                    <img
+                      loading="lazy"
+                      decoding="async"
                       src={item.photo}
                       alt={item.label}
-                      className="w-full h-full object-cover object-center select-none"
+                      className="w-full h-full object-contain object-center select-none bg-white"
                     />
                     <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-[8.5px] font-mono font-bold text-lime-400">
                       PREMIUM
