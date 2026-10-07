@@ -72,11 +72,16 @@ export const PRIMARY_SERVICES: ServiceMenuItem[] = [
   {
     title: "Special Services",
     href: "/solutions/medical",
-    descriptor: "Tours • Passport & VISA • PSO • Sightseeing • Infant Care • HUM",
+    descriptor: "Air & Train Ambulance • HUM • Visa • Cargo & AVI • Ticketing • Spa • PSO",
     icon: ShieldCheck,
-    badge: "Protocol & Care",
+    badge: "Protocol & Medevac",
     image: "/images/services-gallery/family-arrival.webp",
-    features: ["Passport & VISA Assist", "Armed PSO Escorts", "Sightseeing Tours", "Infant Care & HUM Support"],
+    features: [
+      "Air & Train Ambulance",
+      "HUM Remains Repatriation",
+      "Visa & Air Ticketing Assist",
+      "Cargo & AVI Pet Freight",
+    ],
   },
 ];
 

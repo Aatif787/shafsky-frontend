@@ -1,15 +1,17 @@
-import React, { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import React, { useState, useEffect } from "react";
+import { createFileRoute, useNavigate, Link, useLocation } from "@tanstack/react-router";
 import {
   ArrowLeft,
   ArrowRight,
   Sparkles,
   Send,
   CheckCircle2,
-  MessageSquare
+  MessageSquare,
+  Plane
 } from "lucide-react";
 import { display } from "@/components/home/theme";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import { ASSETS } from "@/lib/assets";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import tajMahalImg from "@/assets/homepage/widescreen/home3.jpeg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
@@ -18,9 +20,9 @@ import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 export const Route = createFileRoute("/solutions/medical")({
   head: () =>
     pageHead({
-      title: "VIP Special Services, Spa & Close Protection | Shafsky",
+      title: "VIP Special Services, Medevac, HUM, Visa, Cargo & Protocol | Shafsky",
       description:
-        "Luxury spa and wellness, custom couples travel, and professional PSO close protection with shopping escorts. Special services by Shafsky Aviation.",
+        "Luxury spa and wellness, couples travel, PSO close protection, 24/7 air and train ambulance, HUM repatriation, visa assistance, cargo pet logistics, and commercial air ticketing.",
       path: "/solutions/medical",
       jsonLd: [
         breadcrumbJsonLd([
@@ -35,7 +37,13 @@ export const Route = createFileRoute("/solutions/medical")({
 export type SpecialServiceOptionId =
   | "Spa & Wellness"
   | "Tours & Travel (Honeymoon/Couples)"
-  | "PSO (Personal Security Officer / VIP Shopping)";
+  | "PSO (Personal Security Officer / VIP Shopping)"
+  | "Air Ambulance (Airborne ICU Jet)"
+  | "Train Ambulance (Train ICU Escort)"
+  | "Dignified Human Remains (HUM)"
+  | "Visa Assistance Services"
+  | "Cargo & AVI Pet Freight"
+  | "Air Ticketing Services";
 
 interface SpecialServiceOptionDef {
   id: SpecialServiceOptionId;
@@ -92,15 +100,139 @@ const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
       "24/7 Operations Desk Coordination & Dedicated Executive Security Detail",
     ],
   },
+  {
+    id: "Air Ambulance (Airborne ICU Jet)",
+    label: "Air Ambulance (Airborne ICU)",
+    badge: "24/7 AIRBORNE ICU & BED-TO-BED MEDICAL EVACUATION",
+    tagline: "Dedicated ICU aircraft, certified aero-medical doctors, and seamless bed-to-bed hospital transfer across India and worldwide.",
+    photo: ASSETS.medical,
+    inclusions: [
+      "Dedicated Airborne ICU Jet (Learjet / Hawker / King Air) on 2-Hour Rapid Standby",
+      "Board-Certified Aero-Medical Flight Physicians & Critical Care ICU Nurses Onboard",
+      "Full Advanced Life Support Suite: Transport Ventilator, Defibrillator, Multipara Monitors",
+      "Ramp Surface Ambulance Synchronized at Both Origin & Destination Airport Tarmacs",
+      "Direct Airport Authority / DGCA Priority Clearance for Airside Medical Flights",
+      "24/7 Hospital-to-Hospital Coordination Desk & Continuous Bedside Handover",
+    ],
+  },
+  {
+    id: "Train Ambulance (Train ICU Escort)",
+    label: "Train Ambulance (ICU Escort)",
+    badge: "RAILWAY ICU TRANSFER & MEDICAL ESCORT",
+    tagline: "Cost-effective long-distance patient rail transfer in 1AC/2AC medical coupes equipped with doctors, continuous oxygen, and monitoring.",
+    photo: ASSETS.medicalAssist,
+    inclusions: [
+      "Comfortable Rail Patient Transit in Air-Conditioned 1AC / 2AC Reserved Medical Coupe",
+      "Accompanied by Experienced Critical Care Physician & Emergency Nursing Staff",
+      "Continuous Medical Grade Oxygen Cylinders & Emergency Life-Support Medicine Kit",
+      "Bed-to-Bed Surface Ambulance at Departure Station and Arrival Platform",
+      "Priority Stretcher & Station Master Wheelchair Transit onto Train Compartment",
+      "24/7 Rail Operations Control Room Standby & Continuous Family Tracking",
+    ],
+  },
+  {
+    id: "Dignified Human Remains (HUM)",
+    label: "HUM (Human Remains Transport)",
+    badge: "DIGNIFIED REPATRIATION & MORTUARY DISPATCH",
+    tagline: "Compassionate, fully documented repatriation of mortal remains across domestic and international aviation sectors.",
+    photo: ASSETS.interior,
+    inclusions: [
+      "Full Domestic & International Air Repatriation Clearance by Dedicated Case Managers",
+      "Hospital NOC, Death Certificate Clearance, Embalming Certificate & Police Clearances",
+      "Certified Embalming Procedure & International Zinc-Lined Coffin Hermetic Sealing",
+      "Embassy / Consular Clearance, Quarantine / Health Officer Approvals & NOCs",
+      "Priority Air Cargo Space Allocation & Direct Airside Tarmac Dignified Receiving",
+      "Complete Compassionate Guidance with Real-Time Family Progress Updates",
+    ],
+  },
+  {
+    id: "Visa Assistance Services",
+    label: "Visa Assistance",
+    badge: "FAST-TRACK DIPLOMATIC & CORPORATE VISA ASSIST",
+    tagline: "Expedited visa processing, VIP doorstep biometrics, document vetting, and priority embassy liaison for international travel.",
+    photo: ASSETS.fastTrack,
+    inclusions: [
+      "Expedited Business, Tourist, Diplomatic, Student & Medical Visa Processing",
+      "Doorstep Biometric Coordination & Priority VIP Appointment Scheduling",
+      "Comprehensive Document Verification, Cover Letter Drafting & Embassy File Review",
+      "Fast-Track Processing for Schengen, UK, US, UAE, Singapore & 50+ Global Hubs",
+      "Official Corporate Delegation & Diplomatic Mission Priority File Submission",
+      "24/7 Visa Helpdesk Status Tracking & Secure Courier Passport Delivery",
+    ],
+  },
+  {
+    id: "Cargo & AVI Pet Freight",
+    label: "Cargo & AVI Pet Booking",
+    badge: "AIR FREIGHT & IATA LIVE ANIMAL (AVI) LOGISTICS",
+    tagline: "Specialized aviation freight handling, IATA-compliant live animal & pet booking, and airside customs documentation clearance.",
+    photo: ASSETS.cargo,
+    inclusions: [
+      "IATA Live Animal (AVI) Pet Transport with Climate-Controlled Cargo Hold Allocation",
+      "Pet Relocation Documentation, Veterinary Fit-to-Fly Verification & IATA Crates",
+      "High-Value Express Air Freight, Temperature-Sensitive Pharma & Valuables Escort",
+      "Customs Documentation Liaison, Air Waybill (AWB) Generation & Express Tarmac Clearance",
+      "Airside Supervised Loading with Real-Time Departure WhatsApp Photo Updates",
+      "24/7 Air Cargo Operations Desk Liaison across All Major Commercial Airline Carriers",
+    ],
+  },
+  {
+    id: "Air Ticketing Services",
+    label: "Air Ticketing (Domestic & Intl)",
+    badge: "DOMESTIC & INTERNATIONAL AIRLINE TICKETING",
+    tagline: "Instant domestic and international airline bookings across 500+ commercial carriers, flexible corporate fares, and VIP seat assignments.",
+    photo: ASSETS.plane,
+    inclusions: [
+      "Instant Domestic & International Flight Ticketing across 500+ Global Airlines",
+      "Special Corporate & Marine/Offshore Fares, Extra Baggage & Flexible Re-booking",
+      "Premium Cabin Seat Reservation (Economy, Premium Economy, Business, First Class)",
+      "Special Airside Passenger Assistance: Wheelchair, Stretcher, Unaccompanied Minor",
+      "Instant PNR Generation, Web Check-in & Boarding Pass Issuance to WhatsApp",
+      "24/7 Dedicated Air Ticketing Operations Desk for Flight Changes & Urgent Cancellations",
+    ],
+  },
 ];
 
 function DedicatedSpecialServicesPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedOptionId, setSelectedOptionId] = useState<SpecialServiceOptionId>("Spa & Wellness");
   const [heroSlideIndex, setHeroSlideIndex] = useState<number>(0);
   const [dragStartX, setDragStartX] = useState<number | null>(null);
   const [dragOffset, setDragOffset] = useState<number>(0);
   const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const searchObj = (location.search || {}) as Record<string, unknown>;
+    const subParam = typeof searchObj.sub === "string" ? searchObj.sub : undefined;
+    if (!subParam) return;
+    const sub = subParam.toLowerCase();
+    let targetId: SpecialServiceOptionId | null = null;
+    if (sub.includes("air_amb") || sub.includes("air-amb") || sub === "medevac" || sub === "ambulance") {
+      targetId = "Air Ambulance (Airborne ICU Jet)";
+    } else if (sub.includes("train")) {
+      targetId = "Train Ambulance (Train ICU Escort)";
+    } else if (sub === "hum" || sub.includes("remains")) {
+      targetId = "Dignified Human Remains (HUM)";
+    } else if (sub.includes("visa")) {
+      targetId = "Visa Assistance Services";
+    } else if (sub.includes("cargo") || sub.includes("avi") || sub.includes("pet")) {
+      targetId = "Cargo & AVI Pet Freight";
+    } else if (sub.includes("ticket") || sub.includes("flight")) {
+      targetId = "Air Ticketing Services";
+    } else if (sub.includes("pso") || sub.includes("security")) {
+      targetId = "PSO (Personal Security Officer / VIP Shopping)";
+    } else if (sub.includes("tour") || sub.includes("honeymoon")) {
+      targetId = "Tours & Travel (Honeymoon/Couples)";
+    } else if (sub.includes("spa") || sub.includes("wellness")) {
+      targetId = "Spa & Wellness";
+    }
+
+    if (targetId) {
+      setSelectedOptionId(targetId);
+      const idx = SPECIAL_SERVICES_OPTIONS.findIndex((o) => o.id === targetId);
+      if (idx !== -1) setHeroSlideIndex(idx);
+    }
+  }, [location.search]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setDragStartX(e.touches[0].clientX);
@@ -200,6 +332,53 @@ function DedicatedSpecialServicesPage() {
   const [psoScope, setPsoScope] = useState("VIP Luxury Shopping Escort & Close Protection");
   const [psoRequirements, setPsoRequirements] = useState("");
 
+  // 4. Air Ambulance states
+  const [airAmbPickup, setAirAmbPickup] = useState("");
+  const [airAmbDest, setAirAmbDest] = useState("");
+  const [airAmbDate, setAirAmbDate] = useState("");
+  const [airAmbAircraft, setAirAmbAircraft] = useState("Dedicated Airborne ICU Jet (Learjet / Hawker)");
+  const [airAmbCondition, setAirAmbCondition] = useState("Critical Care / Ventilator Required");
+  const [airAmbNotes, setAirAmbNotes] = useState("");
+
+  // 5. Train Ambulance states
+  const [trainAmbOrigin, setTrainAmbOrigin] = useState("");
+  const [trainAmbDest, setTrainAmbDest] = useState("");
+  const [trainAmbDate, setTrainAmbDate] = useState("");
+  const [trainAmbCoach, setTrainAmbCoach] = useState("1AC Air-Conditioned Reserved Medical Coupe");
+  const [trainAmbCondition, setTrainAmbCondition] = useState("Stable with Oxygen & Doctor Escort");
+  const [trainAmbNotes, setTrainAmbNotes] = useState("");
+
+  // 6. HUM (Human Remains Transport) states
+  const [humOrigin, setHumOrigin] = useState("");
+  const [humDest, setHumDest] = useState("");
+  const [humDate, setHumDate] = useState("");
+  const [humScope, setHumScope] = useState("Domestic Repatriation (Airport to Airport)");
+  const [humNotes, setHumNotes] = useState("");
+
+  // 7. Visa Assistance states
+  const [visaCountry, setVisaCountry] = useState("");
+  const [visaCategory, setVisaCategory] = useState("Tourist / Visitor Visa");
+  const [visaTravelDate, setVisaTravelDate] = useState("");
+  const [visaApplicants, setVisaApplicants] = useState(1);
+  const [visaNotes, setVisaNotes] = useState("");
+
+  // 8. Cargo & AVI Pet Freight states
+  const [cargoOrigin, setCargoOrigin] = useState("");
+  const [cargoDest, setCargoDest] = useState("");
+  const [cargoDate, setCargoDate] = useState("");
+  const [cargoCategory, setCargoCategory] = useState("Live Animal / Pet Relocation (AVI)");
+  const [cargoWeight, setCargoWeight] = useState("");
+  const [cargoNotes, setCargoNotes] = useState("");
+
+  // 9. Air Ticketing states
+  const [ticketOrigin, setTicketOrigin] = useState("");
+  const [ticketDest, setTicketDest] = useState("");
+  const [ticketDate, setTicketDate] = useState("");
+  const [ticketTripType, setTicketTripType] = useState("One Way");
+  const [ticketClass, setTicketClass] = useState("Economy Class");
+  const [ticketPassengers, setTicketPassengers] = useState(1);
+  const [ticketNotes, setTicketNotes] = useState("");
+
   // Contact details
   const [clientName, setClientName] = useState("");
   const [phone, setPhone] = useState("");
@@ -226,7 +405,7 @@ function DedicatedSpecialServicesPage() {
     let serviceDate: string | undefined;
     let details: Record<string, unknown> = { service: selectedOptionId };
     let notes: string | undefined;
-    const serviceCategory: "Travel Support" | "Cargo & Logistics" = "Travel Support";
+    let serviceCategory: "Travel Support" | "Cargo & Logistics" = "Travel Support";
     let serviceType: string = selectedOptionId;
 
     if (selectedOptionId === "Spa & Wellness") {
@@ -273,6 +452,96 @@ function DedicatedSpecialServicesPage() {
       };
       notes = `${psoScope} — ${psoRequirements || "None"}`;
       serviceType = "VIP Escort";
+    } else if (selectedOptionId === "Air Ambulance (Airborne ICU Jet)") {
+      origin = airAmbPickup;
+      destination = airAmbDest;
+      serviceDate = airAmbDate || undefined;
+      details = {
+        service: selectedOptionId,
+        pickup_city: airAmbPickup,
+        destination_hospital: airAmbDest,
+        date: airAmbDate,
+        aircraft_type: airAmbAircraft,
+        patient_condition: airAmbCondition,
+        clinical_notes: airAmbNotes,
+      };
+      notes = `${airAmbAircraft} | Condition: ${airAmbCondition} — ${airAmbNotes || "None"}`;
+      serviceType = "Air Ambulance";
+    } else if (selectedOptionId === "Train Ambulance (Train ICU Escort)") {
+      origin = trainAmbOrigin;
+      destination = trainAmbDest;
+      serviceDate = trainAmbDate || undefined;
+      details = {
+        service: selectedOptionId,
+        origin_station: trainAmbOrigin,
+        destination_station: trainAmbDest,
+        date: trainAmbDate,
+        coach_class: trainAmbCoach,
+        patient_condition: trainAmbCondition,
+        clinical_notes: trainAmbNotes,
+      };
+      notes = `${trainAmbCoach} | Condition: ${trainAmbCondition} — ${trainAmbNotes || "None"}`;
+      serviceType = "Train Ambulance";
+    } else if (selectedOptionId === "Dignified Human Remains (HUM)") {
+      origin = humOrigin;
+      destination = humDest;
+      serviceDate = humDate || undefined;
+      details = {
+        service: selectedOptionId,
+        departure_city: humOrigin,
+        arrival_destination: humDest,
+        date: humDate,
+        repatriation_scope: humScope,
+        documentation_notes: humNotes,
+      };
+      notes = `${humScope} — ${humNotes || "None"}`;
+      serviceType = "Human Remains Repatriation";
+    } else if (selectedOptionId === "Visa Assistance Services") {
+      origin = "India";
+      destination = visaCountry;
+      serviceDate = visaTravelDate || undefined;
+      details = {
+        service: selectedOptionId,
+        destination_country: visaCountry,
+        visa_category: visaCategory,
+        travel_date: visaTravelDate,
+        applicants_count: visaApplicants,
+        requirements: visaNotes,
+      };
+      notes = `${visaCategory} for ${visaCountry} (${visaApplicants} Pax) — ${visaNotes || "None"}`;
+      serviceType = "Visa Assistance";
+    } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
+      origin = cargoOrigin;
+      destination = cargoDest;
+      serviceDate = cargoDate || undefined;
+      serviceCategory = "Cargo & Logistics";
+      details = {
+        service: selectedOptionId,
+        origin_airport: cargoOrigin,
+        destination_airport: cargoDest,
+        date: cargoDate,
+        cargo_category: cargoCategory,
+        weight_volume: cargoWeight,
+        manifest_notes: cargoNotes,
+      };
+      notes = `${cargoCategory} | Wt: ${cargoWeight || "TBD"} — ${cargoNotes || "None"}`;
+      serviceType = "Cargo Assistance";
+    } else if (selectedOptionId === "Air Ticketing Services") {
+      origin = ticketOrigin;
+      destination = ticketDest;
+      serviceDate = ticketDate || undefined;
+      details = {
+        service: selectedOptionId,
+        origin_airport: ticketOrigin,
+        destination_airport: ticketDest,
+        travel_date: ticketDate,
+        trip_type: ticketTripType,
+        cabin_class: ticketClass,
+        passenger_count: ticketPassengers,
+        passenger_notes: ticketNotes,
+      };
+      notes = `${ticketTripType} ${ticketClass} (${ticketPassengers} Pax) from ${ticketOrigin} to ${ticketDest} — ${ticketNotes || "None"}`;
+      serviceType = "Air Ticketing";
     }
 
     try {
@@ -313,6 +582,18 @@ function DedicatedSpecialServicesPage() {
       details = `Destination: ${tourDestination}%0ADates: ${tourStartDate} to ${tourEndDate}%0AGuests: ${tourGuests}%0AStyle: ${tourStyle}%0ANotes: ${tourRequirements || "None"}`;
     } else if (selectedOptionId === "PSO (Personal Security Officer / VIP Shopping)") {
       details = `Location: ${psoLocation}%0ADates: ${psoDates}%0AVIPs: ${psoVipCount}%0AOfficers: ${psoOfficersCount}%0AScope: ${psoScope}%0ANotes: ${psoRequirements || "None"}`;
+    } else if (selectedOptionId === "Air Ambulance (Airborne ICU Jet)") {
+      details = `Pickup Hospital/City: ${airAmbPickup}%0ADestination: ${airAmbDest}%0ADate: ${airAmbDate}%0AAircraft: ${airAmbAircraft}%0APatient Condition: ${airAmbCondition}%0ANotes: ${airAmbNotes || "None"}`;
+    } else if (selectedOptionId === "Train Ambulance (Train ICU Escort)") {
+      details = `Origin Station: ${trainAmbOrigin}%0ADestination Station: ${trainAmbDest}%0ADate: ${trainAmbDate}%0ACoach: ${trainAmbCoach}%0APatient Condition: ${trainAmbCondition}%0ANotes: ${trainAmbNotes || "None"}`;
+    } else if (selectedOptionId === "Dignified Human Remains (HUM)") {
+      details = `Origin: ${humOrigin}%0ADestination: ${humDest}%0ADate: ${humDate}%0AScope: ${humScope}%0ANotes: ${humNotes || "None"}`;
+    } else if (selectedOptionId === "Visa Assistance Services") {
+      details = `Country: ${visaCountry}%0ACategory: ${visaCategory}%0ATravel Date: ${visaTravelDate}%0AApplicants: ${visaApplicants}%0ANotes: ${visaNotes || "None"}`;
+    } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
+      details = `Origin Airport: ${cargoOrigin}%0ADestination Airport: ${cargoDest}%0ADate: ${cargoDate}%0ACargo Type: ${cargoCategory}%0AWeight/Volume: ${cargoWeight}%0ANotes: ${cargoNotes || "None"}`;
+    } else if (selectedOptionId === "Air Ticketing Services") {
+      details = `Sector: ${ticketOrigin} to ${ticketDest}%0ADate: ${ticketDate}%0ATrip Type: ${ticketTripType}%0ACabin: ${ticketClass}%0APassengers: ${ticketPassengers}%0ANotes: ${ticketNotes || "None"}`;
     }
 
     const text = `Hello Shafsky Special Services Desk,%0A%0AI would like to request assistance for:%0A- Service: ${selectedOptionId}%0A${details}%0A- Client Name: ${clientName}%0A- Phone: ${phone}%0A- Email: ${email || "N/A"}`;
@@ -793,6 +1074,580 @@ function DedicatedSpecialServicesPage() {
                   </>
                 )}
 
+                {/* 4. Air Ambulance (Airborne ICU Jet) Form */}
+                {selectedOptionId === "Air Ambulance (Airborne ICU Jet)" && (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Pickup City / Transferring Hospital
+                        </label>
+                        <input
+                          type="text"
+                          value={airAmbPickup}
+                          onChange={(e) => setAirAmbPickup(e.target.value)}
+                          placeholder="e.g. Apollo Hospital, Chennai / Fortis, Delhi"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Destination City / Receiving Hospital
+                        </label>
+                        <input
+                          type="text"
+                          value={airAmbDest}
+                          onChange={(e) => setAirAmbDest(e.target.value)}
+                          placeholder="e.g. AIIMS Delhi / Mount Elizabeth Singapore"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Preferred Flight Date / Timing
+                        </label>
+                        <input
+                          type="text"
+                          value={airAmbDate}
+                          onChange={(e) => setAirAmbDate(e.target.value)}
+                          placeholder="e.g. Urgent / Today / 24 Oct"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Aircraft Fleet Type
+                        </label>
+                        <select
+                          value={airAmbAircraft}
+                          onChange={(e) => setAirAmbAircraft(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                        >
+                          <option value="Dedicated Airborne ICU Jet (Learjet / Hawker)">Dedicated Airborne ICU Jet (Learjet / Hawker)</option>
+                          <option value="Turboprop ICU (King Air B200 / C90)">Turboprop ICU (King Air B200 / C90)</option>
+                          <option value="Commercial Airline Stretcher Clearance">Commercial Airline Stretcher Clearance</option>
+                          <option value="Helicopter Emergency Medical Service (HEMS)">Helicopter Emergency Medical Service (HEMS)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Patient Clinical Status
+                        </label>
+                        <select
+                          value={airAmbCondition}
+                          onChange={(e) => setAirAmbCondition(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                        >
+                          <option value="Critical Care / Ventilator Required">Critical Care / Ventilator Required</option>
+                          <option value="ICU Monitored / High Flow Oxygen">ICU Monitored / High Flow Oxygen</option>
+                          <option value="Stable Stretcher Patient with Medical Escort">Stable Stretcher Patient with Medical Escort</option>
+                          <option value="Wheelchair / Non-Critical Medical Escort">Wheelchair / Non-Critical Medical Escort</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Clinical Summary, Diagnosis & Accompanying Family
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={airAmbNotes}
+                        onChange={(e) => setAirAmbNotes(e.target.value)}
+                        placeholder="e.g. Diagnosis, oxygen flow rate (L/min), treating doctor contact, 1-2 attendants traveling..."
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* 5. Train Ambulance (Train ICU Escort) Form */}
+                {selectedOptionId === "Train Ambulance (Train ICU Escort)" && (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Departure Railway Station & City
+                        </label>
+                        <input
+                          type="text"
+                          value={trainAmbOrigin}
+                          onChange={(e) => setTrainAmbOrigin(e.target.value)}
+                          placeholder="e.g. Patna Junction / Guwahati / Lucknow"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Destination Railway Station & Hospital
+                        </label>
+                        <input
+                          type="text"
+                          value={trainAmbDest}
+                          onChange={(e) => setTrainAmbDest(e.target.value)}
+                          placeholder="e.g. New Delhi Railway Station / AIIMS"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Travel Date
+                        </label>
+                        <input
+                          type="date"
+                          value={trainAmbDate}
+                          onChange={(e) => setTrainAmbDate(e.target.value)}
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Coach Compartment Preference
+                        </label>
+                        <select
+                          value={trainAmbCoach}
+                          onChange={(e) => setTrainAmbCoach(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                        >
+                          <option value="1AC Air-Conditioned Reserved Medical Coupe">1AC Air-Conditioned Reserved Medical Coupe</option>
+                          <option value="2AC Reserved Medical Berth with Escort">2AC Reserved Medical Berth with Escort</option>
+                          <option value="Express Stretcher Station-to-Platform Transit">Express Stretcher Station-to-Platform Transit</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Patient Medical Condition
+                        </label>
+                        <select
+                          value={trainAmbCondition}
+                          onChange={(e) => setTrainAmbCondition(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                        >
+                          <option value="Stable with Oxygen & Doctor Escort">Stable with Oxygen & Doctor Escort</option>
+                          <option value="Bedridden Stretcher Transit with Nurse">Bedridden Stretcher Transit with Nurse</option>
+                          <option value="Post-Operative Orthopedic / Cardiac Patient">Post-Operative Orthopedic / Cardiac Patient</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Oxygen Requirement & Medical Equipment Details
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={trainAmbNotes}
+                        onChange={(e) => setTrainAmbNotes(e.target.value)}
+                        placeholder="e.g. Continuous O2 cylinder required, cardiac monitor, wheelchair/stretcher platform boarding..."
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* 6. Dignified Human Remains (HUM) Form */}
+                {selectedOptionId === "Dignified Human Remains (HUM)" && (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Departure City / Hospital Mortuary
+                        </label>
+                        <input
+                          type="text"
+                          value={humOrigin}
+                          onChange={(e) => setHumOrigin(e.target.value)}
+                          placeholder="e.g. Dubai / London / Mumbai / Delhi"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Destination Airport / City
+                        </label>
+                        <input
+                          type="text"
+                          value={humDest}
+                          onChange={(e) => setHumDest(e.target.value)}
+                          placeholder="e.g. Cochin / Hyderabad / Lucknow / Srinagar"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Preferred Repatriation Date
+                        </label>
+                        <input
+                          type="text"
+                          value={humDate}
+                          onChange={(e) => setHumDate(e.target.value)}
+                          placeholder="e.g. Urgent / Earliest Available Cargo Flight"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Repatriation Protocol Scope
+                        </label>
+                        <select
+                          value={humScope}
+                          onChange={(e) => setHumScope(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                        >
+                          <option value="Domestic Repatriation (Airport to Airport)">Domestic Repatriation (Airport to Airport)</option>
+                          <option value="International Repatriation (Embalming, Consular & Air Cargo)">International Repatriation (Embalming, Consular & Air Cargo)</option>
+                          <option value="Full Mortuary Van Transit & Airside Tarmac Receiving">Full Mortuary Van Transit & Airside Tarmac Receiving</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Documentation Status & Special Family Requests
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={humNotes}
+                        onChange={(e) => setHumNotes(e.target.value)}
+                        placeholder="e.g. Death certificate obtained, embalming NOC required, number of accompanying family passengers..."
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* 7. Visa Assistance Services Form */}
+                {selectedOptionId === "Visa Assistance Services" && (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Destination Country / Region
+                        </label>
+                        <input
+                          type="text"
+                          value={visaCountry}
+                          onChange={(e) => setVisaCountry(e.target.value)}
+                          placeholder="e.g. Schengen Area (France/Germany) / United Kingdom / USA / UAE / Singapore"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Visa Category
+                        </label>
+                        <select
+                          value={visaCategory}
+                          onChange={(e) => setVisaCategory(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                        >
+                          <option value="Tourist / Visitor Visa">Tourist / Visitor Visa</option>
+                          <option value="Business & Corporate Delegation Visa">Business & Corporate Delegation Visa</option>
+                          <option value="Medical Treatment Visa">Medical Treatment Visa</option>
+                          <option value="Diplomatic / Official Delegation Visa">Diplomatic / Official Delegation Visa</option>
+                          <option value="Student / Academic Visa">Student / Academic Visa</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Intended Date of Travel
+                        </label>
+                        <input
+                          type="date"
+                          value={visaTravelDate}
+                          onChange={(e) => setVisaTravelDate(e.target.value)}
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Number of Applicants
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={50}
+                          value={visaApplicants}
+                          onChange={(e) => setVisaApplicants(parseInt(e.target.value) || 1)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Passport Nationality & Fast-Track Doorstep Biometric Requests
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={visaNotes}
+                        onChange={(e) => setVisaNotes(e.target.value)}
+                        placeholder="e.g. Indian passport holder, urgent 48-hour business meeting, require VIP doorstep biometrics appointment..."
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* 8. Cargo & AVI Pet Freight Form */}
+                {selectedOptionId === "Cargo & AVI Pet Freight" && (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Departure Airport / Station
+                        </label>
+                        <input
+                          type="text"
+                          value={cargoOrigin}
+                          onChange={(e) => setCargoOrigin(e.target.value)}
+                          placeholder="e.g. Delhi (DEL) / Mumbai (BOM) / Bangalore (BLR)"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Destination Airport / Country
+                        </label>
+                        <input
+                          type="text"
+                          value={cargoDest}
+                          onChange={(e) => setCargoDest(e.target.value)}
+                          placeholder="e.g. Dubai (DXB) / London Heathrow (LHR) / Singapore (SIN)"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Dispatch Date
+                        </label>
+                        <input
+                          type="date"
+                          value={cargoDate}
+                          onChange={(e) => setCargoDate(e.target.value)}
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Cargo / Freight Classification
+                        </label>
+                        <select
+                          value={cargoCategory}
+                          onChange={(e) => setCargoCategory(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                        >
+                          <option value="Live Animal / Pet Relocation (AVI)">Live Animal / Pet Relocation (AVI)</option>
+                          <option value="High-Value Express Aviation Cargo">High-Value Express Aviation Cargo</option>
+                          <option value="Temperature-Sensitive Pharma Freight">Temperature-Sensitive Pharma Freight</option>
+                          <option value="Dangerous Goods (DGR) Clearance">Dangerous Goods (DGR) Clearance</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Weight / Pet Breed / Crate Size
+                        </label>
+                        <input
+                          type="text"
+                          value={cargoWeight}
+                          onChange={(e) => setCargoWeight(e.target.value)}
+                          placeholder="e.g. Golden Retriever (32 kg) / 120 kg Air Cargo"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Cargo Manifest Details & Special Instructions
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={cargoNotes}
+                        onChange={(e) => setCargoNotes(e.target.value)}
+                        placeholder="e.g. IATA crate dimensions, vaccination record status, custom temperature range, airside photo escort..."
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* 9. Air Ticketing Services Form */}
+                {selectedOptionId === "Air Ticketing Services" && (
+                  <>
+                    {/* Instant booking shortcut banner */}
+                    <div className="bg-lime-50 border border-lime-300 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-lime-500 text-slate-950 flex items-center justify-center shrink-0 shadow-xs">
+                          <Plane size={20} />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold text-slate-900">
+                            Instant Commercial Flight Engine
+                          </h4>
+                          <p className="text-xs text-slate-600">
+                            Search live availability & compare 500+ airlines in real-time.
+                          </p>
+                        </div>
+                      </div>
+                      <Link
+                        to="/book"
+                        search={{ service_id: "air_ticketing" } as any}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-950 hover:bg-slate-900 text-white text-xs font-mono font-bold tracking-wider shadow-sm transition-all whitespace-nowrap cursor-pointer"
+                      >
+                        <span>Launch Flight Booking Engine</span>
+                        <ArrowRight size={13} className="text-lime-400" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Departure Airport / City
+                        </label>
+                        <input
+                          type="text"
+                          value={ticketOrigin}
+                          onChange={(e) => setTicketOrigin(e.target.value)}
+                          placeholder="e.g. New Delhi (DEL) / Mumbai (BOM)"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Arrival Destination Airport / City
+                        </label>
+                        <input
+                          type="text"
+                          value={ticketDest}
+                          onChange={(e) => setTicketDest(e.target.value)}
+                          placeholder="e.g. London Heathrow (LHR) / Dubai (DXB) / Goa (GOI)"
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Travel Date
+                        </label>
+                        <input
+                          type="date"
+                          value={ticketDate}
+                          onChange={(e) => setTicketDate(e.target.value)}
+                          required
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Trip Type
+                        </label>
+                        <select
+                          value={ticketTripType}
+                          onChange={(e) => setTicketTripType(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                        >
+                          <option value="One Way">One Way</option>
+                          <option value="Round Trip">Round Trip</option>
+                          <option value="Multi-City">Multi-City</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Cabin Class
+                        </label>
+                        <select
+                          value={ticketClass}
+                          onChange={(e) => setTicketClass(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                        >
+                          <option value="Economy Class">Economy Class</option>
+                          <option value="Premium Economy">Premium Economy</option>
+                          <option value="Business Class">Business Class</option>
+                          <option value="First Class">First Class</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                          Passengers
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={50}
+                          value={ticketPassengers}
+                          onChange={(e) => setTicketPassengers(parseInt(e.target.value) || 1)}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Airline Preference, Meal & Special Passenger Requests
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={ticketNotes}
+                        onChange={(e) => setTicketNotes(e.target.value)}
+                        placeholder="e.g. Air India / Emirates / Singapore Airlines preferred, aisle seats, extra 10kg baggage, wheelchair assist..."
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                      />
+                    </div>
+                  </>
+                )}
+
                 {/* Contact Information */}
                 <div className="pt-4 border-t border-slate-100">
                   <span className="text-xs font-mono font-bold uppercase tracking-wider text-lime-700 block mb-3">
@@ -866,7 +1721,7 @@ function DedicatedSpecialServicesPage() {
               Service Details & Inclusions.
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-              Luxury couple wellness, curated honeymoon circuits, and high-profile armed close protection escorts.
+              Luxury wellness, curated romantic escapes, close protection, 24/7 medevac & rail ICU, dignified HUM repatriation, visa assistance, cargo pet logistics, and commercial air ticketing.
             </p>
           </div>
 
