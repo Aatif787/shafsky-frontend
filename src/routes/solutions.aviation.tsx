@@ -595,8 +595,7 @@ function DedicatedAirCharterPage() {
                       />
                     </>
                   ) : (
-                    <img
-                      src={slide.src}
+                    <img width={1600} height={900} src={slide.src}
                       alt={slide.alt}
                       className="w-full h-full object-contain object-center select-none block pointer-events-none bg-white"
                       loading={idx <= 1 ? "eager" : "lazy"}
@@ -1221,7 +1220,7 @@ function DedicatedAirCharterPage() {
 
             {activeOption.id === "Private Charter" && (
               <div className="mb-6 rounded-2xl overflow-hidden border border-amber-200/80 shadow-sm bg-slate-900">
-                <img loading="lazy" decoding="async"
+                <img width={1600} height={900} loading="lazy" decoding="async"
                   src="/images/charter/luxury-cabin.webp"
                   alt="Shafsky Ultra-Luxury Private Jet Executive VIP Cabin"
                   className="w-full h-56 sm:h-72 object-cover object-center"

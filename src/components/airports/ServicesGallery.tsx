@@ -96,8 +96,7 @@ export function ServicesGallery({}: ServicesGalleryProps) {
               className="group overflow-hidden rounded-2xl bg-slate-100 shadow-none border border-slate-200/80 transition-all duration-300"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200 shadow-none">
-                <img
-                  src={img.src}
+                <img width={1600} height={900} src={img.src}
                   alt={img.alt}
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 shadow-none"
@@ -137,8 +136,7 @@ export function ServicesGallery({}: ServicesGalleryProps) {
               className="group overflow-hidden rounded-2xl bg-slate-100 shadow-none border border-slate-200/80 transition-all duration-300"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200 shadow-none">
-                <img
-                  src={img.src}
+                <img width={1600} height={900} src={img.src}
                   srcSet={(img as any).srcSet}
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   alt={img.alt}

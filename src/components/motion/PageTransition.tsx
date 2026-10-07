@@ -180,8 +180,7 @@ export function PageTransition() {
               }}
               transition={{ duration: 0.38, ease: EASE }}
             >
-              <img
-                src={logoSrc}
+              <img width={1600} height={900} src={logoSrc}
                 alt={companyName}
                 className="h-full w-full object-contain object-center"
                 draggable={false}

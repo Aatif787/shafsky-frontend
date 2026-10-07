@@ -57,8 +57,7 @@ export function OptimizedImage({
       {/* Blur/Shimmer Placeholder */}
       {showBlur && (
         <div className="absolute inset-0 z-10 w-full h-full overflow-hidden">
-          <img
-            src={placeholder}
+          <img width={1600} height={900} src={placeholder}
             alt=""
             className="w-full h-full object-cover filter blur-xl scale-110"
             style={{ pointerEvents: "none" }}

@@ -688,8 +688,7 @@ function DedicatedSpecialServicesPage() {
                   key={slide.id}
                   className="w-full h-full shrink-0 relative flex items-center justify-center overflow-hidden bg-white"
                 >
-                  <img
-                    src={slide.photo}
+                  <img width={1600} height={900} src={slide.photo}
                     alt={slide.label}
                     className="w-full h-full object-contain object-center select-none block pointer-events-none bg-white"
                     loading={idx <= 1 ? "eager" : "lazy"}
@@ -861,7 +860,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={spaLocation}
                           onChange={(e) => setSpaLocation(e.target.value)}
-                          placeholder="e.g. Udaipur, Delhi, or Mumbai hotel"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -871,10 +869,9 @@ function DedicatedSpecialServicesPage() {
                           Preferred Date & Time *
                         </label>
                         <input
-                          type="text"
+                          type="date"
                           value={spaDate}
                           onChange={(e) => setSpaDate(e.target.value)}
-                          placeholder="e.g. 24 Oct 2026, 4:00 PM"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -903,7 +900,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={spaNotes}
                           onChange={(e) => setSpaNotes(e.target.value)}
-                          placeholder="e.g. Couple hot stone, private jacuzzi suite, aromatherapy..."
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
@@ -923,7 +919,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={tourDestination}
                           onChange={(e) => setTourDestination(e.target.value)}
-                          placeholder="e.g. Paris & Swiss Alps, Kashmir, Maldives"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -933,10 +928,9 @@ function DedicatedSpecialServicesPage() {
                           Travel Dates or Month *
                         </label>
                         <input
-                          type="text"
+                          type="date"
                           value={tourDates}
                           onChange={(e) => setTourDates(e.target.value)}
-                          placeholder="e.g. 15-22 Nov 2026 or Early Dec"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -965,7 +959,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={tourNotes}
                           onChange={(e) => setTourNotes(e.target.value)}
-                          placeholder="e.g. 5-star palace hotels, private yacht, Eiffel dinner cruise..."
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
@@ -985,7 +978,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={psoLocation}
                           onChange={(e) => setPsoLocation(e.target.value)}
-                          placeholder="e.g. Paris, Beverly Hills, Mumbai, Dubai"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -995,10 +987,9 @@ function DedicatedSpecialServicesPage() {
                           Dates / Duration *
                         </label>
                         <input
-                          type="text"
+                          type="date"
                           value={psoDates}
                           onChange={(e) => setPsoDates(e.target.value)}
-                          placeholder="e.g. 3 Days / 15-18 Oct"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1027,7 +1018,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={psoNotes}
                           onChange={(e) => setPsoNotes(e.target.value)}
-                          placeholder="e.g. Number of VIPs, private boutique shopping rooms..."
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
@@ -1047,7 +1037,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={airAmbPickup}
                           onChange={(e) => setAirAmbPickup(e.target.value)}
-                          placeholder="e.g. Apollo Hospital, Chennai"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1060,7 +1049,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={airAmbDest}
                           onChange={(e) => setAirAmbDest(e.target.value)}
-                          placeholder="e.g. AIIMS Delhi / Singapore"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1072,10 +1060,9 @@ function DedicatedSpecialServicesPage() {
                           Transfer Date / Urgency *
                         </label>
                         <input
-                          type="text"
+                          type="date"
                           value={airAmbDate}
                           onChange={(e) => setAirAmbDate(e.target.value)}
-                          placeholder="e.g. Immediate / Today / 24 Oct"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1088,7 +1075,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={airAmbNotes}
                           onChange={(e) => setAirAmbNotes(e.target.value)}
-                          placeholder="e.g. Ventilator required / High-flow O2 / Stable stretcher"
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
@@ -1108,7 +1094,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={trainAmbOrigin}
                           onChange={(e) => setTrainAmbOrigin(e.target.value)}
-                          placeholder="e.g. Patna Junction / Lucknow"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1121,7 +1106,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={trainAmbDest}
                           onChange={(e) => setTrainAmbDest(e.target.value)}
-                          placeholder="e.g. New Delhi Railway Station / AIIMS"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1133,10 +1117,9 @@ function DedicatedSpecialServicesPage() {
                           Preferred Journey Date *
                         </label>
                         <input
-                          type="text"
+                          type="date"
                           value={trainAmbDate}
                           onChange={(e) => setTrainAmbDate(e.target.value)}
-                          placeholder="e.g. 24 Oct 2026"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1149,7 +1132,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={trainAmbNotes}
                           onChange={(e) => setTrainAmbNotes(e.target.value)}
-                          placeholder="e.g. 1AC coupe, continuous oxygen cylinder, stretcher transfer"
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
@@ -1169,7 +1151,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={humOrigin}
                           onChange={(e) => setHumOrigin(e.target.value)}
-                          placeholder="e.g. Dubai, London, Mumbai"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1182,7 +1163,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={humDest}
                           onChange={(e) => setHumDest(e.target.value)}
-                          placeholder="e.g. Cochin, Hyderabad, Delhi"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1194,10 +1174,9 @@ function DedicatedSpecialServicesPage() {
                           Preferred Timeline / Date *
                         </label>
                         <input
-                          type="text"
+                          type="date"
                           value={humDate}
                           onChange={(e) => setHumDate(e.target.value)}
-                          placeholder="e.g. Urgent / Earliest Cargo Flight"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1232,7 +1211,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={visaCountry}
                           onChange={(e) => setVisaCountry(e.target.value)}
-                          placeholder="e.g. Schengen Area (France/Germany), UK, USA, UAE"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1259,10 +1237,9 @@ function DedicatedSpecialServicesPage() {
                           Intended Travel Date *
                         </label>
                         <input
-                          type="text"
+                          type="date"
                           value={visaDate}
                           onChange={(e) => setVisaDate(e.target.value)}
-                          placeholder="e.g. 15 Nov 2026"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1297,7 +1274,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={cargoOrigin}
                           onChange={(e) => setCargoOrigin(e.target.value)}
-                          placeholder="e.g. Delhi (DEL) / Mumbai (BOM)"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1310,7 +1286,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={cargoDest}
                           onChange={(e) => setCargoDest(e.target.value)}
-                          placeholder="e.g. Dubai (DXB) / London (LHR)"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1325,7 +1300,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={cargoDetails}
                           onChange={(e) => setCargoDetails(e.target.value)}
-                          placeholder="e.g. Golden Retriever (32 kg) or 120 kg Express Cargo"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1335,10 +1309,9 @@ function DedicatedSpecialServicesPage() {
                           Preferred Dispatch Date *
                         </label>
                         <input
-                          type="text"
+                          type="date"
                           value={cargoDate}
                           onChange={(e) => setCargoDate(e.target.value)}
-                          placeholder="e.g. 24 Oct 2026"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1359,7 +1332,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={ticketOrigin}
                           onChange={(e) => setTicketOrigin(e.target.value)}
-                          placeholder="e.g. New Delhi (DEL)"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1372,7 +1344,6 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={ticketDest}
                           onChange={(e) => setTicketDest(e.target.value)}
-                          placeholder="e.g. London Heathrow (LHR) / Goa (GOI)"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1384,10 +1355,9 @@ function DedicatedSpecialServicesPage() {
                           Travel Date(s) *
                         </label>
                         <input
-                          type="text"
+                          type="date"
                           value={ticketDate}
                           onChange={(e) => setTicketDate(e.target.value)}
-                          placeholder="e.g. 24 Oct (One Way) or 24-30 Oct (Round Trip)"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1423,7 +1393,6 @@ function DedicatedSpecialServicesPage() {
                         type="text"
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
-                        placeholder="e.g. Sameer Verma"
                         required
                         className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                       />
@@ -1435,7 +1404,6 @@ function DedicatedSpecialServicesPage() {
                         type="tel"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="e.g. +91 98765 43210"
                         required
                         className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                       />
@@ -1447,7 +1415,6 @@ function DedicatedSpecialServicesPage() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="e.g. guest@domain.com"
                         required
                         className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                       />
@@ -1473,7 +1440,7 @@ function DedicatedSpecialServicesPage() {
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs font-mono tracking-wider shadow-md transition-all cursor-pointer disabled:opacity-50"
                   >
                     <Send size={14} />
-                    <span>{isSubmitting ? "Sending..." : "Submit Free Enquiry"}</span>
+                    <span>{isSubmitting ? "Sending..." : "Submit Enquiry"}</span>
                   </button>
                 </div>
               </form>
@@ -1503,10 +1470,8 @@ function DedicatedSpecialServicesPage() {
             </p>
           </div>
 
-          {/* 2-Column Balanced Editorial Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
-            {/* Left Column: Option Title, Photo / Protocol Card & Exact Inclusions List */}
-            <div className="lg:col-span-6 flex flex-col justify-start">
+          {/* Single Column Classical Layout for Active Selection */}
+          <div className="max-w-4xl mx-auto flex flex-col justify-start">
               <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-lime-700 font-mono font-bold mb-3">
                 <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
                 {activeOption.badge}
@@ -1522,8 +1487,7 @@ function DedicatedSpecialServicesPage() {
               */}
               {activeOption.photo ? (
                 <div className="mb-6 rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm bg-white aspect-[16/9]">
-                  <img
-                    loading="lazy"
+                  <img width={1600} height={900} loading="lazy"
                     decoding="async"
                     src={activeOption.photo}
                     alt={activeOption.label}
@@ -1575,65 +1539,6 @@ function DedicatedSpecialServicesPage() {
               </div>
             </div>
 
-            {/* Right Column: Visual Overview Cards for all 9 services */}
-            <div className="lg:col-span-6 space-y-3.5">
-              {SPECIAL_SERVICES_OPTIONS.map((item, idx) => {
-                const IconComp = item.icon;
-                const isSelected = selectedOptionId === item.id;
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => handleSelectOption(item.id)}
-                    className={`w-full rounded-2xl overflow-hidden shadow-xs border transition-all cursor-pointer flex flex-col sm:flex-row bg-white ${
-                      isSelected
-                        ? "border-lime-500 ring-2 ring-lime-400/50 shadow-md bg-lime-50/20"
-                        : "border-slate-200/80 hover:border-lime-300"
-                    }`}
-                  >
-                    {/* Media container:
-                        If item has authentic photo (Spa, Tours, PSO) -> show uncropped 16:9 thumbnail.
-                        If item has no photo (mission services) -> show sleek icon container (ZERO fake stock photos).
-                    */}
-                    {item.photo ? (
-                      <div className="w-full sm:w-44 aspect-[16/9] relative overflow-hidden bg-white shrink-0 flex items-center justify-center border-b sm:border-b-0 sm:border-r border-slate-100">
-                        <img
-                          loading="lazy"
-                          decoding="async"
-                          src={item.photo}
-                          alt={item.label}
-                          className="w-full h-full object-contain object-center select-none bg-white"
-                        />
-                        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-[8.5px] font-mono font-bold text-lime-400">
-                          PREMIUM
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="w-full sm:w-44 h-24 sm:h-auto relative overflow-hidden bg-slate-900 shrink-0 flex items-center justify-center border-b sm:border-b-0 sm:border-r border-slate-800 p-4">
-                        <div className="w-11 h-11 rounded-xl bg-lime-500/15 border border-lime-400/30 text-lime-400 flex items-center justify-center">
-                          <IconComp size={22} className="text-lime-400" />
-                        </div>
-                        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-black/60 border border-white/10 text-[8px] font-mono font-bold text-lime-400">
-                          24/7 OPS
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-center">
-                      <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-lime-700 mb-0.5">
-                        {item.badge}
-                      </span>
-                      <h4 className="text-sm sm:text-base font-bold text-slate-950 mb-1">
-                        {item.label}
-                      </h4>
-                      <p className="text-xs text-slate-600 line-clamp-2">
-                        {item.tagline}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
         </div>
       </section>
     </div>

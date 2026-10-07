@@ -424,8 +424,7 @@ function HolidayInnExpressDetailPage() {
               onClick={() => setLightboxIndex(0)}
               className="w-full sm:w-[65%] relative rounded-xl overflow-hidden min-h-[300px] sm:min-h-[360px] group bg-slate-100 cursor-pointer"
             >
-              <img
-                src="/images/hotels/holiday-inn/room-main.jpg"
+              <img width={1600} height={900} src="/images/hotels/holiday-inn/room-main.jpg"
                 alt="1 Queen Bed Standard Domestic Wing B"
                 className="w-full h-full object-cover object-center select-none block group-hover:scale-103 transition-transform duration-500"
               />
@@ -450,7 +449,7 @@ function HolidayInnExpressDetailPage() {
                 onClick={() => setLightboxIndex(1)}
                 className="w-full h-[145px] sm:h-[175px] rounded-xl overflow-hidden bg-slate-100 group relative cursor-pointer"
               >
-                <img loading="lazy" decoding="async"
+                <img width={1600} height={900} loading="lazy" decoding="async"
                   src="/images/hotels/holiday-inn/couple-tablet.jpg"
                   alt="Couple Relaxing in Guest Room"
                   className="w-full h-full object-cover object-center select-none block group-hover:scale-105 transition-transform duration-500"
@@ -461,7 +460,7 @@ function HolidayInnExpressDetailPage() {
                 onClick={() => setLightboxIndex(2)}
                 className="w-full h-[145px] sm:h-[175px] rounded-xl overflow-hidden bg-slate-100 group relative cursor-pointer"
               >
-                <img loading="lazy" decoding="async"
+                <img width={1600} height={900} loading="lazy" decoding="async"
                   src="/images/hotels/holiday-inn/room-night.jpg"
                   alt="Guest Room Evening Atmosphere"
                   className="w-full h-full object-cover object-center select-none block group-hover:scale-105 transition-transform duration-500"
@@ -750,7 +749,7 @@ function HolidayInnExpressDetailPage() {
                   onClick={() => setLightboxIndex(3)}
                   className="w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200 mb-3 group cursor-pointer"
                 >
-                  <img loading="lazy" decoding="async"
+                  <img width={1600} height={900} loading="lazy" decoding="async"
                     src="/images/hotels/holiday-inn/twin-beds-1.jpg"
                     alt="Standard Twin Bed Configuration"
                     className="w-full h-auto object-cover select-none block group-hover:scale-102 transition-transform duration-500"
@@ -765,7 +764,7 @@ function HolidayInnExpressDetailPage() {
                   onClick={() => setLightboxIndex(4)}
                   className="w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200 mb-4 group cursor-pointer"
                 >
-                  <img loading="lazy" decoding="async"
+                  <img width={1600} height={900} loading="lazy" decoding="async"
                     src="/images/hotels/holiday-inn/room-apples.jpg"
                     alt="King Suite with Desk and Glass Table"
                     className="w-full h-auto object-cover select-none block group-hover:scale-102 transition-transform duration-500"
@@ -996,7 +995,7 @@ function HolidayInnExpressDetailPage() {
                   onClick={() => setLightboxIndex(4)}
                   className="w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200 mb-4 group cursor-pointer"
                 >
-                  <img loading="lazy" decoding="async"
+                  <img width={1600} height={900} loading="lazy" decoding="async"
                     src="/images/hotels/holiday-inn/room-apples.jpg"
                     alt="Standard Room International Wing"
                     className="w-full h-auto object-cover select-none block group-hover:scale-102 transition-transform duration-500"
@@ -1385,8 +1384,7 @@ function HolidayInnExpressDetailPage() {
             </div>
 
             <div className="relative max-h-[70vh] flex items-center justify-center bg-black/40 p-2">
-              <img
-                src={GALLERY_IMAGES[lightboxIndex].src}
+              <img width={1600} height={900} src={GALLERY_IMAGES[lightboxIndex].src}
                 alt={GALLERY_IMAGES[lightboxIndex].title}
                 className="max-h-[65vh] w-auto object-contain rounded-lg"
               />

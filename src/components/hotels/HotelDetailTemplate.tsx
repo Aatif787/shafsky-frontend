@@ -191,8 +191,7 @@ export function HotelDetailTemplate({
             className="relative overflow-hidden cursor-pointer flex justify-center bg-slate-950/5"
           >
             {/* Clean Hero Showcase Image */}
-            <img
-              src={hotel.bannerImage}
+            <img width={1600} height={900} src={hotel.bannerImage}
               alt={hotel.name}
               className="w-full h-auto max-h-[540px] sm:max-h-[620px] object-contain object-center transition-transform duration-700 group-hover:scale-[1.01]"
               loading="eager"
@@ -292,7 +291,7 @@ export function HotelDetailTemplate({
                       onClick={() => openLightbox(category.image, category.name)}
                       className="relative rounded-2xl overflow-hidden bg-slate-100 mb-5 group/img cursor-pointer border border-slate-200/80 shadow-xs"
                     >
-                      <img loading="lazy" decoding="async"
+                      <img width={1600} height={900} loading="lazy" decoding="async"
                         src={category.image}
                         alt={category.name}
                         className="w-full h-56 sm:h-64 object-cover transition-transform duration-500 group-hover/img:scale-105"
@@ -523,8 +522,7 @@ export function HotelDetailTemplate({
                 idx === 0 ? "col-span-2 row-span-1 md:col-span-2" : ""
               }`}
             >
-              <img
-                src={img.src}
+              <img width={1600} height={900} src={img.src}
                 alt={img.alt}
                 className="w-full h-44 sm:h-48 md:h-56 object-cover transition-transform duration-500 group-hover:scale-105"
                 loading="lazy"
@@ -655,8 +653,7 @@ export function HotelDetailTemplate({
               </button>
             </div>
             <div className="p-3 flex justify-center bg-black">
-              <img
-                src={lightboxSrc}
+              <img width={1600} height={900} src={lightboxSrc}
                 alt={lightboxTitle}
                 className="max-h-[80vh] w-auto object-contain rounded-xl"
               />

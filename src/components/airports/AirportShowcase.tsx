@@ -152,8 +152,7 @@ export function AirportShowcase() {
                 <Link to="/airports/$code" params={{ code: airport.code }} className="block p-3">
                   {/* Thumbnail Image */}
                   <div className="relative h-36 w-full rounded-2xl overflow-hidden bg-slate-100">
-                    <img
-                      src={cardImage}
+                    <img width={1600} height={900} src={cardImage}
                       alt={airport.city}
                       loading="lazy"
                       className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
@@ -218,8 +217,7 @@ export function AirportShowcase() {
               >
                 <Link to="/airports/$code" params={{ code: airport.code }} className="block">
                   <div className="relative h-32 w-full rounded-xl overflow-hidden bg-slate-100">
-                    <img
-                      src={cardImage}
+                    <img width={1600} height={900} src={cardImage}
                       alt={airport.city}
                       loading="lazy"
                       decoding="async"

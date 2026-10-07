@@ -111,8 +111,7 @@ export function DestinationHero({ a }: { a: Airport }) {
               transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
               className="absolute inset-0"
             >
-              <img
-                src={images[slide] || images[0]}
+              <img width={1600} height={900} src={images[slide] || images[0]}
                 alt={`${a.city} Airport View ${slide + 1}`}
                 className="h-full w-full object-cover object-center"
               />

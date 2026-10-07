@@ -25,8 +25,7 @@ export function ShowcaseCard({ a, idx }: { a: Airport; idx: number }) {
       >
         {/* Left Compact Square Thumbnail */}
         <div className="relative h-20 w-20 sm:h-22 sm:w-22 shrink-0 overflow-hidden rounded-xl bg-slate-100 border border-slate-100">
-          <img
-            src={cardImage}
+          <img width={1600} height={900} src={cardImage}
             alt={`${a.city} Airport`}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

@@ -105,8 +105,7 @@ const VehicleThumbnailItem: React.FC<{
     >
       <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center p-1">
         {image && !imgFailed ? (
-          <img
-            src={image}
+          <img width={1600} height={900} src={image}
             alt={name}
             onError={() => setImgFailed(true)}
             className="w-full h-full object-contain object-center pointer-events-none transition-transform duration-300 group-hover:scale-105 select-none"

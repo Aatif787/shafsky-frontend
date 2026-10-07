@@ -163,8 +163,7 @@ function AirlineLogoAvatar({
   if (logoUrl && !imgError) {
     return (
       <div className="w-14 h-14 rounded-full bg-white border border-slate-200 p-1.5 shadow-xs flex items-center justify-center shrink-0 overflow-hidden">
-        <img
-          src={logoUrl}
+        <img width={1600} height={900} src={logoUrl}
           alt=""
           onError={() => setImgError(true)}
           className="max-w-full max-h-full object-contain"

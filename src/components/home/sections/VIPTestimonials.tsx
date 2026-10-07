@@ -139,8 +139,7 @@ export function VIPTestimonials() {
             >
               {/* Full Crisp Uncropped Graphic */}
               <div className="relative w-full aspect-[4/5] overflow-hidden">
-                <img
-                  src={item.image}
+                <img width={1600} height={900} src={item.image}
                   alt={item.alt}
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none"
                   loading="lazy"

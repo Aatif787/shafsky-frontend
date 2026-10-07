@@ -106,8 +106,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
     <div className="w-full text-slate-900 min-h-screen relative py-8 sm:py-16 px-4 sm:px-10 max-w-7xl mx-auto">
       {/* PERFECT WIDESCREEN 16:9 DESKTOP BACKGROUND (HOTELS & FLYING PLANE) */}
       <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden bg-sky-950">
-        <img
-          src={desktop169HotelPlaneImg}
+        <img width={1600} height={900} src={desktop169HotelPlaneImg}
           alt="Widescreen desktop luxury hotel resort with airplane flying in morning sky"
           className="w-full h-full object-cover object-top sm:object-[center_20%] lg:object-[center_15%] opacity-90 filter brightness-105 saturate-135 transition-all duration-700"
         />

@@ -340,8 +340,7 @@ export function TransportExperience({
               <div className="rounded-2xl border border-lime-300 bg-lime-50/70 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   {preselectedVehicle.image ? (
-                    <img
-                      src={preselectedVehicle.image}
+                    <img width={1600} height={900} src={preselectedVehicle.image}
                       alt={preselectedVehicle.name}
                       className="w-20 h-14 sm:w-24 sm:h-16 object-cover rounded-xl border border-lime-200 bg-white shadow-2xs"
                       loading="lazy"

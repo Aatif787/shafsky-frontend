@@ -12,8 +12,7 @@ export function AirlineLogo({ iata }: { iata: string }) {
     return <Plane className="h-3.5 w-3.5 text-slate-600" />;
   }
   return (
-    <img
-      src={sources[sourceIndex]}
+    <img width={1600} height={900} src={sources[sourceIndex]}
       alt=""
       className="h-5 w-5 object-contain"
       onError={() => setSourceIndex((n) => n + 1)}

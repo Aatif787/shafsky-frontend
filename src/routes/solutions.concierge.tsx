@@ -267,8 +267,7 @@ function MeetGreetDedicatedPage() {
           {/* Perfectly Fit Uncropped Hero Image Container */}
           <div className="max-w-6xl mx-auto">
             <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center">
-              <img
-                src={meetGreetImg}
+              <img width={1600} height={900} src={meetGreetImg}
                 alt="Shafsky Meet & Greet and Lounge Service Airport Team"
                 className="w-full h-auto object-contain object-center select-none block max-h-[580px]"
                 loading="eager"
@@ -320,8 +319,7 @@ function MeetGreetDedicatedPage() {
             {/* Optional Full Width Hero Banner (e.g. for Transit Service - Zero Cropping) */}
             {activeCatalog.heroBanner && (
               <div className="mb-10 rounded-2xl overflow-hidden shadow-sm bg-slate-50 border border-slate-100">
-                <img
-                  src={activeCatalog.heroBanner}
+                <img width={1600} height={900} src={activeCatalog.heroBanner}
                   alt="Transit Service Waiting Lounge & Apron View"
                   className="w-full h-auto object-contain object-center select-none block"
                 />
@@ -403,7 +401,7 @@ function MeetGreetDedicatedPage() {
                           className="w-full rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 bg-white group hover:border-lime-400 transition-all"
                         >
                           <div className="w-full bg-slate-50 overflow-hidden flex items-center justify-center">
-                            <img loading="lazy" decoding="async"
+                            <img width={1600} height={900} loading="lazy" decoding="async"
                               src={img.src}
                               alt={img.alt}
                               className="w-full h-auto object-contain object-center select-none block group-hover:scale-102 transition-transform duration-500"

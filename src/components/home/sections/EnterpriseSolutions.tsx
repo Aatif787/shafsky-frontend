@@ -161,8 +161,7 @@ export function EnterpriseSolutions() {
             whileTap={{ scale: 0.98 }}
             className="relative flex flex-col items-center justify-center w-full max-w-md mx-auto cursor-pointer group select-none"
           >
-            <img
-              src={servicesImg}
+            <img width={1600} height={900} src={servicesImg}
               alt="Shafsky Dedicated Services Hostess — Namaste Welcome"
               className="w-full max-w-[200px] sm:max-w-[240px] md:max-w-[280px] h-auto object-contain drop-shadow-[0_25px_45px_rgba(0,0,0,0.16)] group-hover:drop-shadow-[0_30px_55px_rgba(212,175,55,0.3)] transition-all duration-500"
               loading="eager"
@@ -185,8 +184,7 @@ export function EnterpriseSolutions() {
             {/* Header / Spotlight on Meet & Greet */}
             <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 bg-slate-50/80 rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-sm mb-10">
               <div className="relative w-44 h-44 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-white shadow-lg shrink-0">
-                <img
-                  src={meetGreetImg}
+                <img width={1600} height={900} src={meetGreetImg}
                   alt="Shafsky Meet & Greet and Lounge Service"
                   className="w-full h-full object-cover"
                 />
@@ -293,8 +291,7 @@ export function EnterpriseSolutions() {
                   <div className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-slate-100 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.12)] group-hover:border-lime-500 group-hover:shadow-[0_15px_30px_-5px_rgba(132,204,22,0.35)] group-hover:scale-105 transition-all duration-500 bg-white mb-4">
                     <picture className="w-full h-full block">
                       <source srcSet={srv.photo} type="image/jpeg" />
-                      <img
-                        src={srv.photo}
+                      <img width={1600} height={900} src={srv.photo}
                         alt={srv.alt}
                         className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                         loading="lazy"
@@ -340,8 +337,7 @@ export function EnterpriseSolutions() {
                   >
                     <picture className="w-full h-full block">
                       <source srcSet={srv.photo} type="image/jpeg" />
-                      <img
-                        src={srv.photo}
+                      <img width={1600} height={900} src={srv.photo}
                         alt={srv.alt}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         loading="lazy"
@@ -443,8 +439,7 @@ export function EnterpriseSolutions() {
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
               className="relative z-10 w-full max-w-2xl md:max-w-3xl lg:max-w-4xl drop-shadow-[0_25px_50px_rgba(15,23,42,0.2)] -rotate-[12deg]"
             >
-              <img
-                src={planeImg}
+              <img width={1600} height={900} src={planeImg}
                 alt={ICICI_REVIEW_MODE ? "Shafsky Aviation Services" : "Shafsky Aviation Executive Jet"}
                 className="w-full h-auto object-contain select-none pointer-events-none"
                 loading="eager"
@@ -481,8 +476,7 @@ export function EnterpriseSolutions() {
                 <div className="flex items-start justify-between gap-4 pb-6 border-b border-slate-100">
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-[#d4af37]/40 shrink-0 shadow-sm bg-slate-100">
-                      <img
-                        src={selectedService.photo}
+                      <img width={1600} height={900} src={selectedService.photo}
                         alt={selectedService.alt}
                         className="w-full h-full object-cover"
                       />

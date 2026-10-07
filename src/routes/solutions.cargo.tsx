@@ -132,8 +132,7 @@ function DedicatedTransportServicePage() {
           {/* Uncropped Responsive Hero Image Slider */}
           <div className="space-y-3">
             <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center min-h-[260px] sm:min-h-[400px]">
-              <img
-                src={TRANSPORT_HERO_SLIDES[heroSlideIndex]?.src || TRANSPORT_HERO_SLIDES[0].src}
+              <img width={1600} height={900} src={TRANSPORT_HERO_SLIDES[heroSlideIndex]?.src || TRANSPORT_HERO_SLIDES[0].src}
                 alt={TRANSPORT_HERO_SLIDES[heroSlideIndex]?.alt || "Shafsky Luxury Transport Fleet"}
                 className="w-full h-auto object-contain object-center select-none block transition-opacity duration-300"
                 loading="eager"
@@ -277,8 +276,7 @@ function DedicatedTransportServicePage() {
                     className="w-full rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 bg-white group hover:border-lime-400 hover:shadow-md transition-all duration-300 flex flex-col"
                   >
                     <div className="relative aspect-[16/10] w-full bg-slate-50 overflow-hidden flex items-center justify-center">
-                      <img
-                        src={img.src}
+                      <img width={1600} height={900} src={img.src}
                         alt={img.alt}
                         className="w-full h-full object-cover object-center select-none block group-hover:scale-103 transition-transform duration-500"
                         loading="lazy"

@@ -47,8 +47,7 @@ export function ResponsiveAirportHero({
       <source media="(min-width: 1024px)" srcSet={webpDesktop || fallbackImage} />
 
       {/* Default fallback img */}
-      <img
-        src={webpDesktop || fallbackImage}
+      <img width={1600} height={900} src={webpDesktop || fallbackImage}
         alt={alt}
         className={className}
         loading={lazy ? "lazy" : "eager"}

@@ -43,8 +43,7 @@ export function DestinationCard({ a, idx }: { a: Airport; idx: number }) {
         style={{ border: "1px solid rgba(255,255,255,0.08)" }}
       >
         {/* image */}
-        <img
-          src={a.cover}
+        <img width={1600} height={900} src={a.cover}
           alt={`${a.city} — ${a.landmark}`}
           loading="lazy"
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-[2200ms] ease-out group-hover:scale-110"

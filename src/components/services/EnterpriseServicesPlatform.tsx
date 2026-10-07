@@ -269,8 +269,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <img
-                    src={activeService.imageUrl}
+                  <img width={1600} height={900} src={activeService.imageUrl}
                     alt={activeService.name}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />

@@ -147,8 +147,7 @@ export function AirportMediaGallery({
               onClick={() => setSelectedImage(imgSrc)}
             >
               <div className="relative w-full h-full overflow-hidden bg-slate-100">
-                <img
-                  src={imgSrc}
+                <img width={1600} height={900} src={imgSrc}
                   alt={`${airportCity} view ${formattedIndex}`}
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
@@ -192,8 +191,7 @@ export function AirportMediaGallery({
               className="relative max-w-6xl max-h-[90vh] w-full flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <img
-                src={selectedImage}
+              <img width={1600} height={900} src={selectedImage}
                 alt={`${airportCity} preview`}
                 className="max-h-[85vh] max-w-full rounded-2xl object-contain shadow-2xl border border-white/15"
               />

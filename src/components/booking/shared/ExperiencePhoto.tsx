@@ -27,8 +27,7 @@ export function ExperiencePhoto({
       >
         <picture className="w-full h-full block">
           <source srcSet={src} type="image/jpeg" />
-          <img
-            src={src}
+          <img width={1600} height={900} src={src}
             alt={alt}
             loading="eager"
             decoding="async"

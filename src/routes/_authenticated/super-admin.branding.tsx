@@ -331,7 +331,7 @@ function SuperAdminBranding() {
                 <div className="flex items-center gap-4 rounded-lg border border-slate-800 bg-slate-950 p-3">
                   <div className="h-10 w-10 flex items-center justify-center bg-slate-900 border border-slate-850 rounded overflow-hidden">
                     {formData.logo_url ? (
-                      <img src={formData.logo_url} alt="Logo" className="h-full w-full object-contain" />
+                      <img width={1600} height={900} src={formData.logo_url} alt="Logo" className="h-full w-full object-contain" />
                     ) : (
                       <Upload className="h-5 w-5 text-slate-600" />
                     )}
@@ -355,7 +355,7 @@ function SuperAdminBranding() {
                 <div className="flex items-center gap-4 rounded-lg border border-slate-800 bg-slate-950 p-3">
                   <div className="h-10 w-10 flex items-center justify-center bg-slate-900 border border-slate-850 rounded overflow-hidden">
                     {formData.logo_dark_url ? (
-                      <img src={formData.logo_dark_url} alt="Dark Logo" className="h-full w-full object-contain" />
+                      <img width={1600} height={900} src={formData.logo_dark_url} alt="Dark Logo" className="h-full w-full object-contain" />
                     ) : (
                       <Upload className="h-5 w-5 text-slate-600" />
                     )}
@@ -379,7 +379,7 @@ function SuperAdminBranding() {
                 <div className="flex items-center gap-4 rounded-lg border border-slate-800 bg-slate-950 p-3">
                   <div className="h-10 w-10 flex items-center justify-center bg-slate-900 border border-slate-850 rounded overflow-hidden">
                     {formData.favicon_url ? (
-                      <img src={formData.favicon_url} alt="Favicon" className="h-6 w-6 object-contain" />
+                      <img width={1600} height={900} src={formData.favicon_url} alt="Favicon" className="h-6 w-6 object-contain" />
                     ) : (
                       <Upload className="h-5 w-5 text-slate-600" />
                     )}
@@ -558,7 +558,7 @@ function SuperAdminBranding() {
                 </div>
                 <div className="flex-1 bg-slate-950 border border-slate-800 text-[10px] text-slate-400 text-center py-0.5 rounded flex items-center justify-center gap-1.5">
                   {formData.favicon_url && (
-                    <img src={formData.favicon_url} alt="" className="h-3 w-3 object-contain" />
+                    <img width={1600} height={900} src={formData.favicon_url} alt="" className="h-3 w-3 object-contain" />
                   )}
                   {formData.company_name || "Shafsky"} website
                 </div>
@@ -570,7 +570,7 @@ function SuperAdminBranding() {
                 <div className="flex items-center justify-between border-b border-slate-900 pb-3">
                   <div className="flex items-center gap-2">
                     {formData.logo_url ? (
-                      <img src={formData.logo_url} alt="Logo" className="max-h-[30px] w-auto object-contain" />
+                      <img width={1600} height={900} src={formData.logo_url} alt="Logo" className="max-h-[30px] w-auto object-contain" />
                     ) : (
                       <span className="text-sm font-bold text-white tracking-wider">
                         {formData.company_name.toUpperCase()}

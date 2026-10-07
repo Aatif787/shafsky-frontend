@@ -135,8 +135,7 @@ export const VehicleMovementStage: React.FC<VehicleMovementStageProps> = ({
               className="w-full h-full flex items-center justify-center select-none"
             >
               {hasValidImage ? (
-                <img
-                  src={vehicle.image}
+                <img width={1600} height={900} src={vehicle.image}
                   alt={vehicle.name}
                   onError={() => setImgError(true)}
                   className="w-full h-full object-contain block pointer-events-none drop-shadow-xs"

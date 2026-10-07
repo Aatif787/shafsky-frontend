@@ -308,8 +308,7 @@ function DedicatedLuxuryHotelsPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-1 sm:gap-1.5 md:gap-2">
             {/* Image 1: Called directly from src/assets/others/hotelpage.png */}
             <div className="w-full aspect-[195/247] overflow-hidden bg-white shadow-none rounded-none border-0">
-              <img
-                src={hotelPageImg}
+              <img width={1600} height={900} src={hotelPageImg}
                 alt="Palace Heritage & Luxury Hotel"
                 className="w-full h-full object-cover object-center select-none block shadow-none rounded-none border-0"
                 loading="eager"
@@ -317,8 +316,7 @@ function DedicatedLuxuryHotelsPage() {
             </div>
             {/* Image 2: public/hotel/hotel1.png */}
             <div className="w-full aspect-[195/247] overflow-hidden bg-white shadow-none rounded-none border-0">
-              <img
-                src="/hotel/hotel1.png"
+              <img width={1600} height={900} src="/hotel/hotel1.png"
                 alt="Illuminated Modern Luxury Resort Hotel"
                 className="w-full h-full object-cover object-center select-none block shadow-none rounded-none border-0"
                 loading="eager"
@@ -326,8 +324,7 @@ function DedicatedLuxuryHotelsPage() {
             </div>
             {/* Image 3: public/hotel/hotel2.png */}
             <div className="w-full aspect-[195/247] overflow-hidden bg-white shadow-none rounded-none border-0">
-              <img
-                src="/hotel/hotel2.png"
+              <img width={1600} height={900} src="/hotel/hotel2.png"
                 alt="Luxury Hotel Resort Swimming Pool"
                 className="w-full h-full object-cover object-center select-none block shadow-none rounded-none border-0"
                 loading="eager"
@@ -335,8 +332,7 @@ function DedicatedLuxuryHotelsPage() {
             </div>
             {/* Image 4: public/hotel/hotel3.png */}
             <div className="w-full aspect-[195/247] overflow-hidden bg-white shadow-none rounded-none border-0">
-              <img
-                src="/hotel/hotel3.png"
+              <img width={1600} height={900} src="/hotel/hotel3.png"
                 alt="The Taj Mahal Palace Luxury Landmark Hotel"
                 className="w-full h-full object-cover object-center select-none block shadow-none rounded-none border-0"
                 loading="eager"
@@ -382,8 +378,7 @@ function DedicatedLuxuryHotelsPage() {
                 className="w-full md:w-[48%] min-h-[240px] md:min-h-[290px] relative overflow-hidden bg-[#FDF5E6] flex-shrink-0 cursor-pointer group"
                 title="Click to view full hotel details"
               >
-                <img
-                  src={hotel.image}
+                <img width={1600} height={900} src={hotel.image}
                   alt={hotel.name}
                   className={`w-full h-full ${
                     hotel.id === "castle-blue"
@@ -572,7 +567,7 @@ function DedicatedLuxuryHotelsPage() {
                     className="w-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white group hover:border-lime-400 transition-all"
                   >
                     <div className="w-full aspect-[4/3] bg-slate-50 overflow-hidden flex items-center justify-center">
-                      <img loading="lazy" decoding="async"
+                      <img width={1600} height={900} loading="lazy" decoding="async"
                         src={img.src}
                         alt={img.alt}
                         className="w-full h-full object-cover object-center select-none block group-hover:scale-102 transition-transform duration-500"

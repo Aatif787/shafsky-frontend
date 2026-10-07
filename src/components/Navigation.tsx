@@ -274,8 +274,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                 whileTap={{ scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 420, damping: 18 }}
               >
-                <img
-                  src={branding.logo_url || "/logo.png"}
+                <img width={1600} height={900} src={branding.logo_url || "/logo.png"}
                   alt="Shafsky Aviation Services"
                   className="h-full w-full object-contain"
                   onError={(e) => {
@@ -511,8 +510,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                                   className="relative flex-1 min-h-[350px] rounded-2xl overflow-hidden border border-[#c5a059]/30 shadow-md flex flex-col justify-end p-4 text-white group/preview bg-[#071328]"
                                 >
                                   {/* Background Image with Cinematic Gradient */}
-                                  <img
-                                    src={activePreview.image}
+                                  <img width={1600} height={900} src={activePreview.image}
                                     alt={activePreview.title}
                                     className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover/preview:scale-105"
                                   />

@@ -282,7 +282,7 @@ function AirportsListingView() {
                   >
                     {/* Circle Image Thumbnail with Code Badge */}
                     <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-white shadow-md group-hover:border-[#7c3aed] group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 shrink-0 bg-slate-100">
-                      <img loading="lazy" decoding="async" src={img} alt={item.city} className="w-full h-full object-cover" />
+                      <img width={1600} height={900} loading="lazy" decoding="async" src={img} alt={item.city} className="w-full h-full object-cover" />
                       <span className="absolute top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-[#7c3aed] text-white text-[9px] font-mono font-bold shadow-xs">
                         {item.code}
                       </span>
@@ -372,7 +372,7 @@ function AirportsListingView() {
                 {/* Left Avatar Thumbnail */}
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 border border-slate-100 bg-slate-100">
-                    <img loading="lazy" decoding="async" src={img} alt={item.city} className="w-full h-full object-cover" />
+                    <img width={1600} height={900} loading="lazy" decoding="async" src={img} alt={item.city} className="w-full h-full object-cover" />
                     <span className="absolute top-0 left-0 px-1 rounded-full bg-[#7c3aed] text-white text-[8px] font-mono font-bold">
                       {item.code}
                     </span>

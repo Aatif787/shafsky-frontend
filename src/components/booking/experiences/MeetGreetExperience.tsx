@@ -288,8 +288,7 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
         <div className="lg:col-span-5 bg-slate-50 rounded-3xl border border-slate-200 p-6 sm:p-7 space-y-6">
           {/* Photo */}
           <div className="w-full rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-950">
-            <img
-              src={activeCatalog.photo}
+            <img width={1600} height={900} src={activeCatalog.photo}
               alt={activeCatalog.label}
               className="w-full h-auto max-h-56 object-cover"
             />

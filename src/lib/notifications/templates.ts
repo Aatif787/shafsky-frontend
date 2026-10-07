@@ -44,7 +44,7 @@ function wrapHtmlLayout(title: string, bodyContent: string): string {
 
   // Render logo image if present, fallback to styled text crest
   const logoHtml = resolvedLogoUrl
-    ? `<img src="${resolvedLogoUrl}" alt="${companyName}" style="max-height: 48px; max-width: 180px; display: inline-block; vertical-align: middle;">`
+    ? `<img width={1600} height={900} src="${resolvedLogoUrl}" alt="${companyName}" style="max-height: 48px; max-width: 180px; display: inline-block; vertical-align: middle;">`
     : `<h1>${firstPart}</h1><p>${restPart.split("").join(" ")}</p>`;
 
   return `

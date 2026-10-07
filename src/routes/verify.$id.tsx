@@ -91,8 +91,7 @@ function VerifyRouteComponent() {
       {/* Brand Header */}
       <div className="mb-8 text-center">
         {branding.logo_url ? (
-          <img
-            src={branding.logo_dark_url || branding.logo_url}
+          <img width={1600} height={900} src={branding.logo_dark_url || branding.logo_url}
             alt={branding.company_name}
             className="h-12 md:h-16 w-auto object-contain mx-auto"
           />
