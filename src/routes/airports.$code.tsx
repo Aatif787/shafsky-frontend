@@ -29,6 +29,7 @@ const airportPageSearchSchema = z.object({
   direction: z.string().optional().catch(""),
   travel_type: z.string().optional().catch(""),
   flight_type: z.string().optional().catch(""),
+  transit_type: z.string().optional().catch(""),
   from_hero: z.string().optional().catch(""),
   booking_mode: z.string().optional().catch(""),
   package_id: z.string().optional().catch(""),

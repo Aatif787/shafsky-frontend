@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { airportApi, formatAirportOption } from "@/lib/api/airportApi";
+import { getTransitCategory } from "@/data/airportRegistry";
 import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
 import {
   PlaneLanding,
@@ -125,23 +126,27 @@ export function BookingPanel() {
       return false;
     }
     const journeyType = tab === "connection" ? "TRANSIT" : tab.toUpperCase();
+    const transitCategory =
+      tab === "connection" ? getTransitCategory(originCode, destCode) : undefined;
     const res = await airportApi.resolveServiceAirport({
       journey_type: journeyType,
       origin: originCode,
       destination: destCode,
       transit: transitCode,
-      flight_type: travelType,
+      flight_type: transitCategory || travelType,
     });
     if (!res.valid || !res.service_airport) {
       toast.error(res.error || "This airport is currently not supported for online booking.");
       return false;
     }
     const serviceAirport = String(res.service_airport).trim().toUpperCase();
-    const derivedTravel = String(res.flight_type || travelType || "").toLowerCase();
+    const derivedTravel = String(res.flight_type || transitCategory || travelType || "").toLowerCase();
     const travelForIntent =
-      derivedTravel === "international" || derivedTravel === "domestic"
-        ? derivedTravel
-        : travelType;
+      tab === "connection"
+        ? (transitCategory || derivedTravel)
+        : derivedTravel === "international" || derivedTravel === "domestic"
+          ? derivedTravel
+          : travelType;
     const intent = {
       airport: serviceAirport,
       airport_id: res.airport?.id,
@@ -154,6 +159,7 @@ export function BookingPanel() {
       direction: tab === "connection" ? "transit" : tab,
       travel_type: travelForIntent,
       flight_type: travelForIntent,
+      transit_type: transitCategory,
       pax_adults: adults,
       pax_children: childrenCount,
       pax_infants: infants,

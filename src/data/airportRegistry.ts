@@ -892,9 +892,45 @@ export function isIndianAirportCode(code?: string | null): boolean {
   if (!code) return false;
   const clean = code.trim().toUpperCase();
   if (INDIAN_AIRPORT_CODES.has(clean)) return true;
-  const entry = getAirportRegistryEntry(clean);
+  const entry = AIRPORT_REGISTRY[clean];
   if (entry && (entry.countryCode === "IN" || entry.country.toUpperCase() === "INDIA")) {
     return true;
   }
   return false;
+}
+
+export type TransitCategory =
+  | "DOMESTIC_DOMESTIC"
+  | "DOMESTIC_INTERNATIONAL"
+  | "INTERNATIONAL_DOMESTIC"
+  | "INTERNATIONAL_INTERNATIONAL";
+
+/**
+ * Calculates the authoritative Transit category from Origin and Final Destination airport types.
+ *
+ * Rules:
+ *   - Origin (Domestic) -> Destination (Domestic) = DOMESTIC_DOMESTIC
+ *   - Origin (Domestic) -> Destination (International) = DOMESTIC_INTERNATIONAL
+ *   - Origin (International) -> Destination (Domestic) = INTERNATIONAL_DOMESTIC
+ *   - Origin (International) -> Destination (International) = INTERNATIONAL_INTERNATIONAL
+ *
+ * The Transit Hub is purely the connecting airport and MUST NOT be used to determine the category.
+ */
+export function getTransitCategory(
+  origin?: string | null,
+  destination?: string | null
+): TransitCategory {
+  const isOriginDomestic = isIndianAirportCode(origin);
+  const isDestDomestic = isIndianAirportCode(destination);
+
+  if (isOriginDomestic && isDestDomestic) {
+    return "DOMESTIC_DOMESTIC";
+  }
+  if (isOriginDomestic && !isDestDomestic) {
+    return "DOMESTIC_INTERNATIONAL";
+  }
+  if (!isOriginDomestic && isDestDomestic) {
+    return "INTERNATIONAL_DOMESTIC";
+  }
+  return "INTERNATIONAL_INTERNATIONAL";
 }

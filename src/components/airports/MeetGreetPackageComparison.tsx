@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { Crown, Check, ArrowRight, ChevronDown, ChevronUp, Sparkles, AlertCircle, RefreshCw } from "lucide-react";
-import { getAirportRegistryEntry } from "@/data/airportRegistry";
+import { getAirportRegistryEntry, getTransitCategory } from "@/data/airportRegistry";
 import { ApiClient } from "@/lib/ApiClient";
 
 interface MeetGreetPackageComparisonProps {
@@ -44,7 +44,23 @@ export function MeetGreetPackageComparison({
   const [journeyType, setJourneyType] = useState<"ARRIVAL" | "DEPARTURE" | "TRANSIT">(
     () => journeyFromSearch(bookingSearch)
   );
-  const [transitType, setTransitType] = useState<string>("DOMESTIC_DOMESTIC");
+  const [transitType, setTransitType] = useState<string>(() => {
+    const o = String(bookingSearch?.origin || "").trim().toUpperCase();
+    const d = String(bookingSearch?.destination || "").trim().toUpperCase();
+    if (o && d) {
+      return getTransitCategory(o, d);
+    }
+    const tt = String(bookingSearch?.transit_type || "").trim().toUpperCase();
+    if (
+      tt === "DOMESTIC_DOMESTIC" ||
+      tt === "DOMESTIC_INTERNATIONAL" ||
+      tt === "INTERNATIONAL_DOMESTIC" ||
+      tt === "INTERNATIONAL_INTERNATIONAL"
+    ) {
+      return tt;
+    }
+    return "DOMESTIC_DOMESTIC";
+  });
   const [terminal, setTerminal] = useState<string>(() => {
     if (isDel && flightFromSearch(bookingSearch) === "INTERNATIONAL") {
       return "Terminal 3";
@@ -57,10 +73,34 @@ export function MeetGreetPackageComparison({
     setJourneyType(journeyFromSearch(bookingSearch));
     const flType = flightFromSearch(bookingSearch);
     setFlightType(flType);
+    const o = String(bookingSearch?.origin || "").trim().toUpperCase();
+    const d = String(bookingSearch?.destination || "").trim().toUpperCase();
+    if (o && d) {
+      setTransitType(getTransitCategory(o, d));
+    } else {
+      const tt = String(bookingSearch?.transit_type || "").trim().toUpperCase();
+      if (
+        tt === "DOMESTIC_DOMESTIC" ||
+        tt === "DOMESTIC_INTERNATIONAL" ||
+        tt === "INTERNATIONAL_DOMESTIC" ||
+        tt === "INTERNATIONAL_INTERNATIONAL"
+      ) {
+        setTransitType(tt);
+      }
+    }
     if (isDel && flType === "INTERNATIONAL") {
       setTerminal("Terminal 3");
     }
-  }, [bookingSearch?.from_hero, bookingSearch?.direction, bookingSearch?.travel_type, bookingSearch?.flight_type, isDel]);
+  }, [
+    bookingSearch?.from_hero,
+    bookingSearch?.direction,
+    bookingSearch?.travel_type,
+    bookingSearch?.flight_type,
+    bookingSearch?.transit_type,
+    bookingSearch?.origin,
+    bookingSearch?.destination,
+    isDel,
+  ]);
 
   // Whenever flightType switches to INTERNATIONAL at DEL, redirect terminal to Terminal 3
   useEffect(() => {
@@ -559,8 +599,18 @@ export function MeetGreetPackageComparison({
                               : journeyType === "DEPARTURE"
                                 ? "departure"
                                 : "arrival",
-                          travel_type: flightType.toLowerCase(),
-                          flight_type: flightType.toLowerCase(),
+                          travel_type:
+                            journeyType === "TRANSIT"
+                              ? transitType.toLowerCase()
+                              : flightType.toLowerCase(),
+                          flight_type:
+                            journeyType === "TRANSIT"
+                              ? transitType
+                              : flightType.toLowerCase(),
+                          transit_type:
+                            journeyType === "TRANSIT"
+                              ? transitType
+                              : undefined,
                           terminal: (isDel && flightType === "INTERNATIONAL") ? "Terminal 3" : terminal,
                           service_id: pkg.id,
                           booking_mode: "package",
