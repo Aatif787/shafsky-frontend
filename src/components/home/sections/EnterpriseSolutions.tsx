@@ -139,7 +139,7 @@ export function EnterpriseSolutions() {
             className="mt-2 text-[clamp(2.2rem,4.5vw,4rem)] leading-[1.06] text-slate-950 tracking-tight font-bold"
             style={display}
           >
-            Our <span className="text-[#b38a2e] font-bold">Services.</span>
+            Our <span className="font-bold">Services.</span>
           </h2>
         </div>
 

@@ -65,7 +65,7 @@ export function ServiceFeatures({ serviceName, features }: ServiceFeaturesProps)
               <span>Service Highlights</span>
             </div>
             <h2 className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-white">
-              Signature Features & <span className="text-[#c5a059]">Inclusions.</span>
+              Signature Features & Inclusions.
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-white/60 font-sans max-w-xl">

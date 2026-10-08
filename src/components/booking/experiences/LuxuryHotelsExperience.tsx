@@ -198,7 +198,7 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
             className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold text-slate-950 tracking-tight leading-tight"
             style={display}
           >
-            Luxury <span className="text-[#b38a2e]">Hotels.</span>
+            Luxury Hotels.
           </h1>
 
           <p className="mt-3 text-sm text-slate-600 max-w-xl leading-relaxed">

@@ -1,3 +1,4 @@
+import { CountryCodeSelect } from "@/components/ui/PhoneInput";
 import { useState, useEffect } from "react";
 import {
   Plane,
@@ -122,17 +123,6 @@ const TIME_PREFERENCES = [
   "Night / Red-eye (00:00 – 06:00)",
 ];
 
-const COUNTRY_CODES = [
-  { code: "+91", country: "India" },
-  { code: "+971", country: "UAE" },
-  { code: "+44", country: "United Kingdom" },
-  { code: "+1", country: "United States / Canada" },
-  { code: "+65", country: "Singapore" },
-  { code: "+966", country: "Saudi Arabia" },
-  { code: "+33", country: "France" },
-  { code: "+49", country: "Germany" },
-  { code: "+41", country: "Switzerland" },
-];
 
 export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initialDestination = "" }: Props) {
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
@@ -895,17 +885,11 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
                 Phone Number <span className="text-red-500">*</span>
               </label>
               <div className="flex gap-2">
-                <select
+                <CountryCodeSelect
                   value={countryCode}
-                  onChange={(e) => setCountryCode(e.target.value)}
+                  onChange={setCountryCode}
                   className="bg-white border border-[#DCD5C9] rounded-xl px-3 py-2.5 text-xs text-[#1A1715] focus:border-[#84CC16] focus:outline-none"
-                >
-                  {COUNTRY_CODES.map((c) => (
-                    <option key={c.code} value={c.code}>
-                      {c.country} ({c.code})
-                    </option>
-                  ))}
-                </select>
+                />
                 <input
                   type="tel"
                   value={phone}

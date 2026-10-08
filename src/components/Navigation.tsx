@@ -354,7 +354,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                 <img
                   src={branding.logo_url || "/logo.png"}
                   alt="Shafsky Aviation Services"
-                  className="h-10 sm:h-11 w-auto object-contain"
+                  className="h-12 sm:h-13 md:h-14 w-auto object-contain"
                   onError={(e) => {
                     (e.target as HTMLElement).style.display = "none";
                   }}

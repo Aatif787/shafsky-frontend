@@ -98,7 +98,7 @@ export function WhyChooseUs() {
             className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight"
             style={display}
           >
-            Travel Made <span className="text-lime-600">Effortless & Simple.</span>
+            Travel Made Effortless & Simple.
           </h2>
           <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
             Skip the airport stress — we handle every detail so you can just relax and enjoy your journey.

@@ -1,3 +1,4 @@
+import { CountryCodeSelect } from "@/components/ui/PhoneInput";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,25 +18,6 @@ import {
 } from "lucide-react";
 import { FloatingInput, FloatingTextArea } from "@/components/ui/interactions";
 
-/* ═══════════════════════════════════════════════════════════════════════════════
- * COUNTRY CODES DATABASE
- * ═══════════════════════════════════════════════════════════════════════════ */
-
-export const COUNTRY_CODES = [
-  { code: "+91", flag: "🇮🇳", name: "India" },
-  { code: "+971", flag: "🇦🇪", name: "UAE" },
-  { code: "+1", flag: "🇺🇸", name: "USA / Canada" },
-  { code: "+44", flag: "🇬🇧", name: "UK" },
-  { code: "+65", flag: "🇸🇬", name: "Singapore" },
-  { code: "+966", flag: "🇸🇦", name: "Saudi Arabia" },
-  { code: "+974", flag: "🇶🇦", name: "Qatar" },
-  { code: "+61", flag: "🇦🇺", name: "Australia" },
-  { code: "+49", flag: "🇩🇪", name: "Germany" },
-  { code: "+33", flag: "🇫🇷", name: "France" },
-  { code: "+81", flag: "🇯🇵", name: "Japan" },
-  { code: "+41", flag: "🇨🇭", name: "Switzerland" },
-  { code: "+852", flag: "🇭🇰", name: "Hong Kong" },
-];
 
 export const SPECIAL_ASSISTANCE_OPTIONS = [
   {
@@ -459,20 +441,14 @@ export function PassengerInformationExperience({
                 <div className="flex gap-2">
                   {/* COUNTRY CODE SELECTOR */}
                   <div className="relative shrink-0">
-                    <select
+                    <CountryCodeSelect
                       value={internalCountryCode}
-                      onChange={(e) => {
-                        setInternalCountryCode(e.target.value);
-                        if (setCountryCode) setCountryCode(e.target.value);
+                      onChange={(v) => {
+                        setInternalCountryCode(v);
+                        if (setCountryCode) setCountryCode(v);
                       }}
-                      className="h-full px-3 py-3.5 rounded-2xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-[#7c3aed] font-mono appearance-none pr-8 cursor-pointer shadow-xs"
-                    >
-                      {COUNTRY_CODES.map((c) => (
-                        <option key={c.code} value={c.code} className="bg-white text-slate-900">
-                          {c.flag} {c.code} ({c.name})
-                        </option>
-                      ))}
-                    </select>
+                      className="h-full px-3 py-3.5 rounded-2xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-[#7c3aed] font-mono cursor-pointer shadow-xs"
+                    />
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
 

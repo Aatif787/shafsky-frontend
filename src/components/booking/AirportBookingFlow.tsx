@@ -33,7 +33,8 @@ import { FlightTimePicker } from "./shared/FlightTimePicker";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { formatFlightLookupError } from "./hooks/useAirportWorkflow";
 import { loadRazorpayScript } from "@/lib/razorpay";
-import { toRazorpayContact } from "./validation/sharedValidation";
+import { toRazorpayContact, normalizePhoneForStorage } from "./validation/sharedValidation";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import {
   SUPPORTED_CURRENCIES,
   convertFromINR,
@@ -759,9 +760,14 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       return;
     }
 
-    const cleanPhone = phone.trim().replace(/\D/g, "");
-    if (!cleanPhone || cleanPhone.length < 10) {
-      toast.error("Please enter a valid contact mobile number for Passenger 1.");
+    // Accept any country: an international number keeps its leading "+" so it
+    // stays routable for WhatsApp/SMS. Previously the dial code was stripped
+    // and a 10-digit minimum applied, which rejected and mangled foreign
+    // numbers even though the backend accepts them.
+    const cleanPhone = normalizePhoneForStorage(phone);
+    const phoneDigits = cleanPhone.replace(/\D/g, "");
+    if (phoneDigits.length < 7 || phoneDigits.length > 15) {
+      toast.error("Please enter a valid mobile number, including your country code.");
       return;
     }
 
@@ -2141,13 +2147,12 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
                       Phone {idx === 0 ? <span className="text-red-500">*</span> : <span className="text-slate-400 font-normal">(optional)</span>}
                     </label>
-                    <input
-                      type="tel"
+                    <PhoneInput
                       required={idx === 0}
                       value={p.phone}
-                      onChange={(e) => updatePassenger(idx, "phone", e.target.value)}
+                      onChange={(v) => updatePassenger(idx, "phone", v)}
                       placeholder={idx === 0 ? "Phone" : "Phone (or same as P1)"}
-                      className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 font-mono text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      className="h-11 w-full rounded-r-xl border border-slate-300 bg-transparent px-3.5 font-mono text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
                     />
                   </div>
 

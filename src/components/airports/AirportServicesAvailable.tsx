@@ -22,7 +22,7 @@ export function AirportServicesAvailable({ a }: AirportServicesAvailableProps) {
             className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-serif font-light text-white"
             style={{ fontFamily: "'Fraunces', serif" }}
           >
-            Available Packages at <span className="italic text-[#c5a059]">{a.city} ({a.code})</span>.
+            Available Packages at <span className="italic">{a.city} ({a.code})</span>.
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-white/60 font-sans max-w-2xl">
             All-inclusive airside escort, fast-track customs clearance, VIP lounge access, and tarmac transfers.

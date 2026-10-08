@@ -185,7 +185,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
     try {
       const notesArray: string[] = [];
       if (mode === "callback") {
-        notesArray.push("[CALL REQUEST: Immediate Concierge Callback Desired]");
+        notesArray.push("[CALL REQUEST: Immediate Callback Desired]");
       }
       if (message.trim()) {
         notesArray.push(message.trim());
@@ -248,10 +248,10 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
     }
   };
 
-  const getWhatsAppConciergeLink = () => {
+  const getWhatsAppLink = () => {
     const ref = bookingResult?.bookingRef || "NEW";
     const text = encodeURIComponent(
-      `Hello Shafsky Aviation Concierge Desk,\n\nI have submitted a Ground Transport booking.\n` +
+      `Hello Shafsky Aviation Desk,\n\nI have submitted a Ground Transport booking.\n` +
         `• Booking Reference: ${ref}\n` +
         `• Lead Passenger: ${name}\n` +
         `• Contact Phone: ${phone}\n` +
@@ -408,7 +408,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                 <a
-                  href={getWhatsAppConciergeLink()}
+                  href={getWhatsAppLink()}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs font-mono uppercase tracking-wider shadow-sm transition-all"

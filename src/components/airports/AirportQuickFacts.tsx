@@ -68,7 +68,7 @@ export function AirportQuickFacts({ a }: AirportQuickFactsProps) {
             className="mt-2 text-3xl sm:text-4xl font-serif font-light text-white"
             style={{ fontFamily: "'Fraunces', serif" }}
           >
-            Quick Facts & <span className="italic text-[#c5a059]">Intelligence.</span>
+            Quick Facts & <span className="italic">Intelligence.</span>
           </h2>
         </div>
 

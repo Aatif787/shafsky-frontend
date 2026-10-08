@@ -260,7 +260,7 @@ function MeetGreetDedicatedPage() {
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-tight text-center"
               style={display}
             >
-              Meet & Greet and Lounge <span className="text-lime-600">Service</span>
+              Meet & Greet and Lounge Service
             </h1>
           </div>
 

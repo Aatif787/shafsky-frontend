@@ -109,7 +109,7 @@ export function ConciergeCustomizer() {
             style={display}
           >
             Design Your{" "}
-            <span className="text-lime-600 font-bold">
+            <span className="font-bold">
               Airport Experience.
             </span>
           </h2>

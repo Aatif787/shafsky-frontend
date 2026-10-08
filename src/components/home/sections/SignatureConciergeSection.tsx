@@ -46,7 +46,7 @@ export function SignatureConciergeSection() {
             style={display}
           >
             Meet & Greet and{" "}
-            <span className="text-lime-600 font-bold">
+            <span className="font-bold">
               Lounge Service.
             </span>
           </h2>

@@ -134,7 +134,7 @@ function ServiceGuidePage() {
             className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
             style={display}
           >
-            How Shafsky Airport <span className="text-lime-600">Assistance Works</span>
+            How Shafsky Airport Assistance Works
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -279,8 +279,8 @@ function ServiceGuidePage() {
             {faqs.map((faq, idx) => (
               <div key={idx} className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
                 <h4 className="text-sm font-bold text-slate-950 flex items-start gap-2">
-                  <span className="text-lime-600 font-mono font-bold">Q.</span>
-                  <span>{faq.q}</span>
+                  <span className="font-mono font-bold">Q.</span>
+                  {faq.q}
                 </h4>
                 <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed pl-5 font-normal">
                   {faq.a}

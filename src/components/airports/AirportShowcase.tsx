@@ -47,7 +47,7 @@ export function AirportShowcase() {
         </div>
 
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-slate-900 font-bold tracking-tight">
-          Featured Aviation <span className="italic text-[#7c3aed]">Destinations</span>
+          Featured Aviation <span className="italic">Destinations</span>
         </h2>
         <p className="mt-3 text-xs sm:text-sm text-slate-600 font-sans max-w-xl mx-auto">
           Explore signature airport sanctuaries arranged across our international VVIP service arc.

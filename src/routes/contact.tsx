@@ -110,7 +110,7 @@ function ContactPage() {
             className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
             style={display}
           >
-            Contact <span className="text-lime-600">Us</span>
+            Contact Us
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed">

@@ -54,7 +54,7 @@ export function ServiceHowItWorks({ serviceName, steps }: ServiceHowItWorksProps
           </div>
 
           <h2 className="mt-4 text-3xl sm:text-5xl font-heading font-bold text-slate-900">
-            How <span className="text-emerald-700">{serviceName}</span> Works.
+            How {serviceName} Works.
           </h2>
 
           <p className="mt-3 text-xs sm:text-sm text-slate-600 font-sans font-medium">

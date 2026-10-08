@@ -216,7 +216,7 @@ export function MeetGreetPackageComparison({
         </div>
 
         <h3 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold">
-          Dynamic Concierge Packages for <span className="italic text-[#7c3aed]">{cityName}</span>
+          Dynamic Concierge Packages for <span className="italic">{cityName}</span>
         </h3>
 
         {/* Hierarchy Filters: Airport -> Journey Type -> Flight Type / Transit Type -> Terminal (DEL) -> Packages */}

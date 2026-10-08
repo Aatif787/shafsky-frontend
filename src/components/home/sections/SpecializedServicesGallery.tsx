@@ -68,7 +68,7 @@ export function SpecializedServicesGallery() {
             style={display}
           >
             Specialized Passenger{" "}
-            <span className="text-lime-600 font-bold">
+            <span className="font-bold">
               Assistance & Care.
             </span>
           </h2>

@@ -53,7 +53,7 @@ export function ServiceWhyChoose({ serviceName, benefits }: ServiceWhyChooseProp
               <span>The Shafsky Distinction</span>
             </div>
             <h2 className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-slate-900">
-              Why Choose <span className="text-emerald-700">{serviceName}</span>.
+              Why Choose {serviceName}.
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-slate-600 font-sans font-medium max-w-xl">

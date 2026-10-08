@@ -18,17 +18,9 @@ export function FAQ() {
       <div className="mx-auto max-w-4xl">
         {/* Upper Side Header (Classical & Centered) */}
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center justify-center gap-2.5 text-[11px] uppercase tracking-[0.3em] text-lime-700 font-semibold font-mono">
-            <span className="h-px w-6 bg-lime-600/50" />
-            <span>SHAFSKY AVIATION SERVICES</span>
-            <span className="text-slate-300">·</span>
-            <span>FAQ</span>
-            <span className="h-px w-6 bg-lime-600/50" />
-          </div>
-
-          <h2 className="mt-4 text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-slate-950 font-raleway leading-[1.15]">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-slate-950 font-raleway leading-[1.15]">
             Frequently Asked{" "}
-            <span className="text-lime-700 font-bold">
+            <span className="font-bold">
               Questions
             </span>
           </h2>

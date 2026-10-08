@@ -125,7 +125,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
             </div>
 
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-heading font-bold text-slate-900 tracking-tight">
-              Signature Airport & <span className="text-amber-700">Flight Services.</span>
+              Signature Airport & Flight Services.
             </h2>
 
             <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-slate-600 font-sans max-w-xl font-medium leading-relaxed">

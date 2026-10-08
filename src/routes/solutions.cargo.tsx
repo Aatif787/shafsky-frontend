@@ -132,7 +132,7 @@ function DedicatedTransportServicePage() {
               className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
               style={display}
             >
-              Transport <span className="text-lime-600">Service</span>
+              Transport Service
             </h1>
           </div>
 

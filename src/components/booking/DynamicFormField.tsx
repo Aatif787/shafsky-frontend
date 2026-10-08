@@ -1,3 +1,4 @@
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import { type FieldConfig } from "@/data/bookingConfigurations";
 import { AIRPORTS } from "@/data/airports";
 import { Plus, Minus } from "lucide-react";
@@ -220,23 +221,13 @@ export function DynamicFormField({ field, value, onChange, error }: DynamicFormF
         <label htmlFor={id} className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-1.5 font-bold">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
-        <div className="flex gap-2">
-          <select className="px-3 py-3.5 rounded-2xl bg-white border border-slate-200 text-xs font-mono text-slate-900 focus:outline-none">
-            <option value="+91">🇮🇳 +91</option>
-            <option value="+971">🇦🇪 +971</option>
-            <option value="+1">🇺🇸 +1</option>
-            <option value="+44">🇬🇧 +44</option>
-            <option value="+65">🇸🇬 +65</option>
-          </select>
-          <input
-            id={id}
-            type="tel"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder || "Mobile number"}
-            className="flex-1 px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#7c3aed]"
-          />
-        </div>
+        <PhoneInput
+          id={id}
+          value={value || ""}
+          onChange={onChange}
+          placeholder={placeholder || "Mobile number"}
+          className="w-full px-4 py-3.5 rounded-r-2xl bg-white border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#7c3aed]"
+        />
       </div>
     );
   }

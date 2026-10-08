@@ -315,7 +315,7 @@ function HolidayInnExpressDetailPage() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors shadow-2xs"
             >
               <Phone size={12} className="text-amber-400" />
-              <span className="hidden sm:inline">24/7 Concierge:</span> +91 92175 22660
+              <span className="hidden sm:inline">24/7 Desk:</span> +91 92175 22660
             </a>
           </div>
         </div>
@@ -1258,7 +1258,7 @@ function HolidayInnExpressDetailPage() {
                 Enquire — Holiday Inn Express
               </h3>
               <p className="text-xs text-slate-600 mt-1.5">
-                Share your stay dates and our concierge desk will confirm availability and send a
+                Share your stay dates and our desk will confirm availability and send a
                 quotation. No payment is taken online.
               </p>
             </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Calendar, User, Phone, Mail, Send, Loader2, CheckCircle2, MessageSquare, Copy, Check } from "lucide-react";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 
 /**
  * Standard hotel enquiry form (enquiry-only — no booking, no payment, no pricing).
@@ -176,7 +177,7 @@ export function StandardHotelEnquiryForm({
             Enquiry Submitted
           </h4>
           <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto mt-1">
-            Your enquiry has been received. Our concierge desk will share availability and a
+            Your enquiry has been received. Our desk will share availability and a
             quotation shortly.
           </p>
         </div>
@@ -279,17 +280,14 @@ export function StandardHotelEnquiryForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-bold text-slate-700 mb-1">Phone / WhatsApp *</label>
-          <div className="relative">
-            <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-            <input
-              type="tel"
-              required
-              value={guestPhone}
-              onChange={(e) => setGuestPhone(e.target.value)}
-              placeholder="Mobile number"
-              className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1d63b8] focus:border-transparent"
-            />
-          </div>
+          <PhoneInput
+            id="hotel-enquiry-phone"
+            required
+            value={guestPhone}
+            onChange={setGuestPhone}
+            placeholder="Mobile number"
+            className="w-full pl-3.5 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#1d63b8] focus:border-transparent"
+          />
         </div>
 
         <div>

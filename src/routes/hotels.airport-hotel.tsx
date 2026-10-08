@@ -210,7 +210,7 @@ const ROOM_CATEGORIES: RoomCategory[] = [
       "Free High-Speed Wi-Fi",
       "Attached Private Bathroom with Hot Water",
       "Plush Armchair & Coffee Table",
-      "24-Hour Concierge & Luggage Assistance",
+      "24-Hour Front Desk & Luggage Assistance",
     ],
     plans: [
       {

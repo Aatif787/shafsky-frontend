@@ -5,6 +5,7 @@ import {
   MapPin,
   MessageSquare,
   Phone,
+  Mail,
   Maximize2,
   Bed,
   Copy,
@@ -20,6 +21,8 @@ import {
   Sparkles, Coffee,
   ChevronRight
 } from "lucide-react";
+import { PhoneInput } from "@/components/ui/PhoneInput";
+import { enquiryApi } from "@/lib/api/enquiryApi";
 import {
   HotelInfo,
   AmenityItem,
@@ -56,6 +59,7 @@ export function HotelDetailTemplate({
 
   const [guestName, setGuestName] = React.useState("");
   const [guestPhone, setGuestPhone] = React.useState("");
+  const [guestEmail, setGuestEmail] = React.useState("");
   const [checkInDate, setCheckInDate] = React.useState("");
   const [checkOutDate, setCheckOutDate] = React.useState("");
   const [guestCount, setGuestCount] = React.useState("2");
@@ -78,7 +82,7 @@ export function HotelDetailTemplate({
 
   const openWhatsAppForPlan = (categoryName: string, plan: RoomPlan) => {
     const text = encodeURIComponent(
-      `Hello Shafsky Aviation Concierge, I would like to book a room at ${hotel.name}:\n\n` +
+      `Hello Shafsky Aviation, I would like to book a room at ${hotel.name}:\n\n` +
         `• Room: ${categoryName}\n` +
         `• Plan: ${plan.name}\n` +
         `• Price: ${plan.price} (${plan.taxNote})\n` +
@@ -93,13 +97,43 @@ export function HotelDetailTemplate({
     if (!selectedEnquiry) return;
 
     const { categoryName, plan } = selectedEnquiry;
+
+    // Persist enquiry to backend
+    try {
+      enquiryApi.submit({
+        passengerName: guestName.trim(),
+        passengerEmail: guestEmail.trim(),
+        passengerPhone: guestPhone.trim(),
+        serviceCategory: "Travel Support",
+        serviceType: "Hotel Booking",
+        destination: hotel.name,
+        serviceDate: checkInDate || undefined,
+        notes: `Hotel enquiry — ${hotel.name} | Room: ${categoryName} | Plan: ${plan.name} | Rate: ${plan.price} | Check-in: ${checkInDate} | Check-out: ${checkOutDate} | Guests: ${guestCount}`,
+        details: {
+          hotel_name: hotel.name,
+          room_category: categoryName,
+          room_plan: plan.name,
+          price: plan.price,
+          check_in: checkInDate,
+          check_out: checkOutDate,
+          guest_count: guestCount,
+          enquiry_type: "hotel_enquiry",
+        },
+      }).catch((err) => {
+        console.warn("Could not persist hotel enquiry to backend:", err);
+      });
+    } catch (err) {
+      console.warn("Could not persist hotel enquiry to backend:", err);
+    }
+
     const details =
-      `Hello Shafsky Aviation Concierge, I would like to book an enquiry for ${hotel.name}:\n\n` +
+      `Hello Shafsky Aviation, I would like to book an enquiry for ${hotel.name}:\n\n` +
       `• Room: ${categoryName}\n` +
       `• Plan: ${plan.name}\n` +
       `• Rate: ${plan.price} (${plan.taxNote})\n` +
       (guestName ? `• Guest Name: ${guestName}\n` : "") +
       (guestPhone ? `• Phone: ${guestPhone}\n` : "") +
+      (guestEmail ? `• Email: ${guestEmail}\n` : "") +
       (checkInDate ? `• Check-in: ${checkInDate}\n` : "") +
       (checkOutDate ? `• Check-out: ${checkOutDate}\n` : "") +
       `• Guests: ${guestCount} Adults\n` +
@@ -115,7 +149,7 @@ export function HotelDetailTemplate({
 
   const handleWhatsAppGeneral = () => {
     const text = encodeURIComponent(
-      `Hello Shafsky Aviation Concierge, I would like to enquire about staying at ${hotel.name}, Near IGI Airport, New Delhi. Please share available room options and rates.`
+      `Hello Shafsky Aviation, I would like to enquire about staying at ${hotel.name}, Near IGI Airport, New Delhi. Please share available room options and rates.`
     );
     window.open(`https://wa.me/${whatsAppPhone}?text=${text}`, "_blank");
   };
@@ -172,7 +206,7 @@ export function HotelDetailTemplate({
               className="inline-flex items-center space-x-2 px-3.5 sm:px-4 py-2 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs sm:text-sm font-semibold shadow-md shadow-emerald-600/20 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
             >
               <MessageSquare className="w-4 h-4" />
-              <span className="hidden sm:inline">WhatsApp Concierge</span>
+              <span className="hidden sm:inline">WhatsApp</span>
               <span className="sm:hidden">WhatsApp</span>
             </button>
             <a
@@ -386,7 +420,7 @@ export function HotelDetailTemplate({
                             {plan.name}
                           </h4>
                           <p className="text-xs text-slate-500 mt-0.5">
-                            Best Flexible Rate • Instant Shafsky Concierge Booking
+                            Best Flexible Rate • Instant Shafsky Booking
                           </p>
                         </div>
 
@@ -687,7 +721,7 @@ export function HotelDetailTemplate({
             <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 text-white p-5 flex items-center justify-between">
               <div>
                 <span className="text-xs uppercase tracking-wider font-semibold text-blue-300 block">
-                  Shafsky Aviation Concierge
+                  Shafsky Aviation Services
                 </span>
                 <h3 className="text-lg sm:text-xl font-bold font-serif mt-0.5">
                   Room Booking Enquiry
@@ -730,7 +764,7 @@ export function HotelDetailTemplate({
             <form onSubmit={handleEnquirySubmit} className="p-5 sm:p-6 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Guest Full Name
+                  Guest Full Name <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
                   <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -745,20 +779,35 @@ export function HotelDetailTemplate({
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Contact Mobile / WhatsApp Number
-                </label>
-                <div className="relative">
-                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-                  <input
-                    type="tel"
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Phone / WhatsApp <span className="text-rose-500">*</span>
+                  </label>
+                  <PhoneInput
                     required
                     placeholder="Mobile number"
                     value={guestPhone}
-                    onChange={(e) => setGuestPhone(e.target.value)}
-                    className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1d63b8] focus:border-transparent"
+                    onChange={setGuestPhone}
+                    className="w-full pl-3.5 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#1d63b8] focus:border-transparent"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Email Address <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <input
+                      type="email"
+                      required
+                      placeholder="name@company.com"
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1d63b8] focus:border-transparent"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -815,7 +864,7 @@ export function HotelDetailTemplate({
                   className="flex-1 bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold py-3 px-4 rounded-xl text-xs sm:text-sm transition-all flex items-center justify-center space-x-2 shadow-md shadow-emerald-600/20 cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <MessageSquare className="w-4 h-4" />
-                  <span>Send via WhatsApp Concierge</span>
+                  <span>Send via WhatsApp</span>
                 </button>
                 <button
                   type="button"

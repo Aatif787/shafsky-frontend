@@ -44,7 +44,7 @@ export function AssistanceCTA({
               className="mt-4 text-3xl sm:text-4xl font-serif font-bold text-slate-900 leading-tight"
             >
               {heading} <br className="hidden sm:inline" />
-              <span className="italic text-[#7c3aed] font-normal">{activeSubheading}</span>
+              <span className="italic font-normal">{activeSubheading}</span>
             </h2>
 
             <p className="mt-3 text-sm text-slate-600 leading-relaxed font-sans max-w-xl">

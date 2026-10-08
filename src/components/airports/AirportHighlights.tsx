@@ -55,7 +55,7 @@ export function AirportHighlights({ a }: AirportHighlightsProps) {
           className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-serif font-light text-white"
           style={{ fontFamily: "'Fraunces', serif" }}
         >
-          Service Highlights & <span className="italic text-[#c5a059]">Excellence.</span>
+          Service Highlights & <span className="italic">Excellence.</span>
         </h2>
         <p className="mt-2 text-xs sm:text-sm text-white/60 font-sans max-w-2xl">
           Four signature pillars of our airside guest relations service at {a.airport?.name || a.city}.

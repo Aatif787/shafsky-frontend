@@ -46,7 +46,7 @@ export function ServiceFAQ({ serviceName, faqs }: ServiceFAQProps) {
             <span>Service Intelligence</span>
           </div>
           <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-slate-900">
-            Frequently Asked Questions about <span className="text-emerald-700">{serviceName}</span>.
+            Frequently Asked Questions about {serviceName}.
           </h2>
         </div>
       </FadeInView>

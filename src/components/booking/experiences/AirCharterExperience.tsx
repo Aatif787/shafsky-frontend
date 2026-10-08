@@ -245,7 +245,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
             className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold text-slate-950 tracking-tight leading-tight"
             style={display}
           >
-            Private <span className="text-[#b38a2e]">Charter.</span>
+            Private Charter.
           </h1>
 
           <p className="mt-3 text-sm text-slate-600 max-w-xl leading-relaxed">

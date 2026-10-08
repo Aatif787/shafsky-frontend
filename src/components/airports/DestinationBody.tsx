@@ -57,7 +57,7 @@ export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearc
       <section id="available-services" className="px-4 py-16 sm:px-8 md:px-16 md:py-20 bg-white border-y border-slate-200">
         <SectionLabel index="01" label="Airside Concierge Catalog" />
         <h2 className="mt-4 max-w-4xl text-[clamp(2rem,3.5vw,3rem)] font-bold text-slate-900 leading-[1.1]" style={display}>
-          Available services at <span className="text-[#7c3aed] italic">{a.city} ({a.code})</span>.
+          Available services at <span className="italic">{a.city} ({a.code})</span>.
         </h2>
 
         {/* Dynamic Master Airport Package Comparison */}

@@ -55,7 +55,7 @@ export function Journey() {
             className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight"
             style={display}
           >
-            Six steps. <span className="text-lime-600">One signature standard.</span>
+            Six steps. One signature standard.
           </h2>
           <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
             From booking to final arrival, enjoy a smooth journey and welcoming hospitality.

@@ -72,7 +72,7 @@ export function ServiceAudience({ serviceName, audiences }: ServiceAudienceProps
               <span>Designed For You</span>
             </div>
             <h2 className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-white">
-              Who Is <span className="text-[#c5a059]">{serviceName}</span> For?
+              Who Is {serviceName} For?
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-white/60 font-sans max-w-xl">

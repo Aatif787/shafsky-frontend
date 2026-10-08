@@ -43,7 +43,7 @@ export function AirportFAQ({ a }: AirportFAQProps) {
           className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-serif font-light text-white"
           style={{ fontFamily: "'Fraunces', serif" }}
         >
-          Frequently Asked Questions at <span className="italic text-[#c5a059]">{a.city}</span>.
+          Frequently Asked Questions at <span className="italic">{a.city}</span>.
         </h2>
       </div>
 
