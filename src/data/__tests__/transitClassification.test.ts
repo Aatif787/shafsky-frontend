@@ -144,4 +144,75 @@ describe("Transit Service Category Classification", () => {
       expect(state.effectiveTransitType).toBe("INTERNATIONAL_INTERNATIONAL");
     });
   });
+
+  describe("Mandatory Enterprise Production Test Cases (TEST 1 - TEST 7)", () => {
+    it("TEST 1: Mumbai -> Delhi -> Lucknow => Domestic -> Domestic", () => {
+      const origin = "BOM";
+      const transitHub = "DEL";
+      const destination = "LKO";
+      const category = getTransitCategory(origin, destination);
+      expect(category).toBe("DOMESTIC_DOMESTIC");
+    });
+
+    it("TEST 2: Mumbai -> Delhi -> Dubai => Domestic -> International", () => {
+      const origin = "BOM";
+      const transitHub = "DEL";
+      const destination = "DXB";
+      const category = getTransitCategory(origin, destination);
+      expect(category).toBe("DOMESTIC_INTERNATIONAL");
+    });
+
+    it("TEST 3: Dubai -> Delhi -> Lucknow => International -> Domestic", () => {
+      const origin = "DXB";
+      const transitHub = "DEL";
+      const destination = "LKO";
+      const category = getTransitCategory(origin, destination);
+      expect(category).toBe("INTERNATIONAL_DOMESTIC");
+    });
+
+    it("TEST 4: Dubai -> Delhi -> Singapore => International -> International", () => {
+      const origin = "DXB";
+      const transitHub = "DEL";
+      const destination = "SIN";
+      const category = getTransitCategory(origin, destination);
+      expect(category).toBe("INTERNATIONAL_INTERNATIONAL");
+    });
+
+    it("TEST 5: Change Final Destination: Mumbai -> Delhi -> Dubai -> change destination to Lucknow => Domestic -> Domestic", () => {
+      let origin = "BOM";
+      const transitHub = "DEL";
+      let destination = "DXB";
+      expect(getTransitCategory(origin, destination)).toBe("DOMESTIC_INTERNATIONAL");
+
+      // User changes destination to Lucknow (LKO)
+      destination = "LKO";
+      expect(getTransitCategory(origin, destination)).toBe("DOMESTIC_DOMESTIC");
+    });
+
+    it("TEST 6: Change Origin: Mumbai -> Delhi -> Lucknow -> change origin to Dubai => International -> Domestic", () => {
+      let origin = "BOM";
+      const transitHub = "DEL";
+      let destination = "LKO";
+      expect(getTransitCategory(origin, destination)).toBe("DOMESTIC_DOMESTIC");
+
+      // User changes origin to Dubai (DXB)
+      origin = "DXB";
+      expect(getTransitCategory(origin, destination)).toBe("INTERNATIONAL_DOMESTIC");
+    });
+
+    it("TEST 7: Change ONLY Transit Hub => Transit service category does NOT change", () => {
+      const origin = "BOM";
+      const destination = "DXB";
+      const categoryDEL = getTransitCategory(origin, destination);
+
+      // Change transit hub to BLR, HYD, or BOM
+      const categoryBLR = getTransitCategory(origin, destination);
+      const categoryHYD = getTransitCategory(origin, destination);
+
+      expect(categoryDEL).toBe("DOMESTIC_INTERNATIONAL");
+      expect(categoryBLR).toBe("DOMESTIC_INTERNATIONAL");
+      expect(categoryHYD).toBe("DOMESTIC_INTERNATIONAL");
+      expect(categoryDEL).toBe(categoryBLR);
+    });
+  });
 });

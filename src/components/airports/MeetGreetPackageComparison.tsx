@@ -1,9 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import { Crown, Check, ArrowRight, ChevronDown, ChevronUp, Sparkles, AlertCircle, RefreshCw, Lock } from "lucide-react";
+import { Crown, Check, ArrowRight, ChevronDown, ChevronUp, Sparkles, AlertCircle, RefreshCw, Pencil } from "lucide-react";
 import { getAirportRegistryEntry, getTransitCategory } from "@/data/airportRegistry";
+import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
+import { formatAirportOption } from "@/lib/api/airportApi";
 import { ApiClient } from "@/lib/ApiClient";
+
+const TRANSIT_TITLE_MAP: Record<string, string> = {
+  DOMESTIC_DOMESTIC: "Domestic → Domestic",
+  DOMESTIC_INTERNATIONAL: "Domestic → International",
+  INTERNATIONAL_DOMESTIC: "International → Domestic",
+  INTERNATIONAL_INTERNATIONAL: "International → International",
+};
 
 interface MeetGreetPackageComparisonProps {
   airportCode: string;
@@ -40,6 +49,24 @@ export function MeetGreetPackageComparison({
 
   const originParam = String(bookingSearch?.origin || "").trim().toUpperCase();
   const destParam = String(bookingSearch?.destination || "").trim().toUpperCase();
+  const transitParam = String(bookingSearch?.transit || airportCode).trim().toUpperCase();
+
+  const [journeyOrigin, setJourneyOrigin] = useState<string>(() => originParam);
+  const [journeyDest, setJourneyDest] = useState<string>(() => destParam);
+  const [journeyTransit, setJourneyTransit] = useState<string>(() => transitParam || airportCode);
+  const [isEditingJourney, setIsEditingJourney] = useState<boolean>(false);
+
+  const originEntry = getAirportRegistryEntry(journeyOrigin);
+  const destEntry = getAirportRegistryEntry(journeyDest);
+  const transitEntry = getAirportRegistryEntry(journeyTransit || airportCode);
+
+  const [originLabel, setOriginLabel] = useState<string>(() => originEntry ? formatAirportOption(originEntry) : journeyOrigin);
+  const [destLabel, setDestLabel] = useState<string>(() => destEntry ? formatAirportOption(destEntry) : journeyDest);
+  const [transitLabel, setTransitLabel] = useState<string>(() => transitEntry ? formatAirportOption(transitEntry) : (journeyTransit || airportCode));
+
+  const originCity = originEntry?.city || journeyOrigin;
+  const destCity = destEntry?.city || journeyDest;
+  const transitCity = transitEntry?.city || journeyTransit || airportCode;
 
   const [flightType, setFlightType] = useState<"DOMESTIC" | "INTERNATIONAL">(
     () => flightFromSearch(bookingSearch)
@@ -47,9 +74,10 @@ export function MeetGreetPackageComparison({
   const [journeyType, setJourneyType] = useState<"ARRIVAL" | "DEPARTURE" | "TRANSIT">(
     () => journeyFromSearch(bookingSearch)
   );
-  const [transitType, setTransitType] = useState<string>(() => {
-    if (originParam && destParam) {
-      return getTransitCategory(originParam, destParam);
+
+  const effectiveTransitType = useMemo(() => {
+    if (journeyOrigin && journeyDest) {
+      return getTransitCategory(journeyOrigin, journeyDest);
     }
     const tt = String(bookingSearch?.transit_type || "").trim().toUpperCase();
     if (
@@ -61,11 +89,7 @@ export function MeetGreetPackageComparison({
       return tt;
     }
     return "DOMESTIC_DOMESTIC";
-  });
-
-  const isTransitLocked = journeyType === "TRANSIT" && Boolean(originParam && destParam);
-  const lockedTransitCategory = isTransitLocked ? getTransitCategory(originParam, destParam) : null;
-  const effectiveTransitType = isTransitLocked && lockedTransitCategory ? lockedTransitCategory : transitType;
+  }, [journeyOrigin, journeyDest, bookingSearch?.transit_type]);
 
   const [terminal, setTerminal] = useState<string>(() => {
     if (isDel && flightFromSearch(bookingSearch) === "INTERNATIONAL") {
@@ -81,18 +105,21 @@ export function MeetGreetPackageComparison({
     setFlightType(flType);
     const o = String(bookingSearch?.origin || "").trim().toUpperCase();
     const d = String(bookingSearch?.destination || "").trim().toUpperCase();
-    if (o && d) {
-      setTransitType(getTransitCategory(o, d));
-    } else {
-      const tt = String(bookingSearch?.transit_type || "").trim().toUpperCase();
-      if (
-        tt === "DOMESTIC_DOMESTIC" ||
-        tt === "DOMESTIC_INTERNATIONAL" ||
-        tt === "INTERNATIONAL_DOMESTIC" ||
-        tt === "INTERNATIONAL_INTERNATIONAL"
-      ) {
-        setTransitType(tt);
-      }
+    const t = String(bookingSearch?.transit || airportCode).trim().toUpperCase();
+    if (o && o !== journeyOrigin) {
+      setJourneyOrigin(o);
+      const oe = getAirportRegistryEntry(o);
+      setOriginLabel(oe ? formatAirportOption(oe) : o);
+    }
+    if (d && d !== journeyDest) {
+      setJourneyDest(d);
+      const de = getAirportRegistryEntry(d);
+      setDestLabel(de ? formatAirportOption(de) : d);
+    }
+    if (t && t !== journeyTransit) {
+      setJourneyTransit(t);
+      const te = getAirportRegistryEntry(t);
+      setTransitLabel(te ? formatAirportOption(te) : t);
     }
     if (isDel && flType === "INTERNATIONAL") {
       setTerminal("Terminal 3");
@@ -105,7 +132,9 @@ export function MeetGreetPackageComparison({
     bookingSearch?.transit_type,
     bookingSearch?.origin,
     bookingSearch?.destination,
+    bookingSearch?.transit,
     isDel,
+    airportCode,
   ]);
 
   // Whenever flightType switches to INTERNATIONAL at DEL, redirect terminal to Terminal 3
@@ -130,13 +159,16 @@ export function MeetGreetPackageComparison({
     const activeTerminal = isDel && flightType === "INTERNATIONAL" ? "Terminal 3" : terminal;
     const flightTypeParam = journeyType === "TRANSIT" ? effectiveTransitType : flightType;
     const terminalParam = journeyType !== "TRANSIT" && isDel && activeTerminal ? `&terminal=${encodeURIComponent(activeTerminal)}` : "";
+    const effOrigin = journeyType === "TRANSIT" ? journeyOrigin : originParam;
+    const effDest = journeyType === "TRANSIT" ? journeyDest : destParam;
+    const effHub = journeyType === "TRANSIT" ? (journeyTransit || airportCode) : airportCode;
     const routeParam =
-      originParam && destParam
-        ? `&origin=${encodeURIComponent(originParam)}&destination=${encodeURIComponent(destParam)}`
+      effOrigin && effDest
+        ? `&origin=${encodeURIComponent(effOrigin)}&destination=${encodeURIComponent(effDest)}`
         : "";
 
     ApiClient.fetchWithAuth(
-      `/api/journey/airports/${airportCode}/services?journey_type=${journeyType}&flight_type=${flightTypeParam}${terminalParam}${routeParam}`
+      `/api/journey/airports/${effHub}/services?journey_type=${journeyType}&flight_type=${flightTypeParam}${terminalParam}${routeParam}`
     )
       .then((res) => {
         if (!res.ok) {
@@ -248,7 +280,7 @@ export function MeetGreetPackageComparison({
     return () => {
       isMounted = false;
     };
-  }, [airportCode, flightType, journeyType, effectiveTransitType, terminal, retryTrigger, originParam, destParam]);
+  }, [airportCode, flightType, journeyType, effectiveTransitType, terminal, retryTrigger, journeyOrigin, journeyDest, journeyTransit]);
 
   return (
     <div className="space-y-8 my-10">
@@ -364,48 +396,172 @@ export function MeetGreetPackageComparison({
             )
           )}
 
-          {/* Transit Type Segmented Control (Only displayed when Transit is selected) */}
-          {journeyType === "TRANSIT" && (
-            <div className="p-1 rounded-2xl bg-purple-50 border border-purple-200 flex flex-wrap items-center justify-center gap-1 text-xs font-mono font-bold">
-              {[
-                { id: "DOMESTIC_DOMESTIC", label: "Domestic → Domestic" },
-                { id: "DOMESTIC_INTERNATIONAL", label: "Domestic → International" },
-                { id: "INTERNATIONAL_DOMESTIC", label: "International → Domestic" },
-                { id: "INTERNATIONAL_INTERNATIONAL", label: "International → International" },
-              ].map((cat) => {
-                const isSelected = effectiveTransitType === cat.id;
-                const isDisabled = isTransitLocked && !isSelected;
-
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    disabled={isDisabled}
-                    onClick={() => {
-                      if (!isTransitLocked) {
-                        setTransitType(cat.id);
-                      }
-                    }}
-                    className={`px-3 py-1.5 rounded-xl transition-all ${
-                      isSelected
-                        ? "bg-[#7c3aed] text-white shadow-xs cursor-default"
-                        : isDisabled
-                          ? "text-purple-900/40 opacity-40 cursor-not-allowed pointer-events-none"
-                          : "text-purple-900 hover:bg-purple-100 cursor-pointer"
-                    }`}
-                  >
-                    <span className="inline-flex items-center gap-1.5">
-                      <span>{cat.label}</span>
-                      {isSelected && isTransitLocked && (
-                        <Lock className="w-3 h-3 text-white/90 shrink-0" />
-                      )}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
         </div>
+
+        {/* TRANSIT JOURNEY SUMMARY & SYSTEM-SELECTED SERVICE */}
+        {journeyType === "TRANSIT" && (
+          <div className="w-full max-w-xl mx-auto rounded-3xl bg-purple-50/70 border border-purple-200/80 p-5 sm:p-6 text-center shadow-xs space-y-4">
+            {journeyOrigin && journeyDest ? (
+              <>
+                {/* Visual Journey Route: Origin -> Connecting Hub -> Final Destination */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-xs font-mono">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-900 bg-white px-3.5 py-1.5 rounded-xl border border-purple-100 shadow-2xs">
+                    <span>{originCity}</span>
+                    <span className="text-slate-400 font-normal">({journeyOrigin})</span>
+                  </div>
+
+                  <span className="text-purple-600 font-bold max-sm:rotate-0 sm:-rotate-90">↓</span>
+
+                  <div className="flex items-center gap-1.5 font-bold text-purple-900 bg-purple-100/90 px-3.5 py-1.5 rounded-xl border border-purple-200 shadow-2xs">
+                    <span>{transitCity}</span>
+                    <span className="text-purple-600 font-normal">({journeyTransit || airportCode})</span>
+                    <span className="text-[10px] text-purple-700 font-sans font-medium uppercase tracking-wider ml-1 bg-white/80 px-1.5 py-0.5 rounded-md">
+                      Connecting Airport
+                    </span>
+                  </div>
+
+                  <span className="text-purple-600 font-bold max-sm:rotate-0 sm:-rotate-90">↓</span>
+
+                  <div className="flex items-center gap-1.5 font-bold text-slate-900 bg-white px-3.5 py-1.5 rounded-xl border border-purple-100 shadow-2xs">
+                    <span>{destCity}</span>
+                    <span className="text-slate-400 font-normal">({journeyDest})</span>
+                  </div>
+                </div>
+
+                {/* System-Determined Service Category */}
+                <div className="pt-2 border-t border-purple-100/80 flex flex-col items-center justify-center gap-1">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-purple-700 font-bold">
+                    Transit Service
+                  </span>
+                  <span className="text-lg sm:text-xl font-serif font-bold text-[#7c3aed]">
+                    {TRANSIT_TITLE_MAP[effectiveTransitType] || "Transit Assistance"}
+                  </span>
+                  <span className="text-xs font-sans text-slate-500 font-medium">
+                    Based on your journey
+                  </span>
+                </div>
+
+                {/* Change Journey Action */}
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingJourney((prev) => !prev)}
+                    className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#7c3aed] hover:text-[#6d28d9] hover:underline px-3 py-1.5 rounded-xl hover:bg-purple-100/60 transition-colors cursor-pointer"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    <span>{isEditingJourney ? "Close Editor" : "Change Journey"}</span>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-3">
+                <div className="text-sm sm:text-base font-serif font-bold text-slate-900">
+                  Select your journey to view available Transit services
+                </div>
+                <p className="text-xs text-slate-600 font-sans max-w-sm mx-auto leading-relaxed">
+                  Provide your origin, connecting hub, and final destination to automatically determine your official transit package.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingJourney(true)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#7c3aed] text-white text-xs font-mono font-bold hover:bg-[#6d28d9] transition-colors cursor-pointer shadow-xs"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  <span>Select Journey</span>
+                </button>
+              </div>
+            )}
+
+            {/* Inline Journey Editor (Allows changing Origin, Transit Hub, and Final Destination) */}
+            {isEditingJourney && (
+              <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-white border border-purple-200/80 shadow-sm space-y-4 text-left">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                  <span className="text-xs font-mono font-bold text-slate-900 uppercase tracking-wider">
+                    Change Journey Airports
+                  </span>
+                  {journeyOrigin && journeyDest && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingJourney(false)}
+                      className="text-xs font-mono font-semibold text-slate-500 hover:text-slate-800 cursor-pointer"
+                    >
+                      Done
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {/* Origin Airport */}
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-wider">
+                      Origin Airport *
+                    </label>
+                    <IntelligentAirportAutocomplete
+                      mode="global"
+                      value={originLabel || journeyOrigin}
+                      onSelect={(ap) => {
+                        setJourneyOrigin(ap.code);
+                        setOriginLabel(formatAirportOption(ap));
+                      }}
+                      placeholder="Search origin airport"
+                      inputClassName="h-10 text-xs rounded-xl"
+                    />
+                  </div>
+
+                  {/* Transit Hub (Connecting) */}
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-wider">
+                      Transit Hub *
+                    </label>
+                    <IntelligentAirportAutocomplete
+                      mode="supported"
+                      journeyType="TRANSIT"
+                      value={transitLabel || journeyTransit}
+                      onSelect={(ap) => {
+                        setJourneyTransit(ap.code);
+                        setTransitLabel(formatAirportOption(ap));
+                      }}
+                      placeholder="Search transit hub"
+                      inputClassName="h-10 text-xs rounded-xl"
+                    />
+                  </div>
+
+                  {/* Final Destination Airport */}
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-wider">
+                      Destination Airport *
+                    </label>
+                    <IntelligentAirportAutocomplete
+                      mode="global"
+                      value={destLabel || journeyDest}
+                      onSelect={(ap) => {
+                        setJourneyDest(ap.code);
+                        setDestLabel(formatAirportOption(ap));
+                      }}
+                      placeholder="Search destination airport"
+                      inputClassName="h-10 text-xs rounded-xl"
+                    />
+                  </div>
+                </div>
+
+                {journeyOrigin && journeyDest && (
+                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-100 text-[11px] font-mono text-purple-700">
+                    <span>
+                      Recalculated Service: <strong>{TRANSIT_TITLE_MAP[getTransitCategory(journeyOrigin, journeyDest)] || "Transit"}</strong>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingJourney(false)}
+                      className="px-4 py-1.5 rounded-xl bg-[#7c3aed] text-white font-bold hover:bg-[#6d28d9] transition-colors cursor-pointer text-xs"
+                    >
+                      Apply Changes
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* DYNAMIC CARDS GRID */}
@@ -579,20 +735,28 @@ export function MeetGreetPackageComparison({
                         {
                           ...(bookingSearch || {}),
                           source: "airport_page",
-                          airport: airportCode,
-                          airport_name: cityName,
+                          airport: journeyType === "TRANSIT" ? (journeyTransit || airportCode) : airportCode,
+                          airport_name: journeyType === "TRANSIT" ? transitCity : cityName,
                           origin:
                             journeyType === "DEPARTURE"
                               ? airportCode
-                              : (bookingSearch?.origin as string) && (bookingSearch?.origin as string).toUpperCase() !== airportCode.toUpperCase()
-                                ? (bookingSearch?.origin as string)
-                                : "",
+                              : journeyType === "TRANSIT"
+                                ? journeyOrigin
+                                : (bookingSearch?.origin as string) && (bookingSearch?.origin as string).toUpperCase() !== airportCode.toUpperCase()
+                                  ? (bookingSearch?.origin as string)
+                                  : "",
                           destination:
                             journeyType === "ARRIVAL"
                               ? airportCode
-                              : (bookingSearch?.destination as string) && (bookingSearch?.destination as string).toUpperCase() !== airportCode.toUpperCase()
-                                ? (bookingSearch?.destination as string)
-                                : "",
+                              : journeyType === "TRANSIT"
+                                ? journeyDest
+                                : (bookingSearch?.destination as string) && (bookingSearch?.destination as string).toUpperCase() !== airportCode.toUpperCase()
+                                  ? (bookingSearch?.destination as string)
+                                  : "",
+                          transit:
+                            journeyType === "TRANSIT"
+                              ? (journeyTransit || airportCode)
+                              : undefined,
                           direction:
                             journeyType === "TRANSIT"
                               ? "transit"
