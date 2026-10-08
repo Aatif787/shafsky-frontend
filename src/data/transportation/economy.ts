@@ -56,7 +56,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
       {
         provider: "Mega Cab",
         rawVehicleName: "Delhi Airport Terminal 1, Terminal 2, Terminal 3 Shuttles",
-        notes: "Tariff covered under MEGA_CAB_TARIFF point-to-point and per-km schedule.",
+        notes: "Tariff covered under standard point-to-point and per-km schedule.",
       },
     ],
   },
@@ -70,7 +70,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
       {
         provider: "Mega Cab",
         rawVehicleName: "Hourly Disposal / Base Fare Cabs",
-        notes: "Tariff covered under MEGA_CAB_TARIFF (Base fare Rs. 32/km + 5% GST).",
+        notes: "Standard reference rate (Base fare Rs. 32/km + 5% GST).",
       },
       {
         provider: "Sidhant",

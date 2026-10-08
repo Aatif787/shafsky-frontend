@@ -56,8 +56,8 @@ const HOTEL_INFO: HotelInfo = {
       distance: "Approx. 1.2 km • 5 mins via Airport Exp. line",
     },
   ],
-  contactPhone: "+91 99990 17646",
-  whatsAppNumber: "919999017646",
+  contactPhone: "+91 92175 22660",
+  whatsAppNumber: "919217522660",
 };
 
 const AMENITIES: AmenityItem[] = [

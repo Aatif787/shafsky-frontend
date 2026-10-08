@@ -1,7 +1,10 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext, useRef, useCallback, useLayoutEffect } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { getSessionInfo } from "@/lib/session";
 import { AuthContext } from "@/auth-system/AuthProvider";
+
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 import {
   Menu,
   X,
@@ -191,13 +194,59 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const headerContainerRef = useRef<HTMLDivElement | null>(null);
+  const megaTriggerRef = useRef<HTMLDivElement | null>(null);
   const megaMenuRef = useRef<HTMLDivElement | null>(null);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [menuLeftOffset, setMenuLeftOffset] = useState<number | null>(null);
+
+  const updateMenuPosition = useCallback(() => {
+    if (typeof window === "undefined" || !megaTriggerRef.current) return;
+    const triggerRect = megaTriggerRef.current.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const targetMenuWidth = ICICI_REVIEW_MODE ? 380 : 840;
+    const menuWidth = Math.min(targetMenuWidth, Math.max(300, viewportWidth - 32));
+    const minMargin = 16;
+    const maxRight = viewportWidth - minMargin - menuWidth;
+
+    // Desired center alignment under the Services trigger button
+    const triggerCenter = triggerRect.left + triggerRect.width / 2;
+    let targetLeft = triggerCenter - menuWidth / 2;
+
+    // If centering would push the left side too close to or off the screen edge
+    if (targetLeft < minMargin) {
+      let alignedLeft = minMargin;
+      if (headerContainerRef.current) {
+        const containerRect = headerContainerRef.current.getBoundingClientRect();
+        const pad = viewportWidth >= 768 ? 56 : viewportWidth >= 640 ? 32 : 16;
+        const contentLeft = containerRect.left + pad;
+        if (contentLeft >= minMargin && contentLeft <= maxRight) {
+          alignedLeft = contentLeft;
+        }
+      }
+      targetLeft = alignedLeft;
+    }
+
+    // Safety checks against screen bounds
+    if (targetLeft > maxRight) {
+      targetLeft = maxRight;
+    }
+    if (targetLeft < minMargin) {
+      targetLeft = minMargin;
+    }
+
+    // Offset relative to the trigger button's own left position
+    const offset = Math.round(targetLeft - triggerRect.left);
+    setMenuLeftOffset(offset);
+  }, []);
 
   const handleMouseEnter = (label: string) => {
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
       hoverTimeoutRef.current = null;
+    }
+    if (label === "Services") {
+      updateMenuPosition();
     }
     setHoveredCategory(label);
   };
@@ -211,11 +260,37 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     }, 140);
   };
 
+  useIsomorphicLayoutEffect(() => {
+    if (hoveredCategory === "Services") {
+      updateMenuPosition();
+    }
+  }, [hoveredCategory, updateMenuPosition]);
+
+  useEffect(() => {
+    if (!hoveredCategory) return;
+    const handleResizeOrScroll = () => {
+      if (window.innerWidth < 1024) {
+        setHoveredCategory(null);
+      } else {
+        updateMenuPosition();
+      }
+    };
+    window.addEventListener("resize", handleResizeOrScroll);
+    window.addEventListener("scroll", handleResizeOrScroll, { passive: true });
+    return () => {
+      window.removeEventListener("resize", handleResizeOrScroll);
+      window.removeEventListener("scroll", handleResizeOrScroll);
+    };
+  }, [hoveredCategory, updateMenuPosition]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
       if (
         megaMenuRef.current &&
-        !megaMenuRef.current.contains(event.target as Node)
+        !megaMenuRef.current.contains(target) &&
+        megaTriggerRef.current &&
+        !megaTriggerRef.current.contains(target)
       ) {
         setHoveredCategory(null);
       }
@@ -245,7 +320,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
           : "bg-white/90 backdrop-blur-md border-b border-slate-200/80 py-4"
       }`}
     >
-      <div className="mx-auto max-w-[1480px] px-4 sm:px-8 md:px-14">
+      <div ref={headerContainerRef} className="mx-auto max-w-[1480px] px-4 sm:px-8 md:px-14">
         <div className="flex items-center justify-between">
           {/* Brand Logo & Emblem + Back Button */}
           <div className="flex items-center gap-3 shrink-0">
@@ -267,35 +342,24 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               </button>
             )}
 
-            <Link to="/" className="flex items-center gap-3 group shrink-0">
+            <Link to="/" className="flex items-center shrink-0">
               <motion.div
-                className="relative flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-lime-50 border-2 border-lime-500/40 p-1 shadow-sm group-hover:border-lime-500 transition-all duration-300"
+                className="relative flex items-center justify-center"
                 whileHover={{ scale: 1.08, rotate: -4 }}
                 whileTap={{ scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 420, damping: 18 }}
               >
-                <img width={1600} height={900} src={branding.logo_url || "/logo.png"}
+                {/* Height is fixed and width follows the logo natural aspect
+                    ratio, so the wordmark inside the image stays legible. */}
+                <img
+                  src={branding.logo_url || "/logo.png"}
                   alt="Shafsky Aviation Services"
-                  className="h-full w-full object-contain"
+                  className="h-10 sm:h-11 w-auto object-contain"
                   onError={(e) => {
                     (e.target as HTMLElement).style.display = "none";
                   }}
                 />
               </motion.div>
-              <div className="flex flex-col">
-                <span
-                  className="text-[17px] sm:text-[19px] font-bold tracking-tight text-slate-900 group-hover:text-lime-600 transition-colors"
-                  style={display}
-                >
-                  SHAFSKY
-                </span>
-                <span
-                  className="text-[8.5px] uppercase tracking-[0.35em] text-lime-700 font-mono -mt-1 font-bold"
-                  style={mono}
-                >
-                  Aviation Services
-                </span>
-              </div>
             </Link>
           </div>
 
@@ -314,6 +378,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               return (
                 <div
                   key={item.label}
+                  ref={isMega ? megaTriggerRef : undefined}
                   className="relative py-2"
                   onMouseEnter={() => isMega && handleMouseEnter(item.label)}
                   onMouseLeave={() => isMega && handleMouseLeave()}
@@ -324,6 +389,9 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        if (!isHovered) {
+                          updateMenuPosition();
+                        }
                         setHoveredCategory(isHovered ? null : item.label);
                       }}
                       aria-expanded={isHovered}
@@ -367,7 +435,12 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                         transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
                         onMouseEnter={() => handleMouseEnter(item.label)}
                         onMouseLeave={() => handleMouseLeave()}
-                        className={`absolute top-[calc(100%-2px)] left-1/2 -translate-x-1/2 rounded-[22px] bg-white border border-[#c5a059]/25 shadow-[0_24px_65px_-12px_rgba(10,25,111,0.16),0_0_0_1px_rgba(197,160,89,0.12)] p-3.5 z-50 before:absolute before:-top-3 before:left-0 before:w-full before:h-3 before:content-[''] ${
+                        style={{
+                          left: menuLeftOffset !== null ? `${menuLeftOffset}px` : undefined,
+                        }}
+                        className={`absolute top-[calc(100%-2px)] rounded-[22px] bg-white border border-[#c5a059]/25 shadow-[0_24px_65px_-12px_rgba(10,25,111,0.16),0_0_0_1px_rgba(197,160,89,0.12)] p-3.5 z-50 before:absolute before:-top-3 before:left-0 before:w-full before:h-3 before:content-[''] ${
+                          menuLeftOffset === null ? "left-0" : ""
+                        } ${
                           ICICI_REVIEW_MODE ? "w-[380px]" : "w-[840px] max-w-[calc(100vw-32px)]"
                         }`}
                       >
@@ -400,7 +473,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                         ) : (
                           <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-stretch">
                             {/* Left Column: Refined Navigation List */}
-                            <div className="md:col-span-7 flex flex-col justify-between pr-1">
+                            <div className="md:col-span-7 min-w-0 flex flex-col justify-between pr-1">
                               <div>
                                 <div className="flex items-center justify-between pb-2 mb-1 px-2 border-b border-slate-100">
                                   <div className="flex items-center gap-2">

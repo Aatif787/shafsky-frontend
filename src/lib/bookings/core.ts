@@ -390,13 +390,156 @@ export const listMyBookings = createServerFn({ method: "GET" })
     return Array.isArray(fallback) ? fallback : fallback?.data ?? [];
   });
 
+export function normalizeGeneralBookingToBookingItem(b: any): BookingItem {
+  const serviceDate =
+    b.departureTime ||
+    b.serviceDate ||
+    b.metadataJson?.service_date ||
+    b.serviceOptions?.service_date ||
+    b.createdAt ||
+    b.created_at ||
+    new Date().toISOString();
+
+  const origin =
+    b.originCode ||
+    b.origin ||
+    b.metadataJson?.origin_label ||
+    b.serviceOptions?.origin ||
+    b.serviceOptions?.pickup_location ||
+    "Delhi / Local";
+
+  const destination =
+    b.destCode ||
+    b.destination ||
+    b.metadataJson?.destination_label ||
+    b.serviceOptions?.destination ||
+    b.serviceOptions?.dropoff_location ||
+    "Destination";
+
+  const passengerName =
+    b.passengerName ||
+    b.contact_name ||
+    "VIP Guest";
+
+  const passengerEmail =
+    b.passengerEmail ||
+    b.contact_email ||
+    "";
+
+  const passengerPhone =
+    b.passengerPhone ||
+    b.contact_phone ||
+    "";
+
+  const category = b.serviceCategory || "Ground Transport";
+  const serviceType = b.serviceType || "Chauffeured Transport";
+
+  const passengerCount = Number(
+    b.serviceOptions?.passenger_count ||
+    b.metadataJson?.details?.passenger_count ||
+    b.serviceOptions?.passengers ||
+    b.metadataJson?.details?.passengers ||
+    b.pax_adults ||
+    1
+  );
+
+  const vehicleCount = Number(
+    b.serviceOptions?.vehicle_count ||
+    b.metadataJson?.details?.vehicle_count ||
+    b.serviceOptions?.vehicleCount ||
+    b.metadataJson?.details?.vehicleCount ||
+    1
+  );
+
+  return {
+    id: String(b.id),
+    booking_ref: b.bookingRef || b.booking_ref || String(b.id),
+    contact_name: passengerName,
+    contact_email: passengerEmail,
+    contact_phone: passengerPhone,
+    company: b.company || (b.metadataJson?.details?.company) || `${category} Reservation`,
+    trip_type: "one_way",
+    origin: origin,
+    destination: destination,
+    depart_date: serviceDate,
+    pax_adults: passengerCount,
+    pax_children: 0,
+    pax_infants: 0,
+    service_type: `${category} - ${serviceType}`,
+    service_name: serviceType,
+    status: String(b.status || "pending").toLowerCase(),
+    quote_amount: Number(b.totalAmount ?? b.quote_amount ?? 0),
+    quote_currency: b.currency || "INR",
+    created_at: b.createdAt || b.created_at || new Date().toISOString(),
+    notes: b.notes || "",
+    user_id: b.userId || b.user_id || null,
+    booking_services: [
+      {
+        id: String(b.id),
+        service_code: "TRANSPORT",
+        service_name: `${category}: ${serviceType}`,
+        category: category.toLowerCase(),
+        quantity: vehicleCount,
+        unit_price: Number(b.totalAmount || 0),
+        currency: b.currency || "INR",
+      },
+    ],
+  };
+}
+
 export const listAllBookings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async (): Promise<BookingItem[]> => {
     const token = getTokenFromRequest();
-    const res = await apiGet<any>("/api/airport/bookings", token);
-    const data = Array.isArray(res) ? res : res?.data ?? [];
-    return (data ?? []) as BookingItem[];
+
+    let airportList: BookingItem[] = [];
+    try {
+      const res = await apiGet<any>("/api/airport/bookings", token);
+      const data = Array.isArray(res) ? res : res?.data ?? [];
+      airportList = Array.isArray(data) ? (data as BookingItem[]) : [];
+    } catch (e) {
+      console.warn("[listAllBookings] Airport bookings fetch error:", e);
+    }
+
+    let generalList: BookingItem[] = [];
+    try {
+      const genRes = await apiGet<any>("/api/bookings/admin/list?pageSize=100", token);
+      const items =
+        genRes?.data?.items ||
+        (Array.isArray(genRes?.data) ? genRes.data : Array.isArray(genRes) ? genRes : []);
+      if (Array.isArray(items)) {
+        generalList = items.map(normalizeGeneralBookingToBookingItem);
+      }
+    } catch (e) {
+      console.warn("[listAllBookings] General admin bookings fetch error:", e);
+    }
+
+    const seenRefs = new Set<string>();
+    const combined: BookingItem[] = [];
+
+    for (const b of airportList) {
+      const ref = b.booking_ref || b.id;
+      if (!seenRefs.has(ref)) {
+        seenRefs.add(ref);
+        combined.push(b);
+      }
+    }
+
+    for (const b of generalList) {
+      const ref = b.booking_ref || b.id;
+      if (!seenRefs.has(ref)) {
+        seenRefs.add(ref);
+        combined.push(b);
+      }
+    }
+
+    combined.sort((a, b) => {
+      const tA = new Date(a.created_at || 0).getTime();
+      const tB = new Date(b.created_at || 0).getTime();
+      return tB - tA;
+    });
+
+    return combined;
   });
 
 const StatusUpdate = z.object({

@@ -82,7 +82,7 @@ export function BusinessDetailsStep({
               type="text"
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
-              placeholder={entityType === "Individual" ? "e.g. Private Residence or Personal" : "e.g. Acme Logistics Pvt Ltd"}
+              placeholder={entityType === "Individual" ? "Private residence or personal account" : "Company or organization legal name"}
               className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-500 shadow-xs font-sans font-medium"
             />
           </div>
@@ -98,7 +98,7 @@ export function BusinessDetailsStep({
               type="text"
               value={gstVatNumber}
               onChange={(e) => setGstVatNumber(e.target.value)}
-              placeholder="e.g. 07AAAAA0000A1Z5 / GB123456789"
+              placeholder="GST or VAT registration number"
               className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-500 shadow-xs font-sans font-medium"
             />
           </div>

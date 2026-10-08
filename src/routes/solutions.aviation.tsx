@@ -822,7 +822,7 @@ function DedicatedAirCharterPage() {
                           type="text"
                           value={origin}
                           onChange={(e) => setOrigin(e.target.value)}
-                          placeholder="e.g. Delhi (DEL) / Mumbai (BOM)"
+                          placeholder="Departure airport or city"
                           required
                           className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500"
                         />
@@ -839,7 +839,7 @@ function DedicatedAirCharterPage() {
                           type="text"
                           value={destination}
                           onChange={(e) => setDestination(e.target.value)}
-                          placeholder="e.g. Goa (GOI) / Dubai (DXB)"
+                          placeholder="Arrival airport or city"
                           required
                           className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500"
                         />
@@ -979,7 +979,7 @@ function DedicatedAirCharterPage() {
                         type="text"
                         value={helipadLocation}
                         onChange={(e) => setHelipadLocation(e.target.value)}
-                        placeholder="e.g. Mahalaxmi Racecourse / Private Resort Helipad"
+                        placeholder="Helipad name, resort, or landing coordinates"
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                       />
                     </div>
@@ -994,7 +994,7 @@ function DedicatedAirCharterPage() {
                         type="text"
                         value={companyName}
                         onChange={(e) => setCompanyName(e.target.value)}
-                        placeholder="e.g. Company name, business meetings, corporate event, or tour details"
+                        placeholder="Company name, corporate event, or meeting itinerary"
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                       />
                     </div>
@@ -1019,7 +1019,7 @@ function DedicatedAirCharterPage() {
                           type="text"
                           value={patientCondition}
                           onChange={(e) => setPatientCondition(e.target.value)}
-                          placeholder="e.g. Cardiac Monitoring / Trauma / Ventilator Required"
+                          placeholder="Patient medical diagnosis and ICU equipment requirements"
                           required
                           className="w-full px-4 py-3 rounded-xl border border-red-300 text-sm font-medium focus:outline-none focus:border-red-500 bg-white"
                         />
@@ -1052,7 +1052,7 @@ function DedicatedAirCharterPage() {
                         type="text"
                         value={weddingDestination}
                         onChange={(e) => setWeddingDestination(e.target.value)}
-                        placeholder="e.g. Udaipur Palace / Excess Wedding Gifts & Wardrobe"
+                        placeholder="Wedding venue and entourage luggage details"
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                       />
                     </div>
@@ -1067,7 +1067,7 @@ function DedicatedAirCharterPage() {
                         type="text"
                         value={pilgrimageSector}
                         onChange={(e) => setPilgrimageSector(e.target.value)}
-                        placeholder="e.g. Kedarnath - Badrinath Same Day / Tirupati VIP"
+                        placeholder="Pilgrimage shrines and sector details"
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                       />
                     </div>
@@ -1082,7 +1082,7 @@ function DedicatedAirCharterPage() {
                       rows={2}
                       value={specialRequests}
                       onChange={(e) => setSpecialRequests(e.target.value)}
-                      placeholder="e.g. Specific gourmet catering, pet in cabin, armed security escort..."
+                      placeholder="Inflight catering preferences, pet travel, armed security escort, or tarmac requests..."
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                     />
                   </div>
@@ -1118,7 +1118,7 @@ function DedicatedAirCharterPage() {
                         type="text"
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
-                        placeholder="e.g. Rahul Sharma"
+                        placeholder="Full name"
                         required
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500"
                       />
@@ -1132,7 +1132,7 @@ function DedicatedAirCharterPage() {
                         type="tel"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="e.g. +91 98765 43210"
+                        placeholder="Mobile number"
                         required
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500"
                       />
@@ -1147,7 +1147,7 @@ function DedicatedAirCharterPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="e.g. contact@domain.com"
+                      placeholder="Email address"
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500"
                     />
                   </div>

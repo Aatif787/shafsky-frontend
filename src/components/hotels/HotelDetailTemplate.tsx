@@ -60,8 +60,8 @@ export function HotelDetailTemplate({
   const [checkOutDate, setCheckOutDate] = React.useState("");
   const [guestCount, setGuestCount] = React.useState("2");
 
-  const whatsAppPhone = hotel.whatsAppNumber || "919999017646";
-  const displayPhone = hotel.contactPhone || "+91 99990 17646";
+  const whatsAppPhone = hotel.whatsAppNumber || "919217522660";
+  const displayPhone = hotel.contactPhone || "+91 92175 22660";
 
   const openLightbox = (src: string, title: string) => {
     setLightboxSrc(src);
@@ -140,7 +140,16 @@ export function HotelDetailTemplate({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
           <div className="flex items-center space-x-3 sm:space-x-4">
             <button
-              onClick={() => navigate({ to: "/solutions/travel" })}
+              onClick={() => {
+                // Return to the previous page when there is history to go back
+                // to (so the browser Back button stays symmetric); fall back to
+                // the hotels listing on a direct link or fresh tab.
+                if (window.history.length > 1) {
+                  window.history.back();
+                } else {
+                  navigate({ to: "/solutions/travel" });
+                }
+              }}
               className="inline-flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#1d63b8] transition-colors cursor-pointer bg-slate-100 hover:bg-slate-200/80 px-3 py-1.5 rounded-lg"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -728,7 +737,7 @@ export function HotelDetailTemplate({
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Captain / Traveler Name"
+                    placeholder="Full name"
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
                     className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1d63b8] focus:border-transparent"
@@ -745,7 +754,7 @@ export function HotelDetailTemplate({
                   <input
                     type="tel"
                     required
-                    placeholder="+91 98765 43210"
+                    placeholder="Mobile number"
                     value={guestPhone}
                     onChange={(e) => setGuestPhone(e.target.value)}
                     className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1d63b8] focus:border-transparent"

@@ -230,7 +230,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
                     required
                     value={stay.destination}
                     onChange={(e) => updateStay({ destination: e.target.value })}
-                    placeholder="e.g. Dubai, London, Paris"
+                    placeholder="Destination city or region"
                     className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none"
                   />
                 </div>
@@ -370,7 +370,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
                   type="text"
                   value={stay.brandPreference || ""}
                   onChange={(e) => updateStay({ brandPreference: e.target.value })}
-                  placeholder="e.g. Taj, Oberoi, Four Seasons, Marriott, Hilton"
+                  placeholder="Preferred hotel or luxury brand"
                   className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none"
                 />
               </div>
@@ -383,7 +383,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
                   type="text"
                   value={guest.specialRequests || ""}
                   onChange={(e) => updateGuest({ specialRequests: e.target.value })}
-                  placeholder="e.g. Sea view, high floor, early check-in, airport transfer"
+                  placeholder="Sea view, high floor, early check-in, airport transfer, or special requests..."
                   className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none"
                 />
               </div>
@@ -405,7 +405,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
                     required
                     value={guest.fullName}
                     onChange={(e) => updateGuest({ fullName: e.target.value })}
-                    placeholder="e.g. Alexander Wright"
+                    placeholder="Full name"
                     className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
                   />
                 </div>
@@ -419,7 +419,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
                     required
                     value={guest.email}
                     onChange={(e) => updateGuest({ email: e.target.value })}
-                    placeholder="alexander@corporate.com"
+                    placeholder="Email address"
                     className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
                   />
                 </div>
@@ -433,7 +433,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
                     required
                     value={guest.phone}
                     onChange={(e) => updateGuest({ phone: e.target.value })}
-                    placeholder="+91 98765 43210"
+                    placeholder="Mobile number"
                     className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
                   />
                 </div>

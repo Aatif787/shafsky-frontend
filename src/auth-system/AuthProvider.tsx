@@ -246,15 +246,12 @@ function AuthSession({
     setProfile(prof);
   };
 
-  const syncAuthCookie = (userId: string | null) => {
-    if (typeof document === "undefined") return;
-    const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
-    const secureFlag = isSecure ? "; Secure" : "";
-    if (userId) {
-      document.cookie = `shafsky_user_id=${encodeURIComponent(userId)}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`;
-    } else {
-      document.cookie = `shafsky_user_id=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
-    }
+  // Identity is never written to a client-readable cookie. The server derives the
+  // caller from the verified Authorization header, so a browser-written cookie can
+  // no longer be mistaken for a session. Session restore uses the HttpOnly refresh
+  // cookie plus the non-authoritative shafsky_session hint.
+  const syncAuthCookie = (_userId: string | null) => {
+    // Intentionally a no-op: kept so existing call sites stay unchanged.
   };
 
   useEffect(() => {
@@ -262,12 +259,9 @@ function AuthSession({
 
     // Restore session on mount via HttpOnly Refresh Cookie -> POST /api/auth/refresh
     const restoreSession = async () => {
-      const hasCookie =
-        hasSessionHint() ||
-        (typeof document !== "undefined" &&
-          (document.cookie.includes("shafsky_user_id") ||
-            document.cookie.includes("shafsky_auth") ||
-            document.cookie.includes("shafsky_session")));
+      // Only the non-authoritative session hint gates the refresh call. The legacy
+      // shafsky_user_id / shafsky_auth cookies are no longer identity sources.
+      const hasCookie = hasSessionHint();
 
       if (!hasCookie && !getAccessToken()) {
         if (active) {
@@ -679,13 +673,12 @@ function AuthSession({
 
   const resetPasswordForEmail = async (email: string) => {
     try {
-      const redirectToUrl =
-        typeof window !== "undefined" ? `${window.location.origin}/auth?mode=reset` : "";
-
       try {
+        // The reset link is resolved server-side from trusted configuration, so no
+        // caller-supplied URL is passed here.
         const { sendPasswordResetNotificationEmail } = await import("@/lib/notifications.functions");
         await sendPasswordResetNotificationEmail({
-          data: { email, resetUrl: redirectToUrl },
+          data: { email },
         });
       } catch (emailErr) {
         console.warn("[AuthProvider] Password reset email dispatch fallback:", emailErr);

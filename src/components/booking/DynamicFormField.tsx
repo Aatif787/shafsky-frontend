@@ -233,7 +233,7 @@ export function DynamicFormField({ field, value, onChange, error }: DynamicFormF
             type="tel"
             value={value || ""}
             onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder || "98765 43210"}
+            placeholder={placeholder || "Mobile number"}
             className="flex-1 px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#7c3aed]"
           />
         </div>

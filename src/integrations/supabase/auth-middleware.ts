@@ -1,51 +1,35 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { supabaseAdmin } from "./client.server";
-import { verifyAccessToken } from "@/auth/verifyRequest.server";
+import { verifyAccessToken, getBearerFromRequest } from "@/auth/verifyRequest.server";
 
 // Valid UUID v4 regex pattern
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-function getUserIdFromCookie(cookieHeader: string | null, defaultVal: string): string {
-  if (!cookieHeader) return defaultVal;
-  const match = cookieHeader.match(/shafsky_user_id=([^;]+)/);
-  if (match && match[1]) {
-    const val = decodeURIComponent(match[1]).trim();
-    if (UUID_REGEX.test(val)) {
-      return val;
-    }
-  }
-  return defaultVal;
+/**
+ * Resolve the verified caller identity for the current request.
+ *
+ * Identity comes ONLY from the Authorization header, verified against FastAPI.
+ * Cookies are never consulted for identity: the browser can write them, so a
+ * cookie value is not a trustworthy identity source.
+ *
+ * Returns "" when the caller is unauthenticated, preserving the previous
+ * behaviour of optionalSupabaseAuth.
+ */
+async function resolveVerifiedUserId(request: Request | null): Promise<string> {
+  const token = getBearerFromRequest(request);
+  if (!token) return "";
+  const verified = await verifyAccessToken(token);
+  const id = verified?.id ? String(verified.id).trim() : "";
+  return UUID_REGEX.test(id) ? id : "";
 }
 
 export const requireSupabaseAuth = createMiddleware({ type: "function" }).server(
   async ({ next }) => {
     const { getRequest } = await import("@tanstack/react-start/server");
     const request = getRequest();
-    const cookieHeader = request ? request.headers.get("cookie") : null;
-    let userId = getUserIdFromCookie(cookieHeader, "");
+    const userId = await resolveVerifiedUserId(request);
 
-    const authHeader = request ? request.headers.get("authorization") : null;
-    if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
-      const token = authHeader.slice(7).trim();
-      if (token) {
-        try {
-          const verified = await verifyAccessToken(token);
-          if (verified?.id) {
-            userId = verified.id;
-          }
-        } catch {
-          // ignore error and proceed with validated cookie check
-        }
-      }
-    }
-
-    if (
-      !userId ||
-      userId === "guest_user" ||
-      userId === "super_admin_user" ||
-      userId === "admin_user" ||
-      !UUID_REGEX.test(userId)
-    ) {
+    if (!userId) {
       throw new Error("Unauthorized: Valid authenticated session is required.");
     }
 
@@ -63,23 +47,7 @@ export const optionalSupabaseAuth = createMiddleware({ type: "function" }).serve
   async ({ next }) => {
     const { getRequest } = await import("@tanstack/react-start/server");
     const request = getRequest();
-    const cookieHeader = request ? request.headers.get("cookie") : null;
-    let userId = getUserIdFromCookie(cookieHeader, "guest_user");
-
-    const authHeader = request ? request.headers.get("authorization") : null;
-    if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
-      const token = authHeader.slice(7).trim();
-      if (token) {
-        try {
-          const verified = await verifyAccessToken(token);
-          if (verified?.id) {
-            userId = verified.id;
-          }
-        } catch {
-          // ignore error and fallback to cookie
-        }
-      }
-    }
+    const userId = await resolveVerifiedUserId(request);
 
     return next({
       context: {
@@ -90,4 +58,3 @@ export const optionalSupabaseAuth = createMiddleware({ type: "function" }).serve
     });
   },
 );
-

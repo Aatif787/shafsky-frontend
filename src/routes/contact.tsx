@@ -288,7 +288,7 @@ function ContactPage() {
                       type="text"
                       value={form.subject}
                       onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                      placeholder="e.g. Flight inquiry or Meet & Greet question"
+                      placeholder="Subject or inquiry topic"
                       className="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
                     />
                   </div>

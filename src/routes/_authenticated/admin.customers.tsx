@@ -894,7 +894,7 @@ function CustomersManagerView() {
                         </div>
                         <div className="text-right flex flex-col items-end gap-1.5">
                           <span className="text-[10px] text-white/40 font-mono">
-                            {b.depart_date.slice(0, 10)}
+                            {(b.depart_date || "").slice(0, 10)}
                           </span>
                           <Link
                             to="/admin/bookings/$id"

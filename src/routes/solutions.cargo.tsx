@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  Car,
 } from "lucide-react";
 import { display } from "@/components/home/theme";
 import home5Img from "@/assets/homepage/home5.jpeg";
@@ -110,9 +111,18 @@ function DedicatedTransportServicePage() {
               <span>Back</span>
             </button>
 
-            <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-lime-700 uppercase tracking-widest bg-lime-50 px-3.5 py-1.5 rounded-full border border-lime-200">
-              <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
-              <span>CHAUFFEURED FLEET & TARMAC SEDANS</span>
+            <div className="flex items-center gap-2.5">
+
+              <button
+                type="button"
+                onClick={() => {
+                  document.getElementById("transport-enquiry-form")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-lime-500 hover:bg-lime-400 active:bg-lime-600 text-slate-950 font-bold text-xs font-mono uppercase tracking-wider shadow-sm transition-all cursor-pointer"
+              >
+                <Car size={13} className="stroke-[2.5]" />
+                <span>Book Fleet</span>
+              </button>
             </div>
           </div>
 
@@ -124,9 +134,6 @@ function DedicatedTransportServicePage() {
             >
               Transport <span className="text-lime-600">Service</span>
             </h1>
-            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Immaculate chauffeured tarmac sedans, Mercedes-Benz Maybach, Toyota Vellfire, and luxury passenger coaches.
-            </p>
           </div>
 
           {/* Uncropped Responsive Hero Image Slider */}
@@ -166,24 +173,6 @@ function DedicatedTransportServicePage() {
               </div>
             </div>
 
-            {/* 3-Slide Thumbnail / Pill Selectors */}
-            <div className="flex items-center justify-center gap-3 pt-1 flex-wrap">
-              {TRANSPORT_HERO_SLIDES.map((item, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setHeroSlideIndex(idx)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-mono font-bold transition cursor-pointer ${
-                    heroSlideIndex === idx
-                      ? "bg-lime-500 text-slate-950 border-lime-600 shadow-sm"
-                      : "bg-white text-slate-600 border-slate-200 hover:border-lime-400 hover:bg-lime-50/50"
-                  }`}
-                >
-                  <span className={`w-2 h-2 rounded-full ${heroSlideIndex === idx ? "bg-slate-950" : "bg-slate-300"}`} />
-                  <span>{item.label}</span>
-                </button>
-              ))}
-            </div>
           </div>
         </div>
       </section>
@@ -295,9 +284,7 @@ function DedicatedTransportServicePage() {
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────────────────────
-          6. FOOTER
-          ───────────────────────────────────────────────────────────── */}
+
       <Footer />
     </div>
   );

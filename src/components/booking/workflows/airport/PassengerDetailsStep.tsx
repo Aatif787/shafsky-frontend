@@ -228,7 +228,7 @@ export function PassengerDetailsStep({
                       void onLookupFlight();
                     }
                   }}
-                  placeholder="E.G. AI2020"
+                  placeholder="Flight number"
                   aria-invalid={Boolean(getFieldError("flight_number") || state.flightErrorMessage)}
                   className={`w-full max-w-sm px-4 py-3.5 rounded-2xl bg-slate-50 text-slate-900 text-sm font-mono font-bold uppercase transition-all outline-none border ${
                     getFieldError("flight_number") || state.flightErrorMessage
@@ -479,7 +479,7 @@ export function PassengerDetailsStep({
                     value={state.specialRequests}
                     onChange={(e) => onChange({ specialRequests: e.target.value })}
                     rows={3}
-                    placeholder="e.g. Wheelchair ramp assistance required, 4 heavy luggage bags, extra legroom buggy requested..."
+                    placeholder="Wheelchair assistance, baggage handling, buggy request, or special requests..."
                     className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-sans focus:outline-none focus:border-amber-600 focus:bg-white transition"
                   />
                 </div>

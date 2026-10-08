@@ -154,7 +154,7 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
               type="text"
               value={data.fromAirport}
               onChange={(e) => onChange({ fromAirport: e.target.value })}
-              placeholder="e.g. London Heathrow (LHR) / New Delhi (DEL)"
+              placeholder="Departure airport or city"
               className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
             />
           </div>
@@ -167,7 +167,7 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
               type="text"
               value={data.toAirport}
               onChange={(e) => onChange({ toAirport: e.target.value })}
-              placeholder="e.g. Dubai International (DXB) / Singapore (SIN)"
+              placeholder="Arrival destination or airport"
               className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
             />
           </div>

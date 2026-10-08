@@ -317,7 +317,7 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
               <FieldLabel optional>Or Specific Hotel / City Name</FieldLabel>
               <input
                 type="text"
-                placeholder="e.g. The Oberoi Amarvilas, Agra / Taj Mahal Palace, Mumbai"
+                placeholder="Hotel name or destination city"
                 value={customCity}
                 onChange={(e) => setCustomCity(e.target.value)}
                 className={INPUT_CLASSES}
@@ -418,7 +418,7 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
             <div>
               <FieldLabel optional>Special Requests / Preferences</FieldLabel>
               <textarea
-                placeholder="e.g. Early check-in (10:00 AM), high-floor room, palace garden view, airport transfer linkage, vegetarian breakfast..."
+                placeholder="Early check-in, high-floor room, view preferences, or special requests..."
                 value={specialRequests}
                 onChange={(e) => setSpecialRequests(e.target.value)}
                 className={TEXTAREA_CLASSES}
@@ -464,7 +464,7 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
                 <FieldLabel required>Lead Guest Full Name</FieldLabel>
                 <input
                   type="text"
-                  placeholder="e.g. Dr. Ananya Sen"
+                  placeholder="Full name"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
                   className={INPUT_CLASSES}
@@ -477,7 +477,7 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
                   <FieldLabel required>Mobile / WhatsApp Number</FieldLabel>
                   <input
                     type="tel"
-                    placeholder="e.g. +91 98765 43210"
+                    placeholder="Mobile number"
                     value={guestPhone}
                     onChange={(e) => setGuestPhone(e.target.value)}
                     className={INPUT_CLASSES}
@@ -488,7 +488,7 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
                   <FieldLabel optional>Email Address</FieldLabel>
                   <input
                     type="email"
-                    placeholder="e.g. ananya.sen@example.com"
+                    placeholder="Email address"
                     value={guestEmail}
                     onChange={(e) => setGuestEmail(e.target.value)}
                     className={INPUT_CLASSES}

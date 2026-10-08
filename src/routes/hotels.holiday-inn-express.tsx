@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Check,
   Phone,
-  MessageSquare,
   ShieldCheck,
   X,
   Send, Clock,
@@ -18,7 +17,7 @@ import {
   Loader2,
   Copy
 } from "lucide-react";
-import { enquiryApi } from "@/lib/api/enquiryApi";
+import { StandardHotelEnquiryForm } from "@/components/hotels/StandardHotelEnquiryForm";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/hotels/holiday-inn-express")({
@@ -223,15 +222,8 @@ function HolidayInnExpressDetailPage() {
   // Photo Lightbox State
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  // Form State & Dual Persistence
-  const [guestName, setGuestName] = useState("");
-  const [guestPhone, setGuestPhone] = useState("");
-  const [guestEmail, setGuestEmail] = useState("");
-  const [needExtraBed, setNeedExtraBed] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [bookingRef, setBookingRef] = useState("");
-  const [copiedRef, setCopiedRef] = useState(false);
+  // Only the address-copy affordance remains here; the enquiry form owns its own
+  // field state (see StandardHotelEnquiryForm).
   const [copiedAddress, setCopiedAddress] = useState(false);
 
   const handleCopyAddress = () => {
@@ -241,14 +233,6 @@ function HolidayInnExpressDetailPage() {
       );
       setCopiedAddress(true);
       setTimeout(() => setCopiedAddress(false), 2500);
-    }
-  };
-
-  const handleCopyBookingRef = () => {
-    if (typeof navigator !== "undefined" && navigator.clipboard && bookingRef) {
-      navigator.clipboard.writeText(bookingRef);
-      setCopiedRef(true);
-      setTimeout(() => setCopiedRef(false), 2500);
     }
   };
 
@@ -273,90 +257,6 @@ function HolidayInnExpressDetailPage() {
 
   const handleEnquiry = (room: RoomOption) => {
     setSelectedRoom(room);
-    setNeedExtraBed(false);
-    setSubmitted(false);
-    setIsSubmitting(false);
-    setBookingRef("");
-    setCopiedRef(false);
-  };
-
-  const handleWhatsAppBooking = (room: RoomOption) => {
-    const text = encodeURIComponent(
-      `Hello Shafsky Aviation Concierge, I would like to book a room at Holiday Inn Express Hotel IGI Airport T3, New Delhi:\n\n` +
-        `• Room: ${room.name}\n` +
-        `• Wing: ${room.wingLabel}\n` +
-        `• Duration: ${room.duration}\n` +
-        `• Rate: ${room.price} (${room.taxNote})\n` +
-        `• Note: ${room.extraBedNote || "None"}\n\n` +
-        `Please confirm real-time availability and dispatch my check-in reservation.`
-    );
-    window.open(`https://wa.me/919999017646?text=${text}`, "_blank");
-  };
-
-  const submitEnquiry = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!selectedRoom || isSubmitting) return;
-
-    setIsSubmitting(true);
-
-    const extraBedText = needExtraBed ? "Yes (+₹1,499/-)" : "No";
-    let officialRef = `SHAF-HTL-T3-${Date.now().toString().slice(-6)}`;
-
-    // Prepare payload for backend DB persistence (Dual Persistence)
-    const payload = {
-      passengerName: guestName.trim() || "Valued Guest",
-      passengerEmail: guestEmail.trim() || `${(guestName.trim() || "guest").toLowerCase().replace(/[^a-z0-9]/g, ".")}@guest.shafsky.com`,
-      passengerPhone: guestPhone.trim(),
-      serviceCategory: "Travel Support" as const,
-      serviceType: "Hotel Booking",
-      destination: "Holiday Inn Express New Delhi Int'l Airport T3",
-      serviceDate: `Transit Stay (${selectedRoom.duration})`,
-      notes: `Room: ${selectedRoom.name} | Wing: ${selectedRoom.wingLabel} | Rate: ${selectedRoom.price} (${selectedRoom.taxNote}) | Extra Bed: ${extraBedText}`,
-      details: {
-        hotel_name: "Holiday Inn Express Hotel IGI Airport T3, New Delhi",
-        room_name: selectedRoom.name,
-        wing: selectedRoom.wingLabel,
-        duration: selectedRoom.duration,
-        rate: selectedRoom.price,
-        tax_note: selectedRoom.taxNote,
-        extra_bed: needExtraBed,
-      },
-    };
-
-    try {
-      const res = await enquiryApi.submit(payload);
-      if (res.success && res.data) {
-        const returnedRef = res.data.bookingRef || (res.data as any).booking_ref;
-        if (returnedRef) {
-          officialRef = returnedRef;
-        }
-      }
-    } catch (err) {
-      console.warn("Backend enquiry API offline or not responding, using resilient local ref:", err);
-    }
-
-    setBookingRef(officialRef);
-
-    // Build structured WhatsApp message with Official Booking Ref
-    const text = encodeURIComponent(
-      `*New Hotel Room Reservation Request — Shafsky Aviation*\n` +
-      `*Reference ID: ${officialRef}*\n\n` +
-      `🏨 *Hotel:* Holiday Inn Express Hotel IGI Airport T3, New Delhi\n` +
-      `🛏️ *Room:* ${selectedRoom.name}\n` +
-      `📍 *Wing:* ${selectedRoom.wingLabel} (Inside DEL T3)\n` +
-      `⏱️ *Duration:* ${selectedRoom.duration} Package\n` +
-      `💳 *Rate:* ${selectedRoom.price} (${selectedRoom.taxNote})\n` +
-      `➕ *Extra Bed:* ${extraBedText}\n\n` +
-      `👤 *Guest Details:*\n` +
-      `• *Name:* ${guestName.trim() || "Valued Guest"}\n` +
-      `• *Phone:* ${guestPhone.trim()}\n` +
-      `• *Email:* ${guestEmail.trim() || "Not provided"}\n\n` +
-      `Please confirm real-time availability and dispatch reservation invoice.`
-    );
-
-    window.open(`https://wa.me/919999017646?text=${text}`, "_blank");
-    setIsSubmitting(false);
-    setSubmitted(true);
   };
 
   return (
@@ -368,7 +268,16 @@ function HolidayInnExpressDetailPage() {
         <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate({ to: "/solutions/travel" })}
+              onClick={() => {
+                // Return to the previous page when there is history to go back
+                // to (so the browser Back button stays symmetric); fall back to
+                // the hotels listing on a direct link or fresh tab.
+                if (window.history.length > 1) {
+                  window.history.back();
+                } else {
+                  navigate({ to: "/solutions/travel" });
+                }
+              }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all cursor-pointer"
             >
               <ArrowLeft size={14} />
@@ -402,11 +311,11 @@ function HolidayInnExpressDetailPage() {
             </div>
 
             <a
-              href="tel:+919999017646"
+              href="tel:+919217522660"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors shadow-2xs"
             >
               <Phone size={12} className="text-amber-400" />
-              <span className="hidden sm:inline">24/7 Concierge:</span> +91 99990 17646
+              <span className="hidden sm:inline">24/7 Concierge:</span> +91 92175 22660
             </a>
           </div>
         </div>
@@ -551,22 +460,6 @@ function HolidayInnExpressDetailPage() {
                   ))}
                 </div>
 
-                <div className="mt-3.5 pt-3 border-t border-amber-100 flex items-baseline justify-between">
-                  <div>
-                    <span className="text-xs text-slate-600 block font-serif">
-                      Package Rate for {activeHeroDuration}:
-                    </span>
-                    <span
-                      className="text-2xl sm:text-3xl font-serif font-bold text-slate-950 tracking-tight"
-                      style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                    >
-                      {featuredRoom.price}
-                    </span>
-                  </div>
-                  <span className="text-[11px] text-slate-500 font-sans text-right max-w-[170px] leading-tight">
-                    {featuredRoom.taxNote}
-                  </span>
-                </div>
               </div>
             </div>
 
@@ -578,15 +471,7 @@ function HolidayInnExpressDetailPage() {
                   onClick={() => handleEnquiry(featuredRoom)}
                   className="flex-1 bg-[#1d63b8] hover:bg-[#165099] text-white font-bold text-xs uppercase tracking-wider py-3 px-5 rounded-lg shadow-xs hover:shadow-sm transition-all cursor-pointer text-center"
                 >
-                  Send Request
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleWhatsAppBooking(featuredRoom)}
-                  className="inline-flex items-center justify-center p-3 bg-[#25D366] hover:bg-[#1ebd5a] text-white rounded-lg shadow-xs transition-colors cursor-pointer"
-                  title="Instant WhatsApp Confirmation"
-                >
-                  <MessageSquare size={16} />
+                  Submit Enquiry
                 </button>
               </div>
 
@@ -882,23 +767,10 @@ function HolidayInnExpressDetailPage() {
                         {room.name}
                       </h3>
                     </div>
-
-                    {/* Price Block */}
-                    <div className="text-left sm:text-right flex-shrink-0">
-                      <p
-                        className="font-serif font-bold text-slate-900 text-2xl leading-none"
-                        style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                      >
-                        {room.price}
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        {room.taxNote}
-                      </p>
-                    </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-3 border-t border-slate-100">
-                    {/* Bullets & Red Extra Bed Note */}
+                    {/* Inclusions */}
                     <div
                       className="space-y-1 text-xs sm:text-sm text-slate-700 font-serif"
                       style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
@@ -911,17 +783,6 @@ function HolidayInnExpressDetailPage() {
                         <Check size={13} className="text-emerald-600 flex-shrink-0" />
                         <span>Free Cancellation till 24 hrs before check in</span>
                       </div>
-                      {room.extraBedNote && (
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-slate-400">•</span>
-                          <span>
-                            Note:{" "}
-                            <span className="text-red-600 font-bold">
-                              {room.extraBedNote}
-                            </span>
-                          </span>
-                        </div>
-                      )}
                     </div>
 
                     {/* Actions */}
@@ -931,15 +792,7 @@ function HolidayInnExpressDetailPage() {
                         onClick={() => handleEnquiry(room)}
                         className="bg-[#1d63b8] hover:bg-[#165099] text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-lg shadow-xs hover:shadow-sm transition-all cursor-pointer"
                       >
-                        ENQUIRY ROOM
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleWhatsAppBooking(room)}
-                        className="p-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg border border-emerald-200 transition-colors cursor-pointer"
-                        title="Direct WhatsApp Confirmation"
-                      >
-                        <MessageSquare size={15} />
+                        SUBMIT ENQUIRY
                       </button>
                     </div>
                   </div>
@@ -1085,23 +938,10 @@ function HolidayInnExpressDetailPage() {
                         {room.name}
                       </h3>
                     </div>
-
-                    {/* Price Block */}
-                    <div className="text-left sm:text-right flex-shrink-0">
-                      <p
-                        className="font-serif font-bold text-slate-900 text-2xl leading-none"
-                        style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                      >
-                        {room.price}
-                      </p>
-                      <p className="text-xs text-purple-700 font-medium mt-1">
-                        {room.taxNote}
-                      </p>
-                    </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-3 border-t border-slate-100">
-                    {/* Bullets & Red Extra Bed Note */}
+                    {/* Inclusions */}
                     <div
                       className="space-y-1 text-xs sm:text-sm text-slate-700 font-serif"
                       style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
@@ -1114,17 +954,6 @@ function HolidayInnExpressDetailPage() {
                         <Check size={13} className="text-emerald-600 flex-shrink-0" />
                         <span>Free Cancellation till 24 hrs before check in</span>
                       </div>
-                      {room.extraBedNote && (
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-slate-400">•</span>
-                          <span>
-                            Note:{" "}
-                            <span className="text-red-600 font-bold">
-                              {room.extraBedNote}
-                            </span>
-                          </span>
-                        </div>
-                      )}
                     </div>
 
                     {/* Actions */}
@@ -1134,15 +963,7 @@ function HolidayInnExpressDetailPage() {
                         onClick={() => handleEnquiry(room)}
                         className="bg-[#1d63b8] hover:bg-[#165099] text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-lg shadow-xs hover:shadow-sm transition-all cursor-pointer"
                       >
-                        ENQUIRY ROOM
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleWhatsAppBooking(room)}
-                        className="p-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg border border-emerald-200 transition-colors cursor-pointer"
-                        title="Direct WhatsApp Confirmation"
-                      >
-                        <MessageSquare size={15} />
+                        SUBMIT ENQUIRY
                       </button>
                     </div>
                   </div>
@@ -1431,225 +1252,23 @@ function HolidayInnExpressDetailPage() {
 
             <div className="mb-5">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200 inline-block mb-2">
-                Express Transit Reservation • DEL Terminal 3
+                Hotel Enquiry • DEL Terminal 3
               </span>
               <h3 className="font-serif font-bold text-slate-900 text-xl sm:text-2xl leading-snug">
-                {selectedRoom.name}
+                Enquire — Holiday Inn Express
               </h3>
-              <div className="flex items-center gap-2 mt-2 text-sm text-slate-700">
-                <span className="font-bold text-slate-950 text-base">{selectedRoom.price}</span>
-                <span>•</span>
-                <span className="text-slate-500 text-xs">{selectedRoom.taxNote}</span>
-              </div>
+              <p className="text-xs text-slate-600 mt-1.5">
+                Share your stay dates and our concierge desk will confirm availability and send a
+                quotation. No payment is taken online.
+              </p>
             </div>
 
-            {submitted ? (
-              <div className="py-4 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
-                <div className="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto shadow-inner ring-8 ring-emerald-50">
-                  <CheckCircle2 size={32} className="text-emerald-600" />
-                </div>
-
-                <div>
-                  <h4 className="font-serif font-bold text-slate-900 text-xl sm:text-2xl">
-                    Reservation Request Dispatched!
-                  </h4>
-                  <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto mt-1">
-                    Your enquiry has been registered in the system and dispatched to our 24/7 airport hospitality concierge on WhatsApp.
-                  </p>
-                </div>
-
-                {/* Official Booking Reference Card */}
-                <div className="bg-slate-50 border border-slate-200/90 rounded-xl p-4 text-left space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold block">
-                        Official Booking Reference
-                      </span>
-                      <span className="font-mono text-base sm:text-lg font-black text-slate-900 tracking-wide">
-                        {bookingRef}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleCopyBookingRef}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold shadow-2xs transition-all cursor-pointer"
-                    >
-                      {copiedRef ? (
-                        <>
-                          <Check size={13} className="text-emerald-600" />
-                          <span className="text-emerald-700">Copied</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy size={13} className="text-slate-500" />
-                          <span>Copy</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  <div className="pt-2.5 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2 text-xs">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-800 border border-amber-200 font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                      Pending Concierge Confirmation
-                    </span>
-                    <span className="text-slate-500 font-mono text-[11px]">
-                      DEL Terminal 3 Airside Desk
-                    </span>
-                  </div>
-
-                  <div className="bg-white rounded-lg p-3 border border-slate-200/60 text-xs text-slate-700 space-y-1.5">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Room:</span>
-                      <span className="font-semibold text-slate-900 text-right">{selectedRoom.name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Duration & Wing:</span>
-                      <span className="font-medium text-slate-800">{selectedRoom.duration} • {selectedRoom.wingLabel}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Rate:</span>
-                      <span className="font-bold text-slate-950">{selectedRoom.price}</span>
-                    </div>
-                    {needExtraBed && (
-                      <div className="flex justify-between text-red-600">
-                        <span>Extra Bed:</span>
-                        <span className="font-medium">+₹1,499/-</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const extraBedText = needExtraBed ? "Yes (+₹1,499/-)" : "No";
-                      const text = encodeURIComponent(
-                        `*New Hotel Room Reservation Request — Shafsky Aviation*\n` +
-                        `*Reference ID: ${bookingRef}*\n\n` +
-                        `🏨 *Hotel:* Holiday Inn Express Hotel IGI Airport T3, New Delhi\n` +
-                        `🛏️ *Room:* ${selectedRoom.name}\n` +
-                        `📍 *Wing:* ${selectedRoom.wingLabel} (Inside DEL T3)\n` +
-                        `⏱️ *Duration:* ${selectedRoom.duration} Package\n` +
-                        `💳 *Rate:* ${selectedRoom.price} (${selectedRoom.taxNote})\n` +
-                        `➕ *Extra Bed:* ${extraBedText}\n\n` +
-                        `👤 *Guest Details:*\n` +
-                        `• *Name:* ${guestName.trim() || "Valued Guest"}\n` +
-                        `• *Phone:* ${guestPhone.trim()}\n` +
-                        `• *Email:* ${guestEmail.trim() || "Not provided"}\n\n` +
-                        `Please confirm real-time availability and dispatch reservation invoice.`
-                      );
-                      window.open(`https://wa.me/919999017646?text=${text}`, "_blank");
-                    }}
-                    className="flex-1 inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebd5a] text-white font-bold text-xs uppercase tracking-wider py-3 rounded-lg shadow-xs transition-colors cursor-pointer"
-                  >
-                    <MessageSquare size={15} />
-                    <span>Open WhatsApp Chat Again</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setSelectedRoom(null)}
-                    className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
-                  >
-                    Done
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={submitEnquiry} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Your Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={guestName}
-                    onChange={(e) => setGuestName(e.target.value)}
-                    placeholder="e.g. Capt. Rajesh Sharma"
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-slate-800"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Phone / WhatsApp *
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      value={guestPhone}
-                      onChange={(e) => setGuestPhone(e.target.value)}
-                      placeholder="e.g. +91 98765 43210"
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-slate-800"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Email (For Invoice)
-                    </label>
-                    <input
-                      type="email"
-                      value={guestEmail}
-                      onChange={(e) => setGuestEmail(e.target.value)}
-                      placeholder="e.g. guest@company.com"
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-slate-800"
-                    />
-                  </div>
-                </div>
-
-                {/* Extra Bed Toggle */}
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-bold text-slate-800 block">
-                      Add Extra Bed to Single Room
-                    </span>
-                    <span className="text-[11px] text-red-600 font-semibold">
-                      Extra bed in single room-1499/-
-                    </span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={needExtraBed}
-                    onChange={(e) => setNeedExtraBed(e.target.checked)}
-                    className="w-4 h-4 text-blue-600 rounded cursor-pointer"
-                  />
-                </div>
-
-                <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex-1 inline-flex items-center justify-center gap-2 bg-[#1d63b8] hover:bg-[#165099] disabled:opacity-75 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-lg shadow-xs transition-colors cursor-pointer"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 size={14} className="animate-spin" />
-                        <span>Dispatching Request...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send size={14} />
-                        <span>Send Request</span>
-                      </>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleWhatsAppBooking(selectedRoom)}
-                    className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebd5a] text-white font-bold text-xs uppercase tracking-wider px-5 py-3.5 rounded-lg shadow-xs transition-colors cursor-pointer"
-                  >
-                    <MessageSquare size={14} />
-                    <span>Direct Chat</span>
-                  </button>
-                </div>
-              </form>
-            )}
+            <StandardHotelEnquiryForm
+              hotelName="Holiday Inn Express Hotel IGI Airport T3, New Delhi"
+              whatsAppNumber="919217522660"
+              locationLabel="DEL Terminal 3"
+              onClose={() => setSelectedRoom(null)}
+            />
           </div>
         </div>
       )}

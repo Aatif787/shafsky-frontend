@@ -360,7 +360,7 @@ export function PassengerInformationExperience({
                           label="Passport Number"
                           value={passportNumber}
                           onChange={(e) => setPassportNumber && setPassportNumber(e.target.value.toUpperCase())}
-                          placeholder="Z1234567"
+                          placeholder="Passport number"
                         />
                       </div>
                       <div>
@@ -371,7 +371,7 @@ export function PassengerInformationExperience({
                           type="text"
                           value={passportNationality}
                           onChange={(e) => setPassportNationality && setPassportNationality(e.target.value)}
-                          placeholder="e.g. Indian, Emirati, British..."
+                          placeholder="Nationality"
                           className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#7c3aed] font-sans"
                         />
                       </div>
@@ -482,7 +482,7 @@ export function PassengerInformationExperience({
                       type="tel"
                       value={passengerPhone}
                       onChange={(e) => setPassengerPhone(e.target.value)}
-                      placeholder="9599087959"
+                      placeholder="Mobile number"
                       className={`w-full px-4 py-3.5 rounded-2xl bg-white border text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-all font-mono ${
                         isPhoneValid ? "border-emerald-500" : "border-slate-200 focus:border-[#7c3aed]"
                       }`}

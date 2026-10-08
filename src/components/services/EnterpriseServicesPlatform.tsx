@@ -139,7 +139,7 @@ export const EnterpriseServicesPlatform: React.FC<EnterpriseServicesPlatformProp
               <Search className="absolute left-4 h-4 w-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search services (e.g. Lounge, Ticket, Transfer)..."
+                placeholder="Search services..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full h-11 sm:h-12 rounded-2xl border border-[#e7e0d3] bg-white/90 backdrop-blur-md pl-11 pr-4 text-xs font-semibold placeholder:text-slate-400 outline-none transition focus:border-amber-600 focus:ring-4 focus:ring-amber-100 shadow-xs"

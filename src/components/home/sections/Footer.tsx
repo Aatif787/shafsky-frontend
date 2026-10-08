@@ -74,7 +74,7 @@ export function Footer() {
               <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                 About Shafsky Aviation Services
               </h3>
-              <p className="text-sm sm:text-[14.5px] text-white/95 leading-relaxed">
+              <p className="text-sm sm:text-[14.5px] text-white/95 leading-relaxed text-justify">
                 We would like to introduce ourselves as Shafsky Aviation Services
                 Pvt. Ltd. with brand name{" "}
                 <span className="text-[#cca028] font-bold">
@@ -83,11 +83,6 @@ export function Footer() {
                 . &ldquo;Welcome &amp; Assist Services&rdquo; providing Meet
                 &amp; Greet and Lounge Service to domestic and international
                 passengers.
-              </p>
-              <p className="text-xs sm:text-[13.5px] text-white/80 leading-relaxed">
-                With an aviation legacy dating back to 1986, our highly trained
-                professionals deliver personalized airport assistance, ensuring every
-                interaction reflects care, discretion, and dependable service.
               </p>
             </div>
 

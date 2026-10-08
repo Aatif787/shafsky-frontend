@@ -58,8 +58,8 @@ const HOTEL_INFO: HotelInfo = {
       distance: "Approx. 350 meters • 3-4 mins walking (Magenta Line)",
     },
   ],
-  contactPhone: "+91 99990 17646",
-  whatsAppNumber: "919999017646",
+  contactPhone: "+91 92175 22660",
+  whatsAppNumber: "919217522660",
   bookingTerms: "Standard, Delux, Luxury & Suite Rooms From ₹ 3,700 / Night (Including 12% GST)",
 };
 

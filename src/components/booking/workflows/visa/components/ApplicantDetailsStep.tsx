@@ -51,7 +51,7 @@ export function ApplicantDetailsStep({
                 type="text"
                 value={coordinatorTitle}
                 onChange={(e) => setCoordinatorTitle(e.target.value)}
-                placeholder="Enter coordinator title (e.g. Travel Manager)"
+                placeholder="Coordinator title / designation"
                 className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500"
               />
               <input

@@ -261,7 +261,11 @@ export const getCustomerMetrics = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({ customerId: z.string() }).parse(data))
   .handler(async ({ data: { customerId }, context }) => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+    const isStaff = await isStaffUser(supabase, userId);
+    if (!isStaff && userId !== customerId) {
+      throw new Error("Forbidden: Access denied");
+    }
     const { data: bookings } = await supabase
       .from("bookings")
       .select("quote_amount, origin, destination, service_type, status")
@@ -307,7 +311,11 @@ export const getCustomerPayments = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({ customerId: z.string() }).parse(data))
   .handler(async ({ data: { customerId }, context }) => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+    const isStaff = await isStaffUser(supabase, userId);
+    if (!isStaff && userId !== customerId) {
+      throw new Error("Forbidden: Access denied");
+    }
     const { data: bookings } = await supabase
       .from("bookings")
       .select("id, booking_ref, quote_amount, quote_currency, status, created_at")
@@ -356,7 +364,11 @@ export const getCustomerDocuments = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({ customerId: z.string() }).parse(data))
   .handler(async ({ data: { customerId }, context }) => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+    const isStaff = await isStaffUser(supabase, userId);
+    if (!isStaff && userId !== customerId) {
+      throw new Error("Forbidden: Access denied");
+    }
     const documents: any[] = [];
 
     const { data: bookings } = await supabase
@@ -454,7 +466,11 @@ export const uploadCustomerDocument = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data: { customerId, kind, fileName, base64Data }, context }) => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+    const isStaff = await isStaffUser(supabase, userId);
+    if (!isStaff && userId !== customerId) {
+      throw new Error("Forbidden: Access denied");
+    }
     const storagePath = `crm/documents/${customerId}/${Date.now()}-${fileName}`;
 
     try {
@@ -696,7 +712,8 @@ export const updateTicketStatus = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data: { ticketId, status, assignedAdminId }, context }) => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+    await assertStaffUser(supabase, userId);
 
     try {
       const updatePayload: Record<string, any> = { status, updated_at: new Date().toISOString() };

@@ -43,7 +43,7 @@ export function ContactSection({
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          placeholder="+91 9599087959"
+          placeholder="Mobile number"
           className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
         />
       </div>
@@ -56,7 +56,7 @@ export function ContactSection({
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="contact@example.com"
+          placeholder="Email address"
           className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
         />
       </div>

@@ -391,7 +391,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
                 <FieldLabel required>Flying From (Origin)</FieldLabel>
                 <input
                   type="text"
-                  placeholder="e.g. Delhi (DEL) / London (LHR)"
+                  placeholder="Departure airport or city"
                   value={origin}
                   onChange={(e) => setOrigin(e.target.value)}
                   className={INPUT_CLASSES}
@@ -402,7 +402,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
                 <FieldLabel required>Flying To (Destination)</FieldLabel>
                 <input
                   type="text"
-                  placeholder="e.g. Mumbai (BOM) / Dubai (DXB)"
+                  placeholder="Arrival destination or airport"
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
                   className={INPUT_CLASSES}
@@ -519,7 +519,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
             <div>
               <FieldLabel optional>Special Requests / Inflight Preferences</FieldLabel>
               <textarea
-                placeholder="e.g. Gourmet catering, airport tarmac transfer, medical staff on board, privacy preferences..."
+                placeholder="Inflight catering, tarmac transfers, passenger preferences, or special requests..."
                 value={specialRequirements}
                 onChange={(e) => setSpecialRequirements(e.target.value)}
                 className={TEXTAREA_CLASSES}
@@ -568,7 +568,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
                 <FieldLabel required>Lead Passenger / Organizer Name</FieldLabel>
                 <input
                   type="text"
-                  placeholder="e.g. Vikramaditya Singhania"
+                  placeholder="Full name"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   className={INPUT_CLASSES}
@@ -581,7 +581,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
                   <FieldLabel required>Contact Phone / WhatsApp</FieldLabel>
                   <input
                     type="tel"
-                    placeholder="e.g. +91 98765 43210"
+                    placeholder="Mobile number"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className={INPUT_CLASSES}
@@ -592,7 +592,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
                   <FieldLabel optional>Email Address</FieldLabel>
                   <input
                     type="email"
-                    placeholder="e.g. v.singhania@corp.com"
+                    placeholder="Email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={INPUT_CLASSES}
@@ -604,7 +604,7 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
                 <FieldLabel optional>Company / Organization</FieldLabel>
                 <input
                   type="text"
-                  placeholder="e.g. Singhania Global Enterprises / Private Family Office"
+                  placeholder="Company name or family office"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   className={INPUT_CLASSES}

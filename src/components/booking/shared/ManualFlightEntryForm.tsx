@@ -302,7 +302,7 @@ export function ManualFlightEntryForm({
               <Building2 className="absolute left-3 top-3 h-3.5 w-3.5 text-slate-400" />
               <input
                 type="text"
-                placeholder="e.g. Terminal 3"
+                placeholder="Terminal number"
                 value={details.terminal}
                 onChange={(e) => handleChange("terminal", e.target.value)}
                 className="w-full rounded-xl border border-gray-300 bg-white/80 pl-9 pr-3.5 py-2 text-xs text-slate-900 placeholder-gray-400 focus:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500/20"

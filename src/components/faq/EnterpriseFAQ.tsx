@@ -201,7 +201,7 @@ export function EnterpriseFAQ() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search FAQs (e.g., fast track, pet, ambulance, Maybach)..."
+            placeholder="Search FAQs by keyword or topic..."
             className="w-full pl-11 pr-10 py-3.5 rounded-2xl bg-white border border-slate-200 focus:border-emerald-500 text-sm text-slate-900 font-semibold placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 shadow-xs transition-all font-sans"
           />
           {searchQuery && (

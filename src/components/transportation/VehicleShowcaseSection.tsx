@@ -22,7 +22,7 @@ export interface VehicleShowcaseSectionProps {
  * Unifies:
  * 1. Responsive Circular Vehicle Selector Carousel (with integrated category filtering).
  * 2. Controlled-height single vehicle drive-in movement stage.
- * 3. Verified provider rate cards & booking actions.
+ * 3. Verified tariff cards & booking actions.
  */
 export const VehicleShowcaseSection: React.FC<VehicleShowcaseSectionProps> = ({
   vehicles,
@@ -130,7 +130,7 @@ export const VehicleShowcaseSection: React.FC<VehicleShowcaseSectionProps> = ({
         direction={direction}
       />
 
-      {/* 3. Dedicated Vehicle Information + Provider Pricing + Enquiry Actions (Below selector) */}
+      {/* 3. Dedicated Vehicle Information + Applicable Pricing + Enquiry Actions (Below selector) */}
       <div className="border-b border-slate-200/80">
         <VehicleDetailsSection vehicle={effectiveActiveVehicle} />
       </div>

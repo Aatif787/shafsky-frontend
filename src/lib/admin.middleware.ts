@@ -1,34 +1,19 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { isStaffUser } from "@/lib/permissions";
-import { verifyAccessToken } from "@/auth/verifyRequest.server";
-
-function getUserIdFromCookie(cookieHeader: string | null, defaultVal = "guest_user") {
-  if (!cookieHeader) return defaultVal;
-  const match = cookieHeader.match(/shafsky_user_id=([^;]+)/);
-  if (match && match[1]) return decodeURIComponent(match[1]).trim();
-  return defaultVal;
-}
+import { verifyAccessToken, getBearerFromRequest } from "@/auth/verifyRequest.server";
 
 export const requireAdminRole = createMiddleware({ type: "function" }).server(async ({ next }) => {
   const { getRequest } = await import("@tanstack/react-start/server");
   const request = getRequest();
-  const cookieHeader = request ? request.headers.get("cookie") : null;
-  let userId = getUserIdFromCookie(cookieHeader, "guest_user");
 
-  const authHeader = request ? request.headers.get("authorization") : null;
-  if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
-    const token = authHeader.slice(7).trim();
-    if (token) {
-      try {
-        const verified = await verifyAccessToken(token);
-        if (verified?.id) {
-          userId = verified.id;
-        }
-      } catch {
-        // continue
-      }
-    }
+  // Identity comes ONLY from the Authorization header, verified against FastAPI.
+  // Cookies are never trusted for identity: the browser can write them.
+  const token = getBearerFromRequest(request);
+  const verified = await verifyAccessToken(token);
+  const userId = verified?.id ? String(verified.id).trim() : "";
+  if (!userId) {
+    throw new Error("Forbidden: Admin role required");
   }
 
   const supabase = supabaseAdmin;

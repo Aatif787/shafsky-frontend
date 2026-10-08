@@ -87,13 +87,9 @@ export async function getUserRoles(
   }
 
 
-  // 3. Hardcoded UUID fallbacks (safety net)
-  if (userId === "5fcaaa44-03b2-4ca3-9547-e2f98c5b7a6a" || userId.includes("super") || userId === "super_admin_user") {
-    return ["super_admin"];
-  }
-  if (userId === "b8a6f45b-82ed-4420-93d9-64c1e9e849eb" || userId.includes("admin") || userId === "admin_user") {
-    return ["admin"];
-  }
+  // 2. Deny by default. Roles come only from the verified FastAPI identity above.
+  //    There are deliberately no hardcoded IDs or name-substring fallbacks here:
+  //    a caller-supplied identifier must never be able to mint a role.
   return ["customer"];
 }
 

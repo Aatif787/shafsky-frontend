@@ -97,6 +97,7 @@ export function TransportExperience({
 
   // Step 2: Passenger & Vehicle Specs
   const [passengers, setPassengers] = useState(2);
+  const [vehicleCount, setVehicleCount] = useState(1);
   const [luggage, setLuggage] = useState(2);
   const [flightNumber, setFlightNumber] = useState("");
   const [specialRequests, setSpecialRequests] = useState("");
@@ -168,9 +169,12 @@ export function TransportExperience({
         notes: [
           specialRequests.trim(),
           preselectedVehicle ? `Vehicle Requested: ${preselectedVehicle.name} (ID: ${preselectedVehicle.id})` : "",
+          `Fleet Units: ${vehicleCount}`,
         ].filter(Boolean).join(" | ") || undefined,
         details: {
           passengers,
+          vehicle_count: vehicleCount,
+          vehicles: vehicleCount,
           luggage,
           flight_number: flightNumber || undefined,
           category: subService,
@@ -382,7 +386,7 @@ export function TransportExperience({
                 <FieldLabel required>Pickup Location</FieldLabel>
                 <input
                   type="text"
-                  placeholder="e.g. Airport Terminal 3 / Hotel / Residence"
+                  placeholder="Airport terminal, hotel, or address"
                   value={pickup}
                   onChange={(e) => setPickup(e.target.value)}
                   className={INPUT_CLASSES}
@@ -393,7 +397,7 @@ export function TransportExperience({
                 <FieldLabel required>Drop-off Location</FieldLabel>
                 <input
                   type="text"
-                  placeholder="e.g. Aerocity / Downtown Hotel / Private Address"
+                  placeholder="Destination address or airport"
                   value={dropoff}
                   onChange={(e) => setDropoff(e.target.value)}
                   className={INPUT_CLASSES}
@@ -450,14 +454,22 @@ export function TransportExperience({
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <CounterField
                 label="Passengers"
                 sublabel="Guests traveling"
                 value={passengers}
                 onChange={setPassengers}
                 min={1}
-                max={20}
+                max={50}
+              />
+              <CounterField
+                label="Number of Vehicles"
+                sublabel="Fleet units"
+                value={vehicleCount}
+                onChange={setVehicleCount}
+                min={1}
+                max={10}
               />
               <CounterField
                 label="Luggage Pieces"
@@ -465,7 +477,7 @@ export function TransportExperience({
                 value={luggage}
                 onChange={setLuggage}
                 min={0}
-                max={20}
+                max={30}
               />
             </div>
 
@@ -473,7 +485,7 @@ export function TransportExperience({
             <div>
               <FieldLabel optional>Special Chauffeur Instructions / Notes</FieldLabel>
               <textarea
-                placeholder="e.g. English-speaking chauffeur, child car seat, extra bottled water, or tarmac gate pickup..."
+                placeholder="Flight details, child car seat, luggage, or chauffeur instructions..."
                 value={specialRequests}
                 onChange={(e) => setSpecialRequests(e.target.value)}
                 className={TEXTAREA_CLASSES}
@@ -519,7 +531,7 @@ export function TransportExperience({
                 <FieldLabel required>Lead Guest Name</FieldLabel>
                 <input
                   type="text"
-                  placeholder="e.g. Siddharth Mehra"
+                  placeholder="Full name"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
                   className={INPUT_CLASSES}
@@ -532,7 +544,7 @@ export function TransportExperience({
                   <FieldLabel required>Phone / WhatsApp Number</FieldLabel>
                   <input
                     type="tel"
-                    placeholder="e.g. +91 98765 43210"
+                    placeholder="Mobile number"
                     value={guestPhone}
                     onChange={(e) => setGuestPhone(e.target.value)}
                     className={INPUT_CLASSES}
@@ -543,7 +555,7 @@ export function TransportExperience({
                   <FieldLabel optional>Email Address</FieldLabel>
                   <input
                     type="email"
-                    placeholder="e.g. s.mehra@example.com"
+                    placeholder="Email address"
                     value={guestEmail}
                     onChange={(e) => setGuestEmail(e.target.value)}
                     className={INPUT_CLASSES}

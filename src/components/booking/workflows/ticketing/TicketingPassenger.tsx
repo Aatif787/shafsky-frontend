@@ -268,7 +268,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                 type="text"
                 value={data.companyName || ""}
                 onChange={(e) => onChange({ companyName: e.target.value })}
-                placeholder="e.g. Sterling Global Holdings"
+                placeholder="Company name"
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-emerald-200 text-slate-900 text-sm font-sans font-medium"
               />
             </div>
@@ -297,7 +297,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                 type="text"
                 value={data.employeeReference || ""}
                 onChange={(e) => onChange({ employeeReference: e.target.value })}
-                placeholder="e.g. CC-90821"
+                placeholder="Cost center or employee reference"
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-emerald-200 text-slate-900 text-sm font-mono font-bold"
               />
             </div>
@@ -323,7 +323,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                   });
                 }
               }}
-              placeholder="e.g. Lord Henry Sterling"
+              placeholder="Full name"
               className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
             />
           </div>
@@ -336,7 +336,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
               type="tel"
               value={data.phone}
               onChange={(e) => onChange({ phone: e.target.value })}
-              placeholder="+44 7700 900077"
+              placeholder="Mobile number"
               className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-mono font-bold"
             />
           </div>
@@ -516,7 +516,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                             nationality: e.target.value,
                           })
                         }
-                        placeholder="e.g. Indian, British, American"
+                        placeholder="Nationality"
                         className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
                       />
                     </div>
@@ -533,7 +533,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                             frequentFlyerNumber: e.target.value,
                           })
                         }
-                        placeholder="e.g. SQ984021"
+                        placeholder="Frequent flyer number"
                         className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm font-mono font-bold"
                       />
                     </div>
@@ -562,7 +562,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                                 passportNumber: e.target.value,
                               })
                             }
-                            placeholder="e.g. Z8492041"
+                            placeholder="Passport number"
                             className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-amber-200 text-slate-900 text-sm font-mono font-bold uppercase focus:border-amber-500"
                           />
                         </div>
@@ -595,7 +595,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                                 passportIssuingCountry: e.target.value,
                               })
                             }
-                            placeholder="e.g. India"
+                            placeholder="Issuing country"
                             className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-amber-200 text-slate-900 text-sm font-sans font-medium focus:border-amber-500"
                           />
                         </div>
@@ -656,7 +656,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
             type="text"
             value={data.dietaryRestrictions || ""}
             onChange={(e) => onChange({ dietaryRestrictions: e.target.value })}
-            placeholder="e.g. Diabetic meal, Halal, Kosher, Strict Vegan..."
+            placeholder="Dietary requirements or inflight meal preferences..."
             className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-xs font-sans font-medium"
           />
         </div>

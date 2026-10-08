@@ -1539,7 +1539,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                           setFlightFetchError(null);
                           setIsCutoffUrgent(false);
                         }}
-                        placeholder="e.g. AI101, 6E202, EK504, BA142, AIC101"
+                        placeholder="Flight number"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -1620,7 +1620,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                         type="text"
                         value={originCode}
                         onChange={(e) => setOriginCode(e.target.value.toUpperCase())}
-                        placeholder="e.g. DEL, BOM, BLR, CCU"
+                        placeholder="Airport code"
                         className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
                       />
                     )}
@@ -1639,7 +1639,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                         type="text"
                         value={destCode}
                         onChange={(e) => setDestCode(e.target.value.toUpperCase())}
-                        placeholder="e.g. DEL, BOM, BLR, CCU"
+                        placeholder="Airport code"
                         className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
                       />
                     )}
@@ -1896,7 +1896,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     type="text"
                     value={manualFlightNum}
                     onChange={(e) => setManualFlightNum(e.target.value.toUpperCase())}
-                    placeholder="e.g. AI101, 6E202, EK504"
+                    placeholder="Flight number"
                     className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase tracking-wider focus:border-lime-500 focus:outline-none"
                     required
                   />
@@ -1953,7 +1953,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                       type="text"
                       value={originCode}
                       onChange={(e) => setOriginCode(e.target.value.toUpperCase())}
-                      placeholder="e.g. DEL, BOM, BLR, CCU"
+                      placeholder="Airport code"
                       className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
                       required={direction === "arrival"}
                     />
@@ -1973,7 +1973,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                       type="text"
                       value={destCode}
                       onChange={(e) => setDestCode(e.target.value.toUpperCase())}
-                      placeholder="e.g. DEL, BOM, BLR, CCU"
+                      placeholder="Airport code"
                       className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
                       required={direction === "departure"}
                     />
@@ -2003,7 +2003,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                         type="text"
                         value={manualDepTerminal}
                         onChange={(e) => setManualDepTerminal(e.target.value)}
-                        placeholder="e.g. T3, T2, T1"
+                        placeholder="Terminal number"
                         className="w-full rounded-lg border border-slate-200 px-2 py-1.5 font-mono text-xs font-bold text-slate-900 uppercase"
                       />
                     </div>
@@ -2030,7 +2030,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                         type="text"
                         value={manualArrTerminal}
                         onChange={(e) => setManualArrTerminal(e.target.value)}
-                        placeholder="e.g. T3, T2, T1"
+                        placeholder="Terminal number"
                         className="w-full rounded-lg border border-slate-200 px-2 py-1.5 font-mono text-xs font-bold text-slate-900 uppercase"
                       />
                     </div>
@@ -2185,7 +2185,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               <textarea
                 value={specialRequests}
                 onChange={(e) => setSpecialRequests(e.target.value)}
-                placeholder="E.g. Wheelchair assistance required from aerobridge, baggage wrapping, or senior citizen assistance."
+                placeholder="Wheelchair assistance, baggage wrapping, senior citizen assistance, or special requests..."
                 rows={2}
                 className="mt-2 w-full rounded-xl border border-slate-300 p-3 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
               />
@@ -2223,7 +2223,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                       type="text"
                       value={gstCompanyName}
                       onChange={(e) => setGstCompanyName(e.target.value)}
-                      placeholder="e.g. Acme Corp Private Limited"
+                      placeholder="Company legal name"
                       className="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 font-sans text-xs font-medium text-slate-900 focus:border-lime-500 focus:outline-none"
                     />
                   </div>
@@ -2236,7 +2236,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                       maxLength={15}
                       value={gstNumber}
                       onChange={(e) => setGstNumber(e.target.value.toUpperCase().trim())}
-                      placeholder="e.g. 07AAAAA0000A1Z5"
+                      placeholder="15-digit GSTIN"
                       className="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 font-mono text-xs font-bold text-slate-900 uppercase focus:border-lime-500 focus:outline-none"
                     />
                   </div>
@@ -2249,7 +2249,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     type="text"
                     value={gstBillingAddress}
                     onChange={(e) => setGstBillingAddress(e.target.value)}
-                    placeholder="e.g. 402 Business Tower, Sector 44, Gurugram, Haryana"
+                    placeholder="Registered company billing address"
                     className="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 font-sans text-xs text-slate-900 focus:border-lime-500 focus:outline-none"
                   />
                 </div>

@@ -332,7 +332,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                   <FieldLabel required>Location / Hotel & City</FieldLabel>
                   <input
                     type="text"
-                    placeholder="e.g. The Oberoi Udaivilas, Udaipur / Taj Palace, Delhi / Dubai"
+                    placeholder="Hotel, resort, or city location"
                     value={spaLocation}
                     onChange={(e) => setSpaLocation(e.target.value)}
                     className={INPUT_CLASSES}
@@ -344,7 +344,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                     <FieldLabel required>Preferred Date & Time</FieldLabel>
                     <input
                       type="text"
-                      placeholder="e.g. 25 Oct 2026, 4:00 PM"
+                      placeholder="Preferred date and time"
                       value={spaDate}
                       onChange={(e) => setSpaDate(e.target.value)}
                       className={INPUT_CLASSES}
@@ -384,7 +384,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                   <FieldLabel required>Destination / Honeymoon Circuit</FieldLabel>
                   <input
                     type="text"
-                    placeholder="e.g. Paris & Swiss Alps / Venice & Amalfi Coast / Maldives / Udaipur"
+                    placeholder="Destination or honeymoon circuit"
                     value={tourDest}
                     onChange={(e) => setTourDest(e.target.value)}
                     className={INPUT_CLASSES}
@@ -461,7 +461,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                     <FieldLabel required>Deployment City / Location</FieldLabel>
                     <input
                       type="text"
-                      placeholder="e.g. Beverly Hills / Paris / Dubai / London / Delhi / Mumbai"
+                      placeholder="Deployment city or assignment location"
                       value={psoLocation}
                       onChange={(e) => setPsoLocation(e.target.value)}
                       className={INPUT_CLASSES}
@@ -530,7 +530,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                 <FieldLabel required>Contact Full Name</FieldLabel>
                 <input
                   type="text"
-                  placeholder="e.g. Major General K. S. Verma / S. Kapoor"
+                  placeholder="Full name"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
                   className={INPUT_CLASSES}
@@ -543,7 +543,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                   <FieldLabel required>Phone / WhatsApp Number</FieldLabel>
                   <input
                     type="tel"
-                    placeholder="e.g. +91 98765 43210"
+                    placeholder="Mobile number"
                     value={guestPhone}
                     onChange={(e) => setGuestPhone(e.target.value)}
                     className={INPUT_CLASSES}
@@ -554,7 +554,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                   <FieldLabel optional>Email Address</FieldLabel>
                   <input
                     type="email"
-                    placeholder="e.g. contact@example.com"
+                    placeholder="Email address"
                     value={guestEmail}
                     onChange={(e) => setGuestEmail(e.target.value)}
                     className={INPUT_CLASSES}
@@ -565,7 +565,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
               <div>
                 <FieldLabel optional>Additional Notes & Preferences</FieldLabel>
                 <textarea
-                  placeholder="e.g. Specific dietary requirements, security preferences, or preferred meeting point..."
+                  placeholder="Specific dietary requirements, security preferences, or preferred meeting point..."
                   value={specialNotes}
                   onChange={(e) => setSpecialNotes(e.target.value)}
                   className={TEXTAREA_CLASSES}

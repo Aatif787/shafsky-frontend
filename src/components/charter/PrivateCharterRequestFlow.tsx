@@ -492,7 +492,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
                         setSearchQuery(leg.origin);
                       }}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Airport name, city, or IATA (e.g. DEL, London)"
+                      placeholder="Airport name, city, or IATA code"
                       className="w-full bg-[#FAF8F5] border border-[#DCD5C9] rounded-xl px-4 py-2.5 text-sm text-[#1A1715] placeholder-[#A8A29E] focus:border-[#84CC16] focus:ring-1 focus:ring-[#84CC16] focus:outline-none transition-colors"
                     />
 
@@ -535,7 +535,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
                         setSearchQuery(leg.destination);
                       }}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Airport name, city, or IATA (e.g. DXB, Paris)"
+                      placeholder="Airport name, city, or IATA code"
                       className="w-full bg-[#FAF8F5] border border-[#DCD5C9] rounded-xl px-4 py-2.5 text-sm text-[#1A1715] placeholder-[#A8A29E] focus:border-[#84CC16] focus:ring-1 focus:ring-[#84CC16] focus:outline-none transition-colors"
                     />
 
@@ -846,7 +846,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
               rows={3}
               value={specialRequests}
               onChange={(e) => setSpecialRequests(e.target.value)}
-              placeholder="Tell us anything that would help us tailor your charter (e.g. dietary preferences, VIP preferences, connection timeline, luggage details)..."
+              placeholder="Dietary preferences, VIP requirements, connection timeline, luggage details, or special requests..."
               className="w-full bg-white border border-[#DCD5C9] rounded-xl p-3.5 text-xs text-[#1A1715] placeholder-[#A8A29E] focus:border-[#84CC16] focus:outline-none transition-colors"
             />
           </div>
@@ -872,7 +872,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
                 type="text"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="e.g. Lord Sterling / Sarah Jenkins"
+                placeholder="Full name"
                 className="w-full bg-white border border-[#DCD5C9] rounded-xl px-4 py-2.5 text-sm text-[#1A1715] placeholder-[#A8A29E] focus:border-[#84CC16] focus:outline-none"
               />
             </div>
@@ -885,7 +885,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="vip@domain.com"
+                placeholder="Email address"
                 className="w-full bg-white border border-[#DCD5C9] rounded-xl px-4 py-2.5 text-sm text-[#1A1715] placeholder-[#A8A29E] focus:border-[#84CC16] focus:outline-none"
               />
             </div>
@@ -910,7 +910,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="98765 43210"
+                  placeholder="Mobile number"
                   className="flex-1 bg-white border border-[#DCD5C9] rounded-xl px-4 py-2.5 text-sm text-[#1A1715] placeholder-[#A8A29E] focus:border-[#84CC16] focus:outline-none"
                 />
               </div>
@@ -922,7 +922,7 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
                 type="text"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
-                placeholder="e.g. Apex Holdings"
+                placeholder="Company or family office name"
                 className="w-full bg-white border border-[#DCD5C9] rounded-xl px-4 py-2.5 text-sm text-[#1A1715] placeholder-[#A8A29E] focus:border-[#84CC16] focus:outline-none"
               />
             </div>

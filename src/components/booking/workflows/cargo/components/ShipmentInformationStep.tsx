@@ -98,7 +98,7 @@ export function ShipmentInformationStep({
               type="text"
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
-              placeholder="e.g. Mumbai (BOM) or Factory Dock"
+              placeholder="Origin city, airport, or facility"
               className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-500 shadow-xs font-sans font-medium"
             />
           </div>
@@ -114,7 +114,7 @@ export function ShipmentInformationStep({
               type="text"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
-              placeholder="e.g. Frankfurt (FRA) or Client Warehouse"
+              placeholder="Destination city, airport, or warehouse"
               className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-500 shadow-xs font-sans font-medium"
             />
           </div>
@@ -162,7 +162,7 @@ export function ShipmentInformationStep({
           rows={3}
           value={commodityDescription}
           onChange={(e) => setCommodityDescription(e.target.value)}
-          placeholder="e.g., High-precision CNC machine parts packaged in wooden crates, requires dry handling..."
+          placeholder="Commodity details, packaging type, handling instructions..."
           className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-500 shadow-xs font-sans font-medium"
         />
       </div>
@@ -231,7 +231,7 @@ export function ShipmentInformationStep({
               type="text"
               value={estimatedWeight}
               onChange={(e) => setEstimatedWeight(e.target.value)}
-              placeholder={`e.g. 450 ${weightUnit}`}
+              placeholder={`Weight in ${weightUnit}`}
               className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-500 shadow-xs font-sans font-medium"
             />
           </div>

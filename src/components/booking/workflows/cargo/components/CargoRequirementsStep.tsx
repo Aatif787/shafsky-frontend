@@ -314,7 +314,7 @@ export function CargoRequirementsStep({
           rows={3}
           value={specialHandlingNotes}
           onChange={(e) => setSpecialHandlingNotes(e.target.value)}
-          placeholder="e.g. Tailgate truck required for pickup, fragile glass optics, no stacking permitted on crates..."
+          placeholder="Tailgate truck required for pickup, fragile items, stacking restrictions, or special instructions..."
           className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-500 shadow-xs font-sans font-medium"
         />
       </div>

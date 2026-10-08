@@ -463,7 +463,7 @@ export function QuoteBuilderModal({
                     <div className="flex flex-col sm:flex-row items-center gap-2">
                       <input
                         type="text"
-                        placeholder="Service Description (e.g. VIP Tarmac escort)"
+                        placeholder="Service description"
                         value={newItemName}
                         onChange={(e) => setNewItemName(e.target.value)}
                         className="flex-1 bg-black/40 border border-white/15 rounded text-xs px-3 py-1.5 text-white placeholder-white/30 focus:outline-none focus:border-[#5ed3ff]"

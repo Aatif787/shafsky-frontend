@@ -447,7 +447,7 @@ function BookingsManagerView() {
                   <td className="p-4">
                     <div className="flex items-center gap-1 text-white/80">
                       <Calendar className="h-3 w-3 text-white/30" />
-                      <span>{b.depart_date.slice(0, 16)}</span>
+                      <span>{(b.depart_date || "").slice(0, 16)}</span>
                     </div>
                   </td>
                   <td className="p-4">

@@ -61,8 +61,8 @@ function DashboardView() {
 
   // Dates (Today and Upcoming)
   const todayStr = new Date().toISOString().slice(0, 10);
-  const todayBookings = metrics.bookings.filter((b) => b.depart_date.startsWith(todayStr)).length;
-  const upcomingBookings = metrics.bookings.filter((b) => b.depart_date > todayStr).length;
+  const todayBookings = metrics.bookings.filter((b) => (b.depart_date || "").startsWith(todayStr)).length;
+  const upcomingBookings = metrics.bookings.filter((b) => (b.depart_date || "") > todayStr).length;
 
   // Recent contact inquiries
   const activeInquiries = metrics.messages.filter((m) => m.status === "new");

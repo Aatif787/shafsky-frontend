@@ -454,7 +454,7 @@ export default function SuperAdminView({ userId }: { userId: string }) {
                         <input
                           type="text"
                           required
-                          placeholder="e.g. MONSOON20"
+                          placeholder="Promo code"
                           value={cpCode}
                           onChange={(e) => setCpCode(e.target.value)}
                           className="w-full h-9 px-3 rounded-lg border border-black/10 bg-transparent text-xs font-semibold outline-none uppercase"

@@ -436,7 +436,7 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
               <FieldLabel optional>Flight Number (Optional / Can provide later)</FieldLabel>
               <input
                 type="text"
-                placeholder="e.g. AI-102 / 6E-205"
+                placeholder="Flight number"
                 value={flightNumber}
                 onChange={(e) => setFlightNumber(e.target.value.toUpperCase())}
                 className={INPUT_CLASSES}
@@ -450,7 +450,7 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
                   <FieldLabel>Guest / Lead Name</FieldLabel>
                   <input
                     type="text"
-                    placeholder="e.g. Rajesh Sharma"
+                    placeholder="Full name"
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
                     className={INPUT_CLASSES}
@@ -461,7 +461,7 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
                   <FieldLabel>Contact Phone Number</FieldLabel>
                   <input
                     type="tel"
-                    placeholder="e.g. +91 98765 43210"
+                    placeholder="Mobile number"
                     value={guestPhone}
                     onChange={(e) => setGuestPhone(e.target.value)}
                     className={INPUT_CLASSES}
@@ -474,7 +474,7 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
                 <FieldLabel optional>Email Address</FieldLabel>
                 <input
                   type="email"
-                  placeholder="e.g. rajesh@example.com"
+                  placeholder="Email address"
                   value={guestEmail}
                   onChange={(e) => setGuestEmail(e.target.value)}
                   className={INPUT_CLASSES}

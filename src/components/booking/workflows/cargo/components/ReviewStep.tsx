@@ -111,7 +111,7 @@ export function ReviewStep({
           email={email}
           setEmail={setEmail}
           nameLabel="Cargo Specialist Contact Person *"
-          namePlaceholder="Full Name (e.g. Marcus Vance)"
+          namePlaceholder="Full name"
         />
       </div>
 

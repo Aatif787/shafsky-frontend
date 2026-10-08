@@ -6,7 +6,7 @@ import { apiGet, apiPost, apiDelete, getTokenFromRequest } from "@/lib/FastApiCl
 import { assertPermission } from "@/lib/permissions";
 import { requireAdminRole } from "@/lib/admin.middleware";
 
-import { autoAssignBookingIfNeeded } from "./core";
+import { autoAssignBookingIfNeeded, normalizeGeneralBookingToBookingItem } from "./core";
 import type {
   BookingItem,
   AdminDashboardMetrics,
@@ -111,8 +111,27 @@ export const getSingleBooking = createServerFn({ method: "POST" })
   .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data }): Promise<BookingItem> => {
     const token = getTokenFromRequest();
-    const res = await apiGet<any>(`/api/airport/bookings/${data.id}`, token);
-    return (res?.data || res) as BookingItem;
+    try {
+      const res = await apiGet<any>(`/api/airport/bookings/${data.id}`, token);
+      const item = res?.data || res;
+      if (item && (item.id || item.booking_ref)) {
+        return item as BookingItem;
+      }
+    } catch {
+      // Not in airport bookings; fallback to general booking desk
+    }
+
+    const genRes = await apiGet<any>(`/api/bookings/${data.id}`, token);
+    const b = genRes?.data || genRes;
+    if (!b) {
+      throw new Error(`Booking ${data.id} not found.`);
+    }
+
+    if (b.contact_name && b.origin) {
+      return b as BookingItem;
+    }
+
+    return normalizeGeneralBookingToBookingItem(b);
   });
 
 export async function logAdminActionHelper(

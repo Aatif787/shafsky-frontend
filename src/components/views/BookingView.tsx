@@ -306,7 +306,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
                     type="text"
                     value={pickupCity}
                     onChange={(e) => setPickupCity(e.target.value)}
-                    placeholder="e.g. New Delhi (DEL)"
+                    placeholder="Departure city or airport"
                     className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
                   />
                 </div>
@@ -319,7 +319,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
                     type="text"
                     value={destinationCity}
                     onChange={(e) => setDestinationCity(e.target.value)}
-                    placeholder="e.g. Dubai (DXB)"
+                    placeholder="Destination city or airport"
                     className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
                   />
                 </div>
@@ -348,7 +348,7 @@ export default function BookingView({ searchParams }: BookingViewProps) {
                 email={passengerEmail}
                 setEmail={setPassengerEmail}
                 nameLabel="Lead Guest Name *"
-                namePlaceholder="e.g. Lord Henry Sterling"
+                namePlaceholder="Full name"
               />
 
               <ReviewSummary

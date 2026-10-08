@@ -41,6 +41,42 @@ export function isSupabaseConfigured(): boolean {
   return Boolean(url && key);
 }
 
+/**
+ * Warn when the Supabase URL and key belong to different projects.
+ *
+ * A key is only valid against its own project, so a mismatch means every request
+ * is rejected. That failure is otherwise silent because callers fall back to a
+ * no-op client, so name the exact mismatch loudly here.
+ *
+ * Diagnostic only: it does not throw, so a misconfigured environment keeps the
+ * same runtime behaviour it has today.
+ */
+function warnOnSupabaseProjectMismatch(url: string, key: string): void {
+  try {
+    const match = url.match(/^https:\/\/([a-z0-9-]+)\.supabase\.co/i);
+    if (!match) return;
+    const urlRef = match[1];
+    const parts = key.split(".");
+    if (parts.length !== 3) return; // opaque new-style key, cannot inspect
+    const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const padded = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
+    const json =
+      typeof atob === "function"
+        ? atob(padded)
+        : Buffer.from(padded, "base64").toString("utf8");
+    const payload = JSON.parse(json);
+    const keyRef = typeof payload?.ref === "string" ? payload.ref : null;
+    if (!keyRef || keyRef === urlRef) return;
+    console.error(
+      `[Supabase] Project mismatch: URL points at "${urlRef}" but the key belongs to "${keyRef}". `+
+        "Supabase requests will be rejected. Align VITE_SUPABASE_URL with the key, " +
+        "or swap in the key for the project the URL names.",
+    );
+  } catch {
+    // Never let a diagnostic break client construction.
+  }
+}
+
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering)
@@ -62,6 +98,8 @@ function createSupabaseClient() {
     console.warn(`[Supabase] ${message}`);
     return null;
   }
+
+  warnOnSupabaseProjectMismatch(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     global: {
