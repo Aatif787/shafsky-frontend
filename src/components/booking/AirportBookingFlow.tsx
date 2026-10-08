@@ -26,7 +26,7 @@ import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { format, parseISO, isValid } from "date-fns";
 import { ApiClient } from "@/lib/ApiClient";
 import { resolveApiUrl } from "@/lib/api/config";
-import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegistry";
+import { getAirportRegistryEntry, isIndianAirportCode, getTransitCategory } from "@/data/airportRegistry";
 import { AirlineLogo } from "./shared/AirlineLogo";
 import { IntelligentAirlineAutocomplete } from "./shared/IntelligentAirlineAutocomplete";
 import { FlightTimePicker } from "./shared/FlightTimePicker";
@@ -209,8 +209,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     let active = true;
     setIsPackagesLoading(true);
     const jt = (direction || "departure").toUpperCase();
-    const ft = (travelType || "domestic").toUpperCase();
-    const url = resolveApiUrl(`/api/airport/services?airport=${airportCode}&journey_type=${jt}&flight_type=${ft}`);
+    const transitCat = direction === "transit" && originCode && destCode ? getTransitCategory(originCode, destCode) : null;
+    const ft = (transitCat || travelType || "domestic").toUpperCase();
+    const routeParams = originCode && destCode ? `&origin=${encodeURIComponent(originCode)}&destination=${encodeURIComponent(destCode)}` : "";
+    const url = resolveApiUrl(`/api/airport/services?airport=${airportCode}&journey_type=${jt}&flight_type=${ft}${routeParams}`);
 
     fetch(url, { headers: { "Accept": "application/json" } })
       .then((res) => res.json())
@@ -237,7 +239,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     return () => {
       active = false;
     };
-  }, [airportCode, direction, travelType]);
+  }, [airportCode, direction, travelType, originCode, destCode]);
 
   // Multi-Currency State & Live Conversion
   const [selectedCurrency, setSelectedCurrency] = useState<string>(() => detectDefaultCurrency());
@@ -918,8 +920,9 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             depart_date: serviceDate,
             travel_date: serviceDate,
             flight_date: serviceDate,
-            flight_type: travelType.toUpperCase(),
-            travel_type: travelType.toUpperCase(),
+            flight_type: direction === "transit" && cleanOrigin && cleanDest ? getTransitCategory(cleanOrigin, cleanDest) : travelType.toUpperCase(),
+            travel_type: direction === "transit" && cleanOrigin && cleanDest ? getTransitCategory(cleanOrigin, cleanDest) : travelType.toUpperCase(),
+            transit_type: direction === "transit" && cleanOrigin && cleanDest ? getTransitCategory(cleanOrigin, cleanDest) : undefined,
             origin_iata: cleanOrigin,
             destination_iata: cleanDest,
             service_airport: airportCode.toUpperCase(),

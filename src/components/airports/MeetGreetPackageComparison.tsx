@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import { Crown, Check, ArrowRight, ChevronDown, ChevronUp, Sparkles, AlertCircle, RefreshCw } from "lucide-react";
+import { Crown, Check, ArrowRight, ChevronDown, ChevronUp, Sparkles, AlertCircle, RefreshCw, Lock } from "lucide-react";
 import { getAirportRegistryEntry, getTransitCategory } from "@/data/airportRegistry";
 import { ApiClient } from "@/lib/ApiClient";
 
@@ -38,6 +38,9 @@ export function MeetGreetPackageComparison({
 
   const isDel = airportCode.toUpperCase() === "DEL";
 
+  const originParam = String(bookingSearch?.origin || "").trim().toUpperCase();
+  const destParam = String(bookingSearch?.destination || "").trim().toUpperCase();
+
   const [flightType, setFlightType] = useState<"DOMESTIC" | "INTERNATIONAL">(
     () => flightFromSearch(bookingSearch)
   );
@@ -45,10 +48,8 @@ export function MeetGreetPackageComparison({
     () => journeyFromSearch(bookingSearch)
   );
   const [transitType, setTransitType] = useState<string>(() => {
-    const o = String(bookingSearch?.origin || "").trim().toUpperCase();
-    const d = String(bookingSearch?.destination || "").trim().toUpperCase();
-    if (o && d) {
-      return getTransitCategory(o, d);
+    if (originParam && destParam) {
+      return getTransitCategory(originParam, destParam);
     }
     const tt = String(bookingSearch?.transit_type || "").trim().toUpperCase();
     if (
@@ -61,6 +62,11 @@ export function MeetGreetPackageComparison({
     }
     return "DOMESTIC_DOMESTIC";
   });
+
+  const isTransitLocked = journeyType === "TRANSIT" && Boolean(originParam && destParam);
+  const lockedTransitCategory = isTransitLocked ? getTransitCategory(originParam, destParam) : null;
+  const effectiveTransitType = isTransitLocked && lockedTransitCategory ? lockedTransitCategory : transitType;
+
   const [terminal, setTerminal] = useState<string>(() => {
     if (isDel && flightFromSearch(bookingSearch) === "INTERNATIONAL") {
       return "Terminal 3";
@@ -121,10 +127,8 @@ export function MeetGreetPackageComparison({
     setLoading(true);
     setFetchError(false);
 
-    const originParam = String(bookingSearch?.origin || "").trim().toUpperCase();
-    const destParam = String(bookingSearch?.destination || "").trim().toUpperCase();
     const activeTerminal = isDel && flightType === "INTERNATIONAL" ? "Terminal 3" : terminal;
-    const flightTypeParam = journeyType === "TRANSIT" ? transitType : flightType;
+    const flightTypeParam = journeyType === "TRANSIT" ? effectiveTransitType : flightType;
     const terminalParam = journeyType !== "TRANSIT" && isDel && activeTerminal ? `&terminal=${encodeURIComponent(activeTerminal)}` : "";
     const routeParam =
       originParam && destParam
@@ -244,7 +248,7 @@ export function MeetGreetPackageComparison({
     return () => {
       isMounted = false;
     };
-  }, [airportCode, flightType, journeyType, transitType, terminal, retryTrigger, bookingSearch?.origin, bookingSearch?.destination]);
+  }, [airportCode, flightType, journeyType, effectiveTransitType, terminal, retryTrigger, originParam, destParam]);
 
   return (
     <div className="space-y-8 my-10">
@@ -363,46 +367,42 @@ export function MeetGreetPackageComparison({
           {/* Transit Type Segmented Control (Only displayed when Transit is selected) */}
           {journeyType === "TRANSIT" && (
             <div className="p-1 rounded-2xl bg-purple-50 border border-purple-200 flex flex-wrap items-center justify-center gap-1 text-xs font-mono font-bold">
-              <button
-                type="button"
-                onClick={() => setTransitType("DOMESTIC_DOMESTIC")}
-                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${transitType === "DOMESTIC_DOMESTIC"
-                    ? "bg-[#7c3aed] text-white shadow-xs"
-                    : "text-purple-900 hover:bg-purple-100"
-                  }`}
-              >
-                Domestic → Domestic
-              </button>
-              <button
-                type="button"
-                onClick={() => setTransitType("DOMESTIC_INTERNATIONAL")}
-                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${transitType === "DOMESTIC_INTERNATIONAL"
-                    ? "bg-[#7c3aed] text-white shadow-xs"
-                    : "text-purple-900 hover:bg-purple-100"
-                  }`}
-              >
-                Domestic → International
-              </button>
-              <button
-                type="button"
-                onClick={() => setTransitType("INTERNATIONAL_DOMESTIC")}
-                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${transitType === "INTERNATIONAL_DOMESTIC"
-                    ? "bg-[#7c3aed] text-white shadow-xs"
-                    : "text-purple-900 hover:bg-purple-100"
-                  }`}
-              >
-                International → Domestic
-              </button>
-              <button
-                type="button"
-                onClick={() => setTransitType("INTERNATIONAL_INTERNATIONAL")}
-                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${transitType === "INTERNATIONAL_INTERNATIONAL"
-                    ? "bg-[#7c3aed] text-white shadow-xs"
-                    : "text-purple-900 hover:bg-purple-100"
-                  }`}
-              >
-                International → International
-              </button>
+              {[
+                { id: "DOMESTIC_DOMESTIC", label: "Domestic → Domestic" },
+                { id: "DOMESTIC_INTERNATIONAL", label: "Domestic → International" },
+                { id: "INTERNATIONAL_DOMESTIC", label: "International → Domestic" },
+                { id: "INTERNATIONAL_INTERNATIONAL", label: "International → International" },
+              ].map((cat) => {
+                const isSelected = effectiveTransitType === cat.id;
+                const isDisabled = isTransitLocked && !isSelected;
+
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    disabled={isDisabled}
+                    onClick={() => {
+                      if (!isTransitLocked) {
+                        setTransitType(cat.id);
+                      }
+                    }}
+                    className={`px-3 py-1.5 rounded-xl transition-all ${
+                      isSelected
+                        ? "bg-[#7c3aed] text-white shadow-xs cursor-default"
+                        : isDisabled
+                          ? "text-purple-900/40 opacity-40 cursor-not-allowed pointer-events-none"
+                          : "text-purple-900 hover:bg-purple-100 cursor-pointer"
+                    }`}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <span>{cat.label}</span>
+                      {isSelected && isTransitLocked && (
+                        <Lock className="w-3 h-3 text-white/90 shrink-0" />
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -601,15 +601,15 @@ export function MeetGreetPackageComparison({
                                 : "arrival",
                           travel_type:
                             journeyType === "TRANSIT"
-                              ? transitType.toLowerCase()
+                              ? effectiveTransitType.toLowerCase()
                               : flightType.toLowerCase(),
                           flight_type:
                             journeyType === "TRANSIT"
-                              ? transitType
+                              ? effectiveTransitType
                               : flightType.toLowerCase(),
                           transit_type:
                             journeyType === "TRANSIT"
-                              ? transitType
+                              ? effectiveTransitType
                               : undefined,
                           terminal: (isDel && flightType === "INTERNATIONAL") ? "Terminal 3" : terminal,
                           service_id: pkg.id,

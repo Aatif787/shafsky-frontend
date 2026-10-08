@@ -27,6 +27,7 @@ const bookSearchSchema = z.object({
   journey_type: z.string().optional().catch(""),
   travel_type: z.string().optional().catch(""),
   flight_type: z.string().optional().catch(""),
+  transit_type: z.string().optional().catch(""),
   depart_date: z.string().optional().catch(""),
   service_date: z.string().optional().catch(""),
   pax_adults: z.union([z.number(), z.string()]).optional().catch(1),

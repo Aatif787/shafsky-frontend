@@ -85,4 +85,63 @@ describe("Transit Service Category Classification", () => {
       expect(transitCategory2).not.toBe(homePageToggle2.toUpperCase());
     });
   });
+
+  describe("Transit Service Locking Authority and Tamper Resistance", () => {
+    function computeTransitLockState(
+      journeyType: string,
+      origin: string,
+      destination: string,
+      clientTransitType?: string
+    ) {
+      const isTransitLocked = journeyType === "TRANSIT" && Boolean(origin && destination);
+      const lockedTransitCategory = isTransitLocked ? getTransitCategory(origin, destination) : null;
+      const effectiveTransitType = isTransitLocked && lockedTransitCategory ? lockedTransitCategory : (clientTransitType || "DOMESTIC_DOMESTIC");
+      return { isTransitLocked, lockedTransitCategory, effectiveTransitType };
+    }
+
+    it("locks Mumbai -> Delhi -> Dubai to Domestic -> International and rejects tampering", () => {
+      const state = computeTransitLockState("TRANSIT", "BOM", "DXB", "DOMESTIC_DOMESTIC");
+      expect(state.isTransitLocked).toBe(true);
+      expect(state.lockedTransitCategory).toBe("DOMESTIC_INTERNATIONAL");
+      expect(state.effectiveTransitType).toBe("DOMESTIC_INTERNATIONAL");
+    });
+
+    it("locks Mumbai -> Delhi -> Lucknow to Domestic -> Domestic and rejects tampering", () => {
+      const state = computeTransitLockState("TRANSIT", "BOM", "LKO", "INTERNATIONAL_INTERNATIONAL");
+      expect(state.isTransitLocked).toBe(true);
+      expect(state.lockedTransitCategory).toBe("DOMESTIC_DOMESTIC");
+      expect(state.effectiveTransitType).toBe("DOMESTIC_DOMESTIC");
+    });
+
+    it("locks Dubai -> Delhi -> Lucknow to International -> Domestic and rejects tampering", () => {
+      const state = computeTransitLockState("TRANSIT", "DXB", "LKO", "DOMESTIC_DOMESTIC");
+      expect(state.isTransitLocked).toBe(true);
+      expect(state.lockedTransitCategory).toBe("INTERNATIONAL_DOMESTIC");
+      expect(state.effectiveTransitType).toBe("INTERNATIONAL_DOMESTIC");
+    });
+
+    it("locks Dubai -> Delhi -> Singapore to International -> International and rejects tampering", () => {
+      const state = computeTransitLockState("TRANSIT", "DXB", "SIN", "DOMESTIC_INTERNATIONAL");
+      expect(state.isTransitLocked).toBe(true);
+      expect(state.lockedTransitCategory).toBe("INTERNATIONAL_INTERNATIONAL");
+      expect(state.effectiveTransitType).toBe("INTERNATIONAL_INTERNATIONAL");
+    });
+
+    it("does not lock Arrival or Departure services", () => {
+      const arrivalState = computeTransitLockState("ARRIVAL", "BOM", "DEL", "DOMESTIC");
+      expect(arrivalState.isTransitLocked).toBe(false);
+      expect(arrivalState.lockedTransitCategory).toBeNull();
+
+      const departureState = computeTransitLockState("DEPARTURE", "DEL", "DXB", "INTERNATIONAL");
+      expect(departureState.isTransitLocked).toBe(false);
+      expect(departureState.lockedTransitCategory).toBeNull();
+    });
+
+    it("allows category switching when browsing catalog without route endpoints", () => {
+      const state = computeTransitLockState("TRANSIT", "", "", "INTERNATIONAL_INTERNATIONAL");
+      expect(state.isTransitLocked).toBe(false);
+      expect(state.lockedTransitCategory).toBeNull();
+      expect(state.effectiveTransitType).toBe("INTERNATIONAL_INTERNATIONAL");
+    });
+  });
 });
