@@ -31,19 +31,22 @@ export function indianMobileDigits(raw: string): string {
 export function toRazorpayContact(raw: string): string {
   const trimmed = (raw || "").trim();
 
-  // Indian numbers keep the original behaviour bit-for-bit.
-  const national = indianMobileDigits(trimmed);
-  if (national) return `+91${national}`;
-
-  // Anything else: keep the dial code when the caller supplied one.
+  // An explicit "+" is authoritative: never second-guess a dial code the caller
+  // supplied. Without this shortcut, +6591234567 (Singapore) is misread as an
+  // Indian number, because the Indian rule below strips a leading "91" and then
+  // accepts the remainder as a valid mobile.
   if (trimmed.startsWith("+")) {
     const compact = trimmed.replace(/[\s().-]/g, "");
     const digits = compact.slice(1);
     return /^\d{7,15}$/.test(digits) ? `+${digits}` : "";
   }
 
-  // Bare digits: an Indian mobile would already have matched above. Fall back
-  // to a plain digit string rather than silently dropping the contact.
+  // No dial code supplied: Indian mobiles keep the historical +91 form exactly.
+  const national = indianMobileDigits(trimmed);
+  if (national) return `+91${national}`;
+
+  // Bare digits that are not an Indian mobile: pass through so the contact is
+  // not silently dropped from the checkout prefill.
   const digitsOnly = trimmed.replace(/\D/g, "");
   return /^\d{7,15}$/.test(digitsOnly) ? digitsOnly : "";
 }

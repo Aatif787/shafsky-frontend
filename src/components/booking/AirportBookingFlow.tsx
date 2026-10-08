@@ -30,6 +30,7 @@ import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegi
 import { AirlineLogo } from "./shared/AirlineLogo";
 import { IntelligentAirlineAutocomplete } from "./shared/IntelligentAirlineAutocomplete";
 import { FlightTimePicker } from "./shared/FlightTimePicker";
+import { AirportSuggestionPicker } from "./shared/AirportSuggestionPicker";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { formatFlightLookupError } from "./hooks/useAirportWorkflow";
 import { loadRazorpayScript } from "@/lib/razorpay";
@@ -807,13 +808,28 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     }
 
     if (direction === "arrival" && !cleanOrigin) {
-      toast.error("Please enter the departure airport (where your flight is departing from).");
+      toast.error("Please select or enter your departure airport (where your flight is departing from).");
       return;
     }
 
     if (direction === "departure" && !cleanDest) {
-      toast.error("Please enter the destination airport (where your flight is flying to).");
+      toast.error("Please select or enter your destination airport (where your flight is flying to).");
       return;
+    }
+
+    if (direction === "transit") {
+      if (!cleanOrigin) {
+        toast.error("Please select the inbound departure airport (where your flight is arriving from).");
+        return;
+      }
+      if (!cleanDest) {
+        toast.error("Please select the outbound destination airport (where your flight is connecting to).");
+        return;
+      }
+      if (cleanOrigin === cleanDest) {
+        toast.error("Inbound departure and outbound destination airports cannot be the same.");
+        return;
+      }
     }
 
     if (
@@ -1611,45 +1627,78 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
               {/* Route Endpoints: Origin & Destination (Shown when not auto-verified) */}
               {!isFlightVerified && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div>
-                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
-                      {direction === "arrival" ? "Flying From (Departure Airport)" : "Departure Airport"}
-                      {direction === "arrival" && <span className="text-red-500"> *</span>}
-                    </label>
-                    {direction === "departure" ? (
-                      <div className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
-                        {airportCode} ({airportCityName})
-                      </div>
-                    ) : (
-                      <input
-                        type="text"
-                        value={originCode}
-                        onChange={(e) => setOriginCode(e.target.value.toUpperCase())}
-                        placeholder="Airport code"
-                        className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
-                      />
-                    )}
+                <div className="space-y-3 pt-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        {direction === "transit"
+                          ? "Flying From (Inbound Origin)"
+                          : direction === "arrival"
+                          ? "Flying From (Departure Airport)"
+                          : "Departure Airport"}
+                        {(direction === "arrival" || direction === "transit") && <span className="text-red-500"> *</span>}
+                      </label>
+                      {direction === "departure" ? (
+                        <div className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                          {airportCode} ({airportCityName})
+                        </div>
+                      ) : (
+                        <AirportSuggestionPicker
+                          value={originCode}
+                          onChange={(code) => setOriginCode(code)}
+                          travelType={travelType}
+                          onTravelTypeChange={(newType) => setTravelType(newType)}
+                          direction={direction}
+                          serviceAirportCode={airportCode}
+                          placeholder={
+                            direction === "transit"
+                              ? "Select inbound departure airport"
+                              : "Select departure airport"
+                          }
+                          required={direction === "arrival" || direction === "transit"}
+                        />
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        {direction === "transit"
+                          ? "Flying To (Connecting Destination)"
+                          : direction === "departure"
+                          ? "Flying To (Destination Airport)"
+                          : "Arrival Service Airport"}
+                        {(direction === "departure" || direction === "transit") && <span className="text-red-500"> *</span>}
+                      </label>
+                      {direction === "arrival" ? (
+                        <div className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                          {airportCode} ({airportCityName})
+                        </div>
+                      ) : (
+                        <AirportSuggestionPicker
+                          value={destCode}
+                          onChange={(code) => setDestCode(code)}
+                          travelType={travelType}
+                          onTravelTypeChange={(newType) => setTravelType(newType)}
+                          direction={direction}
+                          serviceAirportCode={airportCode}
+                          placeholder={
+                            direction === "transit"
+                              ? "Select connecting destination airport"
+                              : "Select destination airport"
+                          }
+                          required={direction === "departure" || direction === "transit"}
+                        />
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
-                      {direction === "departure" ? "Flying To (Destination Airport)" : "Arrival Service Airport"}
-                      {direction === "departure" && <span className="text-red-500"> *</span>}
-                    </label>
-                    {direction === "arrival" ? (
-                      <div className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+
+                  {direction === "transit" && (
+                    <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-[11px] font-mono text-slate-600 flex items-center justify-between">
+                      <span className="font-bold">Transit Service Airport:</span>
+                      <span className="font-bold text-slate-900 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
                         {airportCode} ({airportCityName})
-                      </div>
-                    ) : (
-                      <input
-                        type="text"
-                        value={destCode}
-                        onChange={(e) => setDestCode(e.target.value.toUpperCase())}
-                        placeholder="Airport code"
-                        className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
-                      />
-                    )}
-                  </div>
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1944,47 +1993,78 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               </div>
 
               {/* Row: Flight Route (Origin & Destination) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    {direction === "arrival" ? "Flying From (Departure Airport)" : "Departure Airport"}
-                    {direction === "arrival" && <span className="text-red-500"> *</span>}
-                  </label>
-                  {direction === "departure" ? (
-                    <div className="h-11 rounded-xl border border-slate-200 bg-slate-100/70 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
-                      {airportCode} ({airportCityName})
-                    </div>
-                  ) : (
-                    <input
-                      type="text"
-                      value={originCode}
-                      onChange={(e) => setOriginCode(e.target.value.toUpperCase())}
-                      placeholder="Airport code"
-                      className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
-                      required={direction === "arrival"}
-                    />
-                  )}
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      {direction === "transit"
+                        ? "Flying From (Inbound Origin)"
+                        : direction === "arrival"
+                        ? "Flying From (Departure Airport)"
+                        : "Departure Airport"}
+                      {(direction === "arrival" || direction === "transit") && <span className="text-red-500"> *</span>}
+                    </label>
+                    {direction === "departure" ? (
+                      <div className="h-11 rounded-xl border border-slate-200 bg-slate-100/70 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                        {airportCode} ({airportCityName})
+                      </div>
+                    ) : (
+                      <AirportSuggestionPicker
+                        value={originCode}
+                        onChange={(code) => setOriginCode(code)}
+                        travelType={travelType}
+                        onTravelTypeChange={(newType) => setTravelType(newType)}
+                        direction={direction}
+                        serviceAirportCode={airportCode}
+                        placeholder={
+                          direction === "transit"
+                            ? "Select inbound departure airport"
+                            : "Select departure airport"
+                        }
+                        required={direction === "arrival" || direction === "transit"}
+                      />
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      {direction === "transit"
+                        ? "Flying To (Connecting Destination)"
+                        : direction === "departure"
+                        ? "Flying To (Destination Airport)"
+                        : "Arrival Service Airport"}
+                      {(direction === "departure" || direction === "transit") && <span className="text-red-500"> *</span>}
+                    </label>
+                    {direction === "arrival" ? (
+                      <div className="h-11 rounded-xl border border-slate-200 bg-slate-100/70 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+                        {airportCode} ({airportCityName})
+                      </div>
+                    ) : (
+                      <AirportSuggestionPicker
+                        value={destCode}
+                        onChange={(code) => setDestCode(code)}
+                        travelType={travelType}
+                        onTravelTypeChange={(newType) => setTravelType(newType)}
+                        direction={direction}
+                        serviceAirportCode={airportCode}
+                        placeholder={
+                          direction === "transit"
+                            ? "Select connecting destination airport"
+                            : "Select destination airport"
+                        }
+                        required={direction === "departure" || direction === "transit"}
+                      />
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    {direction === "departure" ? "Flying To (Destination Airport)" : "Arrival Service Airport"}
-                    {direction === "departure" && <span className="text-red-500"> *</span>}
-                  </label>
-                  {direction === "arrival" ? (
-                    <div className="h-11 rounded-xl border border-slate-200 bg-slate-100/70 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
+
+                {direction === "transit" && (
+                  <div className="rounded-xl border border-slate-200 bg-slate-100/70 px-3 py-2 text-[11px] font-mono text-slate-600 flex items-center justify-between">
+                    <span className="font-bold">Transit Service Airport:</span>
+                    <span className="font-bold text-slate-900 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
                       {airportCode} ({airportCityName})
-                    </div>
-                  ) : (
-                    <input
-                      type="text"
-                      value={destCode}
-                      onChange={(e) => setDestCode(e.target.value.toUpperCase())}
-                      placeholder="Airport code"
-                      className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase placeholder:normal-case placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
-                      required={direction === "departure"}
-                    />
-                  )}
-                </div>
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Row: Departure Time & Arrival Time */}

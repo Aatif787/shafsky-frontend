@@ -90,24 +90,19 @@ export async function getDialCountries(): Promise<DialCountry[]> {
  * The fallback is a single documented default, not a country table: the list
  * itself always comes from libphonenumber-js metadata.
  */
+/**
+ * The default dial code is always India (+91).
+ *
+ * Deliberately NOT derived from the browser locale: `Intl.Locale("zh")
+ * .maximize().region` resolves to "CN", so any Chinese-language browser
+ * silently opened on +86 — wrong for this business and confusing for
+ * customers. A fixed default is predictable and the user can still change it.
+ */
+export const DEFAULT_COUNTRY: CountryCode = "IN";
+
+/** Returns the default country for the picker. Always India. */
 export async function detectDefaultCountry(): Promise<CountryCode> {
-  const FALLBACK = "IN" as CountryCode;
-  try {
-    if (typeof navigator === "undefined") return FALLBACK;
-    const meta = await loadPhoneMeta();
-    const all = meta.getCountries();
-    const locales = [navigator.language, ...(navigator.languages || [])];
-    for (const loc of locales) {
-      if (!loc) continue;
-      const region = new Intl.Locale(loc).maximize().region;
-      if (region && all.includes(region)) {
-        return region as CountryCode;
-      }
-    }
-  } catch {
-    // Locale data unavailable; fall through.
-  }
-  return FALLBACK;
+  return DEFAULT_COUNTRY;
 }
 
 /**
@@ -206,7 +201,7 @@ export function PhoneInput({
 }: PhoneInputProps) {
   // Metadata is fetched on demand; the picker renders once it is available.
   const [countries, setCountries] = useState<DialCountry[]>([]);
-  const [country, setCountry] = useState<CountryCode>(defaultCountry || "IN");
+  const [country, setCountry] = useState<CountryCode>(defaultCountry || DEFAULT_COUNTRY);
   const [national, setNational] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
