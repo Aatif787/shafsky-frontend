@@ -171,8 +171,10 @@ export interface PhoneInputProps {
   defaultCountry?: CountryCode;
   placeholder?: string;
   className?: string;
+  style?: React.CSSProperties;
   /** Classes for the surrounding wrapper. */
   wrapperClassName?: string;
+  wrapperStyle?: React.CSSProperties;
   id?: string;
   required?: boolean;
   name?: string;
@@ -192,7 +194,9 @@ export function PhoneInput({
   defaultCountry,
   placeholder = "Mobile number",
   className,
+  style,
   wrapperClassName,
+  wrapperStyle,
   id,
   required,
   name,
@@ -277,7 +281,11 @@ export function PhoneInput({
   };
 
   return (
-    <div ref={wrapRef} className={`relative flex w-full min-w-0 ${wrapperClassName || ""}`}>
+    <div
+      ref={wrapRef}
+      style={wrapperStyle}
+      className={`relative flex w-full min-w-0 ${wrapperClassName || ""}`}
+    >
       <button
         type="button"
         disabled={disabled}
@@ -285,12 +293,26 @@ export function PhoneInput({
         aria-label="Select country code"
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex shrink-0 items-center self-stretch gap-1.5 rounded-l-xl border border-r-0 border-slate-300 bg-slate-50 px-2.5 sm:px-3 text-xs sm:text-sm text-slate-900 hover:bg-slate-100 disabled:opacity-60 focus:outline-none transition"
+        style={{
+          paddingLeft: "clamp(8px, 1.2vw, 12px)",
+          paddingRight: "clamp(8px, 1.2vw, 12px)",
+          fontSize: "clamp(11px, 1.1vw, 13px)",
+        }}
+        className="flex shrink-0 items-center self-stretch gap-1.5 rounded-l-xl border border-r-0 border-slate-300 bg-slate-50 text-slate-900 hover:bg-slate-100 disabled:opacity-60 focus:outline-none transition"
       >
-        <span aria-hidden="true" className="text-base leading-none">
+        <span
+          aria-hidden="true"
+          style={{ fontSize: "clamp(13px, 1.3vw, 16px)" }}
+          className="leading-none"
+        >
           {selected?.flag}
         </span>
-        <span className="font-mono text-xs">{selected?.dial}</span>
+        <span
+          style={{ fontSize: "clamp(11px, 1.1vw, 12px)" }}
+          className="font-mono font-medium"
+        >
+          {selected?.dial}
+        </span>
         <svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" className="opacity-60">
           <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="3" />
         </svg>
@@ -310,6 +332,13 @@ export function PhoneInput({
           void emit(country, e.target.value);
         }}
         placeholder={placeholder}
+        style={{
+          fontSize: "clamp(12px, 1.1vw, 13.5px)",
+          paddingLeft: "clamp(10px, 1.2vw, 14px)",
+          paddingRight: "clamp(10px, 1.2vw, 14px)",
+          minWidth: 0,
+          ...style,
+        }}
         className={`min-w-0 flex-1 ${className || ""}`}
         {...rest}
       />
@@ -317,7 +346,11 @@ export function PhoneInput({
       {open && (
         <div
           role="listbox"
-          className="absolute left-0 top-full z-50 mt-1 max-h-72 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl"
+          style={{
+            width: "clamp(260px, 85vw, 300px)",
+            maxWidth: "calc(100vw - 2rem)",
+          }}
+          className="absolute left-0 top-full z-50 mt-1 max-h-72 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl"
         >
           <div className="border-b border-slate-100 p-2">
             <input
