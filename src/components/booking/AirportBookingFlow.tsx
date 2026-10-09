@@ -4,6 +4,7 @@ import { format, parseISO, isValid } from "date-fns";
 import { resolveApiUrl } from "@/lib/api/config";
 import {
   getAirportRegistryEntry,
+  getTransitCategory,
   getRouteFlightCategory,
   AIRPORT_REGISTRY,
 } from "@/data/airportRegistry";
@@ -137,18 +138,6 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     return todayStart;
   }, [serviceDate, todayStart]);
 
-  const handleDateChange = (newDate: Date | undefined) => {
-    if (!newDate) return;
-    const formatted = format(newDate, "yyyy-MM-dd");
-    setServiceDate(formatted);
-    flightVerification.setIsFlightVerified(false);
-    flightVerification.setVerifiedFlight(null);
-    flightVerification.setFlightFetchError(null);
-    flightVerification.setIsCutoffUrgent(false);
-    setDatePopoverOpen(false);
-    setManualDatePopoverOpen(false);
-  };
-
   // Connecting Flight (Leg 2) Date State for Transit
   const [serviceDate2, setServiceDate2] = useState<string>(() => {
     const rawParam2 = String(searchParams?.depart_date_2 || searchParams?.service_date_2 || searchParams?.departDate2 || "").trim();
@@ -170,6 +159,35 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     }
     return todayStart;
   }, [serviceDate2, todayStart]);
+
+  // 2. Flight Verification Hook
+  const flightVerification = useFlightVerification({
+    searchParams,
+    rawAirportCode,
+    airportCode,
+    direction,
+    travelType,
+    setTravelType,
+    initialTravelType,
+    serviceDate,
+    serviceDate2,
+    originCode,
+    setOriginCode,
+    destCode,
+    setDestCode,
+  });
+
+  const handleDateChange = (newDate: Date | undefined) => {
+    if (!newDate) return;
+    const formatted = format(newDate, "yyyy-MM-dd");
+    setServiceDate(formatted);
+    flightVerification.setIsFlightVerified(false);
+    flightVerification.setVerifiedFlight(null);
+    flightVerification.setFlightFetchError(null);
+    flightVerification.setIsCutoffUrgent(false);
+    setDatePopoverOpen(false);
+    setManualDatePopoverOpen(false);
+  };
 
   const handleDateChange2 = (newDate: Date | undefined) => {
     if (!newDate) return;
@@ -205,7 +223,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     let active = true;
     setIsPackagesLoading(true);
     const jt = (direction || "departure").toUpperCase();
-    const transitCat = direction === "transit" && originCode && destCode ? getRouteFlightCategory(originCode, destCode) : null;
+    const transitCat = direction === "transit" && originCode && destCode ? getTransitCategory(originCode, destCode) : null;
     const ft = (transitCat || travelType || "domestic").toUpperCase();
     const routeParams = originCode && destCode ? `&origin=${encodeURIComponent(originCode)}&destination=${encodeURIComponent(destCode)}` : "";
     const url = resolveApiUrl(`/api/airport/services?airport=${airportCode}&journey_type=${jt}&flight_type=${ft}${routeParams}`);
@@ -298,23 +316,6 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   const billablePax = paxAdults;
   const baseInrTotalPrice = numericUnitPrice * billablePax;
   const convertedUnitPrice = useMemo(() => convertFromINR(numericUnitPrice, selectedCurrency), [numericUnitPrice, selectedCurrency]);
-
-  // 2. Flight Verification Hook
-  const flightVerification = useFlightVerification({
-    searchParams,
-    rawAirportCode,
-    airportCode,
-    direction,
-    travelType,
-    setTravelType,
-    initialTravelType,
-    serviceDate,
-    serviceDate2,
-    originCode,
-    setOriginCode,
-    destCode,
-    setDestCode,
-  });
 
   // Sync multi-service availability whenever route, date, passengers, or selections change
   useEffect(() => {
