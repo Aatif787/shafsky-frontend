@@ -142,6 +142,7 @@ export async function apiAuthRefresh(): Promise<{ data?: AuthResponseData; error
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include", // Sends HttpOnly refreshToken cookie automatically
+      body: JSON.stringify({}),
     });
 
     if (!res.ok) {
@@ -173,6 +174,7 @@ export async function apiAuthLogout(token?: string): Promise<{ success: boolean;
       method: "POST",
       headers,
       credentials: "include",
+      body: JSON.stringify({}),
     });
 
     if (!res.ok) {

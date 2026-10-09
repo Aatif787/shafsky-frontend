@@ -31,13 +31,24 @@ export function hasSessionHint(): boolean {
 export function setSessionHint(present: boolean): void {
   if (typeof document === "undefined") return;
   const secure = typeof window !== "undefined" && window.location.protocol === "https:" ? "; Secure" : "";
+  const domain = typeof window !== "undefined" ? window.location.hostname : "";
+  
+  let domainStr = "";
+  if (domain && domain.includes(".")) {
+    const parts = domain.split(".");
+    // If it's a subdomain like "app.shafskyaviation.com", we want to clear ".shafskyaviation.com"
+    domainStr = `; domain=.${parts.slice(-2).join(".")}`;
+  }
+
   if (present) {
     document.cookie = `${SESSION_HINT_COOKIE}=1; path=/; max-age=31536000; SameSite=Lax${secure}`;
   } else {
-    document.cookie = `${SESSION_HINT_COOKIE}=; path=/; max-age=0; SameSite=Lax${secure}`;
-    // Clear legacy identity cookies only when logging out or invalidating session
-    for (const name of LEGACY_HINT_COOKIES) {
+    const cookiesToClear = [SESSION_HINT_COOKIE, ...LEGACY_HINT_COOKIES];
+    for (const name of cookiesToClear) {
       document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax${secure}`;
+      if (domainStr) {
+        document.cookie = `${name}=; path=/; max-age=0${domainStr}; SameSite=Lax${secure}`;
+      }
     }
   }
 }
