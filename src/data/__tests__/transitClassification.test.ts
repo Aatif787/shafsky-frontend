@@ -215,4 +215,94 @@ describe("Transit Service Category Classification", () => {
       expect(categoryDEL).toBe(categoryBLR);
     });
   });
+
+  describe("Airport Classifiability and Direct Access Transit Validation", () => {
+    it("isAirportClassifiable accepts valid 3-letter uppercase IATA codes and trims whitespace", async () => {
+      const { isAirportClassifiable } = await import("@/data/airportRegistry");
+      expect(isAirportClassifiable("DEL")).toBe(true);
+      expect(isAirportClassifiable("BOM")).toBe(true);
+      expect(isAirportClassifiable("DXB")).toBe(true);
+      expect(isAirportClassifiable("SIN")).toBe(true);
+      expect(isAirportClassifiable(" lhr ")).toBe(true);
+    });
+
+    it("isAirportClassifiable rejects empty, malformed, or non-IATA codes safely", async () => {
+      const { isAirportClassifiable } = await import("@/data/airportRegistry");
+      expect(isAirportClassifiable("")).toBe(false);
+      expect(isAirportClassifiable(null)).toBe(false);
+      expect(isAirportClassifiable(undefined)).toBe(false);
+      expect(isAirportClassifiable("IN")).toBe(false);
+      expect(isAirportClassifiable("DELHI")).toBe(false);
+      expect(isAirportClassifiable("123")).toBe(false);
+      expect(isAirportClassifiable("D1L")).toBe(false);
+      expect(isAirportClassifiable("DE#")).toBe(false);
+    });
+
+    it("distinguishes home booking panel flow vs direct airport page access", () => {
+      // Home flow has from_hero=true with origin and destination populated
+      const isHomeFlow = (bookingSearch: any) =>
+        Boolean(
+          bookingSearch?.from_hero === "true" &&
+          (bookingSearch?.direction === "transit" || bookingSearch?.direction === "connection") &&
+          bookingSearch?.origin &&
+          bookingSearch?.destination
+        );
+
+      expect(isHomeFlow({ from_hero: "true", direction: "transit", origin: "BOM", destination: "DXB" })).toBe(true);
+      expect(isHomeFlow({ from_hero: "true", direction: "connection", origin: "BOM", destination: "DXB" })).toBe(true);
+
+      // Direct airport page visit (e.g. /airports/DEL) has empty/missing params
+      expect(isHomeFlow({})).toBe(false);
+      expect(isHomeFlow({ from_hero: "true" })).toBe(false);
+      expect(isHomeFlow({ from_hero: "true", direction: "transit", origin: "BOM" })).toBe(false);
+      expect(isHomeFlow({ direction: "transit" })).toBe(false);
+    });
+
+    it("validates direct transit route and detects category match vs mismatch correctly", () => {
+      function validateDirectRoute(
+        origin: string,
+        hub: string,
+        destination: string,
+        selectedPackageCategory: string
+      ) {
+        if (!origin || !destination) {
+          return { status: "INCOMPLETE", error: "Please specify both origin and destination" };
+        }
+        if (origin.toUpperCase() === destination.toUpperCase() ||
+            origin.toUpperCase() === hub.toUpperCase() ||
+            destination.toUpperCase() === hub.toUpperCase()) {
+          return { status: "INVALID_ROUTE", error: "Airports in the transit journey must all be distinct" };
+        }
+        const calculatedCategory = getTransitCategory(origin, destination);
+        if (calculatedCategory === selectedPackageCategory) {
+          return { status: "MATCH", calculatedCategory };
+        }
+        return {
+          status: "MISMATCH",
+          calculatedCategory,
+          selectedCategory: selectedPackageCategory,
+          error: `Route is ${calculatedCategory} but package is ${selectedPackageCategory}`
+        };
+      }
+
+      // Valid match: Domestic -> International package with BOM -> DEL -> DXB
+      const matchResult = validateDirectRoute("BOM", "DEL", "DXB", "DOMESTIC_INTERNATIONAL");
+      expect(matchResult.status).toBe("MATCH");
+      expect(matchResult.calculatedCategory).toBe("DOMESTIC_INTERNATIONAL");
+
+      // Mismatch: User selected Domestic -> International, but route is BOM -> DEL -> LKO (Domestic -> Domestic)
+      const mismatchResult = validateDirectRoute("BOM", "DEL", "LKO", "DOMESTIC_INTERNATIONAL");
+      expect(mismatchResult.status).toBe("MISMATCH");
+      expect(mismatchResult.calculatedCategory).toBe("DOMESTIC_DOMESTIC");
+
+      // Invalid route: Origin equals transit hub
+      const invalidResult = validateDirectRoute("DEL", "DEL", "DXB", "DOMESTIC_INTERNATIONAL");
+      expect(invalidResult.status).toBe("INVALID_ROUTE");
+
+      // Incomplete: Missing destination
+      const incompleteResult = validateDirectRoute("BOM", "DEL", "", "DOMESTIC_DOMESTIC");
+      expect(incompleteResult.status).toBe("INCOMPLETE");
+    });
+  });
 });
+

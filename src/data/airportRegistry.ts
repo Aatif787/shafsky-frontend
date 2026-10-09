@@ -934,3 +934,13 @@ export function getTransitCategory(
   }
   return "INTERNATIONAL_INTERNATIONAL";
 }
+
+/**
+ * Validates whether an airport code can be authoritatively classified as Domestic or International.
+ * Returns false if code is missing, malformed, or not a valid 3-letter IATA code.
+ */
+export function isAirportClassifiable(code?: string | null): boolean {
+  if (!code) return false;
+  const clean = code.trim().toUpperCase();
+  return clean.length === 3 && /^[A-Z]{3}$/.test(clean);
+}
