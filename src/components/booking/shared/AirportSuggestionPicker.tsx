@@ -231,10 +231,10 @@ export function AirportSuggestionPicker({
 
     // Auto switch travelType if an international airport was picked on domestic or vice versa
     const isDomesticAirport = isIndianAirportCode(airport.code);
-    if (isDomesticAirport && travelType !== "domestic") {
-      onTravelTypeChange?.("domestic");
-    } else if (!isDomesticAirport && travelType !== "international") {
+    if (!isDomesticAirport && travelType !== "international") {
       onTravelTypeChange?.("international");
+    } else if (isDomesticAirport && cleanServiceCode && isIndianAirportCode(cleanServiceCode) && travelType !== "domestic") {
+      onTravelTypeChange?.("domestic");
     }
 
     setSearchQuery("");
@@ -248,17 +248,17 @@ export function AirportSuggestionPicker({
     onChange(cleanCode, resolved || undefined);
 
     const isDomesticAirport = isIndianAirportCode(cleanCode);
-    if (isDomesticAirport && travelType !== "domestic") {
-      onTravelTypeChange?.("domestic");
-    } else if (!isDomesticAirport && travelType !== "international") {
+    if (!isDomesticAirport && travelType !== "international") {
       onTravelTypeChange?.("international");
+    } else if (isDomesticAirport && cleanServiceCode && isIndianAirportCode(cleanServiceCode) && travelType !== "domestic") {
+      onTravelTypeChange?.("domestic");
     }
 
     setSearchQuery("");
     setOpen(false);
   };
 
-  const handleClear = (e: React.MouseEvent) => {
+  const handleClear = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
     onChange("");
     setSearchQuery("");
@@ -309,14 +309,21 @@ export function AirportSuggestionPicker({
 
             <div className="flex items-center gap-1.5 flex-shrink-0">
               {value && !disabled && (
-                <button
-                  type="button"
+                <span
+                  role="button"
+                  tabIndex={0}
                   onClick={handleClear}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleClear(e);
+                    }
+                  }}
                   title="Clear selection"
-                  className="h-6 w-6 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors"
+                  className="h-6 w-6 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <X size={13} />
-                </button>
+                </span>
               )}
               <ChevronDown
                 size={15}

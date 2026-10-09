@@ -61,7 +61,8 @@ const CHARTER_OPTIONS: CharterOptionDef[] = [
     id: "Domestic and International Charter",
     label: "Domestic & International",
     badge: "GLOBAL FLIGHTS",
-    tagline: "Point-to-point long-range flight itineraries across domestic and international airspace.",
+    // No tagline for this option: the heading above already states the scope.
+    tagline: "",
     aircraftTypes: [
       "Heavy Long-Range Jet (12 - 16 Seats)",
       "Super Midsize Jet (8 - 10 Seats)",
@@ -701,9 +702,11 @@ function DedicatedAirCharterPage() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
               {activeOption.id}
             </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-              {activeOption.tagline}
-            </p>
+            {activeOption.tagline ? (
+              <p className="mt-1 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+                {activeOption.tagline}
+              </p>
+            ) : null}
           </div>
 
           {/* Progressive Steps Indicator */}

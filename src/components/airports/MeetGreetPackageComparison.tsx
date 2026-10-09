@@ -18,12 +18,14 @@ import {
 import {
   getAirportRegistryEntry,
   getTransitCategory,
+  getRouteFlightCategory,
   isAirportClassifiable,
   isIndianAirportCode,
 } from "@/data/airportRegistry";
 import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
 import { formatAirportOption } from "@/lib/api/airportApi";
 import { ApiClient } from "@/lib/ApiClient";
+import { toast } from "sonner";
 
 const TRANSIT_TITLE_MAP: Record<string, string> = {
   DOMESTIC_DOMESTIC: "Domestic → Domestic",
@@ -48,6 +50,14 @@ function journeyFromSearch(search?: Record<string, unknown>): "ARRIVAL" | "DEPAR
 }
 
 function flightFromSearch(search?: Record<string, unknown>): "DOMESTIC" | "INTERNATIONAL" {
+  const o = String(search?.origin || "").trim().toUpperCase();
+  const d = String(search?.destination || "").trim().toUpperCase();
+  if (o.length === 3 && d.length === 3) {
+    return getRouteFlightCategory(o, d).toUpperCase() as "DOMESTIC" | "INTERNATIONAL";
+  }
+  if ((o.length === 3 && !isIndianAirportCode(o)) || (d.length === 3 && !isIndianAirportCode(d))) {
+    return "INTERNATIONAL";
+  }
   const raw = String(search?.travel_type || search?.flight_type || "").toUpperCase();
   if (raw === "INTERNATIONAL" || raw === "INTL" || raw === "INT") return "INTERNATIONAL";
   return "DOMESTIC";
@@ -79,6 +89,16 @@ export function MeetGreetPackageComparison({
   const destParam = String(bookingSearch?.destination || "").trim().toUpperCase();
   const transitParam = String(bookingSearch?.transit || airportCode).trim().toUpperCase();
 
+  const isFromHomepage = bookingSearch?.from_hero === "true";
+  const hasRouteEndpoints = originParam.length === 3 && destParam.length === 3;
+  const isCategoryLocked = Boolean(
+    isFromHomepage || hasRouteEndpoints || bookingSearch?.travel_type || bookingSearch?.flight_type
+  );
+
+  const lockedFlightType = useMemo<"DOMESTIC" | "INTERNATIONAL">(() => {
+    return flightFromSearch(bookingSearch);
+  }, [bookingSearch]);
+
   const [journeyOrigin, setJourneyOrigin] = useState<string>(() => originParam);
   const [journeyDest, setJourneyDest] = useState<string>(() => destParam);
   const [journeyTransit, setJourneyTransit] = useState<string>(() => transitParam || airportCode);
@@ -97,7 +117,7 @@ export function MeetGreetPackageComparison({
   const transitCity = transitEntry?.city || journeyTransit || airportCode;
 
   const [flightType, setFlightType] = useState<"DOMESTIC" | "INTERNATIONAL">(
-    () => flightFromSearch(bookingSearch)
+    () => (isCategoryLocked ? lockedFlightType : flightFromSearch(bookingSearch))
   );
   const [journeyType, setJourneyType] = useState<"ARRIVAL" | "DEPARTURE" | "TRANSIT">(
     () => journeyFromSearch(bookingSearch)
@@ -129,9 +149,9 @@ export function MeetGreetPackageComparison({
   });
 
   useEffect(() => {
-    if (!bookingSearch?.from_hero && !bookingSearch?.direction) return;
+    if (!bookingSearch?.from_hero && !bookingSearch?.direction && !bookingSearch?.origin && !bookingSearch?.destination) return;
     setJourneyType(journeyFromSearch(bookingSearch));
-    const flType = flightFromSearch(bookingSearch);
+    const flType = isCategoryLocked ? lockedFlightType : flightFromSearch(bookingSearch);
     setFlightType(flType);
     const o = String(bookingSearch?.origin || "").trim().toUpperCase();
     const d = String(bookingSearch?.destination || "").trim().toUpperCase();
@@ -165,14 +185,37 @@ export function MeetGreetPackageComparison({
     bookingSearch?.transit,
     isDel,
     airportCode,
+    isCategoryLocked,
+    lockedFlightType,
   ]);
+
+  // Keep category strictly locked for route-determined journeys
+  useEffect(() => {
+    if (isCategoryLocked && flightType !== lockedFlightType) {
+      setFlightType(lockedFlightType);
+    }
+  }, [isCategoryLocked, lockedFlightType, flightType]);
 
   // Whenever flightType switches to INTERNATIONAL at DEL, redirect terminal to Terminal 3
   useEffect(() => {
-    if (isDel && flightType === "INTERNATIONAL") {
+    const activeFt = isCategoryLocked ? lockedFlightType : flightType;
+    if (isDel && activeFt === "INTERNATIONAL") {
       setTerminal("Terminal 3");
     }
-  }, [isDel, flightType]);
+  }, [isDel, flightType, isCategoryLocked, lockedFlightType]);
+
+  const handleFlightTypeChange = (newType: "DOMESTIC" | "INTERNATIONAL") => {
+    if (isCategoryLocked) {
+      toast.info(
+        `Category is fixed to ${lockedFlightType.toLowerCase()} for this route (${originParam || journeyOrigin} → ${destParam || journeyDest}). Return to the homepage booking panel to change your journey.`
+      );
+      return;
+    }
+    setFlightType(newType);
+    if (newType === "INTERNATIONAL" && airportCode.toUpperCase() === "DEL") {
+      setTerminal("Terminal 3");
+    }
+  };
 
   // Direct access Transit category filter state (show one category at a time, never all 4 at once)
   const [directCategoryFilter, setDirectCategoryFilter] = useState<string>("DOMESTIC_DOMESTIC");
@@ -211,7 +254,8 @@ export function MeetGreetPackageComparison({
     setLoading(true);
     setFetchError(false);
 
-    const activeTerminal = isDel && flightType === "INTERNATIONAL" ? "Terminal 3" : terminal;
+    const effFlightType = isCategoryLocked ? lockedFlightType : flightType;
+    const activeTerminal = isDel && effFlightType === "INTERNATIONAL" ? "Terminal 3" : terminal;
     const terminalParam = journeyType !== "TRANSIT" && isDel && activeTerminal ? `&terminal=${encodeURIComponent(activeTerminal)}` : "";
     const effOrigin = journeyType === "TRANSIT" ? journeyOrigin : originParam;
     const effDest = journeyType === "TRANSIT" ? journeyDest : destParam;
@@ -231,7 +275,7 @@ export function MeetGreetPackageComparison({
         fetchUrl = `/api/journey/airports/${effHub}/services?journey_type=TRANSIT`;
       }
     } else {
-      fetchUrl = `/api/journey/airports/${effHub}/services?journey_type=${journeyType}&flight_type=${flightType}${terminalParam}`;
+      fetchUrl = `/api/journey/airports/${effHub}/services?journey_type=${journeyType}&flight_type=${effFlightType}${terminalParam}`;
     }
 
     ApiClient.fetchWithAuth(fetchUrl)
@@ -318,9 +362,11 @@ export function MeetGreetPackageComparison({
               });
               setPackages(mapped);
               setFetchError(false);
-              const derivedFt = String(data.flight_type || "").toUpperCase();
-              if (derivedFt === "DOMESTIC" || derivedFt === "INTERNATIONAL") {
-                setFlightType(derivedFt);
+              if (!isCategoryLocked) {
+                const derivedFt = String(data.flight_type || "").toUpperCase();
+                if (derivedFt === "DOMESTIC" || derivedFt === "INTERNATIONAL") {
+                  setFlightType(derivedFt);
+                }
               }
             } else {
               // Authoritative backend returned 0 active packages for this configuration
@@ -359,6 +405,8 @@ export function MeetGreetPackageComparison({
     journeyTransit,
     isHomeTransitFlow,
     isDirectTransitAccess,
+    isCategoryLocked,
+    lockedFlightType,
   ]);
 
   const configuredCategories = useMemo(() => {
@@ -528,33 +576,57 @@ export function MeetGreetPackageComparison({
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           {/* Flight Type Segmented Control (Arrival & Departure) */}
           {journeyType !== "TRANSIT" && (
-            <div className="p-1 rounded-2xl bg-slate-100 border border-slate-200 inline-flex items-center gap-1 text-xs font-mono font-bold">
-              <button
-                type="button"
-                onClick={() => setFlightType("DOMESTIC")}
-                className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${flightType === "DOMESTIC"
-                    ? "bg-slate-900 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
+            <div className="flex flex-col items-center gap-1.5">
+              <div className="p-1 rounded-2xl bg-slate-100 border border-slate-200 inline-flex items-center gap-1 text-xs font-mono font-bold">
+                <button
+                  type="button"
+                  onClick={() => handleFlightTypeChange("DOMESTIC")}
+                  className={`px-4 py-1.5 rounded-xl transition-all ${
+                    flightType === "DOMESTIC"
+                      ? "bg-slate-900 text-white shadow-xs cursor-default"
+                      : isCategoryLocked
+                        ? "text-slate-400 opacity-60 cursor-not-allowed hover:bg-slate-200/50"
+                        : "text-slate-600 hover:text-slate-900 cursor-pointer"
                   }`}
-              >
-                Domestic
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setFlightType("INTERNATIONAL");
-                  if (airportCode.toUpperCase() === "DEL") {
-                    setTerminal("Terminal 3");
+                  title={
+                    isCategoryLocked && flightType !== "DOMESTIC"
+                      ? "Category is locked to your selected route. Return to the homepage to change journey."
+                      : undefined
                   }
-                }}
-                className={`px-4 py-1.5 rounded-xl transition-all cursor-pointer ${
-                  flightType === "INTERNATIONAL"
-                    ? "bg-slate-900 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                International
-              </button>
+                >
+                  Domestic
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleFlightTypeChange("INTERNATIONAL")}
+                  className={`px-4 py-1.5 rounded-xl transition-all ${
+                    flightType === "INTERNATIONAL"
+                      ? "bg-slate-900 text-white shadow-xs cursor-default"
+                      : isCategoryLocked
+                        ? "text-slate-400 opacity-60 cursor-not-allowed hover:bg-slate-200/50"
+                        : "text-slate-600 hover:text-slate-900 cursor-pointer"
+                  }`}
+                  title={
+                    isCategoryLocked && flightType !== "INTERNATIONAL"
+                      ? "Category is locked to your selected route. Return to the homepage to change journey."
+                      : undefined
+                  }
+                >
+                  International
+                </button>
+              </div>
+              {isCategoryLocked && (
+                <div className="flex items-center gap-1 text-[10.5px] font-mono text-slate-500">
+                  <span>Locked for journey: {originParam || journeyOrigin} → {destParam || journeyDest} ({flightType.toLowerCase()}).</span>
+                  <Link
+                    to="/"
+                    hash="book"
+                    className="text-[#7c3aed] hover:underline font-semibold ml-1"
+                  >
+                    Change on homepage
+                  </Link>
+                </div>
+              )}
             </div>
           )}
 
@@ -996,21 +1068,13 @@ export function MeetGreetPackageComparison({
                           airport: journeyType === "TRANSIT" ? (journeyTransit || airportCode) : airportCode,
                           airport_name: journeyType === "TRANSIT" ? transitCity : cityName,
                           origin:
-                            journeyType === "DEPARTURE"
-                              ? airportCode
-                              : journeyType === "TRANSIT"
-                                ? journeyOrigin
-                                : (bookingSearch?.origin as string) && (bookingSearch?.origin as string).toUpperCase() !== airportCode.toUpperCase()
-                                  ? (bookingSearch?.origin as string)
-                                  : "",
+                            journeyType === "TRANSIT"
+                              ? journeyOrigin
+                              : (bookingSearch?.origin as string) || journeyOrigin || (journeyType === "DEPARTURE" ? airportCode : ""),
                           destination:
-                            journeyType === "ARRIVAL"
-                              ? airportCode
-                              : journeyType === "TRANSIT"
-                                ? journeyDest
-                                : (bookingSearch?.destination as string) && (bookingSearch?.destination as string).toUpperCase() !== airportCode.toUpperCase()
-                                  ? (bookingSearch?.destination as string)
-                                  : "",
+                            journeyType === "TRANSIT"
+                              ? journeyDest
+                              : (bookingSearch?.destination as string) || journeyDest || (journeyType === "ARRIVAL" ? airportCode : ""),
                           transit:
                             journeyType === "TRANSIT"
                               ? (journeyTransit || airportCode)
@@ -1024,16 +1088,16 @@ export function MeetGreetPackageComparison({
                           travel_type:
                             journeyType === "TRANSIT"
                               ? effectiveTransitType.toLowerCase()
-                              : flightType.toLowerCase(),
+                              : (isCategoryLocked ? lockedFlightType.toLowerCase() : flightType.toLowerCase()),
                           flight_type:
                             journeyType === "TRANSIT"
                               ? effectiveTransitType
-                              : flightType.toLowerCase(),
+                              : (isCategoryLocked ? lockedFlightType : flightType),
                           transit_type:
                             journeyType === "TRANSIT"
                               ? effectiveTransitType
                               : undefined,
-                          terminal: (isDel && flightType === "INTERNATIONAL") ? "Terminal 3" : terminal,
+                          terminal: (isDel && (isCategoryLocked ? lockedFlightType : flightType) === "INTERNATIONAL") ? "Terminal 3" : terminal,
                           service_id: pkg.id,
                           booking_mode: "package",
                           package_id: pkg.id,

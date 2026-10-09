@@ -944,3 +944,17 @@ export function isAirportClassifiable(code?: string | null): boolean {
   const clean = code.trim().toUpperCase();
   return clean.length === 3 && /^[A-Z]{3}$/.test(clean);
 }
+
+/**
+ * Authoritatively calculates Domestic vs International flight category from Origin and Destination.
+ * - Both origin and destination in India -> "domestic"
+ * - Either origin or destination (or both) outside India -> "international"
+ */
+export function getRouteFlightCategory(
+  origin?: string | null,
+  destination?: string | null
+): "domestic" | "international" {
+  const isOriginDomestic = isIndianAirportCode(origin);
+  const isDestDomestic = isIndianAirportCode(destination);
+  return isOriginDomestic && isDestDomestic ? "domestic" : "international";
+}

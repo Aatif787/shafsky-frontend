@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getTransitCategory, isIndianAirportCode } from "@/data/airportRegistry";
+import { getTransitCategory, getRouteFlightCategory, isIndianAirportCode } from "@/data/airportRegistry";
 
 describe("Transit Service Category Classification", () => {
   describe("Airport classification authority", () => {
@@ -302,6 +302,75 @@ describe("Transit Service Category Classification", () => {
       // Incomplete: Missing destination
       const incompleteResult = validateDirectRoute("BOM", "DEL", "", "DOMESTIC_DOMESTIC");
       expect(incompleteResult.status).toBe("INCOMPLETE");
+    });
+  });
+
+  describe("Automatic Route Category Selection & Locking Authority", () => {
+    it("correctly identifies Delhi -> Mumbai as Domestic", () => {
+      expect(getRouteFlightCategory("DEL", "BOM")).toBe("domestic");
+    });
+
+    it("correctly identifies Delhi -> Dubai as International", () => {
+      expect(getRouteFlightCategory("DEL", "DXB")).toBe("international");
+    });
+
+    it("correctly identifies Dubai -> Delhi as International", () => {
+      expect(getRouteFlightCategory("DXB", "DEL")).toBe("international");
+    });
+
+    it("correctly identifies foreign routes as International", () => {
+      expect(getRouteFlightCategory("DXB", "SIN")).toBe("international");
+      expect(getRouteFlightCategory("LHR", "JFK")).toBe("international");
+    });
+
+    it("recalculates category when airports change", () => {
+      let origin = "DEL";
+      let destination = "BOM";
+      expect(getRouteFlightCategory(origin, destination)).toBe("domestic");
+
+      // User changes destination to Dubai (DXB)
+      destination = "DXB";
+      expect(getRouteFlightCategory(origin, destination)).toBe("international");
+
+      // User changes origin to London (LHR) and destination to Mumbai (BOM)
+      origin = "LHR";
+      destination = "BOM";
+      expect(getRouteFlightCategory(origin, destination)).toBe("international");
+
+      // User changes origin back to Delhi (DEL) with Mumbai (BOM)
+      origin = "DEL";
+      expect(getRouteFlightCategory(origin, destination)).toBe("domestic");
+    });
+
+    it("locks category on destination page when arrived from booking flow", () => {
+      const simulateDestinationPageCategory = (search: Record<string, any>, userAttemptedToggle: "DOMESTIC" | "INTERNATIONAL") => {
+        const isFromHero = search.from_hero === "true";
+        const hasRoute = search.origin && search.destination;
+        const isLocked = Boolean(isFromHero || hasRoute || search.travel_type || search.flight_type);
+        const lockedType = hasRoute
+          ? getRouteFlightCategory(search.origin, search.destination).toUpperCase()
+          : (String(search.travel_type || search.flight_type || "DOMESTIC").toUpperCase());
+
+        let activeType = lockedType;
+        // User clicks toggle button to switch category
+        if (!isLocked) {
+          activeType = userAttemptedToggle;
+        }
+        // When locked, selection must NOT change
+        return activeType;
+      };
+
+      // Delhi -> Dubai (International)
+      const intlSearch = { origin: "DEL", destination: "DXB", from_hero: "true", travel_type: "international" };
+      // User attempts to switch to Domestic on destination page
+      const resultIntl = simulateDestinationPageCategory(intlSearch, "DOMESTIC");
+      expect(resultIntl).toBe("INTERNATIONAL");
+
+      // Delhi -> Mumbai (Domestic)
+      const domSearch = { origin: "DEL", destination: "BOM", from_hero: "true", travel_type: "domestic" };
+      // User attempts to switch to International on destination page
+      const resultDom = simulateDestinationPageCategory(domSearch, "INTERNATIONAL");
+      expect(resultDom).toBe("DOMESTIC");
     });
   });
 });

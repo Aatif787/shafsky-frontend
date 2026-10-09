@@ -33,6 +33,9 @@ const airportPageSearchSchema = z.object({
   from_hero: z.string().optional().catch(""),
   booking_mode: z.string().optional().catch(""),
   package_id: z.string().optional().catch(""),
+  services: z.string().optional().catch(""),
+  depart_date_2: z.string().optional().catch(""),
+  flight_number_2: z.string().optional().catch(""),
 });
 
 export const Route = createFileRoute("/airports/$code")({

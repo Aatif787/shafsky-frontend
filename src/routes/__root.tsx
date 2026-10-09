@@ -245,6 +245,8 @@ function RootComponent() {
 
   if (!publishableKey) return application;
 
+  const isProdKey = publishableKey.startsWith("pk_live_");
+
   return (
     <ClerkProvider
       publishableKey={publishableKey}
@@ -252,6 +254,16 @@ function RootComponent() {
       signUpUrl="/auth"
       signInFallbackRedirectUrl="/"
       signUpFallbackRedirectUrl="/"
+      {...(isProdKey
+        ? {
+            allowedRedirectOrigins: [
+              "https://shafskyaviation.com",
+              "https://shafskyaviation.in",
+              "https://www.shafskyaviation.com",
+              "https://www.shafskyaviation.in",
+            ],
+          }
+        : {})}
     >
       {application}
     </ClerkProvider>

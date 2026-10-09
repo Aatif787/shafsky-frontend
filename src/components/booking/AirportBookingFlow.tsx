@@ -19,14 +19,15 @@ import {
   MessageSquare, Building2,
   Minus,
   Plus,
-  CalendarDays
+  CalendarDays,
+  Send
 } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { format, parseISO, isValid } from "date-fns";
 import { ApiClient } from "@/lib/ApiClient";
 import { resolveApiUrl } from "@/lib/api/config";
-import { getAirportRegistryEntry, isIndianAirportCode, getTransitCategory } from "@/data/airportRegistry";
+import { getAirportRegistryEntry, isIndianAirportCode, getTransitCategory, getRouteFlightCategory } from "@/data/airportRegistry";
 import { AirlineLogo } from "./shared/AirlineLogo";
 import { IntelligentAirlineAutocomplete } from "./shared/IntelligentAirlineAutocomplete";
 import { FlightTimePicker } from "./shared/FlightTimePicker";
@@ -42,6 +43,12 @@ import {
   formatPrice,
   detectDefaultCurrency,
 } from "@/lib/currency";
+import {
+  MultiServiceApi,
+  AirportServiceType,
+  ServiceItemAvailability,
+  MultiServiceAvailabilityResponse,
+} from "@/lib/api/multiServiceApi";
 
 interface AirportBookingFlowProps {
   searchParams?: Record<string, any>;
@@ -107,9 +114,23 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     return "arrival";
   }, [searchParams]);
 
+  const isCategoryLocked = useMemo(() => {
+    if (searchParams?.from_hero === "true") return true;
+    const orig = extractIata(searchParams?.origin);
+    const dest = extractIata(searchParams?.destination);
+    if (orig && dest) return true;
+    if (searchParams?.travel_type || searchParams?.flight_type) return true;
+    return false;
+  }, [searchParams]);
+
   const initialTravelType: "domestic" | "international" = useMemo(() => {
+    const orig = extractIata(searchParams?.origin);
+    const dest = extractIata(searchParams?.destination);
+    if (orig && dest) {
+      return getRouteFlightCategory(orig, dest);
+    }
     const raw = String(searchParams?.travel_type || searchParams?.flight_type || "").toLowerCase();
-    return raw === "international" || raw === "intl" ? "international" : "domestic";
+    return raw === "international" || raw === "intl" || raw.includes("international") ? "international" : "domestic";
   }, [searchParams]);
 
   const rawAirportCode =
@@ -125,6 +146,20 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   const [airportCode] = useState<string>(rawAirportCode);
   const [direction] = useState<"arrival" | "departure" | "transit">(initialDirection);
   const [travelType, setTravelType] = useState<"domestic" | "international">(initialTravelType);
+
+  const handleTravelTypeChange = (newType: "domestic" | "international") => {
+    if (isCategoryLocked) {
+      // Category is locked by the homepage booking flow route
+      return;
+    }
+    setTravelType(newType);
+  };
+
+  useEffect(() => {
+    if (isCategoryLocked && travelType !== initialTravelType) {
+      setTravelType(initialTravelType);
+    }
+  }, [isCategoryLocked, initialTravelType, travelType]);
 
   const registryEntry = getAirportRegistryEntry(airportCode);
   const airportCityName = searchParams?.airport_name || registryEntry?.city || registryEntry?.name || airportCode;
@@ -144,6 +179,11 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
   const [originCode, setOriginCode] = useState<string>(initialOrigin);
   const [destCode, setDestCode] = useState<string>(initialDestination);
+  const rawTransit = extractIata(searchParams?.transit);
+  const [transitCode, setTransitCode] = useState<string>(rawTransit || (direction === "transit" ? airportCode : ""));
+  const cleanOrigin = (originCode || "").trim().toUpperCase();
+  const cleanDest = (destCode || "").trim().toUpperCase();
+  const cleanTransit = (transitCode || rawTransit || "").trim().toUpperCase();
 
   const [serviceDate, setServiceDate] = useState<string>(() => {
     const rawParam = String(searchParams?.depart_date || searchParams?.service_date || "").trim();
@@ -275,6 +315,60 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     };
   }, [airportCode, direction, travelType, originCode, destCode]);
 
+  // Multi-Service Selection & Dynamic Availability State (Configured from Homepage Booking Panel)
+  const [selectedServices, setSelectedServices] = useState<AirportServiceType[]>(() => {
+    const sParam = typeof searchParams?.services === "string" ? searchParams.services : "";
+    if (sParam.trim()) {
+      const tokens = sParam.split(",").map((s: string) => s.trim().toUpperCase());
+      const mapped: AirportServiceType[] = [];
+      for (const t of tokens) {
+        if (t === "DEPARTURE" && !mapped.includes("DEPARTURE")) mapped.push("DEPARTURE");
+        if (t === "ARRIVAL" && !mapped.includes("ARRIVAL")) mapped.push("ARRIVAL");
+        if ((t === "TRANSIT" || t === "CONNECTION") && !mapped.includes("TRANSIT")) mapped.push("TRANSIT");
+      }
+      if (mapped.length > 0) return mapped;
+    }
+    const rawDir = (initialDirection || "departure").toUpperCase();
+    if (rawDir === "TRANSIT") return ["TRANSIT"];
+    if (rawDir === "ARRIVAL") return ["ARRIVAL"];
+    return ["DEPARTURE"];
+  });
+  const [packageByService, setPackageByService] = useState<Record<AirportServiceType, string>>(() => {
+    const pkg = searchParams?.package_id || searchParams?.service_id || "";
+    const primaryDir = (initialDirection || "departure").toUpperCase();
+    return {
+      DEPARTURE: primaryDir === "DEPARTURE" && pkg ? pkg : pkg || "",
+      ARRIVAL: primaryDir === "ARRIVAL" && pkg ? pkg : pkg || "",
+      TRANSIT: primaryDir === "TRANSIT" && pkg ? pkg : "meet_greet",
+    };
+  });
+  const [multiServiceAvailability, setMultiServiceAvailability] = useState<ServiceItemAvailability[]>([]);
+  const [multiServiceResponse, setMultiServiceResponse] = useState<MultiServiceAvailabilityResponse | null>(null);
+  const [isMultiServiceLoading, setIsMultiServiceLoading] = useState<boolean>(false);
+  const [isArrangementSubmitting, setIsArrangementSubmitting] = useState<boolean>(false);
+  const [arrangementSubmitted, setArrangementSubmitted] = useState<boolean>(false);
+  const [serviceQuerySuccessRef, setServiceQuerySuccessRef] = useState<string | null>(null);
+
+  const handleToggleService = (st: AirportServiceType) => {
+    setSelectedServices((prev) => {
+      if (prev.includes(st)) {
+        if (prev.length === 1) {
+          toast.info("At least one service must remain selected.");
+          return prev;
+        }
+        return prev.filter((s) => s !== st);
+      }
+      return [...prev, st];
+    });
+  };
+
+  const handleSelectPackageForService = (st: AirportServiceType, pkgSlug: string) => {
+    setPackageByService((prev) => ({
+      ...prev,
+      [st]: pkgSlug,
+    }));
+  };
+
   // Multi-Currency State & Live Conversion
   const [selectedCurrency, setSelectedCurrency] = useState<string>(() => detectDefaultCurrency());
 
@@ -344,6 +438,69 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   const [manualDepTerminal2, setManualDepTerminal2] = useState<string>("");
   const [manualArrTime2, setManualArrTime2] = useState<string>("");
   const [manualArrTerminal2, setManualArrTerminal2] = useState<string>("");
+
+  // Sync multi-service availability whenever route, date, passengers, or selections change
+  useEffect(() => {
+    let active = true;
+    const effOrigin = cleanOrigin || originCode || (direction === "departure" ? airportCode : "");
+    const effDest = cleanDest || destCode || (direction === "arrival" ? airportCode : "");
+    const effTransit = cleanTransit || transitCode || searchParams?.transit || (direction === "transit" ? airportCode : "");
+
+    if (!effOrigin && !effDest && !airportCode) return;
+
+    setIsMultiServiceLoading(true);
+
+    MultiServiceApi.checkAvailability({
+      origin_code: effOrigin || airportCode || "DEL",
+      dest_code: effDest || airportCode || "BOM",
+      transit_codes: effTransit ? [effTransit] : undefined,
+      flight_num: flightNumber || undefined,
+      service_date: serviceDate || undefined,
+      guest_count: billablePax,
+      selected_services: selectedServices.map((st) => ({
+        service_type: st,
+        package_slug: packageByService[st] || (st === (direction || "departure").toUpperCase() ? initialPkgId : undefined),
+        airport_code: st === "DEPARTURE" ? effOrigin : st === "ARRIVAL" ? effDest : effTransit,
+      })),
+    })
+      .then((res) => {
+        if (!active) return;
+        setMultiServiceResponse(res);
+        setMultiServiceAvailability(res.services || []);
+        if (res.services && res.services.length > 0) {
+          setPackageByService((prev) => {
+            const next = { ...prev };
+            for (const item of res.services) {
+              const st = item.service_type as AirportServiceType;
+              if (item.status === "AVAILABLE" && item.package_slug && !prev[st]) {
+                next[st] = item.package_slug;
+              }
+            }
+            return next;
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn("[AirportBookingFlow] Multi-service availability error:", err);
+      })
+      .finally(() => {
+        if (active) setIsMultiServiceLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [
+    originCode,
+    destCode,
+    airportCode,
+    direction,
+    flightNumber,
+    serviceDate,
+    billablePax,
+    selectedServices,
+    packageByService,
+  ]);
 
   // Mumbai Airport Express Fee rule:
   // For Mumbai Airport (BOM), if booking is created less than 24 hours before actual service start time:
@@ -420,7 +577,12 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
   const expressFeeInr = expressFeeDetails.feeInr;
   const isExpressFeeApplicable = expressFeeDetails.isApplicable;
-  const totalPrice = baseInrTotalPrice + expressFeeInr;
+  const isMultiService = selectedServices.length > 1;
+  const effectiveBaseInrTotalPrice =
+    isMultiService && multiServiceResponse
+      ? multiServiceResponse.total_payable
+      : baseInrTotalPrice;
+  const totalPrice = effectiveBaseInrTotalPrice + expressFeeInr;
   const convertedExpressFee = useMemo(() => convertFromINR(expressFeeInr, selectedCurrency), [expressFeeInr, selectedCurrency]);
   const convertedTotalPrice = useMemo(() => convertFromINR(totalPrice, selectedCurrency), [totalPrice, selectedCurrency]);
 
@@ -940,6 +1102,117 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     }
   }, []);
 
+  // Direct Service Arrangement Submission (when services require offline concierge arrangement)
+  const handleRequestServiceArrangement = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    // 1. Validate All Passenger Details
+    for (let i = 0; i < passengers.length; i++) {
+      const p = passengers[i];
+      const pName = (p.fullName || "").trim();
+      if (!pName || pName.length < 2) {
+        toast.error(`Please enter the full name for Passenger ${i + 1}.`);
+        return;
+      }
+    }
+
+    const cleanName = fullName.trim();
+    const cleanEmail = email.trim();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!cleanEmail || !emailPattern.test(cleanEmail)) {
+      toast.error("Please enter a valid email address for Passenger 1.");
+      return;
+    }
+
+    const cleanPhone = normalizePhoneForStorage(phone);
+    const phoneDigits = cleanPhone.replace(/\D/g, "");
+    if (phoneDigits.length < 7 || phoneDigits.length > 15) {
+      toast.error("Please enter a valid mobile number, including your country code.");
+      return;
+    }
+
+    const effFlightNum1 = (
+      isFlightVerified && verifiedFlight
+        ? verifiedFlight.flightNum
+        : isManualMode
+        ? sanitizeFlightInput(manualFlightNum)
+        : sanitizeFlightInput(flightNumber)
+    ).trim().toUpperCase();
+
+    const effFlightNum2 = (
+      isFlightVerified2 && verifiedFlight2
+        ? verifiedFlight2.flightNum
+        : isManualMode2
+        ? sanitizeFlightInput(manualFlightNum2)
+        : sanitizeFlightInput(flightNumber2)
+    ).trim().toUpperCase();
+
+    const effFlightNum = direction === "transit"
+      ? (effFlightNum1 && effFlightNum2 ? `${effFlightNum1} / ${effFlightNum2}` : effFlightNum1 || effFlightNum2)
+      : effFlightNum1 || manualFlightNum || flightNumber || "";
+
+    if (!effFlightNum || effFlightNum.length < 3) {
+      toast.error("Please enter your flight number.");
+      return;
+    }
+
+    const reqOrigin = (
+      (isFlightVerified && verifiedFlight?.origin?.code) ||
+      originCode ||
+      (direction === "departure" ? airportCode : "")
+    ).trim().toUpperCase();
+
+    const reqDest = (
+      (isFlightVerified && verifiedFlight?.destination?.code) ||
+      destCode ||
+      (direction === "arrival" ? airportCode : "")
+    ).trim().toUpperCase();
+
+    const reqTransit = (transitCode || searchParams?.transit || (direction === "transit" ? airportCode : "")).trim().toUpperCase();
+
+    setIsArrangementSubmitting(true);
+    try {
+      const qRes = await MultiServiceApi.createQuery({
+        passenger_name: cleanName,
+        passenger_email: cleanEmail,
+        passenger_phone: cleanPhone,
+        flight_num: effFlightNum,
+        service_date: serviceDate || format(new Date(), "yyyy-MM-dd"),
+        booking_ref: undefined,
+        itinerary: multiServiceResponse?.itinerary || {
+          origin: reqOrigin,
+          destination: reqDest,
+          transit: reqTransit || undefined,
+        },
+        requested_services: (multiServiceResponse?.services || selectedServices.map((st) => ({
+          service_type: st,
+          airport_code: st === "DEPARTURE" ? reqOrigin : st === "ARRIVAL" ? reqDest : (reqTransit || airportCode),
+          status: "REQUEST_REQUIRED",
+          package: packageByService[st] || "silver",
+        }))) as any,
+        unavailable_services: (
+          multiServiceResponse?.services?.filter((s) => s.status === "REQUEST_REQUIRED")?.length
+            ? multiServiceResponse.services.filter((s) => s.status === "REQUEST_REQUIRED")
+            : selectedServices.map((st) => ({
+                service_type: st,
+                airport_code: st === "DEPARTURE" ? reqOrigin : st === "ARRIVAL" ? reqDest : (reqTransit || airportCode),
+                status: "REQUEST_REQUIRED",
+                package: packageByService[st] || "silver",
+              }))
+        ) as any,
+        notes: "Customer requested airport concierge arrangement.",
+      });
+
+      setServiceQuerySuccessRef(qRes.query_ref);
+      setArrangementSubmitted(true);
+      toast.success("Service arrangement requested successfully!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit service arrangement. Please try again.");
+    } finally {
+      setIsArrangementSubmitting(false);
+    }
+  };
+
   // Launch Razorpay Payment & Confirm Booking ONLY upon Backend Signature Verification
   const handleProceedToPayment = async (e?: React.SubmitEvent<HTMLFormElement>) => {
     if (e) e.preventDefault();
@@ -1114,6 +1387,11 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       terminalVal2 = "Terminal 3";
     }
 
+    if (multiServiceResponse && multiServiceResponse.none_available) {
+      await handleRequestServiceArrangement();
+      return;
+    }
+
     setSubmitting(true);
     setPaymentStatus("OPEN");
 
@@ -1139,11 +1417,32 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
           passengerEmail: cleanEmail,
           passengerPhone: cleanPhone,
           serviceCategory: "Airport Assistance",
-          serviceType: packageSlug,
+          serviceType: selectedServices.length > 1 ? "multi_service" : packageSlug,
+          selectedServices: {
+            multi_service: selectedServices.length > 1,
+            services: selectedServices.map((st) => ({
+              service_type: st,
+              airport_code: st === "DEPARTURE" ? cleanOrigin : st === "ARRIVAL" ? cleanDest : (cleanTransit || transitCode || airportCode),
+              package: packageByService[st] || (st === (direction || "departure").toUpperCase() ? packageSlug : undefined),
+            })),
+          },
           flightNum: submissionFlightNum,
           originCode: cleanOrigin,
           destCode: cleanDest,
           metadataJson: {
+            multi_service: selectedServices.length > 1,
+            selected_services: {
+              multi_service: selectedServices.length > 1,
+              services: selectedServices.map((st) => ({
+                service_type: st,
+                airport_code: st === "DEPARTURE" ? cleanOrigin : st === "ARRIVAL" ? cleanDest : (cleanTransit || transitCode || airportCode),
+                package: packageByService[st] || (st === (direction || "departure").toUpperCase() ? packageSlug : undefined),
+              })),
+            },
+            service_breakdown: multiServiceResponse?.services || [],
+            available_services: multiServiceResponse?.services.filter((s) => s.status === "AVAILABLE") || [],
+            unavailable_services: multiServiceResponse?.services.filter((s) => s.status === "REQUEST_REQUIRED") || [],
+            itinerary: multiServiceResponse?.itinerary || {},
             journey_type: direction.toUpperCase(),
             direction,
             service_date: serviceDate,
@@ -1739,6 +2038,30 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               </div>
             )}
 
+            {multiServiceResponse && multiServiceResponse.unavailable_services_count > 0 && (
+              <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 space-y-2 text-xs">
+                <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                  <AlertCircle size={16} className="text-amber-700 shrink-0" />
+                  <span>Pending Service Arrangement (Not Confirmed)</span>
+                </div>
+                <div className="space-y-1.5 pt-1">
+                  {multiServiceResponse.services.filter((s) => s.status === "REQUEST_REQUIRED").map((us) => (
+                    <div key={`${us.service_type}-${us.airport_code}`} className="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-xl bg-white/90 border border-amber-200 gap-1">
+                      <span className="font-bold text-amber-950">
+                        {us.service_type === "DEPARTURE" ? "Departure" : us.service_type === "ARRIVAL" ? "Arrival" : "Transit"} Service ({us.airport_code})
+                      </span>
+                      <span className="text-[11px] text-amber-900 font-semibold">
+                        “We will arrange your service at this airport and inform you shortly.”
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[11.5px] text-amber-800 leading-relaxed font-sans pt-1">
+                  Your available airport services are confirmed and paid. The unavailable service(s) above have been saved as a pending arrangement request linked to booking <strong>{confirmedBookingRef}</strong>. Our operations team will contact you shortly.
+                </p>
+              </div>
+            )}
+
             <div className="rounded-2xl border border-lime-200 bg-lime-50/50 p-4 text-xs text-slate-700 space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-lime-900">
                 <ShieldCheck size={16} className="text-lime-700" />
@@ -1873,7 +2196,82 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
         ) : null}
       </div>
 
-      <form onSubmit={handleProceedToPayment} className="space-y-6">
+      {arrangementSubmitted ? (
+        <div className="rounded-3xl border border-amber-200 bg-white p-6 sm:p-10 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-100 pb-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
+                <CheckCircle2 size={24} />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-950">
+                  Service Arrangement Requested
+                </h2>
+                <span className="text-xs text-slate-500 font-mono">
+                  Reference: <strong>{serviceQuerySuccessRef}</strong>
+                </span>
+              </div>
+            </div>
+            <div className="rounded-full bg-amber-100 px-3.5 py-1 text-xs font-mono font-bold text-amber-900 self-start sm:self-auto">
+              Pending Arrangement • ₹0 Payable Now
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-5 space-y-2 text-xs">
+            <div className="flex items-center gap-2 font-bold text-amber-950 text-sm">
+              <AlertCircle size={16} className="text-amber-700" />
+              <span>“We will arrange your service at this airport and inform you shortly.”</span>
+            </div>
+            <p className="text-amber-800 leading-relaxed font-sans">
+              Our 24/7 VIP Concierge team has received your travel request. A dedicated journey manager will contact you at <strong>{phone}</strong> and <strong>{email}</strong> shortly to coordinate your arrangements.
+            </p>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <h3 className="font-mono text-xs uppercase font-bold text-slate-600">
+              Requested Airport Services
+            </h3>
+            <div className="space-y-2">
+              {selectedServices.map((st) => {
+                const sApt =
+                  st === "DEPARTURE"
+                    ? cleanOrigin || originCode
+                    : st === "ARRIVAL"
+                      ? cleanDest || destCode
+                      : cleanTransit || transitCode || airportCode;
+                return (
+                  <div key={st} className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 bg-slate-50 text-xs">
+                    <span className="font-bold text-slate-900">
+                      {st === "DEPARTURE" ? "Departure" : st === "ARRIVAL" ? "Arrival" : "Transit"} Service ({sApt || "Airport"})
+                    </span>
+                    <span className="font-mono text-amber-700 font-bold">Pending Arrangement</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <Link
+              to="/"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-slate-800 transition"
+            >
+              <span>Return to Home</span>
+            </Link>
+            <a
+              href={`https://wa.me/919599087959?text=${encodeURIComponent(
+                `Hi Shafsky Team, I requested service arrangement ${serviceQuerySuccessRef} for ${cleanOrigin} to ${cleanDest}.`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-slate-800 hover:bg-slate-50 transition"
+            >
+              <span>WhatsApp Concierge Desk</span>
+            </a>
+          </div>
+        </div>
+      ) : (
+        <form onSubmit={handleProceedToPayment} className="space-y-6">
         {/* ========================================================================= */}
         {/* 1. FLIGHT DETAILS (TRANSIT: TWO-LEG SPLIT | NON-TRANSIT: SINGLE FLIGHT)  */}
         {/* ========================================================================= */}
@@ -1979,7 +2377,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     value={originCode}
                     onChange={(code) => setOriginCode(code)}
                     travelType={travelType}
-                    onTravelTypeChange={(newType) => setTravelType(newType)}
+                    onTravelTypeChange={(newType) => handleTravelTypeChange(newType)}
                     direction="transit"
                     serviceAirportCode={airportCode}
                     placeholder="Select inbound departure airport"
@@ -1994,7 +2392,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     value={destCode}
                     onChange={(code) => setDestCode(code)}
                     travelType={travelType}
-                    onTravelTypeChange={(newType) => setTravelType(newType)}
+                    onTravelTypeChange={(newType) => handleTravelTypeChange(newType)}
                     direction="transit"
                     serviceAirportCode={airportCode}
                     placeholder="Select connecting destination airport"
@@ -2842,7 +3240,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                           value={originCode}
                           onChange={(code) => setOriginCode(code)}
                           travelType={travelType}
-                          onTravelTypeChange={(newType) => setTravelType(newType)}
+                          onTravelTypeChange={(newType) => handleTravelTypeChange(newType)}
                           direction={direction}
                           serviceAirportCode={airportCode}
                           placeholder="Select departure airport"
@@ -2866,7 +3264,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                           value={destCode}
                           onChange={(code) => setDestCode(code)}
                           travelType={travelType}
-                          onTravelTypeChange={(newType) => setTravelType(newType)}
+                          onTravelTypeChange={(newType) => handleTravelTypeChange(newType)}
                           direction={direction}
                           serviceAirportCode={airportCode}
                           placeholder="Select destination airport"
@@ -3187,7 +3585,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                         value={originCode}
                         onChange={(code) => setOriginCode(code)}
                         travelType={travelType}
-                        onTravelTypeChange={(newType) => setTravelType(newType)}
+                        onTravelTypeChange={(newType) => handleTravelTypeChange(newType)}
                         direction={direction}
                         serviceAirportCode={airportCode}
                         placeholder="Select departure airport"
@@ -3211,7 +3609,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                         value={destCode}
                         onChange={(code) => setDestCode(code)}
                         travelType={travelType}
-                        onTravelTypeChange={(newType) => setTravelType(newType)}
+                        onTravelTypeChange={(newType) => handleTravelTypeChange(newType)}
                         direction={direction}
                         serviceAirportCode={airportCode}
                         placeholder="Select destination airport"
@@ -3530,6 +3928,83 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             </select>
           </div>
 
+          {/* Itemized Services Breakdown */}
+          <div className="space-y-2.5 pt-2 border-t border-slate-100">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-bold block">
+              Selected Airport Services
+            </span>
+            <div className="space-y-2">
+              {selectedServices.map((st) => {
+                const sApt =
+                  st === "DEPARTURE"
+                    ? cleanOrigin || originCode || (direction === "departure" ? airportCode : "")
+                    : st === "ARRIVAL"
+                      ? cleanDest || destCode || (direction === "arrival" ? airportCode : "")
+                      : cleanTransit || transitCode || searchParams?.transit || (direction === "transit" ? airportCode : "");
+                const sTypeLabel =
+                  st === "DEPARTURE"
+                    ? "Departure Service"
+                    : st === "ARRIVAL"
+                      ? "Arrival Service"
+                      : "Transit Service";
+                const availItem = multiServiceAvailability.find(
+                  (a) => a.service_type === st && (!sApt || a.airport_code.toUpperCase() === sApt.toUpperCase())
+                );
+                const isAvailable = availItem ? availItem.status === "AVAILABLE" : true;
+                const itemPriceInr = availItem?.total_price ?? (isAvailable ? numericUnitPrice * billablePax : 0);
+                const itemPkg = availItem?.package_name || (isAvailable ? (packageByService[st] || selectedPackageName) : "Concierge Arrangement");
+
+                return (
+                  <div
+                    key={`itemized-service-${st}`}
+                    className={`flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-2xl border text-xs gap-2 transition-all ${
+                      isAvailable
+                        ? "bg-slate-50/70 border-slate-200/80 text-slate-800"
+                        : "bg-amber-50/60 border-amber-200 text-amber-950"
+                    }`}
+                  >
+                    <div className="flex flex-col gap-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-900">
+                          {sTypeLabel} • {sApt || "Airport"}
+                        </span>
+                        <span
+                          className={`font-mono text-[9px] uppercase px-2 py-0.5 rounded-full font-bold ${
+                            isAvailable
+                              ? "bg-lime-100 text-lime-800"
+                              : "bg-amber-100 text-amber-800 border border-amber-200"
+                          }`}
+                        >
+                          {isAvailable ? "Available" : "Arrangement Request"}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-500 font-medium">
+                        Package: {itemPkg} • {billablePax} Guest{billablePax > 1 ? "s" : ""}
+                      </span>
+                      {!isAvailable && (
+                        <span className="text-[11px] font-medium text-amber-800 mt-0.5">
+                          “We will arrange your service at this airport and inform you shortly.”
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="text-right sm:self-center font-mono font-bold text-sm">
+                      {isAvailable ? (
+                        <span className="text-slate-900">
+                          {formatPrice(convertFromINR(itemPriceInr, selectedCurrency), selectedCurrency)}
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 font-medium text-xs">
+                          ₹0 (Payable later)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Compact booking details grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
             <div>
@@ -3565,7 +4040,9 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 {formatPrice(convertedTotalPrice, selectedCurrency)}
               </div>
               <span className="text-[11px] text-slate-500">
-                {formatPrice(convertedUnitPrice, selectedCurrency)} × {paxAdults} adult{paxAdults > 1 ? "s" : ""}
+                {multiServiceResponse?.none_available
+                  ? "₹0 payable now — Our concierge team will arrange your requested services."
+                  : `${formatPrice(convertedTotalPrice, selectedCurrency)} payable today for confirmed services`}
                 {isExpressFeeApplicable && (
                   <span className="text-amber-700 font-bold ml-1">
                     + {formatPrice(convertedExpressFee, selectedCurrency)} (50% Express Fee)
@@ -3614,7 +4091,27 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 Share
               </button>
 
-              {paymentStatus === "DISMISSED" || paymentStatus === "FAILED" ? (
+              {multiServiceResponse?.none_available ? (
+                <button
+                  type="button"
+                  onClick={handleRequestServiceArrangement}
+                  disabled={isArrangementSubmitting}
+                  className="flex-1 sm:flex-none min-w-[240px] inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 px-6 py-3.5 text-xs font-mono font-extrabold uppercase tracking-widest text-slate-950 shadow-md shadow-amber-500/25 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  {isArrangementSubmitting ? (
+                    <>
+                      <Loader2 size={15} className="animate-spin" />
+                      <span>Submitting Request...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={14} />
+                      <span>Request Service Arrangement</span>
+                      <ArrowRight size={15} />
+                    </>
+                  )}
+                </button>
+              ) : paymentStatus === "DISMISSED" || paymentStatus === "FAILED" ? (
                 <button
                   type="button"
                   onClick={handleRetryPayment}
@@ -3657,6 +4154,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
           </div>
         </div>
       </form>
+      )}
     </div>
   );
 }

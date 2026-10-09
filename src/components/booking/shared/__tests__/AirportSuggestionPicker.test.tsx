@@ -83,4 +83,49 @@ describe("AirportSuggestionPicker Catalog and Lookup Suite", () => {
       expect(intlCodes).toContain("JFK");
     });
   });
+
+  describe("AirportSuggestionPicker Markup & No Nested Button Invariant", () => {
+    it("renders valid markup without nested <button> elements when value is selected", async () => {
+      const { renderToString } = await import("react-dom/server");
+      const React = await import("react");
+      const { AirportSuggestionPicker } = await import("../AirportSuggestionPicker");
+
+      const html = renderToString(
+        React.createElement(AirportSuggestionPicker, {
+          value: "BOM",
+          onChange: () => {},
+          travelType: "domestic",
+        })
+      );
+
+      // Verify no nested <button> tag exists inside the trigger button
+      const buttonMatches = html.match(/<button[^>]*>[\s\S]*?<\/button>/gi) || [];
+      for (const btn of buttonMatches) {
+        const innerContent = btn.replace(/^<button[^>]*>/i, "").replace(/<\/button>$/i, "");
+        expect(innerContent).not.toMatch(/<button/i);
+      }
+
+      // Verify clear control is accessible and rendered with role="button"
+      expect(html).toContain('title="Clear selection"');
+      expect(html).toContain('role="button"');
+    });
+
+    it("renders placeholder and no clear control when value is empty", async () => {
+      const { renderToString } = await import("react-dom/server");
+      const React = await import("react");
+      const { AirportSuggestionPicker } = await import("../AirportSuggestionPicker");
+
+      const html = renderToString(
+        React.createElement(AirportSuggestionPicker, {
+          value: "",
+          onChange: () => {},
+          travelType: "domestic",
+          placeholder: "Select airport...",
+        })
+      );
+
+      expect(html).toContain("Select airport...");
+      expect(html).not.toContain('title="Clear selection"');
+    });
+  });
 });

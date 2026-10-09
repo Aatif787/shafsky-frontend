@@ -130,8 +130,8 @@ export function ConciergeCustomizer() {
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { id: "arrival", label: "Arrival Escort", Icon: PlaneLanding },
                     { id: "departure", label: "Departure Escort", Icon: PlaneTakeoff },
+                    { id: "arrival", label: "Arrival Escort", Icon: PlaneLanding },
                     { id: "transit", label: "Transit Connection", Icon: Shuffle },
                   ].map(({ id, label, Icon }) => {
                     const isSelected = flow === id;

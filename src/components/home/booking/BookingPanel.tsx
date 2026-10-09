@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { airportApi, formatAirportOption } from "@/lib/api/airportApi";
-import { getTransitCategory } from "@/data/airportRegistry";
+import { getTransitCategory, getRouteFlightCategory, isIndianAirportCode } from "@/data/airportRegistry";
 import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
 import {
   PlaneLanding,
@@ -37,7 +37,8 @@ export function BookingPanel() {
   const [destLabel, setDestLabel] = useState<string>("");
   const [transitLabel, setTransitLabel] = useState<string>("");
   const [travelType, setTravelType] = useState<"domestic" | "international">("domestic");
-  const [tab, setTab] = useState<"arrival" | "departure" | "connection">("departure");
+  type BookingPanelService = "departure" | "arrival" | "connection";
+  const [selectedServices, setSelectedServices] = useState<BookingPanelService[]>(["departure"]);
   const [showPassengerModal, setShowPassengerModal] = useState(false);
   const [adults, setAdults] = useState(1);
   const [childrenCount, setChildrenCount] = useState(0);
@@ -47,6 +48,53 @@ export function BookingPanel() {
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [departDate2, setDepartDate2] = useState("");
   const [datePopoverOpen2, setDatePopoverOpen2] = useState(false);
+
+  // Authoritative route classification derived dynamically from origin and destination
+  const routeDeterminedCategory = useMemo<"domestic" | "international" | null>(() => {
+    const o = originCode.trim().toUpperCase();
+    const d = destCode.trim().toUpperCase();
+    if (o.length === 3 && d.length === 3) {
+      return getRouteFlightCategory(o, d);
+    }
+    if ((o.length === 3 && !isIndianAirportCode(o)) || (d.length === 3 && !isIndianAirportCode(d))) {
+      return "international";
+    }
+    return null;
+  }, [originCode, destCode]);
+
+  // Restore Automatic Category Selection: recalculate whenever airports are selected or changed
+  useEffect(() => {
+    if (routeDeterminedCategory) {
+      setTravelType(routeDeterminedCategory);
+    }
+  }, [routeDeterminedCategory]);
+
+  const handleCategoryToggle = (kind: "domestic" | "international") => {
+    if (routeDeterminedCategory && kind !== routeDeterminedCategory) {
+      toast.info(
+        `Category is automatically determined as ${routeDeterminedCategory} for your selected route (${originCode} → ${destCode}).`
+      );
+      return;
+    }
+    setTravelType(kind);
+  };
+
+  const toggleService = (srv: BookingPanelService) => {
+    setSelectedServices((prev) => {
+      if (prev.includes(srv)) {
+        if (prev.length === 1) {
+          toast.info("Please keep at least one airport service selected.");
+          return prev;
+        }
+        return prev.filter((s) => s !== srv);
+      }
+      return [...prev, srv];
+    });
+  };
+
+  const hasTransit = selectedServices.includes("connection");
+  const hasDeparture = selectedServices.includes("departure");
+  const hasArrival = selectedServices.includes("arrival");
 
   const todayStart = useMemo(() => {
     const d = new Date();
@@ -76,7 +124,7 @@ export function BookingPanel() {
     };
   }, []);
 
-  // Reset touched validation markers when tab changes
+  // Reset touched validation markers when services change
   useEffect(() => {
     setTouched({
       flightNumber: false,
@@ -84,7 +132,7 @@ export function BookingPanel() {
       flightNumber2: false,
       departDate2: false,
     });
-  }, [tab]);
+  }, [selectedServices]);
 
   const dateValue = departDate && isValid(new Date(departDate)) ? parseISO(departDate) : undefined;
   const dateValue2 =
@@ -96,27 +144,24 @@ export function BookingPanel() {
     originCode.trim().toUpperCase() === destCode.trim().toUpperCase();
 
   const isSameTransit =
-    tab === "connection" &&
+    hasTransit &&
     transitCode.trim().length === 3 &&
     (transitCode.trim().toUpperCase() === originCode.trim().toUpperCase() ||
       transitCode.trim().toUpperCase() === destCode.trim().toUpperCase());
 
-  const isArrivalDepartureValid =
+  const isFormValid =
+    selectedServices.length > 0 &&
     originCode.trim().length === 3 &&
     destCode.trim().length === 3 &&
     !isSameOriginDest &&
+    (!hasTransit || (transitCode.trim().length === 3 && !isSameTransit)) &&
     departDate !== "";
-  const isConnectionValid =
-    originCode.trim().length === 3 &&
-    destCode.trim().length === 3 &&
-    transitCode.trim().length === 3 &&
-    !isSameOriginDest &&
-    !isSameTransit &&
-    departDate !== "";
-
-  const isFormValid = tab === "connection" ? isConnectionValid : isArrivalDepartureValid;
 
   const resolveAndNavigate = async (extra: Record<string, unknown> = {}) => {
+    if (selectedServices.length === 0) {
+      toast.error("Please select at least one airport service.");
+      return false;
+    }
     if (isSameOriginDest) {
       toast.error("Origin and destination airports cannot be the same. Please select distinct airports.");
       return false;
@@ -125,58 +170,108 @@ export function BookingPanel() {
       toast.error("Transit hub cannot match your origin or destination airport.");
       return false;
     }
-    const journeyType = tab === "connection" ? "TRANSIT" : tab.toUpperCase();
+
     const transitCategory =
-      tab === "connection" ? getTransitCategory(originCode, destCode) : undefined;
-    const res = await airportApi.resolveServiceAirport({
-      journey_type: journeyType,
-      origin: originCode,
-      destination: destCode,
-      transit: transitCode,
-      flight_type: transitCategory || travelType,
-    });
-    if (!res.valid || !res.service_airport) {
-      toast.error(res.error || "This airport is currently not supported for online booking.");
-      return false;
+      hasTransit ? getTransitCategory(originCode, destCode) : undefined;
+    const servicesParam = selectedServices.join(",");
+
+    // Resolve supported airport for catalog and package selection
+    // Order of priority: Departure origin -> Transit hub -> Arrival destination
+    let targetResolution: any = null;
+    let targetDirection: "departure" | "arrival" | "transit" = "departure";
+
+    if (hasDeparture && originCode) {
+      const res = await airportApi.resolveServiceAirport({
+        journey_type: "DEPARTURE",
+        origin: originCode,
+        destination: destCode,
+        transit: transitCode,
+        flight_type: travelType,
+      });
+      if (res.valid && res.service_airport) {
+        targetResolution = res;
+        targetDirection = "departure";
+      }
     }
-    const serviceAirport = String(res.service_airport).trim().toUpperCase();
-    const derivedTravel = String(res.flight_type || transitCategory || travelType || "").toLowerCase();
-    const travelForIntent =
-      tab === "connection"
-        ? (transitCategory || derivedTravel)
-        : derivedTravel === "international" || derivedTravel === "domestic"
-          ? derivedTravel
-          : travelType;
+
+    if (!targetResolution && hasTransit && transitCode) {
+      const res = await airportApi.resolveServiceAirport({
+        journey_type: "TRANSIT",
+        origin: originCode,
+        destination: destCode,
+        transit: transitCode,
+        flight_type: transitCategory || travelType,
+      });
+      if (res.valid && res.service_airport) {
+        targetResolution = res;
+        targetDirection = "transit";
+      }
+    }
+
+    if (!targetResolution && hasArrival && destCode) {
+      const res = await airportApi.resolveServiceAirport({
+        journey_type: "ARRIVAL",
+        origin: originCode,
+        destination: destCode,
+        transit: transitCode,
+        flight_type: travelType,
+      });
+      if (res.valid && res.service_airport) {
+        targetResolution = res;
+        targetDirection = "arrival";
+      }
+    }
+
+    const isAvailable = Boolean(targetResolution && targetResolution.valid && targetResolution.service_airport);
+    const serviceAirport = isAvailable
+      ? String(targetResolution.service_airport).trim().toUpperCase()
+      : (hasDeparture ? originCode : hasArrival ? destCode : transitCode);
+
     const intent = {
+      services: servicesParam,
       airport: serviceAirport,
-      airport_id: res.airport?.id,
-      airport_name: res.airport?.name,
+      airport_id: targetResolution?.airport?.id,
+      airport_name: targetResolution?.airport?.name,
       origin: originCode,
       destination: destCode,
       transit: transitCode || undefined,
       booking_mode: "package",
       depart_date: departDate,
-      direction: tab === "connection" ? "transit" : tab,
-      travel_type: travelForIntent,
-      flight_type: travelForIntent,
+      depart_date_2: departDate2 || undefined,
+      direction: targetDirection,
+      travel_type: travelType,
+      flight_type: targetDirection === "transit" ? (transitCategory || travelType) : travelType,
       transit_type: transitCategory,
       pax_adults: adults,
       pax_children: childrenCount,
       pax_infants: infants,
       from_hero: "true",
+      source: "booking_panel",
       ...extra,
     };
+
     try {
       sessionStorage.setItem("shafsky_booking_intent", JSON.stringify(intent));
     } catch {
       // ignore quota / private mode
     }
-    navigate({
-      to: "/airports/$code",
-      params: { code: serviceAirport },
-      hash: "available-services",
-      search: intent as any,
-    });
+
+    if (isAvailable) {
+      // Redirect to the airport's existing service and package catalog page
+      navigate({
+        to: "/airports/$code",
+        params: { code: serviceAirport },
+        hash: "available-services",
+        search: intent as any,
+      });
+    } else {
+      // None of the selected airports are supported for instant online booking:
+      // Navigate directly to /book for concierge service arrangement request
+      navigate({
+        to: "/book",
+        search: intent as any,
+      });
+    }
     return true;
   };
 
@@ -195,7 +290,7 @@ export function BookingPanel() {
     await resolveAndNavigate();
   };
 
-  const tabs: [typeof tab, string, React.ComponentType<{ className?: string }>][] = [
+  const serviceOptions: [BookingPanelService, string, React.ComponentType<{ className?: string }>][] = [
     ["departure", "Departure", PlaneTakeoff],
     ["arrival", "Arrival", PlaneLanding],
     ["connection", "Transit", DoublePlaneIcon],
@@ -218,7 +313,7 @@ export function BookingPanel() {
             className="text-center text-lg sm:text-xl font-bold text-slate-950 tracking-tight"
             style={display}
           >
-            Book your seamless airport experience.
+            Book Airport Service
           </h2>
         </div>
 
@@ -229,15 +324,18 @@ export function BookingPanel() {
             <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200 self-start sm:self-auto w-full sm:w-auto">
               {(["domestic", "international"] as const).map((kind) => {
                 const active = travelType === kind;
+                const isLockedOut = Boolean(routeDeterminedCategory && kind !== routeDeterminedCategory);
                 return (
                   <button
                     key={kind}
                     type="button"
-                    onClick={() => setTravelType(kind)}
-                    className={`relative z-10 flex-1 sm:flex-initial h-9 sm:px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                    onClick={() => handleCategoryToggle(kind)}
+                    className={`relative z-10 flex-1 sm:flex-initial h-9 sm:px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 rounded-xl ${
                       active
-                        ? "text-white bg-slate-950 shadow-xs"
-                        : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50"
+                        ? "text-white bg-slate-950 shadow-xs cursor-default"
+                        : isLockedOut
+                          ? "text-slate-400 opacity-60 cursor-not-allowed hover:bg-slate-100/30"
+                          : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50 cursor-pointer"
                     }`}
                     style={mono}
                   >
@@ -247,15 +345,15 @@ export function BookingPanel() {
               })}
             </div>
 
-            {/* Direction Tabs (Services: After Domestic/International) */}
+            {/* Multi-Service Selection: Departure, Transit, Arrival */}
             <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200">
-              {tabs.map(([k, label, Icon]) => {
-                const active = tab === k;
+              {serviceOptions.map(([k, label, Icon]) => {
+                const active = selectedServices.includes(k);
                 return (
                   <button
                     key={k}
                     type="button"
-                    onClick={() => setTab(k)}
+                    onClick={() => toggleService(k)}
                     className={`relative z-10 flex flex-1 sm:flex-initial h-9 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                       active
                         ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-xs"
@@ -273,12 +371,12 @@ export function BookingPanel() {
 
           {/* Form Inputs Grid */}
           <motion.div
-            key={`booking-form-grid-${tab}`}
+            key={`booking-form-grid-${selectedServices.join("-")}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
             className={`grid gap-4 sm:gap-5 ${
-              tab === "connection"
+              hasTransit
                 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
                 : "grid-cols-1 sm:grid-cols-2"
             }`}
@@ -290,29 +388,28 @@ export function BookingPanel() {
                 <span className="text-lime-600 font-bold">*</span>
               </label>
               <IntelligentAirportAutocomplete
-                key={`origin-${tab}`}
-                mode={tab === "departure" ? "supported" : "global"}
-                journeyType={tab === "departure" ? "DEPARTURE" : undefined}
+                key="origin-global"
+                mode="global"
                 value={originLabel || originCode}
                 inputClassName={AIRPORT_INPUT}
                 onSelect={(ap) => {
                   setOriginCode(ap.code);
                   setOriginLabel(formatAirportOption(ap));
                 }}
-                placeholder={tab === "departure" ? "Search departure hub" : "Search origin airport"}
+                placeholder={hasDeparture ? "Search departure origin" : "Search origin airport"}
               />
             </div>
 
-            {/* Transit Hub (Only if connection) */}
-            {tab === "connection" && (
+            {/* Transit Hub (Only if transit/connection selected) */}
+            {hasTransit && (
               <div className="flex flex-col gap-1.5">
                 <label className={LABEL}>
                   <span>Transit Hub</span>
                   <span className="text-lime-600 font-bold">*</span>
                 </label>
                 <IntelligentAirportAutocomplete
-                  key="transit-supported"
-                  mode="supported"
+                  key="transit-global"
+                  mode="global"
                   journeyType="TRANSIT"
                   value={transitLabel || transitCode}
                   inputClassName={AIRPORT_INPUT}
@@ -337,16 +434,15 @@ export function BookingPanel() {
                 <span className="text-lime-600 font-bold">*</span>
               </label>
               <IntelligentAirportAutocomplete
-                key={`dest-${tab}`}
-                mode={tab === "arrival" ? "supported" : "global"}
-                journeyType={tab === "arrival" ? "ARRIVAL" : undefined}
+                key="dest-global"
+                mode="global"
                 value={destLabel || destCode}
                 inputClassName={AIRPORT_INPUT}
                 onSelect={(ap) => {
                   setDestCode(ap.code);
                   setDestLabel(formatAirportOption(ap));
                 }}
-                placeholder={tab === "arrival" ? "Search arrival hub" : "Search destination airport"}
+                placeholder={hasArrival ? "Search arrival destination" : "Search destination airport"}
               />
               {isSameOriginDest && (
                 <span className="text-[11px] font-mono text-rose-500 font-medium">
@@ -358,7 +454,7 @@ export function BookingPanel() {
             {/* Flight Date (or Inbound Date for connection) */}
             <div className="flex flex-col gap-1.5">
               <label className={LABEL}>
-                <span>{tab === "connection" ? "Inbound Date" : "Flight Date"}</span>
+                <span>{hasTransit ? "Inbound Date" : "Flight Date"}</span>
                 <span className="text-lime-600 font-bold">*</span>
               </label>
               <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
@@ -388,7 +484,7 @@ export function BookingPanel() {
             </div>
 
             {/* Outbound Date (Only if connection) */}
-            {tab === "connection" && (
+            {hasTransit && (
               <div className="flex flex-col gap-1.5">
                 <label className={LABEL}>
                   <span>Outbound Date</span>
