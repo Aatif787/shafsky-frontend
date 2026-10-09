@@ -28,7 +28,7 @@ const SPECIALIZED_SERVICES: GalleryService[] = [
     desc: "Compassionate, dedicated escort officers caring for senior citizens, medical passengers, and unaccompanied minors.",
     photo: HOMEPAGE_PHOTOS.specialAssistance,
     icon: HeartPulse,
-    link: "/solutions/medical",
+    link: "/solutions/special-services",
   },
   {
     title: "Duty Free & Luxury Shopping Service",
@@ -44,7 +44,7 @@ const SPECIALIZED_SERVICES: GalleryService[] = [
     desc: "Supervised gate-to-gate connection care, comfortable transit seating, and luggage re-check liaison.",
     photo: HOMEPAGE_PHOTOS.transitComfort,
     icon: Users,
-    link: "/solutions/travel",
+    link: "/solutions/hotels",
   },
   {
     title: "Destination & Celebration Service",

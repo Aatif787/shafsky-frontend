@@ -25,17 +25,17 @@ import toursTravelImg from "@/assets/others/tours-travel.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
-export const Route = createFileRoute("/solutions/medical")({
+export const Route = createFileRoute("/solutions/special-services")({
   head: () =>
     pageHead({
       title: "VIP Special Services, Medevac, HUM, Visa, Cargo & Protocol | Shafsky",
       description:
         "Luxury spa and wellness, couples travel, PSO close protection, 24/7 air and train ambulance, HUM repatriation, visa assistance, cargo pet logistics, and commercial air ticketing.",
-      path: "/solutions/medical",
+      path: "/solutions/special-services",
       jsonLd: [
         breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Special Services", path: "/solutions/medical" },
+          { name: "Special Services", path: "/solutions/special-services" },
         ]),
       ],
     }),

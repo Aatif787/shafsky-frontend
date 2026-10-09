@@ -134,9 +134,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       const p = location.pathname.toLowerCase();
       if (
         p.startsWith("/solutions/aviation") ||
-        p.startsWith("/solutions/cargo") ||
-        p.startsWith("/solutions/travel") ||
-        p.startsWith("/solutions/medical") ||
+        p.startsWith("/solutions/transport") ||
+        p.startsWith("/solutions/hotels") ||
+        p.startsWith("/solutions/special-services") ||
         p.startsWith("/charter") ||
         p.startsWith("/hotels")
       ) {

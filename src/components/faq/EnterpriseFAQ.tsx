@@ -84,7 +84,7 @@ const FAQ_DATASET: FAQItem[] = [
     a: "Upon landing, our airside host coordinates directly with your destination 5-star hotel concierge. Your luggage is transferred directly from the aircraft to your hotel suite, and key cards are prepared prior to your arrival.",
     highlight: "Hotel Integration",
     relatedServiceId: "hotel",
-    relatedServiceLink: "/solutions/travel?sub=hotel",
+    relatedServiceLink: "/solutions/hotels?sub=hotel",
     relatedServiceTitle: "Luxury Hotel Handoff",
   },
   {
@@ -95,7 +95,7 @@ const FAQ_DATASET: FAQItem[] = [
     a: "Yes. Our diplomatic relations desk prepares priority visa-on-arrival, e-visa authorizations, and consular clearance for international delegations, VIPs, and corporate executives.",
     highlight: "Visa Liaison",
     relatedServiceId: "visa",
-    relatedServiceLink: "/solutions/travel?sub=visa",
+    relatedServiceLink: "/solutions/special-services?sub=visa",
     relatedServiceTitle: "Consular Visa Desk",
   },
 
@@ -108,7 +108,7 @@ const FAQ_DATASET: FAQItem[] = [
     a: "Our AVI escorts utilize IATA-certified climate-controlled tarmac vehicles and bonded holding suites. Dedicated veterinary professionals accompany your pet from aircraft unloading through instant customs release.",
     highlight: "IATA Certified AVI",
     relatedServiceId: "avi",
-    relatedServiceLink: "/solutions/cargo?sub=avi",
+    relatedServiceLink: "/solutions/special-services?sub=avi",
     relatedServiceTitle: "Live Animal AVI Transit",
   },
 
@@ -121,7 +121,7 @@ const FAQ_DATASET: FAQItem[] = [
     a: "Our 24/7 command center dispatches critical care air ambulance aircraft within 90–120 minutes of flight confirmation, complete with specialized flight physicians and life support equipment.",
     highlight: "Dispatch < 120m",
     relatedServiceId: "air_ambulance",
-    relatedServiceLink: "/solutions/medical?sub=air_ambulance",
+    relatedServiceLink: "/solutions/special-services?sub=air_ambulance",
     relatedServiceTitle: "Air Ambulance Medevac",
   },
 

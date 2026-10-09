@@ -23,9 +23,9 @@ describe("ICICI Review Mode Specifications", () => {
       const p = pathname.toLowerCase();
       if (
         p.startsWith("/solutions/aviation") ||
-        p.startsWith("/solutions/cargo") ||
-        p.startsWith("/solutions/travel") ||
-        p.startsWith("/solutions/medical") ||
+        p.startsWith("/solutions/transport") ||
+        p.startsWith("/solutions/hotels") ||
+        p.startsWith("/solutions/special-services") ||
         p.startsWith("/charter") ||
         p.startsWith("/hotels")
       ) {
@@ -37,9 +37,9 @@ describe("ICICI Review Mode Specifications", () => {
     it("redirects all forbidden public routes to /solutions/concierge in Review Mode", () => {
       const forbiddenRoutes = [
         "/solutions/aviation",
-        "/solutions/cargo",
-        "/solutions/travel",
-        "/solutions/medical",
+        "/solutions/transport",
+        "/solutions/hotels",
+        "/solutions/special-services",
         "/charter",
         "/charter/requests",
         "/hotels/airport-hotel",
@@ -57,9 +57,9 @@ describe("ICICI Review Mode Specifications", () => {
     it("does NOT redirect forbidden routes when Review Mode is false", () => {
       const forbiddenRoutes = [
         "/solutions/aviation",
-        "/solutions/cargo",
-        "/solutions/travel",
-        "/solutions/medical",
+        "/solutions/transport",
+        "/solutions/hotels",
+        "/solutions/special-services",
         "/charter",
         "/hotels/airport-hotel",
       ];
@@ -118,9 +118,9 @@ describe("ICICI Review Mode Specifications", () => {
       expect(fullServices).toHaveLength(5);
       const serviceHrefs = fullServices.map((s) => s.href);
       expect(serviceHrefs).toContain("/solutions/aviation");
-      expect(serviceHrefs).toContain("/solutions/cargo");
-      expect(serviceHrefs).toContain("/solutions/travel");
-      expect(serviceHrefs).toContain("/solutions/medical");
+      expect(serviceHrefs).toContain("/solutions/transport");
+      expect(serviceHrefs).toContain("/solutions/hotels");
+      expect(serviceHrefs).toContain("/solutions/special-services");
     });
   });
 
@@ -252,9 +252,9 @@ describe("ICICI Review Mode Specifications", () => {
       { path: "/solutions/concierge" },
       { path: "/book" },
       { path: "/solutions/aviation" },
-      { path: "/solutions/cargo" },
-      { path: "/solutions/travel" },
-      { path: "/solutions/medical" },
+      { path: "/solutions/transport" },
+      { path: "/solutions/hotels" },
+      { path: "/solutions/special-services" },
       { path: "/services/guide" },
       { path: "/contact" },
       { path: "/hotels/airport-hotel" },
@@ -266,9 +266,9 @@ describe("ICICI Review Mode Specifications", () => {
 
     const NON_REVIEW_PREFIXES = [
       "/solutions/aviation",
-      "/solutions/cargo",
-      "/solutions/travel",
-      "/solutions/medical",
+      "/solutions/transport",
+      "/solutions/hotels",
+      "/solutions/special-services",
       "/charter",
       "/hotels",
     ];

@@ -21,9 +21,9 @@ const STATIC_PAGES: SitemapEntry[] = [
   { path: "/solutions/concierge", changefreq: "weekly", priority: "0.9" },
   { path: "/book", changefreq: "weekly", priority: "0.8" },
   { path: "/solutions/aviation", changefreq: "monthly", priority: "0.8" },
-  { path: "/solutions/cargo", changefreq: "monthly", priority: "0.7" },
-  { path: "/solutions/travel", changefreq: "monthly", priority: "0.7" },
-  { path: "/solutions/medical", changefreq: "monthly", priority: "0.6" },
+  { path: "/solutions/transport", changefreq: "monthly", priority: "0.7" },
+  { path: "/solutions/hotels", changefreq: "monthly", priority: "0.7" },
+  { path: "/solutions/special-services", changefreq: "monthly", priority: "0.6" },
   { path: "/services/guide", changefreq: "monthly", priority: "0.7" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
   { path: "/hotels/airport-hotel", changefreq: "monthly", priority: "0.6" },
@@ -35,9 +35,9 @@ const STATIC_PAGES: SitemapEntry[] = [
 
 const NON_REVIEW_PREFIXES = [
   "/solutions/aviation",
-  "/solutions/cargo",
-  "/solutions/travel",
-  "/solutions/medical",
+  "/solutions/transport",
+  "/solutions/hotels",
+  "/solutions/special-services",
   "/charter",
   "/hotels",
 ];

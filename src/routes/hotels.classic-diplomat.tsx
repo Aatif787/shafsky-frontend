@@ -19,7 +19,7 @@ export const Route = createFileRoute("/hotels/classic-diplomat")({
       jsonLd: [
         breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Hotels", path: "/solutions/travel" },
+          { name: "Hotels", path: "/solutions/hotels" },
           { name: "Classic Diplomat", path: "/hotels/classic-diplomat" },
         ]),
       ],

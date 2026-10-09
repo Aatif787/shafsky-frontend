@@ -400,6 +400,7 @@ export interface CountryCodeSelectProps {
   /** Receives the dial code (e.g. "+971"). */
   onChange: (dialCode: string) => void;
   className?: string;
+  style?: React.CSSProperties;
   disabled?: boolean;
 }
 
@@ -410,7 +411,7 @@ export interface CountryCodeSelectProps {
  *
  * Options come from libphonenumber-js metadata; nothing is hardcoded.
  */
-export function CountryCodeSelect({ value, onChange, className, disabled }: CountryCodeSelectProps) {
+export function CountryCodeSelect({ value, onChange, className, style, disabled }: CountryCodeSelectProps) {
   const [countries, setCountries] = useState<DialCountry[]>([]);
   useEffect(() => {
     let alive = true;
@@ -429,6 +430,7 @@ export function CountryCodeSelect({ value, onChange, className, disabled }: Coun
       disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
       className={className}
+      style={style}
       aria-label="Country calling code"
     >
       {countries.map((c) => (

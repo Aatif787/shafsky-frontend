@@ -30,7 +30,7 @@ export const Route = createFileRoute("/hotels/holiday-inn-express")({
       jsonLd: [
         breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Hotels", path: "/solutions/travel" },
+          { name: "Hotels", path: "/solutions/hotels" },
           { name: "Holiday Inn Express T3", path: "/hotels/holiday-inn-express" },
         ]),
       ],
@@ -275,7 +275,7 @@ function HolidayInnExpressDetailPage() {
                 if (window.history.length > 1) {
                   window.history.back();
                 } else {
-                  navigate({ to: "/solutions/travel" });
+                  navigate({ to: "/solutions/hotels" });
                 }
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all cursor-pointer"

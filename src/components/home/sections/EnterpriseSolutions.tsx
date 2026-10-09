@@ -277,11 +277,11 @@ export function EnterpriseSolutions() {
                     } else if (srv.id === "air-charter") {
                       navigate({ to: "/solutions/aviation" });
                     } else if (srv.id === "luxury-hotels") {
-                      navigate({ to: "/solutions/travel" });
+                      navigate({ to: "/solutions/hotels" });
                     } else if (srv.id === "transport-service") {
-                      navigate({ to: "/solutions/cargo" });
+                      navigate({ to: "/solutions/transport" });
                     } else if (srv.id === "special-services") {
-                      navigate({ to: "/solutions/medical" });
+                      navigate({ to: "/solutions/special-services" });
                     } else {
                       setSelectedService(srv);
                     }
@@ -328,9 +328,9 @@ export function EnterpriseSolutions() {
                     onClick={() => {
                       if (srv.id === "meet-greet-lounge") navigate({ to: "/solutions/concierge" });
                       else if (srv.id === "air-charter") navigate({ to: "/solutions/aviation" });
-                      else if (srv.id === "luxury-hotels") navigate({ to: "/solutions/travel" });
-                      else if (srv.id === "transport-service") navigate({ to: "/solutions/cargo" });
-                      else if (srv.id === "special-services") navigate({ to: "/solutions/medical" });
+                      else if (srv.id === "luxury-hotels") navigate({ to: "/solutions/hotels" });
+                      else if (srv.id === "transport-service") navigate({ to: "/solutions/transport" });
+                      else if (srv.id === "special-services") navigate({ to: "/solutions/special-services" });
                       else setSelectedService(srv);
                     }}
                     className="group relative rounded-full overflow-hidden cursor-pointer shadow-[0_10px_25px_-5px_rgba(0,0,0,0.15)] ring-2 ring-[#d4af37]/40 ring-offset-4 ring-offset-white transition-all duration-500 bg-slate-900 flex-shrink-0 w-[5.5rem] h-[5.5rem] sm:w-24 sm:h-24 z-10"

@@ -438,28 +438,40 @@ export function PassengerInformationExperience({
                 <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-1.5 font-bold">
                   Phone / WhatsApp Number *
                 </label>
-                <div className="flex gap-2">
+                <div className="flex" style={{ gap: "clamp(0.5rem, 1.5vw, 0.75rem)" }}>
                   {/* COUNTRY CODE SELECTOR */}
-                  <div className="relative shrink-0">
+                  <div className="relative shrink-0" style={{ width: "clamp(90px, 25vw, 120px)" }}>
                     <CountryCodeSelect
                       value={internalCountryCode}
                       onChange={(v) => {
                         setInternalCountryCode(v);
                         if (setCountryCode) setCountryCode(v);
                       }}
-                      className="h-full px-3 py-3.5 rounded-2xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-[#7c3aed] font-mono cursor-pointer shadow-xs"
+                      style={{
+                        height: "clamp(44px, 4.5vw, 52px)",
+                        fontSize: "clamp(11px, 1.1vw, 12px)",
+                        paddingLeft: "clamp(8px, 1vw, 12px)",
+                        paddingRight: "clamp(24px, 3vw, 28px)",
+                      }}
+                      className="w-full rounded-2xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-[#7c3aed] font-mono cursor-pointer shadow-xs appearance-none"
                     />
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
 
                   {/* PHONE INPUT */}
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <input
                       type="tel"
                       value={passengerPhone}
                       onChange={(e) => setPassengerPhone(e.target.value)}
                       placeholder="Mobile number"
-                      className={`w-full px-4 py-3.5 rounded-2xl bg-white border text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-all font-mono ${
+                      style={{
+                        height: "clamp(44px, 4.5vw, 52px)",
+                        fontSize: "clamp(12px, 1.2vw, 14px)",
+                        paddingLeft: "clamp(12px, 1.5vw, 16px)",
+                        paddingRight: "clamp(12px, 1.5vw, 16px)",
+                      }}
+                      className={`w-full rounded-2xl bg-white border text-slate-900 placeholder-slate-400 focus:outline-none transition-all font-mono ${
                         isPhoneValid ? "border-emerald-500" : "border-slate-200 focus:border-[#7c3aed]"
                       }`}
                     />

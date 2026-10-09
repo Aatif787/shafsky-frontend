@@ -40,10 +40,10 @@ import { Route as HotelsDePavilionRouteImport } from './routes/hotels.de-pavilio
 import { Route as HotelsHolidayInnExpressRouteImport } from './routes/hotels.holiday-inn-express'
 import { Route as ServicesGuideRouteImport } from './routes/services.guide'
 import { Route as SolutionsAviationRouteImport } from './routes/solutions.aviation'
-import { Route as SolutionsCargoRouteImport } from './routes/solutions.cargo'
 import { Route as SolutionsConciergeRouteImport } from './routes/solutions.concierge'
-import { Route as SolutionsMedicalRouteImport } from './routes/solutions.medical'
-import { Route as SolutionsTravelRouteImport } from './routes/solutions.travel'
+import { Route as SolutionsHotelsRouteImport } from './routes/solutions.hotels'
+import { Route as SolutionsSpecialServicesRouteImport } from './routes/solutions.special-services'
+import { Route as SolutionsTransportRouteImport } from './routes/solutions.transport'
 import { Route as VerifyIdRouteImport } from './routes/verify.$id'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
@@ -235,24 +235,25 @@ const SolutionsAviationRoute = SolutionsAviationRouteImport.update({
   path: '/solutions/aviation',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SolutionsCargoRoute = SolutionsCargoRouteImport.update({
-  id: '/solutions/cargo',
-  path: '/solutions/cargo',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SolutionsConciergeRoute = SolutionsConciergeRouteImport.update({
   id: '/solutions/concierge',
   path: '/solutions/concierge',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SolutionsMedicalRoute = SolutionsMedicalRouteImport.update({
-  id: '/solutions/medical',
-  path: '/solutions/medical',
+const SolutionsHotelsRoute = SolutionsHotelsRouteImport.update({
+  id: '/solutions/hotels',
+  path: '/solutions/hotels',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SolutionsTravelRoute = SolutionsTravelRouteImport.update({
-  id: '/solutions/travel',
-  path: '/solutions/travel',
+const SolutionsSpecialServicesRoute =
+  SolutionsSpecialServicesRouteImport.update({
+    id: '/solutions/special-services',
+    path: '/solutions/special-services',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SolutionsTransportRoute = SolutionsTransportRouteImport.update({
+  id: '/solutions/transport',
+  path: '/solutions/transport',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerifyIdRoute = VerifyIdRouteImport.update({
@@ -496,10 +497,10 @@ export interface FileRoutesByFullPath {
   '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
   '/services/guide': typeof ServicesGuideRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
-  '/solutions/cargo': typeof SolutionsCargoRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
-  '/solutions/medical': typeof SolutionsMedicalRoute
-  '/solutions/travel': typeof SolutionsTravelRoute
+  '/solutions/hotels': typeof SolutionsHotelsRoute
+  '/solutions/special-services': typeof SolutionsSpecialServicesRoute
+  '/solutions/transport': typeof SolutionsTransportRoute
   '/verify/$id': typeof VerifyIdRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
@@ -566,10 +567,10 @@ export interface FileRoutesByTo {
   '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
   '/services/guide': typeof ServicesGuideRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
-  '/solutions/cargo': typeof SolutionsCargoRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
-  '/solutions/medical': typeof SolutionsMedicalRoute
-  '/solutions/travel': typeof SolutionsTravelRoute
+  '/solutions/hotels': typeof SolutionsHotelsRoute
+  '/solutions/special-services': typeof SolutionsSpecialServicesRoute
+  '/solutions/transport': typeof SolutionsTransportRoute
   '/verify/$id': typeof VerifyIdRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
@@ -640,10 +641,10 @@ export interface FileRoutesById {
   '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
   '/services/guide': typeof ServicesGuideRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
-  '/solutions/cargo': typeof SolutionsCargoRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
-  '/solutions/medical': typeof SolutionsMedicalRoute
-  '/solutions/travel': typeof SolutionsTravelRoute
+  '/solutions/hotels': typeof SolutionsHotelsRoute
+  '/solutions/special-services': typeof SolutionsSpecialServicesRoute
+  '/solutions/transport': typeof SolutionsTransportRoute
   '/verify/$id': typeof VerifyIdRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
@@ -714,10 +715,10 @@ export interface FileRouteTypes {
     | '/hotels/holiday-inn-express'
     | '/services/guide'
     | '/solutions/aviation'
-    | '/solutions/cargo'
     | '/solutions/concierge'
-    | '/solutions/medical'
-    | '/solutions/travel'
+    | '/solutions/hotels'
+    | '/solutions/special-services'
+    | '/solutions/transport'
     | '/verify/$id'
     | '/admin/analytics'
     | '/admin/audit-logs'
@@ -784,10 +785,10 @@ export interface FileRouteTypes {
     | '/hotels/holiday-inn-express'
     | '/services/guide'
     | '/solutions/aviation'
-    | '/solutions/cargo'
     | '/solutions/concierge'
-    | '/solutions/medical'
-    | '/solutions/travel'
+    | '/solutions/hotels'
+    | '/solutions/special-services'
+    | '/solutions/transport'
     | '/verify/$id'
     | '/admin/analytics'
     | '/admin/audit-logs'
@@ -857,10 +858,10 @@ export interface FileRouteTypes {
     | '/hotels/holiday-inn-express'
     | '/services/guide'
     | '/solutions/aviation'
-    | '/solutions/cargo'
     | '/solutions/concierge'
-    | '/solutions/medical'
-    | '/solutions/travel'
+    | '/solutions/hotels'
+    | '/solutions/special-services'
+    | '/solutions/transport'
     | '/verify/$id'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/audit-logs'
@@ -925,10 +926,10 @@ export interface RootRouteChildren {
   HotelsHolidayInnExpressRoute: typeof HotelsHolidayInnExpressRoute
   ServicesGuideRoute: typeof ServicesGuideRoute
   SolutionsAviationRoute: typeof SolutionsAviationRoute
-  SolutionsCargoRoute: typeof SolutionsCargoRoute
   SolutionsConciergeRoute: typeof SolutionsConciergeRoute
-  SolutionsMedicalRoute: typeof SolutionsMedicalRoute
-  SolutionsTravelRoute: typeof SolutionsTravelRoute
+  SolutionsHotelsRoute: typeof SolutionsHotelsRoute
+  SolutionsSpecialServicesRoute: typeof SolutionsSpecialServicesRoute
+  SolutionsTransportRoute: typeof SolutionsTransportRoute
   VerifyIdRoute: typeof VerifyIdRoute
   ApiCharterRequestsRoute: typeof ApiCharterRequestsRoute
   ApiFlightValidateRoute: typeof ApiFlightValidateRoute
@@ -1154,13 +1155,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SolutionsAviationRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/solutions/cargo': {
-      id: '/solutions/cargo'
-      path: '/solutions/cargo'
-      fullPath: '/solutions/cargo'
-      preLoaderRoute: typeof SolutionsCargoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/solutions/concierge': {
       id: '/solutions/concierge'
       path: '/solutions/concierge'
@@ -1168,18 +1162,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SolutionsConciergeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/solutions/medical': {
-      id: '/solutions/medical'
-      path: '/solutions/medical'
-      fullPath: '/solutions/medical'
-      preLoaderRoute: typeof SolutionsMedicalRouteImport
+    '/solutions/hotels': {
+      id: '/solutions/hotels'
+      path: '/solutions/hotels'
+      fullPath: '/solutions/hotels'
+      preLoaderRoute: typeof SolutionsHotelsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/solutions/travel': {
-      id: '/solutions/travel'
-      path: '/solutions/travel'
-      fullPath: '/solutions/travel'
-      preLoaderRoute: typeof SolutionsTravelRouteImport
+    '/solutions/special-services': {
+      id: '/solutions/special-services'
+      path: '/solutions/special-services'
+      fullPath: '/solutions/special-services'
+      preLoaderRoute: typeof SolutionsSpecialServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions/transport': {
+      id: '/solutions/transport'
+      path: '/solutions/transport'
+      fullPath: '/solutions/transport'
+      preLoaderRoute: typeof SolutionsTransportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verify/$id': {
@@ -1609,10 +1610,10 @@ const rootRouteChildren: RootRouteChildren = {
   HotelsHolidayInnExpressRoute: HotelsHolidayInnExpressRoute,
   ServicesGuideRoute: ServicesGuideRoute,
   SolutionsAviationRoute: SolutionsAviationRoute,
-  SolutionsCargoRoute: SolutionsCargoRoute,
   SolutionsConciergeRoute: SolutionsConciergeRoute,
-  SolutionsMedicalRoute: SolutionsMedicalRoute,
-  SolutionsTravelRoute: SolutionsTravelRoute,
+  SolutionsHotelsRoute: SolutionsHotelsRoute,
+  SolutionsSpecialServicesRoute: SolutionsSpecialServicesRoute,
+  SolutionsTransportRoute: SolutionsTransportRoute,
   VerifyIdRoute: VerifyIdRoute,
   ApiCharterRequestsRoute: ApiCharterRequestsRoute,
   ApiFlightValidateRoute: ApiFlightValidateRoute,

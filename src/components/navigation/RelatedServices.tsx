@@ -40,7 +40,7 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
   air_ticketing: {
     id: "air_ticketing",
     title: "Commercial Air Ticketing",
-    link: "/solutions/travel?sub=air_ticketing",
+    link: "/solutions/special-services?sub=air_ticketing",
     icon: Ticket,
     desc: "Commercial first-class and business-class flight reservations with priority seat blocking.",
     tag: "VIP Ticketing",
@@ -49,7 +49,7 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
   hotel: {
     id: "hotel",
     title: "5-Star Hotel & Palace Suites",
-    link: "/solutions/travel?sub=hotel",
+    link: "/solutions/hotels?sub=hotel",
     icon: Hotel,
     desc: "Luxury palace suite reservations with complimentary room upgrades & butler service.",
     tag: "Luxury Stay",
@@ -58,7 +58,7 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
   visa: {
     id: "visa",
     title: "Fast-Track Visa Services",
-    link: "/solutions/travel?sub=visa",
+    link: "/solutions/special-services?sub=visa",
     icon: Building2,
     desc: "Expedited diplomatic visa processing, e-Visa dispatch, and embassy liaison.",
     tag: "Fast-Track Visa",
@@ -67,7 +67,7 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
   onboard_meals: {
     id: "onboard_meals",
     title: "In-Flight Gourmet Catering",
-    link: "/solutions/travel?sub=onboard_meals",
+    link: "/solutions/special-services?sub=onboard_meals",
     icon: Sparkles,
     desc: "Custom Michelin-grade inflight catering & specialized dietary curation.",
     tag: "Bespoke Dining",
@@ -78,7 +78,7 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
   cargo: {
     id: "cargo",
     title: "Air Cargo Clearance",
-    link: "/solutions/cargo?sub=cargo",
+    link: "/solutions/special-services?sub=cargo",
     icon: Package,
     desc: "Express airside freight handling, customs bonding, and high-value cargo escort.",
     tag: "Freight Clearance",
@@ -87,7 +87,7 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
   avi: {
     id: "avi",
     title: "Live Pet AVI Transit",
-    link: "/solutions/cargo?sub=avi",
+    link: "/solutions/special-services?sub=avi",
     icon: Package,
     desc: "Climate-controlled live animal air transit with dedicated veterinary care.",
     tag: "Live Pet Transit",
@@ -98,7 +98,7 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
   air_ambulance: {
     id: "air_ambulance",
     title: "Air Ambulance Medevac",
-    link: "/solutions/medical?sub=air_ambulance",
+    link: "/solutions/special-services?sub=air_ambulance",
     icon: HeartPulse,
     desc: "24/7 Airborne ICU jets with specialized flight doctor critical care teams.",
     tag: "Airborne ICU",
@@ -107,7 +107,7 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
   train_ambulance: {
     id: "train_ambulance",
     title: "Train Ambulance Escort",
-    link: "/solutions/medical?sub=train_ambulance",
+    link: "/solutions/special-services?sub=train_ambulance",
     icon: Car,
     desc: "Mobile rail life-support medevac units with doctor escorts.",
     tag: "Rail ICU",
@@ -116,7 +116,7 @@ const SERVICE_CATALOG: Record<string, RelatedServiceItem> = {
   hum: {
     id: "hum",
     title: "HUM Repatriation",
-    link: "/solutions/medical?sub=hum",
+    link: "/solutions/special-services?sub=hum",
     icon: ShieldCheck,
     desc: "Dignified human remains repatriation & international embassy clearance.",
     tag: "Repatriation",
@@ -163,17 +163,17 @@ function resolveIntelligentSuggestions(pathname: string, searchLocation: any): R
   }
 
   // 2. Travel Services Route
-  if (pathname.includes("/solutions/travel")) {
+  if (pathname.includes("/solutions/hotels")) {
     return [SERVICE_CATALOG.meet_greet, SERVICE_CATALOG.visa, SERVICE_CATALOG.hotel];
   }
 
   // 3. Cargo Route
-  if (pathname.includes("/solutions/cargo")) {
+  if (pathname.includes("/solutions/transport")) {
     return [SERVICE_CATALOG.cargo, SERVICE_CATALOG.avi, SERVICE_CATALOG.transport];
   }
 
   // 4. Medical Route
-  if (pathname.includes("/solutions/medical")) {
+  if (pathname.includes("/solutions/special-services")) {
     return [SERVICE_CATALOG.air_ambulance, SERVICE_CATALOG.train_ambulance, SERVICE_CATALOG.hum];
   }
 

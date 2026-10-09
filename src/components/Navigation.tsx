@@ -56,7 +56,7 @@ export const PRIMARY_SERVICES: ServiceMenuItem[] = [
   },
   {
     title: "Transport Service",
-    href: "/solutions/cargo",
+    href: "/solutions/transport",
     descriptor: "Luxury • MUV / Large • Standard",
     icon: Car,
     badge: "Chauffeur & Fleet",
@@ -65,7 +65,7 @@ export const PRIMARY_SERVICES: ServiceMenuItem[] = [
   },
   {
     title: "Luxury Hotels",
-    href: "/solutions/travel",
+    href: "/solutions/hotels",
     descriptor: "7 Star • 5 Star • 3 Star",
     icon: Hotel,
     badge: "Curated Stays",
@@ -74,7 +74,7 @@ export const PRIMARY_SERVICES: ServiceMenuItem[] = [
   },
   {
     title: "Special Services",
-    href: "/solutions/medical",
+    href: "/solutions/special-services",
     descriptor: "Air & Train Ambulance • HUM • Visa • Cargo & AVI • Ticketing • Spa • PSO",
     icon: ShieldCheck,
     badge: "Protocol & Medevac",

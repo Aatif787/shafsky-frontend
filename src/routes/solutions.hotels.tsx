@@ -5,18 +5,18 @@ import { display } from "@/components/home/theme";
 import hotelPageImg from "@/assets/others/hotelpage.png";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
-export const Route = createFileRoute("/solutions/travel")({
+export const Route = createFileRoute("/solutions/hotels")({
   head: () =>
     pageHead({
       title: "Luxury Airport Hotels & VIP Stays in India | Shafsky",
       description:
         "Preferred rates at palace resorts, 5-star suites, and airport transit hotels near IGI Delhi and major Indian hubs. Book VIP hotel stays with Shafsky Aviation.",
-      path: "/solutions/travel",
+      path: "/solutions/hotels",
       keywords: ["airport hotel Delhi", "IGI airport hotel", "VIP hotel booking India"],
       jsonLd: [
         breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Luxury Hotels", path: "/solutions/travel" },
+          { name: "Luxury Hotels", path: "/solutions/hotels" },
         ]),
       ],
     }),

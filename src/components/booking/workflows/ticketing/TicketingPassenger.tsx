@@ -324,7 +324,13 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                 }
               }}
               placeholder="Full name"
-              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
+              style={{ 
+                height: "clamp(44px, 4.5vw, 52px)",
+                fontSize: "clamp(12px, 1.2vw, 14px)",
+                paddingLeft: "clamp(12px, 1.5vw, 16px)",
+                paddingRight: "clamp(12px, 1.5vw, 16px)"
+              }}
+              className="w-full rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-emerald-500 font-sans font-medium"
             />
           </div>
 
@@ -337,7 +343,13 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
               value={data.phone}
               onChange={(e) => onChange({ phone: e.target.value })}
               placeholder="Mobile number"
-              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-mono font-bold"
+              style={{ 
+                height: "clamp(44px, 4.5vw, 52px)",
+                fontSize: "clamp(12px, 1.2vw, 14px)",
+                paddingLeft: "clamp(12px, 1.5vw, 16px)",
+                paddingRight: "clamp(12px, 1.5vw, 16px)"
+              }}
+              className="w-full rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-emerald-500 font-mono font-bold"
             />
           </div>
 
@@ -350,7 +362,13 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
               value={data.email}
               onChange={(e) => onChange({ email: e.target.value })}
               placeholder="guest@shafskyaviation.com"
-              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 font-sans font-medium"
+              style={{ 
+                height: "clamp(44px, 4.5vw, 52px)",
+                fontSize: "clamp(12px, 1.2vw, 14px)",
+                paddingLeft: "clamp(12px, 1.5vw, 16px)",
+                paddingRight: "clamp(12px, 1.5vw, 16px)"
+              }}
+              className="w-full rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-emerald-500 font-sans font-medium"
             />
           </div>
         </div>

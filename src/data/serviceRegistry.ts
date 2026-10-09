@@ -5,7 +5,7 @@ import {
   LucideIcon
 } from "lucide-react";
 
-export type ServiceCategory = "concierge" | "travel" | "cargo" | "medical" | "aviation" | "security";
+export type ServiceCategory = "concierge" | "hotels" | "transport" | "special-services" | "aviation" | "security";
 
 export interface ServiceSEO {
   title: string;
@@ -44,18 +44,23 @@ export const SERVICE_REGISTRY: Record<string, ServiceEntry> = OFFICIAL_SHAFSKY_S
     let category: ServiceCategory = "concierge";
     let categoryHref = "/solutions/concierge";
 
-    if (item.categoryId === "air_ticketing" || (item.categoryId as string) === "travel_support") {
-      category = "travel";
-      categoryHref = "/solutions/travel";
+    if (item.categoryId === "ground_transport") {
+      category = "transport";
+      categoryHref = "/solutions/transport";
     } else if (item.categoryId === "private_charter") {
       category = "aviation";
       categoryHref = "/solutions/aviation";
-    } else if (item.categoryId === "cargo_logistics") {
-      category = "cargo";
-      categoryHref = "/solutions/cargo";
-    } else if (item.categoryId === "medical_assistance") {
-      category = "medical";
-      categoryHref = "/solutions/medical";
+    } else if (
+      item.categoryId === "air_ticketing" || 
+      (item.categoryId as string) === "travel_support" ||
+      item.categoryId === "cargo_logistics" || 
+      item.categoryId === "medical_assistance"
+    ) {
+      category = "special-services";
+      categoryHref = "/solutions/special-services";
+    } else if ((item.categoryId as string) === "hotels" || (item.categoryId as string) === "accommodation") {
+      category = "hotels";
+      categoryHref = "/solutions/hotels";
     }
 
     const reqFields = getRequiredBookingFields(item.bookingServiceId || item.id);

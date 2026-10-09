@@ -247,19 +247,19 @@ export function serviceCatalogJsonLd() {
       "@type": "ListItem",
       position: 3,
       name: "Airport Transfers",
-      url: absoluteUrl("/solutions/cargo"),
+      url: absoluteUrl("/solutions/transport"),
     },
     {
       "@type": "ListItem",
       position: 4,
       name: "Luxury Hotels",
-      url: absoluteUrl("/solutions/travel"),
+      url: absoluteUrl("/solutions/hotels"),
     },
     {
       "@type": "ListItem",
       position: 5,
       name: "Special Services",
-      url: absoluteUrl("/solutions/medical"),
+      url: absoluteUrl("/solutions/special-services"),
     },
   ];
 

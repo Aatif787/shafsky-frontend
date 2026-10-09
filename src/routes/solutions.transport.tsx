@@ -10,18 +10,18 @@ import { display } from "@/components/home/theme";
 import home5Img from "@/assets/homepage/home5.jpeg";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
-export const Route = createFileRoute("/solutions/cargo")({
+export const Route = createFileRoute("/solutions/transport")({
   head: () =>
     pageHead({
       title: "Airport Luxury Transfers & Chauffeured Fleet | Shafsky",
       description:
         "Chauffeured airport transfers in Mercedes-Maybach, Toyota Vellfire, and executive sedans across India. Book tarmac and curbside passenger transport with Shafsky.",
-      path: "/solutions/cargo",
+      path: "/solutions/transport",
       keywords: ["airport transfer India", "chauffeured luxury car", "Maybach airport pickup"],
       jsonLd: [
         breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Airport Transfers", path: "/solutions/cargo" },
+          { name: "Airport Transfers", path: "/solutions/transport" },
         ]),
       ],
     }),

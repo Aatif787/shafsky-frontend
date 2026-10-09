@@ -181,7 +181,7 @@ export function HotelDetailTemplate({
                 if (window.history.length > 1) {
                   window.history.back();
                 } else {
-                  navigate({ to: "/solutions/travel" });
+                  navigate({ to: "/solutions/hotels" });
                 }
               }}
               className="inline-flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#1d63b8] transition-colors cursor-pointer bg-slate-100 hover:bg-slate-200/80 px-3 py-1.5 rounded-lg"

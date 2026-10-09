@@ -19,9 +19,9 @@ interface BreadcrumbsProps {
 
 const CATEGORY_MAP: Record<string, { label: string; href: string }> = {
   "/solutions/concierge": { label: "Airport Concierge", href: "/solutions/concierge" },
-  "/solutions/travel": { label: "Travel Services", href: "/solutions/travel" },
-  "/solutions/cargo": { label: "Cargo & Logistics", href: "/solutions/cargo" },
-  "/solutions/medical": { label: "Medical Assist", href: "/solutions/medical" },
+  "/solutions/hotels": { label: "Hotels & Hospitality", href: "/solutions/hotels" },
+  "/solutions/transport": { label: "Transport Services", href: "/solutions/transport" },
+  "/solutions/special-services": { label: "Special Services", href: "/solutions/special-services" },
   "/solutions/aviation": { label: "Private Aviation", href: "/solutions/aviation" },
   "/charter": { label: "Private Aviation", href: "/charter" },
   "/airports": { label: "Coverage", href: "/airports" },
