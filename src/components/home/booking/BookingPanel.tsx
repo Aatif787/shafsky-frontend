@@ -116,9 +116,7 @@ export function BookingPanel() {
 
   // Field validation touched states
   const [, setTouched] = useState({
-    flightNumber: false,
     departDate: false,
-    flightNumber2: false,
     departDate2: false,
   });
 
@@ -139,9 +137,7 @@ export function BookingPanel() {
   // Reset touched validation markers when services change
   useEffect(() => {
     setTouched({
-      flightNumber: false,
       departDate: false,
-      flightNumber2: false,
       departDate2: false,
     });
   }, [selectedServices]);
@@ -195,14 +191,18 @@ export function BookingPanel() {
       transitCode
     );
 
+    const existingFlightNumber = (extra?.flight_number || extra?.flight_num || extra?.flightNumber) as string | undefined;
+    const existingFlightNumber2 = (extra?.flight_number_2 || extra?.flight_num_2 || extra?.flightNumber2) as string | undefined;
+
     // Call MultiServiceApi to check availability across the complete itinerary
     let availResponse: any = null;
+    let apiError: any = null;
     try {
       availResponse = await MultiServiceApi.checkAvailability({
         origin_code: originCode,
         dest_code: destCode,
         transit_codes: transitCode ? [transitCode] : undefined,
-        flight_num: flightNumber || undefined,
+        flight_num: existingFlightNumber || undefined,
         flight_date: departDate || undefined,
         service_date: departDate || undefined,
         guest_count: adults,
@@ -212,8 +212,18 @@ export function BookingPanel() {
           airport_code: st === "DEPARTURE" ? originCode : st === "ARRIVAL" ? destCode : transitCode,
         })),
       });
-    } catch (err) {
+    } catch (err: any) {
       console.warn("[BookingPanel] MultiServiceApi check error:", err);
+      apiError = err;
+    }
+
+    if (apiError) {
+      if (apiError.status === 401 || apiError.statusCode === 401) {
+        toast.error("Session expired or authentication failed. Please refresh the page and try again.");
+      } else {
+        toast.error(apiError.message || "Unable to check airport availability. Please check your connection and try again.");
+      }
+      return false;
     }
 
     // Determine available targets (status === "AVAILABLE" and is_airport_supported)
@@ -227,10 +237,7 @@ export function BookingPanel() {
         );
         if (item && item.status === "AVAILABLE" && item.is_airport_supported) {
           availableTargets.push({ target, item });
-          continue;
         }
-      } else if (AIRPORT_REGISTRY[target.airportCode]) {
-        availableTargets.push({ target });
       }
     }
 
@@ -246,8 +253,8 @@ export function BookingPanel() {
       booking_mode: "package",
       depart_date: departDate,
       depart_date_2: departDate2 || undefined,
-      flight_number: flightNumber || undefined,
-      flight_number_2: flightNumber2 || undefined,
+      flight_number: existingFlightNumber || undefined,
+      flight_number_2: existingFlightNumber2 || undefined,
       direction: firstAvailable ? firstAvailable.direction : (hasDeparture ? "departure" : hasArrival ? "arrival" : "transit"),
       travel_type: travelType,
       flight_type: travelType,
@@ -291,15 +298,46 @@ export function BookingPanel() {
     e.preventDefault();
     if (!isFormValid) {
       setTouched({
-        flightNumber: true,
         departDate: true,
-        flightNumber2: true,
         departDate2: true,
       });
-      toast.error("Please select origin, destination, and travel date.");
+      if (selectedServices.length === 0) {
+        toast.error("Please select at least one airport service.");
+        return;
+      }
+      if (!originCode || originCode.trim().length !== 3) {
+        toast.error("Please select a departure airport.");
+        return;
+      }
+      if (!destCode || destCode.trim().length !== 3) {
+        toast.error("Please select an arrival airport.");
+        return;
+      }
+      if (isSameOriginDest) {
+        toast.error("Origin and destination airports cannot be the same.");
+        return;
+      }
+      if (hasTransit && (!transitCode || transitCode.trim().length !== 3)) {
+        toast.error("Please select a transit airport.");
+        return;
+      }
+      if (isSameTransit) {
+        toast.error("Transit hub cannot match your origin or destination airport.");
+        return;
+      }
+      if (!departDate) {
+        toast.error("Please select your travel date.");
+        return;
+      }
+      toast.error("Please complete all required booking details.");
       return;
     }
-    await resolveAndNavigate();
+    try {
+      await resolveAndNavigate();
+    } catch (err: any) {
+      console.error("[BookingPanel] Navigation error:", err);
+      toast.error(err?.message || "Failed to proceed with booking. Please try again.");
+    }
   };
 
   const serviceOptions: [BookingPanelService, string, React.ComponentType<{ className?: string }>][] = [

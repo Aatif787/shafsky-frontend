@@ -5,6 +5,7 @@
 
 import { ApiClient } from "@/lib/ApiClient";
 import { resolveApiUrl } from "@/lib/api/config";
+import { clearAccessToken } from "@/auth/tokenStore";
 
 export interface FlightLegInput {
   origin_code: string;
@@ -138,12 +139,14 @@ export interface ServiceQueryResponse {
 export const MultiServiceApi = {
   /**
    * Evaluates availability and authoritative pricing across an itinerary for any selected combination of services.
+   * Public discovery endpoint (unauthenticated). Sends Bearer token only if an active session exists in memory,
+   * and automatically recovers from stale tokens on 401 by clearing the expired token and retrying once unauthenticated.
    */
   async checkAvailability(
     request: MultiServiceAvailabilityRequest
   ): Promise<MultiServiceAvailabilityResponse> {
     const url = resolveApiUrl("/api/journey/multi-service/availability");
-    const res = await ApiClient.fetchWithAuth(url, {
+    let res = await ApiClient.fetchWithAuth(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -152,9 +155,31 @@ export const MultiServiceApi = {
       body: JSON.stringify(request),
     });
 
+    // If 401 Unauthorized was returned, the in-memory token may be stale/expired.
+    // Clear stale access token and retry once as an unauthenticated public request.
+    if (res.status === 401) {
+      try {
+        clearAccessToken();
+      } catch {
+        // ignore
+      }
+      res = await ApiClient.fetchWithAuth(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(request),
+      });
+    }
+
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || `Availability check failed (${res.status})`);
+      const message = err.detail || err.error || `Availability check failed (${res.status})`;
+      const error: any = new Error(message);
+      error.status = res.status;
+      error.statusCode = res.status;
+      throw error;
     }
 
     return res.json();
@@ -165,7 +190,7 @@ export const MultiServiceApi = {
    */
   async createQuery(payload: ServiceQueryCreate): Promise<ServiceQueryResponse> {
     const url = resolveApiUrl("/api/journey/multi-service/query");
-    const res = await ApiClient.fetchWithAuth(url, {
+    let res = await ApiClient.fetchWithAuth(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -174,9 +199,29 @@ export const MultiServiceApi = {
       body: JSON.stringify(payload),
     });
 
+    if (res.status === 401) {
+      try {
+        clearAccessToken();
+      } catch {
+        // ignore
+      }
+      res = await ApiClient.fetchWithAuth(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+    }
+
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || `Query submission failed (${res.status})`);
+      const message = err.detail || err.error || `Query submission failed (${res.status})`;
+      const error: any = new Error(message);
+      error.status = res.status;
+      error.statusCode = res.status;
+      throw error;
     }
 
     return res.json();

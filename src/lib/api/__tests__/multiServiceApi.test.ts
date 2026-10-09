@@ -98,4 +98,97 @@ describe("MultiServiceApi Unit Tests", () => {
       })
     ).rejects.toThrow("Origin airport required");
   });
+
+  it("handles 401 Unauthorized by clearing stale token and retrying once unauthenticated", async () => {
+    const mockSuccessResponse = {
+      success: true,
+      itinerary: { departure_airport: "BOM", arrival_airport: "DEL", transit_airports: [], legs: [], is_connecting: false, total_legs: 1 },
+      services: [],
+      all_available: true,
+      any_available: true,
+      none_available: false,
+      guest_count: 1,
+      available_subtotal: 0,
+      total_payable: 0,
+      currency: "INR",
+      unavailable_services_count: 0,
+    };
+
+    // First call returns 401, second call (retry) returns 200 OK
+    const fetchSpy = vi.spyOn(ApiClient, "fetchWithAuth")
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        json: async () => ({ detail: "Token expired" }),
+      } as any)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => mockSuccessResponse,
+      } as any);
+
+    const result = await MultiServiceApi.checkAvailability({
+      origin_code: "BOM",
+      dest_code: "DEL",
+      selected_services: [{ service_type: "DEPARTURE" }],
+    });
+
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    expect(result.success).toBe(true);
+  });
+
+  it("does not repeatedly loop if 401 persists after retry", async () => {
+    const fetchSpy = vi.spyOn(ApiClient, "fetchWithAuth")
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        json: async () => ({ detail: "Unauthorized" }),
+      } as any)
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        json: async () => ({ detail: "Unauthorized" }),
+      } as any);
+
+    await expect(
+      MultiServiceApi.checkAvailability({
+        origin_code: "BOM",
+        dest_code: "DEL",
+        selected_services: [{ service_type: "DEPARTURE" }],
+      })
+    ).rejects.toThrow("Unauthorized");
+
+    // Exactly 2 attempts (1 initial + 1 unauthenticated retry), never loops repeatedly
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("succeeds when optional flight_num is omitted", async () => {
+    const mockResponse = {
+      success: true,
+      itinerary: { departure_airport: "BOM", arrival_airport: "DEL", transit_airports: [], legs: [], is_connecting: false, total_legs: 1 },
+      services: [],
+      all_available: true,
+      any_available: true,
+      none_available: false,
+      guest_count: 1,
+      available_subtotal: 0,
+      total_payable: 0,
+      currency: "INR",
+      unavailable_services_count: 0,
+    };
+
+    vi.spyOn(ApiClient, "fetchWithAuth").mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    } as any);
+
+    const result = await MultiServiceApi.checkAvailability({
+      origin_code: "BOM",
+      dest_code: "DEL",
+      selected_services: [{ service_type: "DEPARTURE" }],
+      // flight_num intentionally undefined
+    });
+
+    expect(result.success).toBe(true);
+  });
 });
