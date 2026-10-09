@@ -94,61 +94,97 @@ interface ParsedFlight {
   terminals: string;
 }
 
-function parseFlightSnapshots(notes: string | null): ParsedFlight[] {
-  if (!notes) return [];
+function parseFlightSnapshots(notes: string | null, booking?: any): ParsedFlight[] {
   const segments: ParsedFlight[] = [];
 
-  const snapRegex =
-    /\[Flight (\d) Snapshot - (AUTO_VERIFIED|MANUAL_ENTRY)\]([\s\S]*?)(?=\[Flight \d Snapshot|$|Selected Services:|Total Service Price:)/g;
+  if (notes) {
+    const snapRegex =
+      /\[Flight (\d) Snapshot - (AUTO_VERIFIED|MANUAL_ENTRY)\]([\s\S]*?)(?=\[Flight \d Snapshot|$|Selected Services:|Total Service Price:)/g;
 
-  let match;
-  while ((match = snapRegex.exec(notes)) !== null) {
-    const segment = match[1];
-    const mode = match[2];
-    const content = match[3];
+    let match;
+    while ((match = snapRegex.exec(notes)) !== null) {
+      const segment = match[1];
+      const mode = match[2];
+      const content = match[3];
 
-    const isManual = mode === "MANUAL_ENTRY";
+      const isManual = mode === "MANUAL_ENTRY";
 
-    const flightNumMatch = content.match(/-\s*Flight Number:\s*([^\n\r]+)/i);
-    const airlineMatch = content.match(/-\s*Airline Name:\s*([^\n\r]+)/i);
-    const originMatch = content.match(/-\s*Departure Airport:\s*([^\n\r]+)/i);
-    const destMatch = content.match(/-\s*Arrival Airport:\s*([^\n\r]+)/i);
+      const flightNumMatch = content.match(/-\s*Flight Number:\s*([^\n\r]+)/i);
+      const airlineMatch = content.match(/-\s*Airline Name:\s*([^\n\r]+)/i);
+      const originMatch = content.match(/-\s*Departure Airport:\s*([^\n\r]+)/i);
+      const destMatch = content.match(/-\s*Arrival Airport:\s*([^\n\r]+)/i);
 
-    const depDateMatch = content.match(/-\s*Departure Date:\s*([^\n\r]+)/i);
-    const depTimeMatch = content.match(/-\s*Departure Time:\s*([^\n\r]+)/i);
-    const depDateTimeMatch = content.match(/-\s*Departure Date\/Time:\s*([^\n\r]+)/i);
+      const depDateMatch = content.match(/-\s*Departure Date:\s*([^\n\r]+)/i);
+      const depTimeMatch = content.match(/-\s*Departure Time:\s*([^\n\r]+)/i);
+      const depDateTimeMatch = content.match(/-\s*Departure Date\/Time:\s*([^\n\r]+)/i);
 
-    const arrDateTimeMatch = content.match(/-\s*Arrival Date\/Time:\s*([^\n\r]+)/i);
-    const terminalsMatch = content.match(/-\s*Terminals:\s*([^\n\r]+)/i);
+      const arrDateTimeMatch = content.match(/-\s*Arrival Date\/Time:\s*([^\n\r]+)/i);
+      const terminalsMatch = content.match(/-\s*Terminals:\s*([^\n\r]+)/i);
 
-    const flightNum = flightNumMatch ? flightNumMatch[1].trim() : "";
-    const airline = airlineMatch ? airlineMatch[1].trim() : "";
-    const origin = originMatch ? originMatch[1].trim() : "";
-    const destination = destMatch ? destMatch[1].trim() : "";
+      const flightNum = flightNumMatch ? flightNumMatch[1].trim() : "";
+      const airline = airlineMatch ? airlineMatch[1].trim() : "";
+      const origin = originMatch ? originMatch[1].trim() : "";
+      const destination = destMatch ? destMatch[1].trim() : "";
 
-    let departDate = depDateMatch ? depDateMatch[1].trim() : "";
-    let departTime = depTimeMatch ? depTimeMatch[1].trim() : "";
-    if (depDateTimeMatch) {
-      const parts = depDateTimeMatch[1].trim().split(" ");
-      departDate = parts[0] || "";
-      departTime = parts[1] || "";
+      let departDate = depDateMatch ? depDateMatch[1].trim() : "";
+      let departTime = depTimeMatch ? depTimeMatch[1].trim() : "";
+      if (depDateTimeMatch) {
+        const parts = depDateTimeMatch[1].trim().split(" ");
+        departDate = parts[0] || "";
+        departTime = parts[1] || "";
+      }
+
+      const arrivalDateTime = arrDateTimeMatch ? arrDateTimeMatch[1].trim() : "";
+      const terminals = terminalsMatch ? terminalsMatch[1].trim() : "";
+
+      segments.push({
+        segment,
+        isManual,
+        flightNum,
+        airline,
+        origin,
+        destination,
+        departDate,
+        departTime,
+        arrivalDateTime,
+        terminals,
+      });
     }
+  }
 
-    const arrivalDateTime = arrDateTimeMatch ? arrDateTimeMatch[1].trim() : "";
-    const terminals = terminalsMatch ? terminalsMatch[1].trim() : "";
-
-    segments.push({
-      segment,
-      isManual,
-      flightNum,
-      airline,
-      origin,
-      destination,
-      departDate,
-      departTime,
-      arrivalDateTime,
-      terminals,
-    });
+  // Fallback: If no snapshot found in notes but metadataJson contains incoming/connecting flight
+  if (segments.length === 0 && booking?.metadataJson) {
+    const meta = booking.metadataJson;
+    if (meta.incoming_flight) {
+      const inc = meta.incoming_flight;
+      segments.push({
+        segment: "1",
+        isManual: inc.is_manual ?? !inc.is_verified,
+        flightNum: inc.flight_number || booking.flight_num || "",
+        airline: inc.airline || "Airline",
+        origin: inc.origin || booking.origin || "",
+        destination: inc.destination || booking.transit_hub || meta.transit_hub || meta.transit_code || "Transit Hub",
+        departDate: inc.depart_date || (inc.depart_time ? String(inc.depart_time).slice(0, 10) : ""),
+        departTime: inc.depart_time ? String(inc.depart_time).slice(11, 16) : "",
+        arrivalDateTime: inc.arrival_time ? String(inc.arrival_time).slice(0, 16).replace("T", " ") : "",
+        terminals: inc.terminal ? `Terminal ${inc.terminal}` : "",
+      });
+    }
+    if (meta.connecting_flight) {
+      const conn = meta.connecting_flight;
+      segments.push({
+        segment: "2",
+        isManual: conn.is_manual ?? !conn.is_verified,
+        flightNum: conn.flight_number || booking.flight_num_2 || meta.flight_number_2 || "",
+        airline: conn.airline || "Airline",
+        origin: conn.origin || booking.transit_hub || meta.transit_hub || meta.transit_code || "Transit Hub",
+        destination: conn.destination || booking.destination || "",
+        departDate: conn.depart_date || (conn.depart_time ? String(conn.depart_time).slice(0, 10) : ""),
+        departTime: conn.depart_time ? String(conn.depart_time).slice(11, 16) : "",
+        arrivalDateTime: conn.arrival_time ? String(conn.arrival_time).slice(0, 16).replace("T", " ") : "",
+        terminals: conn.terminal ? `Terminal ${conn.terminal}` : "",
+      });
+    }
   }
 
   return segments;
@@ -479,7 +515,7 @@ function BookingDetailsView() {
     }
   };
 
-  const parsedFlights = parseFlightSnapshots(booking.notes ?? null);
+  const parsedFlights = parseFlightSnapshots(booking?.notes ?? null, booking);
   const cleanNotes = booking?.notes
     ? booking.notes
         .replace(
@@ -490,6 +526,8 @@ function BookingDetailsView() {
         .replace(/Total Service Price:[\s\S]*?(?=\r?\n\r?\n|\n\n|$)/, "")
         .trim()
     : "";
+
+  const transitHubCode = booking?.transit_hub || booking?.metadataJson?.transit_hub || booking?.metadataJson?.transit_code || null;
 
   return (
     <div className="space-y-8">
@@ -508,7 +546,15 @@ function BookingDetailsView() {
             Booking Ref: {booking.booking_ref}
           </span>
           <h1 className="text-3xl font-bold mt-1" style={pageDisplay}>
-            {booking.origin} → {booking.destination}
+            {transitHubCode ? (
+              <span>
+                {booking.origin} → <span className="text-[#5ed3ff]">{transitHubCode}</span> → {booking.destination}
+              </span>
+            ) : (
+              <span>
+                {booking.origin} → {booking.destination}
+              </span>
+            )}
           </h1>
         </div>
         <div className="flex items-center gap-3">

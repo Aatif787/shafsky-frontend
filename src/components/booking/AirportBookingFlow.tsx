@@ -180,6 +180,40 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     setManualDatePopoverOpen(false);
   };
 
+  // Connecting Flight (Leg 2) Date State for Transit
+  const [serviceDate2, setServiceDate2] = useState<string>(() => {
+    const rawParam2 = String(searchParams?.depart_date_2 || searchParams?.service_date_2 || searchParams?.departDate2 || "").trim();
+    if (rawParam2 && /^\d{4}-\d{2}-\d{2}$/.test(rawParam2) && isValid(parseISO(rawParam2))) {
+      return rawParam2;
+    }
+    const rawParam1 = String(searchParams?.depart_date || searchParams?.service_date || "").trim();
+    if (rawParam1 && /^\d{4}-\d{2}-\d{2}$/.test(rawParam1) && isValid(parseISO(rawParam1))) {
+      return rawParam1;
+    }
+    return format(new Date(), "yyyy-MM-dd");
+  });
+  const [datePopoverOpen2, setDatePopoverOpen2] = useState(false);
+  const [manualDatePopoverOpen2, setManualDatePopoverOpen2] = useState(false);
+
+  const dateValue2 = useMemo(() => {
+    if (serviceDate2 && isValid(parseISO(serviceDate2))) {
+      return parseISO(serviceDate2);
+    }
+    return todayStart;
+  }, [serviceDate2, todayStart]);
+
+  const handleDateChange2 = (newDate: Date | undefined) => {
+    if (!newDate) return;
+    const formatted = format(newDate, "yyyy-MM-dd");
+    setServiceDate2(formatted);
+    setIsFlightVerified2(false);
+    setVerifiedFlight2(null);
+    setFlightFetchError2(null);
+    setIsCutoffUrgent2(false);
+    setDatePopoverOpen2(false);
+    setManualDatePopoverOpen2(false);
+  };
+
   const [paxAdults, setPaxAdults] = useState<number>(() => Math.min(10, Math.max(1, Number(searchParams?.pax_adults) || 1)));
   const paxChildren = Math.max(0, Number(searchParams?.pax_children) || 0);
   const paxInfants = Math.max(0, Number(searchParams?.pax_infants) || 0);
@@ -288,6 +322,28 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     }
     return searchParams?.terminal || "";
   });
+
+  // Connecting Flight (Leg 2) State for Transit Journeys
+  const [flightNumber2, setFlightNumber2] = useState<string>(
+    searchParams?.flight_number_2 || searchParams?.flightNumber2 || searchParams?.connecting_flight_number || ""
+  );
+  const [isFlightFetching2, setIsFlightFetching2] = useState<boolean>(false);
+  const [isFlightVerified2, setIsFlightVerified2] = useState<boolean>(false);
+  const [verifiedFlight2, setVerifiedFlight2] = useState<FlightData | null>(null);
+  const [flightFetchError2, setFlightFetchError2] = useState<string | null>(null);
+  const [isCutoffUrgent2, setIsCutoffUrgent2] = useState<boolean>(false);
+
+  // Manual Connecting Flight State
+  const [isManualMode2, setIsManualMode2] = useState<boolean>(false);
+  const [manualAirline2, setManualAirline2] = useState<string>("");
+  const [manualAirlineIata2, setManualAirlineIata2] = useState<string>("");
+  const [manualFlightNum2, setManualFlightNum2] = useState<string>(
+    searchParams?.flight_number_2 || searchParams?.flightNumber2 || searchParams?.connecting_flight_number || ""
+  );
+  const [manualDepTime2, setManualDepTime2] = useState<string>("");
+  const [manualDepTerminal2, setManualDepTerminal2] = useState<string>("");
+  const [manualArrTime2, setManualArrTime2] = useState<string>("");
+  const [manualArrTerminal2, setManualArrTerminal2] = useState<string>("");
 
   // Mumbai Airport Express Fee rule:
   // For Mumbai Airport (BOM), if booking is created less than 24 hours before actual service start time:
@@ -730,10 +786,157 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     }
   };
 
+  // Handle Automatic Connecting Flight Verification for Transit (Leg 2: Transit Hub -> Destination)
+  const handleVerifyFlight2 = async () => {
+    const cleaned = sanitizeFlightInput(flightNumber2);
+    if (!cleaned || cleaned.length < 3) {
+      toast.error("Please enter a valid connecting flight number (e.g. EK504, 6E224).");
+      return;
+    }
+
+    setIsFlightFetching2(true);
+    setFlightFetchError2(null);
+    setIsCutoffUrgent2(false);
+
+    try {
+      const res = await ApiClient.fetchWithAuth("/api/flight/validate", {
+        method: "POST",
+        body: JSON.stringify({
+          flightNum: cleaned,
+          departDate: serviceDate2,
+          tripType: "one_way",
+          originCode: airportCode,
+          destCode: destCode || "",
+          airportCode,
+          direction: "departure",
+        }),
+      });
+
+      const resJson = await res.json().catch(() => null);
+
+      if (res.ok && resJson && resJson.success) {
+        const raw = resJson.data?.flightData || resJson.data?.flight_data || resJson.data;
+        const flightObj = Array.isArray(raw) ? raw[0] : raw;
+
+        if (flightObj) {
+          const depRawSched = flightObj?.departure?.scheduled || flightObj?.departure?.scheduledTime || null;
+          const arrRawSched = flightObj?.arrival?.scheduled || flightObj?.arrival?.scheduledTime || null;
+
+          let isArrNextDay = false;
+          if (depRawSched && arrRawSched) {
+            const depDateMatch = String(depRawSched).match(/^(\d{4}-\d{2}-\d{2})/);
+            const arrDateMatch = String(arrRawSched).match(/^(\d{4}-\d{2}-\d{2})/);
+            if (depDateMatch && arrDateMatch && arrDateMatch[1] > depDateMatch[1]) {
+              isArrNextDay = true;
+            } else {
+              const depT = String(depRawSched).match(/(\d{1,2}:\d{2})/)?.[1] || "";
+              const arrT = String(arrRawSched).match(/(\d{1,2}:\d{2})/)?.[1] || "";
+              if (depT && arrT && arrT < depT) {
+                isArrNextDay = true;
+              }
+            }
+          }
+
+          const anchoredDepSched = depRawSched
+            ? buildAnchoredServiceClock(serviceDate2, depRawSched, "14:00")
+            : null;
+          const anchoredArrSched = arrRawSched
+            ? buildAnchoredServiceClock(serviceDate2, arrRawSched, "17:30", isArrNextDay)
+            : null;
+
+          const flightData: FlightData = {
+            flightNum: (flightObj?.flight?.iata || flightObj?.flightNum || cleaned).toUpperCase(),
+            carrier: {
+              iata: flightObj?.airline?.iata || flightObj?.carrier?.iata || cleaned.slice(0, 2),
+              name: flightObj?.airline?.name || flightObj?.carrier?.name || "Verified Airline",
+              logo: flightObj?.airline?.logo || null,
+            },
+            origin: {
+              code: (flightObj?.departure?.airport || flightObj?.origin?.code || airportCode).toUpperCase(),
+              name: flightObj?.departure?.airport_name || flightObj?.origin?.name || null,
+              city: flightObj?.departure?.city || flightObj?.origin?.city || null,
+              country: flightObj?.departure?.country || null,
+              timezone: flightObj?.departure?.timezone || null,
+            },
+            destination: {
+              code: (flightObj?.arrival?.airport || flightObj?.destination?.code || destCode || "").toUpperCase(),
+              name: flightObj?.arrival?.airport_name || flightObj?.destination?.name || null,
+              city: flightObj?.arrival?.city || flightObj?.destination?.city || null,
+              country: flightObj?.arrival?.country || null,
+              timezone: flightObj?.arrival?.timezone || null,
+            },
+            departure: {
+              scheduledTime: anchoredDepSched,
+              terminal: flightObj?.departure?.terminal || null,
+              gate: flightObj?.departure?.gate || null,
+              timezone: flightObj?.departure?.timezone || null,
+            },
+            arrival: {
+              scheduledTime: anchoredArrSched,
+              terminal: flightObj?.arrival?.terminal || null,
+              gate: flightObj?.arrival?.gate || null,
+              timezone: flightObj?.arrival?.timezone || null,
+            },
+          };
+
+          const flOrigin = (flightData.origin?.code || "").trim().toUpperCase();
+          const flDest = (flightData.destination?.code || "").trim().toUpperCase();
+
+          if (flOrigin && flDest && flOrigin === flDest) {
+            setFlightFetchError2(`Connecting flight route origin and destination cannot be the same (${flOrigin}).`);
+            setIsFlightVerified2(false);
+            setVerifiedFlight2(null);
+            setManualFlightNum2(cleaned);
+            return;
+          }
+
+          if (flOrigin && airportCode && flOrigin !== airportCode.toUpperCase()) {
+            setFlightFetchError2(`This connecting flight departs from ${flOrigin}, but your transit hub is ${airportCode}. Please verify or enter manually.`);
+            setIsFlightVerified2(false);
+            setVerifiedFlight2(null);
+            setManualFlightNum2(cleaned);
+            return;
+          }
+
+          if (flDest && destCode && flDest !== destCode.toUpperCase()) {
+            setDestCode(flDest);
+          }
+
+          setVerifiedFlight2(flightData);
+          setIsFlightVerified2(true);
+          setIsManualMode2(false);
+          setFlightFetchError2(null);
+          toast.success(`Connecting flight ${flightData.flightNum} verified successfully.`);
+          return;
+        }
+      }
+
+      const errorMsg = formatFlightLookupError(resJson?.error || resJson?.message || resJson, res?.status);
+      setFlightFetchError2(errorMsg || "Live schedule not found for connecting flight. Please provide details manually below.");
+      setIsFlightVerified2(false);
+      setVerifiedFlight2(null);
+      setManualFlightNum2(cleaned);
+      if (!manualAirlineIata2 && cleaned.length >= 2) {
+        setManualAirlineIata2(cleaned.slice(0, 2));
+      }
+    } catch (err) {
+      console.warn("[AirportBookingFlow] Connecting flight verification exception:", err);
+      setFlightFetchError2("Flight verification service could not be reached. You can enter details manually below.");
+      setIsFlightVerified2(false);
+      setVerifiedFlight2(null);
+      setManualFlightNum2(cleaned);
+    } finally {
+      setIsFlightFetching2(false);
+    }
+  };
+
   // Auto-verify if flight_number is passed in URL query params so mismatch is immediately visible on screen
   useEffect(() => {
     if (searchParams?.flight_number?.trim() && !isFlightVerified) {
       handleVerifyFlight();
+    }
+    if (searchParams?.flight_number_2?.trim() && !isFlightVerified2) {
+      handleVerifyFlight2();
     }
   }, []);
 
@@ -774,16 +977,37 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       return;
     }
 
-    // 2. Validate Flight Number
-    const activeFlightNum = isFlightVerified && verifiedFlight
-      ? verifiedFlight.flightNum
-      : isManualMode
-      ? sanitizeFlightInput(manualFlightNum)
-      : sanitizeFlightInput(flightNumber);
+    // 2. Validate Flight Numbers (Separate validation for Transit legs)
+    const activeFlightNum1 = (
+      isFlightVerified && verifiedFlight
+        ? verifiedFlight.flightNum
+        : isManualMode
+        ? sanitizeFlightInput(manualFlightNum)
+        : sanitizeFlightInput(flightNumber)
+    ).trim().toUpperCase();
 
-    if (!activeFlightNum || activeFlightNum.length < 3) {
-      toast.error("Flight number is required. Please enter or verify your flight.");
-      return;
+    const activeFlightNum2 = (
+      isFlightVerified2 && verifiedFlight2
+        ? verifiedFlight2.flightNum
+        : isManualMode2
+        ? sanitizeFlightInput(manualFlightNum2)
+        : sanitizeFlightInput(flightNumber2)
+    ).trim().toUpperCase();
+
+    if (direction === "transit") {
+      if (!activeFlightNum1 || activeFlightNum1.length < 3) {
+        toast.error("Incoming flight number is required (Leg 1: Origin → Transit Hub).");
+        return;
+      }
+      if (!activeFlightNum2 || activeFlightNum2.length < 3) {
+        toast.error("Connecting flight number is required (Leg 2: Transit Hub → Final Destination).");
+        return;
+      }
+    } else {
+      if (!activeFlightNum1 || activeFlightNum1.length < 3) {
+        toast.error("Flight number is required. Please enter or verify your flight.");
+        return;
+      }
     }
 
     const packageSlug = (selectedPackageId || "gold").toLowerCase();
@@ -844,42 +1068,20 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       return;
     }
 
-    const rawDepForGap = isFlightVerified && verifiedFlight?.departure?.scheduledTime
-      ? verifiedFlight.departure.scheduledTime
-      : manualDepTime;
-    const rawArrForGap = isFlightVerified && verifiedFlight?.arrival?.scheduledTime
-      ? verifiedFlight.arrival.scheduledTime
-      : manualArrTime;
-
-    let isArrivalOvernight = false;
-    if (rawDepForGap && rawArrForGap) {
-      const depDateM = String(rawDepForGap).match(/^(\d{4}-\d{2}-\d{2})/);
-      const arrDateM = String(rawArrForGap).match(/^(\d{4}-\d{2}-\d{2})/);
-      if (depDateM && arrDateM && arrDateM[1] > depDateM[1]) {
-        isArrivalOvernight = true;
-      } else {
-        const depH = String(rawDepForGap).match(/(\d{1,2}:\d{2})/)?.[1] || "";
-        const arrH = String(rawArrForGap).match(/(\d{1,2}:\d{2})/)?.[1] || "";
-        if (depH && arrH && arrH < depH) {
-          isArrivalOvernight = true;
-        }
-      }
-    }
-
-    const depClock = buildAnchoredServiceClock(
+    // Clocks for Leg 1 (or single flight)
+    const depClock1 = buildAnchoredServiceClock(
       serviceDate,
       isFlightVerified ? verifiedFlight?.departure?.scheduledTime : null,
       manualDepTime || "10:00"
     );
 
-    const arrClock = buildAnchoredServiceClock(
+    const arrClock1 = buildAnchoredServiceClock(
       serviceDate,
       isFlightVerified ? verifiedFlight?.arrival?.scheduledTime : null,
-      manualArrTime || "12:30",
-      isArrivalOvernight
+      manualArrTime || "12:30"
     );
 
-    let terminalVal = isFlightVerified
+    let terminalVal1 = isFlightVerified
       ? direction === "arrival"
         ? verifiedFlight?.arrival?.terminal
         : verifiedFlight?.departure?.terminal
@@ -887,9 +1089,29 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       ? manualArrTerminal
       : manualDepTerminal;
 
-    // Strict Rule: For Delhi (DEL) International services, always Terminal 3
     if ((airportCode || "").toUpperCase() === "DEL" && travelType === "international") {
-      terminalVal = "Terminal 3";
+      terminalVal1 = "Terminal 3";
+    }
+
+    // Clocks for Leg 2 (Connecting Flight in Transit)
+    const depClock2 = buildAnchoredServiceClock(
+      serviceDate2,
+      isFlightVerified2 ? verifiedFlight2?.departure?.scheduledTime : null,
+      manualDepTime2 || "14:00"
+    );
+
+    const arrClock2 = buildAnchoredServiceClock(
+      serviceDate2,
+      isFlightVerified2 ? verifiedFlight2?.arrival?.scheduledTime : null,
+      manualArrTime2 || "17:30"
+    );
+
+    let terminalVal2 = isFlightVerified2
+      ? verifiedFlight2?.departure?.terminal
+      : manualDepTerminal2;
+
+    if ((destCode || "").toUpperCase() === "DEL" && travelType === "international") {
+      terminalVal2 = "Terminal 3";
     }
 
     setSubmitting(true);
@@ -902,6 +1124,14 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       let keyId: string | null = null;
       let amountPaise: number = selectedCurrency === "INR" ? convertedTotalPrice * 100 : Math.round(convertedTotalPrice * 100);
 
+      const submissionFlightNum = direction === "transit"
+        ? `${activeFlightNum1} / ${activeFlightNum2}`
+        : activeFlightNum1;
+
+      const transitCategory = direction === "transit" && cleanOrigin && cleanDest
+        ? getTransitCategory(cleanOrigin, cleanDest)
+        : travelType.toUpperCase();
+
       const createRes = await ApiClient.fetchWithAuth("/api/bookings", {
         method: "POST",
         body: JSON.stringify({
@@ -910,7 +1140,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
           passengerPhone: cleanPhone,
           serviceCategory: "Airport Assistance",
           serviceType: packageSlug,
-          flightNum: activeFlightNum,
+          flightNum: submissionFlightNum,
           originCode: cleanOrigin,
           destCode: cleanDest,
           metadataJson: {
@@ -920,13 +1150,15 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             depart_date: serviceDate,
             travel_date: serviceDate,
             flight_date: serviceDate,
-            flight_type: direction === "transit" && cleanOrigin && cleanDest ? getTransitCategory(cleanOrigin, cleanDest) : travelType.toUpperCase(),
-            travel_type: direction === "transit" && cleanOrigin && cleanDest ? getTransitCategory(cleanOrigin, cleanDest) : travelType.toUpperCase(),
-            transit_type: direction === "transit" && cleanOrigin && cleanDest ? getTransitCategory(cleanOrigin, cleanDest) : undefined,
+            flight_type: transitCategory,
+            travel_type: transitCategory,
+            transit_type: direction === "transit" ? transitCategory : undefined,
+            transit_hub: direction === "transit" ? airportCode.toUpperCase() : undefined,
+            transit_code: direction === "transit" ? airportCode.toUpperCase() : undefined,
             origin_iata: cleanOrigin,
             destination_iata: cleanDest,
             service_airport: airportCode.toUpperCase(),
-            terminal: terminalVal || undefined,
+            terminal: terminalVal1 || undefined,
             pax_adults: paxAdults,
             pax_children: paxChildren,
             pax_infants: paxInfants,
@@ -939,6 +1171,61 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               phone: p.phone.trim() || cleanPhone,
               email: p.email.trim() || cleanEmail,
             })),
+            // Two-leg details for Transit bookings
+            ...(direction === "transit"
+              ? {
+                  incoming_flight_number: activeFlightNum1,
+                  incoming_flight_date: serviceDate,
+                  incoming_flight: {
+                    flight_number: activeFlightNum1,
+                    airline: isManualMode ? manualAirline : (verifiedFlight?.carrier?.name || "Verified Airline"),
+                    airline_iata: isManualMode ? manualAirlineIata : (verifiedFlight?.carrier?.iata || activeFlightNum1.slice(0, 2)),
+                    origin: cleanOrigin,
+                    destination: airportCode,
+                    date: serviceDate,
+                    departure_time: depClock1,
+                    arrival_time: arrClock1,
+                    terminal: terminalVal1 || undefined,
+                    verified: isFlightVerified,
+                  },
+                  connecting_flight_number: activeFlightNum2,
+                  connecting_flight_date: serviceDate2,
+                  connecting_flight: {
+                    flight_number: activeFlightNum2,
+                    airline: isManualMode2 ? manualAirline2 : (verifiedFlight2?.carrier?.name || "Verified Airline"),
+                    airline_iata: isManualMode2 ? manualAirlineIata2 : (verifiedFlight2?.carrier?.iata || activeFlightNum2.slice(0, 2)),
+                    origin: airportCode,
+                    destination: cleanDest,
+                    date: serviceDate2,
+                    departure_time: depClock2,
+                    arrival_time: arrClock2,
+                    terminal: terminalVal2 || undefined,
+                    verified: isFlightVerified2,
+                  },
+                  legs: [
+                    {
+                      leg: "incoming",
+                      flight_number: activeFlightNum1,
+                      airline: isManualMode ? manualAirline : (verifiedFlight?.carrier?.name || "Verified Airline"),
+                      origin: cleanOrigin,
+                      destination: airportCode,
+                      date: serviceDate,
+                      time: arrClock1,
+                      terminal: terminalVal1 || undefined,
+                    },
+                    {
+                      leg: "connecting",
+                      flight_number: activeFlightNum2,
+                      airline: isManualMode2 ? manualAirline2 : (verifiedFlight2?.carrier?.name || "Verified Airline"),
+                      origin: airportCode,
+                      destination: cleanDest,
+                      date: serviceDate2,
+                      time: depClock2,
+                      terminal: terminalVal2 || undefined,
+                    },
+                  ],
+                }
+              : {}),
             package: packageSlug,
             unit_price: convertedUnitPrice,
             currency: selectedCurrency,
@@ -948,13 +1235,17 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             gst_number: showGst && gstNumber.trim() ? gstNumber.trim().toUpperCase() : undefined,
             gst_billing_address: showGst && gstBillingAddress.trim() ? gstBillingAddress.trim() : undefined,
           },
-          departureTime: depClock,
-          arrivalTime: arrClock,
+          departureTime: direction === "transit" ? depClock1 : depClock1,
+          arrivalTime: direction === "transit" ? arrClock2 : arrClock1,
           totalAmount: convertedTotalPrice,
           currency: selectedCurrency,
-          notes: specialRequests
-            ? `${specialRequests} | Passengers: ${passengers.map((p, idx) => `P${idx + 1}: ${p.fullName.trim()}${p.age ? ` (${p.age}y)` : ""}`).join(", ")}`
-            : `Airport: ${airportCode}, Direction: ${direction} | Passengers: ${passengers.map((p, idx) => `P${idx + 1}: ${p.fullName.trim()}${p.age ? ` (${p.age}y)` : ""}`).join(", ")}`,
+          notes: direction === "transit"
+            ? (specialRequests
+                ? `${specialRequests} | Transit at ${airportCode}: Incoming ${activeFlightNum1} (${cleanOrigin} -> ${airportCode}, ${serviceDate}), Connecting ${activeFlightNum2} (${airportCode} -> ${cleanDest}, ${serviceDate2}) | Passengers: ${passengers.map((p, idx) => `P${idx + 1}: ${p.fullName.trim()}${p.age ? ` (${p.age}y)` : ""}`).join(", ")}`
+                : `Transit at ${airportCode}: Incoming ${activeFlightNum1} (${cleanOrigin} -> ${airportCode}, ${serviceDate}), Connecting ${activeFlightNum2} (${airportCode} -> ${cleanDest}, ${serviceDate2}) | Passengers: ${passengers.map((p, idx) => `P${idx + 1}: ${p.fullName.trim()}${p.age ? ` (${p.age}y)` : ""}`).join(", ")}`)
+            : (specialRequests
+                ? `${specialRequests} | Passengers: ${passengers.map((p, idx) => `P${idx + 1}: ${p.fullName.trim()}${p.age ? ` (${p.age}y)` : ""}`).join(", ")}`
+                : `Airport: ${airportCode}, Direction: ${direction} | Passengers: ${passengers.map((p, idx) => `P${idx + 1}: ${p.fullName.trim()}${p.age ? ` (${p.age}y)` : ""}`).join(", ")}`),
         }),
       });
 
@@ -1276,6 +1567,13 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       ? `${manualFlightNum} (${manualAirline || manualAirlineIata || "Airline"})`
       : flightNumber;
 
+    const activeFlight1 = activeFlight;
+    const activeFlight2 = isFlightVerified2 && verifiedFlight2
+      ? `${verifiedFlight2.flightNum} (${verifiedFlight2.carrier.name || "Verified Flight"})`
+      : isManualMode2
+      ? `${manualFlightNum2} (${manualAirline2 || manualAirlineIata2 || "Airline"})`
+      : flightNumber2;
+
     return (
       <div className="mx-auto max-w-2xl px-4 py-12 sm:py-16">
         <div className="overflow-hidden rounded-3xl border border-lime-400 bg-white shadow-xl">
@@ -1330,52 +1628,116 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
           {/* Details Summary Table */}
           <div className="px-6 py-6 sm:px-10 space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-xs">
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
-                <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
-                  Airport & Service
-                </span>
-                <span className="font-bold text-slate-900 block font-sans">
-                  {airportCityName} ({airportCode})
-                </span>
-                <span className="text-[11px] text-slate-600 font-medium font-sans">
-                  {selectedPackageName}
-                </span>
-              </div>
+            {direction === "transit" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
+                  <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
+                    Transit Hub & Service
+                  </span>
+                  <span className="font-bold text-slate-900 block font-sans">
+                    {airportCityName} ({airportCode})
+                  </span>
+                  <span className="text-[11px] text-slate-600 font-medium font-sans">
+                    {selectedPackageName}
+                  </span>
+                </div>
 
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
-                <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
-                  Journey & Date
-                </span>
-                <span className="font-bold text-slate-900 block capitalize font-sans">
-                  {travelType} {direction}
-                </span>
-                <span className="font-mono text-[11px] text-slate-600 font-medium">
-                  {format(dateValue, "dd MMM yyyy")}
-                </span>
-              </div>
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
+                  <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
+                    Route & Category
+                  </span>
+                  <span className="font-mono font-bold text-slate-900 block">
+                    {originCode} ➔ {airportCode} ➔ {destCode}
+                  </span>
+                  <span className="font-mono text-[11px] text-slate-600 font-medium capitalize">
+                    {travelType} Transit
+                  </span>
+                </div>
 
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
-                <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
-                  Flight
-                </span>
-                <span className="font-mono font-bold text-slate-900 block text-xs">
-                  {activeFlight}
-                </span>
-              </div>
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
+                  <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
+                    Incoming Flight (Leg 1)
+                  </span>
+                  <span className="font-mono font-bold text-slate-900 block text-xs">
+                    {activeFlight1}
+                  </span>
+                  <span className="font-mono text-[11px] text-slate-600 font-medium">
+                    {format(dateValue, "dd MMM yyyy")}
+                  </span>
+                </div>
 
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
-                <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
-                  Lead Guest & Passengers
-                </span>
-                <span className="font-bold text-slate-900 block truncate font-sans">
-                  {fullName}
-                </span>
-                <span className="font-mono text-[11px] text-slate-600 font-medium">
-                  {totalPax} Passenger{totalPax > 1 ? "s" : ""}
-                </span>
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
+                  <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
+                    Connecting Flight (Leg 2)
+                  </span>
+                  <span className="font-mono font-bold text-slate-900 block text-xs">
+                    {activeFlight2}
+                  </span>
+                  <span className="font-mono text-[11px] text-slate-600 font-medium">
+                    {format(dateValue2, "dd MMM yyyy")}
+                  </span>
+                </div>
+
+                <div className="sm:col-span-2 rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
+                  <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
+                    Lead Guest & Passengers
+                  </span>
+                  <span className="font-bold text-slate-900 block truncate font-sans">
+                    {fullName}
+                  </span>
+                  <span className="font-mono text-[11px] text-slate-600 font-medium">
+                    {totalPax} Passenger{totalPax > 1 ? "s" : ""}
+                  </span>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 text-xs">
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
+                  <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
+                    Airport & Service
+                  </span>
+                  <span className="font-bold text-slate-900 block font-sans">
+                    {airportCityName} ({airportCode})
+                  </span>
+                  <span className="text-[11px] text-slate-600 font-medium font-sans">
+                    {selectedPackageName}
+                  </span>
+                </div>
+
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
+                  <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
+                    Journey & Date
+                  </span>
+                  <span className="font-bold text-slate-900 block capitalize font-sans">
+                    {travelType} {direction}
+                  </span>
+                  <span className="font-mono text-[11px] text-slate-600 font-medium">
+                    {format(dateValue, "dd MMM yyyy")}
+                  </span>
+                </div>
+
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
+                  <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
+                    Flight
+                  </span>
+                  <span className="font-mono font-bold text-slate-900 block text-xs">
+                    {activeFlight}
+                  </span>
+                </div>
+
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3.5">
+                  <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-500 font-bold block mb-0.5">
+                    Lead Guest & Passengers
+                  </span>
+                  <span className="font-bold text-slate-900 block truncate font-sans">
+                    {fullName}
+                  </span>
+                  <span className="font-mono text-[11px] text-slate-600 font-medium">
+                    {totalPax} Passenger{totalPax > 1 ? "s" : ""}
+                  </span>
+                </div>
+              </div>
+            )}
 
             <div className="rounded-2xl border border-lime-200 bg-lime-50/50 p-4 text-xs text-slate-700 space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-lime-900">
@@ -1513,9 +1875,841 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
       <form onSubmit={handleProceedToPayment} className="space-y-6">
         {/* ========================================================================= */}
-        {/* 1. FLIGHT DETAILS (AUTOMATIC FETCH + STRICT AIRPORT CONSISTENCY + MANUAL) */}
+        {/* 1. FLIGHT DETAILS (TRANSIT: TWO-LEG SPLIT | NON-TRANSIT: SINGLE FLIGHT)  */}
         {/* ========================================================================= */}
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
+        {direction === "transit" ? (
+          <div className="space-y-6">
+            {/* 1A. JOURNEY ROUTE OVERVIEW CARD */}
+            <div className="rounded-3xl border border-lime-300 bg-gradient-to-br from-lime-50/60 via-white to-slate-50 p-6 sm:p-7 shadow-sm space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-lime-200/80 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-lime-400">
+                    <Plane size={16} />
+                  </div>
+                  <div>
+                    <h2 className="font-serif text-lg font-bold text-slate-900">Transit Journey Overview</h2>
+                    <p className="text-[11px] text-slate-500 font-mono">
+                      VIP transit concierge at {airportCityName} ({airportCode}).
+                    </p>
+                  </div>
+                </div>
+
+                <span className="rounded-full bg-lime-500/20 text-lime-900 border border-lime-400/40 px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider">
+                  {getTransitCategory(originCode, destCode)}
+                </span>
+              </div>
+
+              {/* Visual Route Flow */}
+              <div className="rounded-2xl border border-lime-200 bg-white/80 p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-2 sm:gap-4">
+                  {/* Origin */}
+                  <div className="text-left min-w-[70px] sm:min-w-[100px]">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">
+                      1. Inbound Origin
+                    </span>
+                    <span className="font-mono text-base sm:text-xl font-black text-slate-950 block">
+                      {originCode || "TBD"}
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-medium block truncate max-w-[120px]">
+                      {getAirportRegistryEntry(originCode)?.city || "Origin Airport"}
+                    </span>
+                  </div>
+
+                  {/* Flight 1 Arrow */}
+                  <div className="flex-1 flex flex-col items-center justify-center px-1">
+                    <span className="text-[9px] font-mono font-bold text-slate-500 mb-1">
+                      {isFlightVerified && verifiedFlight ? verifiedFlight.flightNum : flightNumber || "Leg 1"}
+                    </span>
+                    <div className="relative w-full flex items-center justify-center">
+                      <div className="w-full border-t-2 border-dashed border-lime-400" />
+                      <div className="absolute flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-lime-400 text-[10px]">
+                        ✈
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Transit Hub (Highlight) */}
+                  <div className="text-center px-3 py-1.5 rounded-xl bg-lime-100/80 border border-lime-300 min-w-[90px] sm:min-w-[130px]">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-lime-800 font-bold block">
+                      Transit Hub
+                    </span>
+                    <span className="font-mono text-base sm:text-xl font-black text-slate-950 block">
+                      {airportCode}
+                    </span>
+                    <span className="text-[11px] text-slate-800 font-semibold block truncate max-w-[130px]">
+                      {airportCityName}
+                    </span>
+                  </div>
+
+                  {/* Flight 2 Arrow */}
+                  <div className="flex-1 flex flex-col items-center justify-center px-1">
+                    <span className="text-[9px] font-mono font-bold text-slate-500 mb-1">
+                      {isFlightVerified2 && verifiedFlight2 ? verifiedFlight2.flightNum : flightNumber2 || "Leg 2"}
+                    </span>
+                    <div className="relative w-full flex items-center justify-center">
+                      <div className="w-full border-t-2 border-dashed border-lime-400" />
+                      <div className="absolute flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-lime-400 text-[10px]">
+                        ✈
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Destination */}
+                  <div className="text-right min-w-[70px] sm:min-w-[100px]">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 font-bold block">
+                      2. Connecting To
+                    </span>
+                    <span className="font-mono text-base sm:text-xl font-black text-slate-950 block">
+                      {destCode || "TBD"}
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-medium block truncate max-w-[120px] ml-auto">
+                      {getAirportRegistryEntry(destCode)?.city || "Destination"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Route Endpoints Selector */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Flying From (Inbound Origin) <span className="text-red-500">*</span>
+                  </label>
+                  <AirportSuggestionPicker
+                    value={originCode}
+                    onChange={(code) => setOriginCode(code)}
+                    travelType={travelType}
+                    onTravelTypeChange={(newType) => setTravelType(newType)}
+                    direction="transit"
+                    serviceAirportCode={airportCode}
+                    placeholder="Select inbound departure airport"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Flying To (Connecting Destination) <span className="text-red-500">*</span>
+                  </label>
+                  <AirportSuggestionPicker
+                    value={destCode}
+                    onChange={(code) => setDestCode(code)}
+                    travelType={travelType}
+                    onTravelTypeChange={(newType) => setTravelType(newType)}
+                    direction="transit"
+                    serviceAirportCode={airportCode}
+                    placeholder="Select connecting destination airport"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 1B. INCOMING FLIGHT (LEG 1: INBOUND ORIGIN -> TRANSIT HUB) */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 text-lime-400 font-mono text-xs font-bold">
+                    1
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-serif text-base sm:text-lg font-bold text-slate-900">
+                        Incoming Flight (Leg 1)
+                      </h3>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-600">
+                        {originCode || "Origin"} ➔ {airportCode}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-mono">
+                      Flight arriving at {airportCityName} ({airportCode}).
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsManualMode(!isManualMode);
+                    if (!isManualMode) {
+                      setManualFlightNum(flightNumber);
+                    }
+                  }}
+                  className="text-xs font-mono font-bold text-slate-600 hover:text-slate-950 underline cursor-pointer"
+                >
+                  {isManualMode ? "Use automatic fetch" : "Enter manually"}
+                </button>
+              </div>
+
+              {/* AUTOMATIC FETCH */}
+              {!isManualMode && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                    <div className="md:col-span-7">
+                      <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Incoming Flight Number <span className="text-red-500">*</span>
+                      </label>
+                      <div className="flex gap-2.5">
+                        <input
+                          type="text"
+                          value={flightNumber}
+                          onChange={(e) => {
+                            setFlightNumber(e.target.value.toUpperCase());
+                            setIsFlightVerified(false);
+                            setVerifiedFlight(null);
+                            setFlightFetchError(null);
+                            setIsCutoffUrgent(false);
+                          }}
+                          placeholder="e.g. AI101, 6E202"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleVerifyFlight();
+                            }
+                          }}
+                          className="h-12 flex-1 rounded-2xl border border-slate-300 bg-transparent px-4 font-mono text-sm font-bold text-slate-900 uppercase tracking-wider focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleVerifyFlight}
+                          disabled={isFlightFetching || !flightNumber.trim()}
+                          className="h-12 px-5 rounded-2xl bg-slate-900 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-slate-800 disabled:opacity-50 transition cursor-pointer flex items-center gap-2 shrink-0"
+                        >
+                          {isFlightFetching ? (
+                            <>
+                              <Loader2 size={14} className="animate-spin text-lime-400" />
+                              <span>Fetching...</span>
+                            </>
+                          ) : (
+                            <span>Fetch Flight</span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-5">
+                      <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Incoming Flight Date <span className="text-red-500">*</span>
+                      </label>
+                      <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            className="relative flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300 bg-transparent px-4 text-left text-xs font-semibold text-slate-900 outline-none hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 cursor-pointer shadow-none"
+                          >
+                            <div className="flex items-center gap-2.5 truncate">
+                              <CalendarDays className="h-4 w-4 text-lime-600 shrink-0" />
+                              <span className="font-mono text-xs font-bold text-slate-900">
+                                {format(dateValue, "dd MMMM yyyy")}
+                              </span>
+                            </div>
+                            <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-slate-200 shadow-xl rounded-3xl z-50"
+                          align="start"
+                        >
+                          <CalendarPicker
+                            mode="single"
+                            selected={dateValue}
+                            onSelect={handleDateChange}
+                            disabled={{ before: todayStart }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
+
+                  {isCutoffUrgent && (
+                    <div className="rounded-2xl border border-rose-300 bg-rose-50/80 p-4 text-xs text-rose-950 space-y-2">
+                      <div className="flex items-center gap-2 font-bold text-rose-900 text-sm">
+                        <PhoneCall size={16} className="text-rose-600" />
+                        <span>Urgent Airport Notice</span>
+                      </div>
+                      <p className="text-xs text-rose-900 leading-relaxed font-sans">
+                        Flight is scheduled within standard notice. Our 24/7 team can assist on WhatsApp.
+                      </p>
+                    </div>
+                  )}
+
+                  {flightFetchError && !isCutoffUrgent && (
+                    <div className="rounded-2xl border border-amber-300 bg-amber-50/70 p-4 text-xs text-amber-900 flex items-start gap-3">
+                      <AlertCircle size={18} className="text-amber-700 shrink-0 mt-0.5" />
+                      <div className="flex-1 space-y-1">
+                        <p className="font-semibold">{flightFetchError}</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsManualMode(true);
+                            setManualFlightNum(flightNumber);
+                          }}
+                          className="mt-1 font-mono font-bold text-amber-950 underline block cursor-pointer"
+                        >
+                          → Enter incoming flight details manually
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {isFlightFetching && (
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 space-y-3 animate-pulse">
+                      <div className="h-8 w-48 bg-slate-200 rounded" />
+                    </div>
+                  )}
+
+                  {isFlightVerified && verifiedFlight && (
+                    <div className="rounded-2xl border border-lime-400 bg-lime-50/40 p-4 sm:p-5 space-y-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-slate-200 p-1">
+                            <AirlineLogo iata={verifiedFlight.carrier.iata} />
+                          </div>
+                          <div>
+                            <span className="font-bold text-slate-950 text-sm block">
+                              {verifiedFlight.carrier.name} ({verifiedFlight.carrier.iata})
+                            </span>
+                            <span className="font-mono text-xs font-black text-slate-900">
+                              {verifiedFlight.flightNum}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="rounded-full bg-lime-500 px-2.5 py-0.5 font-mono text-[9.5px] font-bold uppercase text-slate-950 flex items-center gap-1">
+                          <Check size={12} /> Verified
+                        </span>
+                      </div>
+                      <div className="rounded-xl bg-white/90 border border-lime-200/80 p-3 flex items-center justify-between text-xs">
+                        <div>
+                          <span className="font-mono text-[9px] uppercase text-slate-400 font-bold block">Departs</span>
+                          <span className="font-mono font-bold text-slate-900">{verifiedFlight.origin.code || originCode}</span>
+                          {verifiedFlight.departure.scheduledTime && (
+                            <span className="block font-mono text-[11px] text-slate-600">
+                              {verifiedFlight.departure.scheduledTime.slice(11, 16)}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1 flex flex-col items-center px-2">
+                          <span className="text-[9px] font-mono text-slate-400">Arrives at Transit Hub</span>
+                          <div className="w-full border-t border-dashed border-lime-400 my-1" />
+                        </div>
+                        <div className="text-right">
+                          <span className="font-mono text-[9px] uppercase text-slate-400 font-bold block">Arrives</span>
+                          <span className="font-mono font-bold text-slate-900">{airportCode}</span>
+                          {verifiedFlight.arrival.scheduledTime && (
+                            <span className="block font-mono text-[11px] text-slate-600">
+                              {verifiedFlight.arrival.scheduledTime.slice(11, 16)}
+                            </span>
+                          )}
+                          {verifiedFlight.arrival.terminal && (
+                            <span className="inline-block mt-0.5 text-[9px] font-mono font-bold bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">
+                              T{verifiedFlight.arrival.terminal.replace(/^[Tt]/, "")}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* MANUAL ENTRY */}
+              {isManualMode && (
+                <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 sm:p-5">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                    <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                      <Clock size={13} className="text-lime-600" />
+                      Manual Incoming Flight Entry
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsManualMode(false)}
+                      className="font-mono text-xs font-bold text-slate-700 hover:text-slate-950 underline cursor-pointer"
+                    >
+                      ← Back to automatic fetch
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Airline <span className="text-red-500">*</span>
+                      </label>
+                      <IntelligentAirlineAutocomplete
+                        value={manualAirline}
+                        onChangeText={(txt) => setManualAirline(txt)}
+                        onSelect={(airline) => {
+                          setManualAirline(airline.name);
+                          setManualAirlineIata(airline.iata);
+                          if (!manualFlightNum.startsWith(airline.iata)) {
+                            setManualFlightNum(`${airline.iata}${manualFlightNum.replace(/^[A-Z0-9]{2,3}/, "")}`);
+                          }
+                        }}
+                        placeholder="Search airline"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Flight Number <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={manualFlightNum}
+                        onChange={(e) => setManualFlightNum(e.target.value.toUpperCase())}
+                        placeholder="e.g. AI101"
+                        className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase tracking-wider focus:border-lime-500 focus:outline-none"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Flight Date <span className="text-red-500">*</span>
+                      </label>
+                      <Popover open={manualDatePopoverOpen} onOpenChange={setManualDatePopoverOpen}>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            className="relative flex h-11 w-full items-center justify-between rounded-xl border border-slate-300 bg-white px-3 text-left text-xs font-semibold text-slate-900 outline-none hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 cursor-pointer shadow-none"
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <CalendarDays className="h-4 w-4 text-lime-600 shrink-0" />
+                              <span className="font-mono text-xs font-bold text-slate-900">
+                                {format(dateValue, "dd MMM yyyy")}
+                              </span>
+                            </div>
+                            <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-slate-200 shadow-xl rounded-2xl z-50"
+                          align="start"
+                        >
+                          <CalendarPicker
+                            mode="single"
+                            selected={dateValue}
+                            onSelect={handleDateChange}
+                            disabled={{ before: todayStart }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-2">
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-bold block">
+                        Inbound Departure (at {originCode || "Origin"})
+                      </span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <span className="text-[9.5px] font-mono text-slate-500 block mb-0.5">Time</span>
+                          <FlightTimePicker
+                            value={manualDepTime}
+                            onChange={(val) => setManualDepTime(val)}
+                            placeholder="Select time"
+                            inputClassName="w-full rounded-lg border border-slate-200 pl-8 pr-7 py-1.5 font-mono text-xs font-bold text-slate-900 bg-white"
+                          />
+                        </div>
+                        <div>
+                          <span className="text-[9.5px] font-mono text-slate-500 block mb-0.5">Terminal</span>
+                          <input
+                            type="text"
+                            value={manualDepTerminal}
+                            onChange={(e) => setManualDepTerminal(e.target.value)}
+                            placeholder="Terminal"
+                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 font-mono text-xs font-bold text-slate-900 uppercase"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-2">
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-bold block">
+                        Inbound Arrival (at {airportCode})
+                      </span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <span className="text-[9.5px] font-mono text-slate-500 block mb-0.5">Time</span>
+                          <FlightTimePicker
+                            value={manualArrTime}
+                            onChange={(val) => setManualArrTime(val)}
+                            placeholder="Select time"
+                            inputClassName="w-full rounded-lg border border-slate-200 pl-8 pr-7 py-1.5 font-mono text-xs font-bold text-slate-900 bg-white"
+                          />
+                        </div>
+                        <div>
+                          <span className="text-[9.5px] font-mono text-slate-500 block mb-0.5">Terminal</span>
+                          <input
+                            type="text"
+                            value={manualArrTerminal}
+                            onChange={(e) => setManualArrTerminal(e.target.value)}
+                            placeholder="Terminal"
+                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 font-mono text-xs font-bold text-slate-900 uppercase"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 1C. CONNECTING FLIGHT (LEG 2: TRANSIT HUB -> CONNECTING DESTINATION) */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-lime-500 text-slate-950 font-mono text-xs font-bold">
+                    2
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-serif text-base sm:text-lg font-bold text-slate-900">
+                        Connecting Flight (Leg 2)
+                      </h3>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-600">
+                        {airportCode} ➔ {destCode || "Destination"}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-mono">
+                      Outbound flight departing from {airportCityName} ({airportCode}).
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsManualMode2(!isManualMode2);
+                    if (!isManualMode2) {
+                      setManualFlightNum2(flightNumber2);
+                    }
+                  }}
+                  className="text-xs font-mono font-bold text-slate-600 hover:text-slate-950 underline cursor-pointer"
+                >
+                  {isManualMode2 ? "Use automatic fetch" : "Enter manually"}
+                </button>
+              </div>
+
+              {/* AUTOMATIC FETCH */}
+              {!isManualMode2 && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                    <div className="md:col-span-7">
+                      <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Connecting Flight Number <span className="text-red-500">*</span>
+                      </label>
+                      <div className="flex gap-2.5">
+                        <input
+                          type="text"
+                          value={flightNumber2}
+                          onChange={(e) => {
+                            setFlightNumber2(e.target.value.toUpperCase());
+                            setIsFlightVerified2(false);
+                            setVerifiedFlight2(null);
+                            setFlightFetchError2(null);
+                            setIsCutoffUrgent2(false);
+                          }}
+                          placeholder="e.g. EK504, 6E224"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleVerifyFlight2();
+                            }
+                          }}
+                          className="h-12 flex-1 rounded-2xl border border-slate-300 bg-transparent px-4 font-mono text-sm font-bold text-slate-900 uppercase tracking-wider focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/20"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleVerifyFlight2}
+                          disabled={isFlightFetching2 || !flightNumber2.trim()}
+                          className="h-12 px-5 rounded-2xl bg-slate-900 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-slate-800 disabled:opacity-50 transition cursor-pointer flex items-center gap-2 shrink-0"
+                        >
+                          {isFlightFetching2 ? (
+                            <>
+                              <Loader2 size={14} className="animate-spin text-lime-400" />
+                              <span>Fetching...</span>
+                            </>
+                          ) : (
+                            <span>Fetch Flight</span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-5">
+                      <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Connecting Flight Date <span className="text-red-500">*</span>
+                      </label>
+                      <Popover open={datePopoverOpen2} onOpenChange={setDatePopoverOpen2}>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            className="relative flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300 bg-transparent px-4 text-left text-xs font-semibold text-slate-900 outline-none hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 cursor-pointer shadow-none"
+                          >
+                            <div className="flex items-center gap-2.5 truncate">
+                              <CalendarDays className="h-4 w-4 text-lime-600 shrink-0" />
+                              <span className="font-mono text-xs font-bold text-slate-900">
+                                {format(dateValue2, "dd MMMM yyyy")}
+                              </span>
+                            </div>
+                            <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-slate-200 shadow-xl rounded-3xl z-50"
+                          align="start"
+                        >
+                          <CalendarPicker
+                            mode="single"
+                            selected={dateValue2}
+                            onSelect={handleDateChange2}
+                            disabled={{ before: todayStart }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
+
+                  {isCutoffUrgent2 && (
+                    <div className="rounded-2xl border border-rose-300 bg-rose-50/80 p-4 text-xs text-rose-950 space-y-2">
+                      <div className="flex items-center gap-2 font-bold text-rose-900 text-sm">
+                        <PhoneCall size={16} className="text-rose-600" />
+                        <span>Urgent Airport Notice</span>
+                      </div>
+                      <p className="text-xs text-rose-900 leading-relaxed font-sans">
+                        Flight is scheduled within standard notice. Our 24/7 team can assist on WhatsApp.
+                      </p>
+                    </div>
+                  )}
+
+                  {flightFetchError2 && !isCutoffUrgent2 && (
+                    <div className="rounded-2xl border border-amber-300 bg-amber-50/70 p-4 text-xs text-amber-900 flex items-start gap-3">
+                      <AlertCircle size={18} className="text-amber-700 shrink-0 mt-0.5" />
+                      <div className="flex-1 space-y-1">
+                        <p className="font-semibold">{flightFetchError2}</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsManualMode2(true);
+                            setManualFlightNum2(flightNumber2);
+                          }}
+                          className="mt-1 font-mono font-bold text-amber-950 underline block cursor-pointer"
+                        >
+                          → Enter connecting flight details manually
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {isFlightFetching2 && (
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 space-y-3 animate-pulse">
+                      <div className="h-8 w-48 bg-slate-200 rounded" />
+                    </div>
+                  )}
+
+                  {isFlightVerified2 && verifiedFlight2 && (
+                    <div className="rounded-2xl border border-lime-400 bg-lime-50/40 p-4 sm:p-5 space-y-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-slate-200 p-1">
+                            <AirlineLogo iata={verifiedFlight2.carrier.iata} />
+                          </div>
+                          <div>
+                            <span className="font-bold text-slate-950 text-sm block">
+                              {verifiedFlight2.carrier.name} ({verifiedFlight2.carrier.iata})
+                            </span>
+                            <span className="font-mono text-xs font-black text-slate-900">
+                              {verifiedFlight2.flightNum}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="rounded-full bg-lime-500 px-2.5 py-0.5 font-mono text-[9.5px] font-bold uppercase text-slate-950 flex items-center gap-1">
+                          <Check size={12} /> Verified
+                        </span>
+                      </div>
+                      <div className="rounded-xl bg-white/90 border border-lime-200/80 p-3 flex items-center justify-between text-xs">
+                        <div>
+                          <span className="font-mono text-[9px] uppercase text-slate-400 font-bold block">Departs Transit Hub</span>
+                          <span className="font-mono font-bold text-slate-900">{airportCode}</span>
+                          {verifiedFlight2.departure.scheduledTime && (
+                            <span className="block font-mono text-[11px] text-slate-600">
+                              {verifiedFlight2.departure.scheduledTime.slice(11, 16)}
+                            </span>
+                          )}
+                          {verifiedFlight2.departure.terminal && (
+                            <span className="inline-block mt-0.5 text-[9px] font-mono font-bold bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">
+                              T{verifiedFlight2.departure.terminal.replace(/^[Tt]/, "")}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1 flex flex-col items-center px-2">
+                          <span className="text-[9px] font-mono text-slate-400">Connecting Flight</span>
+                          <div className="w-full border-t border-dashed border-lime-400 my-1" />
+                        </div>
+                        <div className="text-right">
+                          <span className="font-mono text-[9px] uppercase text-slate-400 font-bold block">Final Destination</span>
+                          <span className="font-mono font-bold text-slate-900">{verifiedFlight2.destination.code || destCode}</span>
+                          {verifiedFlight2.arrival.scheduledTime && (
+                            <span className="block font-mono text-[11px] text-slate-600">
+                              {verifiedFlight2.arrival.scheduledTime.slice(11, 16)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* MANUAL ENTRY */}
+              {isManualMode2 && (
+                <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 sm:p-5">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                    <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                      <Clock size={13} className="text-lime-600" />
+                      Manual Connecting Flight Entry
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsManualMode2(false)}
+                      className="font-mono text-xs font-bold text-slate-700 hover:text-slate-950 underline cursor-pointer"
+                    >
+                      ← Back to automatic fetch
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Airline <span className="text-red-500">*</span>
+                      </label>
+                      <IntelligentAirlineAutocomplete
+                        value={manualAirline2}
+                        onChangeText={(txt) => setManualAirline2(txt)}
+                        onSelect={(airline) => {
+                          setManualAirline2(airline.name);
+                          setManualAirlineIata2(airline.iata);
+                          if (!manualFlightNum2.startsWith(airline.iata)) {
+                            setManualFlightNum2(`${airline.iata}${manualFlightNum2.replace(/^[A-Z0-9]{2,3}/, "")}`);
+                          }
+                        }}
+                        placeholder="Search airline"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Flight Number <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={manualFlightNum2}
+                        onChange={(e) => setManualFlightNum2(e.target.value.toUpperCase())}
+                        placeholder="e.g. EK504"
+                        className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 font-mono text-xs font-bold text-slate-900 uppercase tracking-wider focus:border-lime-500 focus:outline-none"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        Connecting Flight Date <span className="text-red-500">*</span>
+                      </label>
+                      <Popover open={manualDatePopoverOpen2} onOpenChange={setManualDatePopoverOpen2}>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            className="relative flex h-11 w-full items-center justify-between rounded-xl border border-slate-300 bg-white px-3 text-left text-xs font-semibold text-slate-900 outline-none hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 cursor-pointer shadow-none"
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <CalendarDays className="h-4 w-4 text-lime-600 shrink-0" />
+                              <span className="font-mono text-xs font-bold text-slate-900">
+                                {format(dateValue2, "dd MMM yyyy")}
+                              </span>
+                            </div>
+                            <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-slate-200 shadow-xl rounded-2xl z-50"
+                          align="start"
+                        >
+                          <CalendarPicker
+                            mode="single"
+                            selected={dateValue2}
+                            onSelect={handleDateChange2}
+                            disabled={{ before: todayStart }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-2">
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-bold block">
+                        Outbound Departure (at {airportCode})
+                      </span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <span className="text-[9.5px] font-mono text-slate-500 block mb-0.5">Time</span>
+                          <FlightTimePicker
+                            value={manualDepTime2}
+                            onChange={(val) => setManualDepTime2(val)}
+                            placeholder="Select time"
+                            inputClassName="w-full rounded-lg border border-slate-200 pl-8 pr-7 py-1.5 font-mono text-xs font-bold text-slate-900 bg-white"
+                          />
+                        </div>
+                        <div>
+                          <span className="text-[9.5px] font-mono text-slate-500 block mb-0.5">Terminal</span>
+                          <input
+                            type="text"
+                            value={manualDepTerminal2}
+                            onChange={(e) => setManualDepTerminal2(e.target.value)}
+                            placeholder="Terminal"
+                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 font-mono text-xs font-bold text-slate-900 uppercase"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-2">
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-bold block">
+                        Outbound Arrival (at {destCode || "Destination"})
+                      </span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <span className="text-[9.5px] font-mono text-slate-500 block mb-0.5">Time</span>
+                          <FlightTimePicker
+                            value={manualArrTime2}
+                            onChange={(val) => setManualArrTime2(val)}
+                            placeholder="Select time"
+                            inputClassName="w-full rounded-lg border border-slate-200 pl-8 pr-7 py-1.5 font-mono text-xs font-bold text-slate-900 bg-white"
+                          />
+                        </div>
+                        <div>
+                          <span className="text-[9.5px] font-mono text-slate-500 block mb-0.5">Terminal</span>
+                          <input
+                            type="text"
+                            value={manualArrTerminal2}
+                            onChange={(e) => setManualArrTerminal2(e.target.value)}
+                            placeholder="Terminal"
+                            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 font-mono text-xs font-bold text-slate-900 uppercase"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-lime-400">
@@ -1634,12 +2828,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
-                        {direction === "transit"
-                          ? "Flying From (Inbound Origin)"
-                          : direction === "arrival"
+                        {direction === "arrival"
                           ? "Flying From (Departure Airport)"
                           : "Departure Airport"}
-                        {(direction === "arrival" || direction === "transit") && <span className="text-red-500"> *</span>}
+                        {direction === "arrival" && <span className="text-red-500"> *</span>}
                       </label>
                       {direction === "departure" ? (
                         <div className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
@@ -1653,23 +2845,17 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                           onTravelTypeChange={(newType) => setTravelType(newType)}
                           direction={direction}
                           serviceAirportCode={airportCode}
-                          placeholder={
-                            direction === "transit"
-                              ? "Select inbound departure airport"
-                              : "Select departure airport"
-                          }
-                          required={direction === "arrival" || direction === "transit"}
+                          placeholder="Select departure airport"
+                          required={direction === "arrival"}
                         />
                       )}
                     </div>
                     <div>
                       <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
-                        {direction === "transit"
-                          ? "Flying To (Connecting Destination)"
-                          : direction === "departure"
+                        {direction === "departure"
                           ? "Flying To (Destination Airport)"
                           : "Arrival Service Airport"}
-                        {(direction === "departure" || direction === "transit") && <span className="text-red-500"> *</span>}
+                        {direction === "departure" && <span className="text-red-500"> *</span>}
                       </label>
                       {direction === "arrival" ? (
                         <div className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
@@ -1683,25 +2869,12 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                           onTravelTypeChange={(newType) => setTravelType(newType)}
                           direction={direction}
                           serviceAirportCode={airportCode}
-                          placeholder={
-                            direction === "transit"
-                              ? "Select connecting destination airport"
-                              : "Select destination airport"
-                          }
-                          required={direction === "departure" || direction === "transit"}
+                          placeholder="Select destination airport"
+                          required={direction === "departure"}
                         />
                       )}
                     </div>
                   </div>
-
-                  {direction === "transit" && (
-                    <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-[11px] font-mono text-slate-600 flex items-center justify-between">
-                      <span className="font-bold">Transit Service Airport:</span>
-                      <span className="font-bold text-slate-900 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
-                        {airportCode} ({airportCityName})
-                      </span>
-                    </div>
-                  )}
                 </div>
               )}
 
@@ -2000,12 +3173,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
-                      {direction === "transit"
-                        ? "Flying From (Inbound Origin)"
-                        : direction === "arrival"
+                      {direction === "arrival"
                         ? "Flying From (Departure Airport)"
                         : "Departure Airport"}
-                      {(direction === "arrival" || direction === "transit") && <span className="text-red-500"> *</span>}
+                      {direction === "arrival" && <span className="text-red-500"> *</span>}
                     </label>
                     {direction === "departure" ? (
                       <div className="h-11 rounded-xl border border-slate-200 bg-slate-100/70 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
@@ -2019,23 +3190,17 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                         onTravelTypeChange={(newType) => setTravelType(newType)}
                         direction={direction}
                         serviceAirportCode={airportCode}
-                        placeholder={
-                          direction === "transit"
-                            ? "Select inbound departure airport"
-                            : "Select departure airport"
-                        }
-                        required={direction === "arrival" || direction === "transit"}
+                        placeholder="Select departure airport"
+                        required={direction === "arrival"}
                       />
                     )}
                   </div>
                   <div>
                     <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
-                      {direction === "transit"
-                        ? "Flying To (Connecting Destination)"
-                        : direction === "departure"
+                      {direction === "departure"
                         ? "Flying To (Destination Airport)"
                         : "Arrival Service Airport"}
-                      {(direction === "departure" || direction === "transit") && <span className="text-red-500"> *</span>}
+                      {direction === "departure" && <span className="text-red-500"> *</span>}
                     </label>
                     {direction === "arrival" ? (
                       <div className="h-11 rounded-xl border border-slate-200 bg-slate-100/70 px-3.5 flex items-center text-xs font-mono font-bold text-slate-800">
@@ -2049,25 +3214,12 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                         onTravelTypeChange={(newType) => setTravelType(newType)}
                         direction={direction}
                         serviceAirportCode={airportCode}
-                        placeholder={
-                          direction === "transit"
-                            ? "Select connecting destination airport"
-                            : "Select destination airport"
-                        }
-                        required={direction === "departure" || direction === "transit"}
+                        placeholder="Select destination airport"
+                        required={direction === "departure"}
                       />
                     )}
                   </div>
                 </div>
-
-                {direction === "transit" && (
-                  <div className="rounded-xl border border-slate-200 bg-slate-100/70 px-3 py-2 text-[11px] font-mono text-slate-600 flex items-center justify-between">
-                    <span className="font-bold">Transit Service Airport:</span>
-                    <span className="font-bold text-slate-900 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
-                      {airportCode} ({airportCityName})
-                    </span>
-                  </div>
-                )}
               </div>
 
               {/* Row: Departure Time & Arrival Time */}
@@ -2129,6 +3281,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             </div>
           )}
         </div>
+      )}
 
         {/* ========================================================================= */}
         {/* 2. BASIC PASSENGER DETAILS                                                */}

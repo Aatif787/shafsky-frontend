@@ -588,7 +588,6 @@ function AuthSession({
           finalizeSignInAndExchange: establishFreshClerkSignIn,
           setActiveSession: clerk.setActiveSession,
           missingRequirementsError: googleMissingRequirementsError,
-          handleRedirectCallback: clerk.handleRedirectCallback,
         });
       } catch (err) {
         console.error("[AuthProvider] Clerk Google return exception:", err);

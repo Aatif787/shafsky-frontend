@@ -68,6 +68,10 @@ export interface BookingItem {
   assigned_to?: string | null;
   service_id?: string;
   service_name?: string;
+  flight_num?: string | null;
+  flight_num_2?: string | null;
+  transit_hub?: string | null;
+  metadataJson?: Record<string, any>;
   customer_profile?: {
     id?: string;
     full_name?: string;

@@ -174,16 +174,26 @@ export function MeetGreetPackageComparison({
     }
   }, [isDel, flightType]);
 
-  // Direct access Transit category filter state
-  const [directCategoryFilter, setDirectCategoryFilter] = useState<string>("ALL");
+  // Direct access Transit category filter state (show one category at a time, never all 4 at once)
+  const [directCategoryFilter, setDirectCategoryFilter] = useState<string>("DOMESTIC_DOMESTIC");
 
-  // Direct access Transit journey validation modal state
+  // Direct access Transit journey validation modal state (pre-filled with any previous selections)
+  const initialModalOrigin = String(bookingSearch?.origin || journeyOrigin || "").trim().toUpperCase();
+  const initialModalDest = String(bookingSearch?.destination || journeyDest || "").trim().toUpperCase();
   const [isValidationModalOpen, setIsValidationModalOpen] = useState<boolean>(false);
   const [validatingPackage, setValidatingPackage] = useState<any | null>(null);
-  const [valOrigin, setValOrigin] = useState<string>("");
-  const [valOriginLabel, setValOriginLabel] = useState<string>("");
-  const [valDest, setValDest] = useState<string>("");
-  const [valDestLabel, setValDestLabel] = useState<string>("");
+  const [valOrigin, setValOrigin] = useState<string>(initialModalOrigin);
+  const [valOriginLabel, setValOriginLabel] = useState<string>(() => {
+    if (!initialModalOrigin) return "";
+    const oe = getAirportRegistryEntry(initialModalOrigin);
+    return oe ? formatAirportOption(oe) : initialModalOrigin;
+  });
+  const [valDest, setValDest] = useState<string>(initialModalDest);
+  const [valDestLabel, setValDestLabel] = useState<string>(() => {
+    if (!initialModalDest) return "";
+    const de = getAirportRegistryEntry(initialModalDest);
+    return de ? formatAirportOption(de) : initialModalDest;
+  });
   const [valTransit, setValTransit] = useState<string>(airportCode);
   const [valTransitLabel, setValTransitLabel] = useState<string>(() =>
     airportEntry ? formatAirportOption(airportEntry) : airportCode
@@ -356,9 +366,14 @@ export function MeetGreetPackageComparison({
     return Array.from(new Set(cats));
   }, [packages]);
 
+  useEffect(() => {
+    if (configuredCategories.length > 0 && !configuredCategories.includes(directCategoryFilter)) {
+      setDirectCategoryFilter(configuredCategories[0]);
+    }
+  }, [configuredCategories, directCategoryFilter]);
+
   const displayedPackages = useMemo(() => {
     if (!isDirectTransitAccess) return packages;
-    if (directCategoryFilter === "ALL") return packages;
     return packages.filter((p: any) => p.category === directCategoryFilter);
   }, [isDirectTransitAccess, directCategoryFilter, packages]);
 
@@ -400,25 +415,24 @@ export function MeetGreetPackageComparison({
     if (onSelectPackage) onSelectPackage(pkg);
     setValidatingPackage(pkg);
 
-    if (journeyOrigin && journeyDest) {
-      setValOrigin(journeyOrigin);
-      setValOriginLabel(originLabel || journeyOrigin);
-      setValDest(journeyDest);
-      setValDestLabel(destLabel || journeyDest);
-      setValTransit(journeyTransit || airportCode);
-      setValTransitLabel(transitLabel || (journeyTransit || airportCode));
+    // Reuse any previously selected airports (from modal state, journey state, or URL search)
+    const effectiveOrigin = (valOrigin || journeyOrigin || (bookingSearch?.origin as string) || "").trim().toUpperCase();
+    const effectiveDest = (valDest || journeyDest || (bookingSearch?.destination as string) || "").trim().toUpperCase();
+    const effectiveTransit = (valTransit || journeyTransit || (bookingSearch?.transit as string) || airportCode).trim().toUpperCase();
 
-      if (isAirportClassifiable(journeyOrigin) && isAirportClassifiable(journeyDest)) {
-        const cat = getTransitCategory(journeyOrigin, journeyDest);
-        if (cat === pkg.category) {
-          proceedToBooking(pkg, journeyOrigin, journeyDest, journeyTransit || airportCode, cat);
-          return;
-        }
-      }
-    } else {
-      setValTransit(airportCode);
-      setValTransitLabel(airportEntry ? formatAirportOption(airportEntry) : airportCode);
+    if (effectiveOrigin) {
+      setValOrigin(effectiveOrigin);
+      const oe = getAirportRegistryEntry(effectiveOrigin);
+      setValOriginLabel(valOriginLabel || originLabel || (oe ? formatAirportOption(oe) : effectiveOrigin));
     }
+    if (effectiveDest) {
+      setValDest(effectiveDest);
+      const de = getAirportRegistryEntry(effectiveDest);
+      setValDestLabel(valDestLabel || destLabel || (de ? formatAirportOption(de) : effectiveDest));
+    }
+    setValTransit(effectiveTransit);
+    const te = getAirportRegistryEntry(effectiveTransit);
+    setValTransitLabel(valTransitLabel || transitLabel || (te ? formatAirportOption(te) : effectiveTransit));
 
     setIsValidationModalOpen(true);
   };
@@ -507,16 +521,8 @@ export function MeetGreetPackageComparison({
 
   return (
     <div className="space-y-8 my-10">
-      {/* SECTION TITLE & HIERARCHY FILTERS */}
+      {/* HIERARCHY FILTERS: Airport -> Journey Type -> Flight Type / Transit Type -> Terminal (DEL) -> Packages */}
       <div className="text-center max-w-2xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-[#7c3aed] text-[10px] font-mono font-bold uppercase tracking-widest">
-          <Crown className="w-3.5 h-3.5" />
-          <span>Official Service Packages</span>
-        </div>
-
-        <h3 className="text-2xl sm:text-3xl font-serif text-slate-900 font-bold">
-          Concierge Packages for <span className="italic">{cityName}</span>
-        </h3>
 
         {/* Hierarchy Filters: Airport -> Journey Type -> Flight Type / Transit Type -> Terminal (DEL) -> Packages */}
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -624,52 +630,25 @@ export function MeetGreetPackageComparison({
         {/* TRANSIT DISPLAY: DIRECT AIRPORT-PAGE ACCESS VS PRESERVED HOME BOOKING FLOW */}
         {journeyType === "TRANSIT" && (
           isDirectTransitAccess ? (
-            /* Direct Airport-Page Access: Browsable configured categories, no arbitrary default, no placeholder */
-            <div className="w-full max-w-2xl mx-auto rounded-3xl bg-purple-50/70 border border-purple-200/80 p-5 sm:p-6 text-center shadow-xs space-y-4">
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-purple-200 text-[#7c3aed] text-[10px] font-mono font-bold uppercase tracking-wider shadow-2xs">
-                  <Sparkles className="w-3 h-3" />
-                  <span>Configured Transit Catalog</span>
-                </div>
-                <div className="text-base sm:text-lg font-serif font-bold text-slate-900">
-                  Available Transit Service Categories at {cityName} ({airportCode})
-                </div>
-                <p className="text-xs text-slate-600 font-sans max-w-md mx-auto leading-relaxed">
-                  Browse official transit packages below. Select any package to validate your route (Origin → Connecting Hub → Final Destination) before booking.
-                </p>
-              </div>
-
-              {/* Category Filter Pills (Only categories configured for this airport) */}
-              {configuredCategories.length > 1 && (
-                <div className="flex flex-wrap items-center justify-center gap-2 pt-2 border-t border-purple-100/80">
+            /* Direct Airport-Page Access: Category selector (one at a time, never all 4 at once) */
+            configuredCategories.length > 1 ? (
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                {configuredCategories.map((cat) => (
                   <button
+                    key={cat}
                     type="button"
-                    onClick={() => setDirectCategoryFilter("ALL")}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
-                      directCategoryFilter === "ALL"
+                    onClick={() => setDirectCategoryFilter(cat)}
+                    className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+                      directCategoryFilter === cat
                         ? "bg-[#7c3aed] text-white shadow-xs"
-                        : "bg-white text-slate-600 hover:text-slate-900 border border-purple-100 shadow-2xs"
+                        : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-2xs"
                     }`}
                   >
-                    All Categories ({packages.length})
+                    {TRANSIT_TITLE_MAP[cat] || cat}
                   </button>
-                  {configuredCategories.map((cat) => (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => setDirectCategoryFilter(cat)}
-                      className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
-                        directCategoryFilter === cat
-                          ? "bg-[#7c3aed] text-white shadow-xs"
-                          : "bg-white text-slate-600 hover:text-slate-900 border border-purple-100 shadow-2xs"
-                      }`}
-                    >
-                      {TRANSIT_TITLE_MAP[cat] || cat}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : null
           ) : (
             /* Preserved Home Booking Flow: Route summary + Authoritative category + Change Journey editor */
             <div className="w-full max-w-xl mx-auto rounded-3xl bg-purple-50/70 border border-purple-200/80 p-5 sm:p-6 text-center shadow-xs space-y-4">
@@ -1093,17 +1072,13 @@ export function MeetGreetPackageComparison({
               className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-purple-100 p-6 sm:p-7 space-y-5 max-h-[90vh] overflow-y-auto"
             >
               {/* Modal Header */}
-              <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
+              <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-3">
                 <div>
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-50 text-[#7c3aed] text-[10px] font-mono font-bold uppercase tracking-wider">
-                    <Crown className="w-3 h-3" />
-                    <span>Validate Transit Journey</span>
-                  </div>
-                  <h4 className="mt-2 text-xl font-serif font-bold text-slate-900">
-                    Confirm Flight Route
+                  <h4 className="text-lg font-serif font-bold text-slate-900">
+                    Confirm Route
                   </h4>
                   <p className="text-xs text-slate-500 font-sans mt-0.5">
-                    Selected Package: <strong className="text-slate-800">{validatingPackage.title}</strong> ({TRANSIT_TITLE_MAP[validatingPackage.category] || validatingPackage.category}) • <strong className="text-[#7c3aed]">{validatingPackage.price}</strong>
+                    Package: <strong className="text-slate-800">{validatingPackage.title}</strong> • <strong className="text-[#7c3aed]">{validatingPackage.price}</strong>
                   </p>
                 </div>
                 <button
@@ -1115,124 +1090,97 @@ export function MeetGreetPackageComparison({
                 </button>
               </div>
 
-              {/* Explanation */}
-              <p className="text-xs text-slate-600 font-sans leading-relaxed">
-                Transit service categories are strictly determined by: <br />
-                <strong className="text-purple-700 font-mono text-[11px]">Origin Airport Type → Final Destination Airport Type</strong><br />
-                {cityName} ({airportCode}) serves as your connecting transit hub.
-              </p>
-
-              {/* Autocomplete Form */}
-              <div className="space-y-3.5">
-                {/* Origin Airport */}
+              {/* Form Fields */}
+              <div className="space-y-3 pt-1">
+                {/* Departure Airport */}
                 <div className="space-y-1">
-                  <label className="text-[10px] font-mono font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
-                    <span>Origin Airport (Departure) *</span>
-                    {valOrigin && (
-                      <span className="text-[9px] font-normal text-purple-700">
-                        {isAirportClassifiable(valOrigin) ? (isIndianAirportCode(valOrigin) ? "Domestic (India)" : "International") : "Unknown"}
-                      </span>
-                    )}
+                  <label className="text-[11px] font-mono font-bold text-slate-700 uppercase tracking-wider">
+                    Departure Airport
                   </label>
                   <IntelligentAirportAutocomplete
                     mode="global"
                     value={valOriginLabel || valOrigin}
                     onSelect={(ap) => {
                       setValOrigin(ap.code);
-                      setValOriginLabel(formatAirportOption(ap));
+                      const lbl = formatAirportOption(ap);
+                      setValOriginLabel(lbl);
+                      setJourneyOrigin(ap.code);
+                      setOriginLabel(lbl);
                     }}
-                    placeholder="Search origin airport (e.g. BOM, DXB, LHR)"
-                    inputClassName="h-10 text-xs rounded-xl"
+                    placeholder="Search departure airport"
+                    inputClassName="w-full h-11 pl-9 pr-3.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-purple-600 focus:ring-2 focus:ring-purple-500/20 outline-none"
                   />
                 </div>
 
-                {/* Connecting Hub */}
+                {/* Connecting Transit Hub */}
                 <div className="space-y-1">
-                  <label className="text-[10px] font-mono font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
-                    <span>Connecting Transit Hub *</span>
-                    <span className="text-[9px] font-normal text-purple-700">Connecting Only</span>
+                  <label className="text-[11px] font-mono font-bold text-slate-700 uppercase tracking-wider">
+                    Connecting Airport
                   </label>
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-purple-50 border border-purple-200 text-xs font-mono font-bold text-purple-900">
-                    <span>{cityName}</span>
-                    <span className="text-purple-600 font-normal">({airportCode})</span>
-                    <span className="ml-auto text-[10px] text-purple-700 font-sans font-medium uppercase tracking-wider bg-white px-2 py-0.5 rounded-md">
-                      Active Transit Airport
+                  <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-purple-50/70 border border-purple-200 text-xs font-mono text-purple-950">
+                    <span className="font-bold">{cityName} ({airportCode})</span>
+                    <span className="text-[10px] text-purple-700 bg-white px-2 py-0.5 rounded-md font-sans font-medium">
+                      Transit Hub
                     </span>
                   </div>
                 </div>
 
                 {/* Final Destination Airport */}
                 <div className="space-y-1">
-                  <label className="text-[10px] font-mono font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
-                    <span>Final Destination Airport *</span>
-                    {valDest && (
-                      <span className="text-[9px] font-normal text-purple-700">
-                        {isAirportClassifiable(valDest) ? (isIndianAirportCode(valDest) ? "Domestic (India)" : "International") : "Unknown"}
-                      </span>
-                    )}
+                  <label className="text-[11px] font-mono font-bold text-slate-700 uppercase tracking-wider">
+                    Destination Airport
                   </label>
                   <IntelligentAirportAutocomplete
                     mode="global"
                     value={valDestLabel || valDest}
                     onSelect={(ap) => {
                       setValDest(ap.code);
-                      setValDestLabel(formatAirportOption(ap));
+                      const lbl = formatAirportOption(ap);
+                      setValDestLabel(lbl);
+                      setJourneyDest(ap.code);
+                      setDestLabel(lbl);
                     }}
-                    placeholder="Search destination airport (e.g. LKO, DXB, SIN)"
-                    inputClassName="h-10 text-xs rounded-xl"
+                    placeholder="Search destination airport"
+                    inputClassName="w-full h-11 pl-9 pr-3.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-purple-600 focus:ring-2 focus:ring-purple-500/20 outline-none"
                   />
                 </div>
               </div>
 
               {/* Validation Feedback Banner */}
-              {validationState && (
+              {validationState && validationState.status !== "INCOMPLETE" && (
                 <div className="pt-1">
                   {validationState.status === "MATCH" && (
-                    <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-sans space-y-1">
-                      <div className="flex items-center gap-1.5 font-bold font-mono text-[11px] text-emerald-800">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>Route Category Verified</span>
-                      </div>
-                      <p className="leading-relaxed">
-                        {valOrigin} → {airportCode} → {valDest} is classified as{" "}
-                        <strong>{TRANSIT_TITLE_MAP[validationState.calculatedCategory!]}</strong>. Matches your selected package!
-                      </p>
+                    <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-sans flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Route verified for this package ({valOrigin} → {airportCode} → {valDest}).</span>
                     </div>
                   )}
 
                   {validationState.status === "MISMATCH" && (
-                    <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 text-xs font-sans space-y-2.5">
+                    <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 text-xs font-sans space-y-2">
                       <div className="flex items-center gap-1.5 font-bold font-mono text-[11px] text-amber-900">
                         <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                        <span>Transit Category Mismatch</span>
+                        <span>Route Mismatch</span>
                       </div>
                       <p className="leading-relaxed">
-                        Your route {valOrigin} → {airportCode} → {valDest} is{" "}
-                        <strong>{TRANSIT_TITLE_MAP[validationState.calculatedCategory!]}</strong>, but you selected a{" "}
-                        <strong>{TRANSIT_TITLE_MAP[validationState.selectedCategory!]}</strong> package.
+                        This route is <strong>{TRANSIT_TITLE_MAP[validationState.calculatedCategory!]}</strong>, but you chose <strong>{TRANSIT_TITLE_MAP[validationState.selectedCategory!]}</strong>.
                       </p>
                       {validationState.matchingAlternativePkg && (
                         <button
                           type="button"
                           onClick={() => handleSwitchToMatchingPackage(validationState.matchingAlternativePkg)}
-                          className="w-full py-2 px-3 rounded-xl bg-amber-600 text-white font-mono text-xs font-bold hover:bg-amber-700 transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-1.5"
+                          className="w-full py-2 px-3 rounded-lg bg-amber-600 text-white font-mono text-xs font-bold hover:bg-amber-700 transition-colors cursor-pointer"
                         >
-                          <span>Switch to {TRANSIT_TITLE_MAP[validationState.calculatedCategory!]} Package ({validationState.matchingAlternativePkg.price})</span>
+                          Switch to {TRANSIT_TITLE_MAP[validationState.calculatedCategory!]} ({validationState.matchingAlternativePkg.price})
                         </button>
                       )}
                     </div>
                   )}
 
                   {(validationState.status === "INVALID_ROUTE" || validationState.status === "UNCLASSIFIABLE") && (
-                    <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950 text-xs font-sans flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-                      <p className="leading-relaxed">{validationState.message}</p>
-                    </div>
-                  )}
-
-                  {validationState.status === "INCOMPLETE" && (
-                    <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-600 text-xs font-sans">
-                      {validationState.message}
+                    <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-950 text-xs font-sans flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                      <span>{validationState.message}</span>
                     </div>
                   )}
                 </div>

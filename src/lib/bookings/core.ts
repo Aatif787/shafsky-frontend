@@ -473,6 +473,10 @@ export function normalizeGeneralBookingToBookingItem(b: any): BookingItem {
     created_at: b.createdAt || b.created_at || new Date().toISOString(),
     notes: b.notes || "",
     user_id: b.userId || b.user_id || null,
+    flight_num: b.flightNum || b.flight_num || null,
+    flight_num_2: b.flightNum2 || b.flight_num_2 || b.metadataJson?.flight_number_2 || null,
+    transit_hub: b.metadataJson?.transit_hub || b.metadataJson?.transit_code || b.metadataJson?.service_airport || null,
+    metadataJson: b.metadataJson || b.metadata_json || {},
     booking_services: [
       {
         id: String(b.id),
