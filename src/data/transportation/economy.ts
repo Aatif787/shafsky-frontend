@@ -6,6 +6,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
     id: "executive-sedan-city-ciaz",
     name: "Executive Sedan (Honda City / Maruti Ciaz)",
     category: "Economy / Standard",
+    image: "/images/transport/vehicles/executive-sedan-city-ciaz.webp",
     bookable: true,
     enquiryAvailable: true,
     providers: [
@@ -43,6 +44,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
     id: "standard-compact-sedan",
     name: "Standard Compact Sedan",
     category: "Economy / Standard",
+    image: "/images/transport/vehicles/standard-compact-sedan.webp",
     bookable: true,
     enquiryAvailable: true,
   },
@@ -50,6 +52,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
     id: "airport-transit-shuttles",
     name: "Airport Transit Shuttles",
     category: "Economy / Standard",
+    image: "/images/transport/vehicles/airport-transit-shuttles.webp",
     bookable: true,
     enquiryAvailable: true,
     providers: [
@@ -64,6 +67,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
     id: "hourly-disposal-city-sedan",
     name: "Hourly Disposal City Sedan",
     category: "Economy / Standard",
+    image: "/images/transport/vehicles/hourly-disposal-city-sedan.webp",
     bookable: true,
     enquiryAvailable: true,
     providers: [
@@ -94,6 +98,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
     id: "maruti-suzuki-dzire",
     name: "Maruti Suzuki Dzire",
     category: "Economy / Standard",
+    image: "/images/transport/vehicles/maruti-suzuki-dzire.webp",
     bookable: true,
     enquiryAvailable: true,
     providers: [
@@ -144,6 +149,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
     id: "hyundai-aura",
     name: "Hyundai Aura",
     category: "Economy / Standard",
+    image: "/images/transport/vehicles/hyundai-aura.webp",
     bookable: true,
     enquiryAvailable: true,
     providers: [
@@ -167,6 +173,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
     id: "toyota-etios",
     name: "Toyota Etios",
     category: "Economy / Standard",
+    image: "/images/transport/vehicles/toyota-etios.webp",
     bookable: true,
     enquiryAvailable: true,
     providers: [
@@ -189,6 +196,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
     id: "toyota-corolla-altis",
     name: "Toyota Corolla Altis",
     category: "Economy / Standard",
+    image: "/images/transport/vehicles/toyota-corolla-altis.webp",
     bookable: true,
     enquiryAvailable: true,
     providers: [
@@ -213,6 +221,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
     id: "maruti-suzuki-ertiga",
     name: "Maruti Suzuki Ertiga",
     category: "Economy / Standard",
+    image: "/images/transport/vehicles/maruti-suzuki-ertiga.webp",
     bookable: true,
     enquiryAvailable: true,
     providers: [
@@ -263,6 +272,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
     id: "kia-carens",
     name: "Kia Carens",
     category: "Economy / Standard",
+    image: "/images/transport/vehicles/kia-carens.webp",
     bookable: true,
     enquiryAvailable: true,
     providers: [
@@ -313,6 +323,7 @@ export const ECONOMY_STANDARD_CATALOG: TransportationVehicleItem[] = [
     id: "toyota-rumion-mahindra-marazzo",
     name: "Toyota Rumion / Mahindra Marazzo",
     category: "Economy / Standard",
+    image: "/images/transport/vehicles/toyota-rumion-mahindra-marazzo.webp",
     bookable: true,
     enquiryAvailable: true,
     providers: [
