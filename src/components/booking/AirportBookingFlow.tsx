@@ -3787,9 +3787,9 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5 sm:gap-4">
                   {/* Full Name */}
-                  <div>
+                  <div className="sm:col-span-8 md:col-span-9">
                     <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
                       Name <span className="text-red-500">*</span>
                     </label>
@@ -3799,12 +3799,12 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                       value={p.fullName}
                       onChange={(e) => updatePassenger(idx, "fullName", e.target.value)}
                       placeholder="Name as per government ID"
-                      className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none transition"
                     />
                   </div>
 
                   {/* Age */}
-                  <div>
+                  <div className="sm:col-span-4 md:col-span-3">
                     <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
                       Age
                     </label>
@@ -3815,12 +3815,12 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                       value={p.age}
                       onChange={(e) => updatePassenger(idx, "age", e.target.value)}
                       placeholder="Age (Years)"
-                      className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 font-mono text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 font-mono text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none transition"
                     />
                   </div>
 
                   {/* Mobile Number */}
-                  <div>
+                  <div className="sm:col-span-6">
                     <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
                       Phone {idx === 0 ? <span className="text-red-500">*</span> : <span className="text-slate-400 font-normal">(optional)</span>}
                     </label>
@@ -3828,13 +3828,13 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                       required={idx === 0}
                       value={p.phone}
                       onChange={(v) => updatePassenger(idx, "phone", v)}
-                      placeholder={idx === 0 ? "Phone" : "Phone (or same as P1)"}
-                      className="h-11 w-full rounded-r-xl border border-slate-300 bg-transparent px-3.5 font-mono text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      placeholder={idx === 0 ? "Phone number" : "Phone (or same as P1)"}
+                      className="h-11 w-full rounded-r-xl border border-slate-300 bg-transparent px-3.5 font-mono text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none transition"
                     />
                   </div>
 
                   {/* Email Address */}
-                  <div>
+                  <div className="sm:col-span-6">
                     <label className="block text-xs font-mono font-bold text-slate-700 mb-1.5">
                       Email {idx === 0 ? <span className="text-red-500">*</span> : <span className="text-slate-400 font-normal">(optional)</span>}
                     </label>
@@ -3843,8 +3843,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                       required={idx === 0}
                       value={p.email}
                       onChange={(e) => updatePassenger(idx, "email", e.target.value)}
-                      placeholder={idx === 0 ? "Email" : "Email (or same as P1)"}
-                      className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
+                      placeholder={idx === 0 ? "Email address" : "Email (or same as P1)"}
+                      className="h-11 w-full rounded-xl border border-slate-300 bg-transparent px-3.5 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none transition"
                     />
                   </div>
                 </div>

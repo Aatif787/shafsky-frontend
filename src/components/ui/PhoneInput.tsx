@@ -277,7 +277,7 @@ export function PhoneInput({
   };
 
   return (
-    <div ref={wrapRef} className={`relative flex ${wrapperClassName || ""}`}>
+    <div ref={wrapRef} className={`relative flex w-full min-w-0 ${wrapperClassName || ""}`}>
       <button
         type="button"
         disabled={disabled}
@@ -285,7 +285,7 @@ export function PhoneInput({
         aria-label="Select country code"
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex shrink-0 items-center gap-1.5 rounded-l-2xl border border-r-0 border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 hover:bg-slate-100 disabled:opacity-60"
+        className="flex shrink-0 items-center self-stretch gap-1.5 rounded-l-xl border border-r-0 border-slate-300 bg-slate-50 px-2.5 sm:px-3 text-xs sm:text-sm text-slate-900 hover:bg-slate-100 disabled:opacity-60 focus:outline-none transition"
       >
         <span aria-hidden="true" className="text-base leading-none">
           {selected?.flag}
@@ -310,14 +310,14 @@ export function PhoneInput({
           void emit(country, e.target.value);
         }}
         placeholder={placeholder}
-        className={className}
+        className={`min-w-0 flex-1 ${className || ""}`}
         {...rest}
       />
 
       {open && (
         <div
           role="listbox"
-          className="absolute left-0 top-full z-50 mt-1 max-h-72 w-72 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl"
+          className="absolute left-0 top-full z-50 mt-1 max-h-72 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl"
         >
           <div className="border-b border-slate-100 p-2">
             <input
