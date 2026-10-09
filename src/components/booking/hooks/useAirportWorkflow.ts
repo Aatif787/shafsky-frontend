@@ -61,6 +61,7 @@ export interface AirportWorkflowState {
   resolvedAirport?: any;
   isFlightLocked?: boolean;
   bookingSource?: "airport_page" | "generic";
+  travelTypeAutoSwitchedReason?: string;
 }
 
 /**
@@ -449,6 +450,21 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
 
         if (fetchRes.success) {
           const derivedFt = String(fetchRes.flightType || "").toLowerCase();
+          const targetTravelType: ("domestic" | "international" | undefined) =
+            derivedFt === "international" || derivedFt === "domestic"
+              ? (derivedFt as "domestic" | "international")
+              : undefined;
+
+          let autoSwitchReason: string | undefined = undefined;
+          if (targetTravelType && targetTravelType !== state.travelType) {
+            if (targetTravelType === "international") {
+              autoSwitchReason = "International route detected. Showing International concierge packages.";
+            } else {
+              autoSwitchReason = "Domestic route detected. Showing Domestic concierge packages.";
+            }
+            toast.info(autoSwitchReason);
+          }
+
           setState((prev) => ({
             ...prev,
             isLoadingServices: false,
@@ -457,10 +473,8 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
             availableServicesList: fetchRes.services,
             availablePackagesList: fetchRes.packages,
             flightType: fetchRes.flightType,
-            travelType:
-              derivedFt === "international" || derivedFt === "domestic"
-                ? (derivedFt as "domestic" | "international")
-                : prev.travelType,
+            travelType: targetTravelType || prev.travelType,
+            travelTypeAutoSwitchedReason: autoSwitchReason || prev.travelTypeAutoSwitchedReason,
             airportName: fetchRes.airport?.name || prev.airportName,
             resolvedAirport: fetchRes.airport
               ? {
@@ -740,7 +754,19 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       const arrCountry = (flightInfo.destination?.country || "").toUpperCase();
       const isOriginIndia = depCountry === "IN" || depCountry === "INDIA" || isIndianAirportCode(flightInfo.origin?.code);
       const isDestIndia = arrCountry === "IN" || arrCountry === "INDIA" || isIndianAirportCode(flightInfo.destination?.code);
-      const isDetectedIntl = state.travelType === "international" || (!isOriginIndia || !isDestIndia);
+      const isDetectedIntl = !isOriginIndia || !isDestIndia;
+      const targetTravelType: "domestic" | "international" = isDetectedIntl ? "international" : "domestic";
+
+      let flightSwitchReason: string | undefined = state.travelTypeAutoSwitchedReason;
+      if (state.travelType !== targetTravelType) {
+        if (targetTravelType === "international") {
+          flightSwitchReason = `International flight route detected (${flightInfo.origin?.code || "Origin"} → ${flightInfo.destination?.code || "Destination"}). Service category updated to International.`;
+          toast.info(flightSwitchReason);
+        } else {
+          flightSwitchReason = `Domestic flight route detected (${flightInfo.origin?.code || "Origin"} → ${flightInfo.destination?.code || "Destination"}). Service category updated to Domestic.`;
+          toast.info(flightSwitchReason);
+        }
+      }
 
       if (effectiveAirportCode === "DEL" && isDetectedIntl) {
         inferredTerminal = "Terminal 3";
@@ -770,6 +796,8 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
           : matchedAirportName,
         originCode: flightInfo.origin?.code || (state.bookingSource === "airport_page" ? (originCode || state.originCode) : state.originCode),
         destCode: flightInfo.destination?.code || (state.bookingSource === "airport_page" ? (destCode || state.destCode) : state.destCode),
+        travelType: targetTravelType,
+        travelTypeAutoSwitchedReason: flightSwitchReason,
         isAirportCovered: true,
         flightStateMode: "VERIFIED",
         flightErrorMessage: undefined,
@@ -833,9 +861,28 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       }
     }
 
+    const isOriginIndia = isIndianAirportCode(originCode);
+    const isDestIndia = isIndianAirportCode(destCode);
+    const isActuallyIntl = !isOriginIndia || !isDestIndia;
+    const targetTravelType: "domestic" | "international" = isActuallyIntl ? "international" : "domestic";
+
+    let manualSwitchReason: string | undefined = state.travelTypeAutoSwitchedReason;
+    if (state.travelType !== targetTravelType) {
+      if (targetTravelType === "international") {
+        manualSwitchReason = `International route entered (${originCode} → ${destCode}). Service category updated to International.`;
+        toast.info(manualSwitchReason);
+      } else {
+        manualSwitchReason = `Domestic route entered (${originCode} → ${destCode}). Service category updated to Domestic.`;
+        toast.info(manualSwitchReason);
+      }
+    }
+
     const rawTerm = state.direction === "arrival" ? flightInfo.arrival?.terminal : flightInfo.departure?.terminal;
     let inferredTerminal: string | undefined = undefined;
-    if (rawTerm) {
+    const effectiveAirportCode = (selectedServiceAirport || "").trim().toUpperCase();
+    if (effectiveAirportCode === "DEL" && isActuallyIntl) {
+      inferredTerminal = "Terminal 3";
+    } else if (rawTerm) {
       const tStr = String(rawTerm).trim();
       if (tStr.includes("3") || tStr.toUpperCase().includes("T3")) {
         inferredTerminal = "Terminal 3";
@@ -849,6 +896,8 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       validatedFlightData: flightInfo,
       flightNumber: flightInfo.flightNum,
       selectedTerminal: inferredTerminal || state.selectedTerminal,
+      travelType: targetTravelType,
+      travelTypeAutoSwitchedReason: manualSwitchReason,
       isManualMode: false,
       isFlightLocked: true,
       flightStateMode: "MANUAL",

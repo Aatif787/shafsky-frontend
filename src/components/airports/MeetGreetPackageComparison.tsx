@@ -211,6 +211,21 @@ export function MeetGreetPackageComparison({
       );
       return;
     }
+
+    const o = (journeyOrigin || "").trim().toUpperCase();
+    const d = (journeyDest || "").trim().toUpperCase();
+    const hasIntlAirport = (o && !isIndianAirportCode(o)) || (d && !isIndianAirportCode(d));
+    const isBothDomestic = o && d && isIndianAirportCode(o) && isIndianAirportCode(d);
+
+    if (newType === "DOMESTIC" && hasIntlAirport) {
+      const intlCode = o && !isIndianAirportCode(o) ? o : d;
+      toast.warning(`Your route includes an international airport (${intlCode}). Domestic packages cannot be selected.`);
+      return;
+    }
+    if (newType === "INTERNATIONAL" && isBothDomestic) {
+      toast.info(`Both airports (${o} and ${d}) are domestic in India.`);
+    }
+
     setFlightType(newType);
     if (newType === "INTERNATIONAL" && airportCode.toUpperCase() === "DEL") {
       setTerminal("Terminal 3");
@@ -806,8 +821,21 @@ export function MeetGreetPackageComparison({
                         mode="global"
                         value={originLabel || journeyOrigin}
                         onSelect={(ap) => {
-                          setJourneyOrigin(ap.code);
+                          const nextOrigin = ap.code.trim().toUpperCase();
+                          setJourneyOrigin(nextOrigin);
                           setOriginLabel(formatAirportOption(ap));
+                          if (!isIndianAirportCode(nextOrigin) && flightType !== "INTERNATIONAL") {
+                            setFlightType("INTERNATIONAL");
+                            toast.info(`International airport selected (${nextOrigin}). Packages updated to International.`);
+                          } else if (
+                            isIndianAirportCode(nextOrigin) &&
+                            journeyDest &&
+                            isIndianAirportCode(journeyDest) &&
+                            flightType !== "DOMESTIC"
+                          ) {
+                            setFlightType("DOMESTIC");
+                            toast.info(`Domestic route detected (${nextOrigin} → ${journeyDest}). Packages updated to Domestic.`);
+                          }
                         }}
                         placeholder="Search origin airport"
                         inputClassName="h-10 text-xs rounded-xl"
@@ -841,8 +869,21 @@ export function MeetGreetPackageComparison({
                         mode="global"
                         value={destLabel || journeyDest}
                         onSelect={(ap) => {
-                          setJourneyDest(ap.code);
+                          const nextDest = ap.code.trim().toUpperCase();
+                          setJourneyDest(nextDest);
                           setDestLabel(formatAirportOption(ap));
+                          if (!isIndianAirportCode(nextDest) && flightType !== "INTERNATIONAL") {
+                            setFlightType("INTERNATIONAL");
+                            toast.info(`International airport selected (${nextDest}). Packages updated to International.`);
+                          } else if (
+                            isIndianAirportCode(nextDest) &&
+                            journeyOrigin &&
+                            isIndianAirportCode(journeyOrigin) &&
+                            flightType !== "DOMESTIC"
+                          ) {
+                            setFlightType("DOMESTIC");
+                            toast.info(`Domestic route detected (${journeyOrigin} → ${nextDest}). Packages updated to Domestic.`);
+                          }
                         }}
                         placeholder="Search destination airport"
                         inputClassName="h-10 text-xs rounded-xl"

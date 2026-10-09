@@ -13,6 +13,7 @@ import { BookingSummaryReviewStep } from "./BookingSummaryReviewStep";
 import { PassengerDetailsStep } from "./PassengerDetailsStep";
 import { ApiClient } from "@/lib/ApiClient";
 import { toRazorpayContact } from "../../validation/sharedValidation";
+import { isIndianAirportCode } from "@/data/airportRegistry";
 
 interface AirportWorkflowProps {
   searchParams?: any;
@@ -620,13 +621,38 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                         <button
                           key={kind}
                           type="button"
-                          onClick={() =>
+                          onClick={() => {
+                            const o = (state.originCode || "").trim().toUpperCase();
+                            const d = (state.destCode || "").trim().toUpperCase();
+                            const hasIntlAirport = (o && !isIndianAirportCode(o)) || (d && !isIndianAirportCode(d));
+                            const isBothDomestic = o && d && isIndianAirportCode(o) && isIndianAirportCode(d);
+
+                            if (kind === "domestic" && hasIntlAirport) {
+                              const intlCode = o && !isIndianAirportCode(o) ? o : d;
+                              toast.warning(
+                                `Your route includes an international airport (${intlCode}). Domestic service cannot be selected.`
+                              );
+                              return;
+                            }
+                            if (kind === "international" && isBothDomestic) {
+                              const msg = `Both airports (${o} and ${d}) are domestic within India. Switched to Domestic.`;
+                              toast.info(msg);
+                              updateState({
+                                travelType: "domestic",
+                                travelTypeAutoSwitchedReason: msg,
+                                isFlightValidated: false,
+                                validatedFlightData: null,
+                              });
+                              return;
+                            }
+
                             updateState({
                               travelType: kind,
+                              travelTypeAutoSwitchedReason: undefined,
                               isFlightValidated: false,
                               validatedFlightData: null,
-                            })
-                          }
+                            });
+                          }}
                           className={`flex-1 py-3 px-3 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                             state.travelType === kind
                               ? "bg-white text-amber-900 shadow-sm border border-slate-200/80"
@@ -638,6 +664,21 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                       ))}
                     </div>
                   </div>
+
+                  {/* Informational Callout when Travel Type was Automatically Determined */}
+                  {state.travelTypeAutoSwitchedReason && (
+                    <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-950 flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                      <div className="text-xs space-y-0.5">
+                        <span className="font-mono font-bold uppercase tracking-wider block text-amber-900">
+                          Service Category Notice
+                        </span>
+                        <p className="text-amber-800 font-sans">
+                          {state.travelTypeAutoSwitchedReason}
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {isAirportPageBooking && state.airportCode && (
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
@@ -673,13 +714,39 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                         journeyType={state.direction === "departure" ? "DEPARTURE" : undefined}
                         value={state.originCode || ""}
                         onSelect={(ap) => {
-                          const nextOrigin = ap.code;
+                          const nextOrigin = ap.code.trim().toUpperCase();
                           const nextAirport =
                             state.direction === "departure" ? nextOrigin : state.airportCode;
+                          const currentDest = (state.destCode || "").trim().toUpperCase();
+                          const isNextOriginIntl = !isIndianAirportCode(nextOrigin);
+                          const isCurrentDestIntl = currentDest ? !isIndianAirportCode(currentDest) : false;
+                          const isRouteIntl = isNextOriginIntl || isCurrentDestIntl;
+
+                          let newTravelType = state.travelType;
+                          let reason: string | undefined = state.travelTypeAutoSwitchedReason;
+
+                          if (isRouteIntl && state.travelType !== "international") {
+                            newTravelType = "international";
+                            reason = `International airport selected (${nextOrigin}). Service category updated to International.`;
+                            toast.info(reason);
+                          } else if (
+                            !isRouteIntl &&
+                            currentDest &&
+                            isIndianAirportCode(currentDest) &&
+                            isIndianAirportCode(nextOrigin) &&
+                            state.travelType !== "domestic"
+                          ) {
+                            newTravelType = "domestic";
+                            reason = `Domestic route detected (${nextOrigin} → ${currentDest}). Service category updated to Domestic.`;
+                            toast.info(reason);
+                          }
+
                           updateState({
                             originCode: nextOrigin,
                             airportCode: nextAirport || state.airportCode,
                             airportName: state.direction === "departure" ? ap.name : state.airportName,
+                            travelType: newTravelType,
+                            travelTypeAutoSwitchedReason: reason,
                             isFlightValidated: false,
                             validatedFlightData: null,
                           });
@@ -719,13 +786,39 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                         journeyType={state.direction === "arrival" ? "ARRIVAL" : undefined}
                         value={state.destCode || ""}
                         onSelect={(ap) => {
-                          const nextDest = ap.code;
+                          const nextDest = ap.code.trim().toUpperCase();
                           const nextAirport =
                             state.direction === "arrival" ? nextDest : state.airportCode;
+                          const currentOrigin = (state.originCode || "").trim().toUpperCase();
+                          const isNextDestIntl = !isIndianAirportCode(nextDest);
+                          const isCurrentOriginIntl = currentOrigin ? !isIndianAirportCode(currentOrigin) : false;
+                          const isRouteIntl = isNextDestIntl || isCurrentOriginIntl;
+
+                          let newTravelType = state.travelType;
+                          let reason: string | undefined = state.travelTypeAutoSwitchedReason;
+
+                          if (isRouteIntl && state.travelType !== "international") {
+                            newTravelType = "international";
+                            reason = `International airport selected (${nextDest}). Service category updated to International.`;
+                            toast.info(reason);
+                          } else if (
+                            !isRouteIntl &&
+                            currentOrigin &&
+                            isIndianAirportCode(currentOrigin) &&
+                            isIndianAirportCode(nextDest) &&
+                            state.travelType !== "domestic"
+                          ) {
+                            newTravelType = "domestic";
+                            reason = `Domestic route detected (${currentOrigin} → ${nextDest}). Service category updated to Domestic.`;
+                            toast.info(reason);
+                          }
+
                           updateState({
                             destCode: nextDest,
                             airportCode: nextAirport || state.airportCode,
                             airportName: state.direction === "arrival" ? ap.name : state.airportName,
+                            travelType: newTravelType,
+                            travelTypeAutoSwitchedReason: reason,
                             isFlightValidated: false,
                             validatedFlightData: null,
                           });

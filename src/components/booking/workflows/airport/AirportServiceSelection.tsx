@@ -141,6 +141,13 @@ export function AirportServiceSelection({
             </span>
           </div>
         </div>
+
+        {state.travelTypeAutoSwitchedReason && (
+          <div className="mt-4 pt-4 border-t border-slate-800 flex items-start gap-2.5 text-xs text-amber-300 font-mono">
+            <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <span>{state.travelTypeAutoSwitchedReason}</span>
+          </div>
+        )}
       </div>
 
       {/* ── 4. TERMINAL SELECTION DROPDOWN (IF APPLICABLE) ── */}

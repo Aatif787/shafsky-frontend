@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -63,11 +63,21 @@ export function BookingPanel() {
   }, [originCode, destCode]);
 
   // Restore Automatic Category Selection: recalculate whenever airports are selected or changed
+  const prevRouteCatRef = useRef<string | null>(null);
   useEffect(() => {
     if (routeDeterminedCategory) {
+      if (prevRouteCatRef.current && prevRouteCatRef.current !== routeDeterminedCategory) {
+        const isIntl = routeDeterminedCategory === "international";
+        toast.info(
+          isIntl
+            ? `International airport detected (${originCode || destCode}). Service category updated to International.`
+            : `Domestic route detected (${originCode} → ${destCode}). Service category updated to Domestic.`
+        );
+      }
+      prevRouteCatRef.current = routeDeterminedCategory;
       setTravelType(routeDeterminedCategory);
     }
-  }, [routeDeterminedCategory]);
+  }, [routeDeterminedCategory, originCode, destCode]);
 
   const handleCategoryToggle = (kind: "domestic" | "international") => {
     if (routeDeterminedCategory && kind !== routeDeterminedCategory) {
