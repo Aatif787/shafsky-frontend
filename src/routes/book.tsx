@@ -40,6 +40,10 @@ const bookSearchSchema = z.object({
   booking_mode: z.string().optional().catch("package"),
   from_hero: z.string().optional().catch(""),
   source: z.string().optional().catch(""),
+  pkg_departure: z.string().optional().catch(""),
+  pkg_transit: z.string().optional().catch(""),
+  pkg_arrival: z.string().optional().catch(""),
+  step_index: z.union([z.number(), z.string()]).optional().catch(0),
 });
 
 export const Route = createFileRoute("/book")({

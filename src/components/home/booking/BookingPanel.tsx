@@ -3,7 +3,9 @@ import { motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { airportApi, formatAirportOption } from "@/lib/api/airportApi";
-import { getTransitCategory, getRouteFlightCategory, isIndianAirportCode } from "@/data/airportRegistry";
+import { getTransitCategory, getRouteFlightCategory, isIndianAirportCode, AIRPORT_REGISTRY } from "@/data/airportRegistry";
+import { MultiServiceApi } from "@/lib/api/multiServiceApi";
+import { resolveOrderedJourneyTargets, type JourneyServiceTarget } from "@/lib/journey/multiServiceJourney";
 import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
 import {
   PlaneLanding,
@@ -185,78 +187,78 @@ export function BookingPanel() {
       hasTransit ? getTransitCategory(originCode, destCode) : undefined;
     const servicesParam = selectedServices.join(",");
 
-    // Resolve supported airport for catalog and package selection
-    // Order of priority: Departure origin -> Transit hub -> Arrival destination
-    let targetResolution: any = null;
-    let targetDirection: "departure" | "arrival" | "transit" = "departure";
+    // Resolve service targets in canonical order: DEPARTURE -> TRANSIT -> ARRIVAL
+    const orderedTargets = resolveOrderedJourneyTargets(
+      selectedServices,
+      originCode,
+      destCode,
+      transitCode
+    );
 
-    if (hasDeparture && originCode) {
-      const res = await airportApi.resolveServiceAirport({
-        journey_type: "DEPARTURE",
-        origin: originCode,
-        destination: destCode,
-        transit: transitCode,
-        flight_type: travelType,
+    // Call MultiServiceApi to check availability across the complete itinerary
+    let availResponse: any = null;
+    try {
+      availResponse = await MultiServiceApi.checkAvailability({
+        origin_code: originCode,
+        dest_code: destCode,
+        transit_codes: transitCode ? [transitCode] : undefined,
+        flight_num: flightNumber || undefined,
+        flight_date: departDate || undefined,
+        service_date: departDate || undefined,
+        guest_count: adults,
+        flight_type: travelType.toUpperCase(),
+        selected_services: selectedServices.map((st) => ({
+          service_type: st,
+          airport_code: st === "DEPARTURE" ? originCode : st === "ARRIVAL" ? destCode : transitCode,
+        })),
       });
-      if (res.valid && res.service_airport) {
-        targetResolution = res;
-        targetDirection = "departure";
+    } catch (err) {
+      console.warn("[BookingPanel] MultiServiceApi check error:", err);
+    }
+
+    // Determine available targets (status === "AVAILABLE" and is_airport_supported)
+    const availableTargets: Array<{ target: JourneyServiceTarget; item?: any }> = [];
+    for (const target of orderedTargets) {
+      if (availResponse && availResponse.services) {
+        const item = availResponse.services.find(
+          (s: any) =>
+            s.service_type === target.serviceType &&
+            s.airport_code.toUpperCase() === target.airportCode.toUpperCase()
+        );
+        if (item && item.status === "AVAILABLE" && item.is_airport_supported) {
+          availableTargets.push({ target, item });
+          continue;
+        }
+      } else if (AIRPORT_REGISTRY[target.airportCode]) {
+        availableTargets.push({ target });
       }
     }
 
-    if (!targetResolution && hasTransit && transitCode) {
-      const res = await airportApi.resolveServiceAirport({
-        journey_type: "TRANSIT",
-        origin: originCode,
-        destination: destCode,
-        transit: transitCode,
-        flight_type: transitCategory || travelType,
-      });
-      if (res.valid && res.service_airport) {
-        targetResolution = res;
-        targetDirection = "transit";
-      }
-    }
-
-    if (!targetResolution && hasArrival && destCode) {
-      const res = await airportApi.resolveServiceAirport({
-        journey_type: "ARRIVAL",
-        origin: originCode,
-        destination: destCode,
-        transit: transitCode,
-        flight_type: travelType,
-      });
-      if (res.valid && res.service_airport) {
-        targetResolution = res;
-        targetDirection = "arrival";
-      }
-    }
-
-    const isAvailable = Boolean(targetResolution && targetResolution.valid && targetResolution.service_airport);
-    const serviceAirport = isAvailable
-      ? String(targetResolution.service_airport).trim().toUpperCase()
-      : (hasDeparture ? originCode : hasArrival ? destCode : transitCode);
+    const firstAvailable = availableTargets[0]?.target;
+    const isAnyAvailable = Boolean(firstAvailable);
 
     const intent = {
       services: servicesParam,
-      airport: serviceAirport,
-      airport_id: targetResolution?.airport?.id,
-      airport_name: targetResolution?.airport?.name,
+      airport: firstAvailable ? firstAvailable.airportCode : (hasDeparture ? originCode : hasArrival ? destCode : transitCode),
       origin: originCode,
       destination: destCode,
       transit: transitCode || undefined,
       booking_mode: "package",
       depart_date: departDate,
       depart_date_2: departDate2 || undefined,
-      direction: targetDirection,
+      flight_number: flightNumber || undefined,
+      flight_number_2: flightNumber2 || undefined,
+      direction: firstAvailable ? firstAvailable.direction : (hasDeparture ? "departure" : hasArrival ? "arrival" : "transit"),
       travel_type: travelType,
-      flight_type: targetDirection === "transit" ? (transitCategory || travelType) : travelType,
+      flight_type: travelType,
       transit_type: transitCategory,
       pax_adults: adults,
       pax_children: childrenCount,
       pax_infants: infants,
       from_hero: "true",
       source: "booking_panel",
+      packages_by_service: {},
+      services_availability: availResponse?.services || [],
       ...extra,
     };
 
@@ -266,11 +268,11 @@ export function BookingPanel() {
       // ignore quota / private mode
     }
 
-    if (isAvailable) {
-      // Redirect to the airport's existing service and package catalog page
+    if (isAnyAvailable && firstAvailable) {
+      // Redirect to the first available service's airport catalog page
       navigate({
         to: "/airports/$code",
-        params: { code: serviceAirport },
+        params: { code: firstAvailable.airportCode },
         hash: "available-services",
         search: intent as any,
       });

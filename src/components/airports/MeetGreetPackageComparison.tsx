@@ -26,6 +26,12 @@ import { IntelligentAirportAutocomplete } from "@/components/booking/shared/Inte
 import { formatAirportOption } from "@/lib/api/airportApi";
 import { ApiClient } from "@/lib/ApiClient";
 import { toast } from "sonner";
+import { type AirportServiceType } from "@/lib/api/multiServiceApi";
+import {
+  getNextJourneyStep,
+  recordPackageSelection,
+  getStoredBookingIntent,
+} from "@/lib/journey/multiServiceJourney";
 
 const TRANSIT_TITLE_MAP: Record<string, string> = {
   DOMESTIC_DOMESTIC: "Domestic → Domestic",
@@ -440,6 +446,74 @@ export function MeetGreetPackageComparison({
     return packages.filter((p: any) => p.category === directCategoryFilter);
   }, [isDirectTransitAccess, directCategoryFilter, packages]);
 
+  const handleSelectPackageAndContinue = (pkg: any) => {
+    if (onSelectPackage) onSelectPackage(pkg);
+
+    // Identify current service
+    const currentService: AirportServiceType = journeyType;
+
+    // Persist this package selection
+    recordPackageSelection(currentService, pkg.id);
+
+    // Check all services in the itinerary
+    const storedIntent = getStoredBookingIntent();
+    const servicesParam = String(bookingSearch?.services || storedIntent.services || "").trim();
+    const allSelectedServices: AirportServiceType[] = servicesParam
+      ? (servicesParam.split(",").map((s) => s.trim().toUpperCase() as AirportServiceType).filter(Boolean))
+      : [currentService];
+
+    const effOrigin = journeyType === "TRANSIT" ? journeyOrigin : ((bookingSearch?.origin as string) || journeyOrigin || (journeyType === "DEPARTURE" ? airportCode : ""));
+    const effDest = journeyType === "TRANSIT" ? journeyDest : ((bookingSearch?.destination as string) || journeyDest || (journeyType === "ARRIVAL" ? airportCode : ""));
+    const effTransit = (bookingSearch?.transit as string) || journeyTransit || airportCode;
+
+    const existingPkgs: Record<string, string> = {
+      ...(storedIntent.packages_by_service || {}),
+      ...(bookingSearch?.pkg_departure ? { DEPARTURE: bookingSearch.pkg_departure as string } : {}),
+      ...(bookingSearch?.pkg_transit ? { TRANSIT: bookingSearch.pkg_transit as string } : {}),
+      ...(bookingSearch?.pkg_arrival ? { ARRIVAL: bookingSearch.pkg_arrival as string } : {}),
+      [currentService]: pkg.id,
+    };
+
+    const nextDecision = getNextJourneyStep(
+      currentService,
+      pkg.id,
+      allSelectedServices,
+      effOrigin,
+      effDest,
+      effTransit,
+      storedIntent.services_availability,
+      existingPkgs,
+      {
+        ...(bookingSearch || {}),
+        source: "airport_page",
+        package_name: pkg.title || pkg.name || pkg.id,
+        package_price: pkg.price || "",
+        terminal: (isDel && (isCategoryLocked ? lockedFlightType : flightType) === "INTERNATIONAL") ? "Terminal 3" : terminal,
+        travel_type: journeyType === "TRANSIT"
+          ? effectiveTransitType.toLowerCase()
+          : (isCategoryLocked ? lockedFlightType.toLowerCase() : flightType.toLowerCase()),
+        flight_type: journeyType === "TRANSIT"
+          ? effectiveTransitType
+          : (isCategoryLocked ? lockedFlightType : flightType),
+        transit_type: journeyType === "TRANSIT" ? effectiveTransitType : (bookingSearch?.transit_type || undefined),
+      }
+    );
+
+    if (nextDecision.type === "AIRPORT_PAGE" && nextDecision.targetAirport) {
+      navigate({
+        to: "/airports/$code",
+        params: { code: nextDecision.targetAirport },
+        hash: "available-services",
+        search: nextDecision.searchParams as any,
+      });
+    } else {
+      navigate({
+        to: "/book",
+        search: nextDecision.searchParams as any,
+      });
+    }
+  };
+
   const proceedToBooking = (
     pkg: any,
     origin: string,
@@ -447,31 +521,59 @@ export function MeetGreetPackageComparison({
     hub: string,
     category: string
   ) => {
-    const hubEntry = getAirportRegistryEntry(hub);
-    const hubCityName = hubEntry?.city || hub;
-    navigate({
-      to: "/book",
-      search: {
+    recordPackageSelection("TRANSIT", pkg.id);
+    const storedIntent = getStoredBookingIntent();
+    const servicesParam = String(bookingSearch?.services || storedIntent.services || "").trim();
+    const allSelectedServices: AirportServiceType[] = servicesParam
+      ? (servicesParam.split(",").map((s) => s.trim().toUpperCase() as AirportServiceType).filter(Boolean))
+      : ["TRANSIT"];
+
+    const existingPkgs: Record<string, string> = {
+      ...(storedIntent.packages_by_service || {}),
+      ...(bookingSearch?.pkg_departure ? { DEPARTURE: bookingSearch.pkg_departure as string } : {}),
+      ...(bookingSearch?.pkg_transit ? { TRANSIT: bookingSearch.pkg_transit as string } : {}),
+      ...(bookingSearch?.pkg_arrival ? { ARRIVAL: bookingSearch.pkg_arrival as string } : {}),
+      TRANSIT: pkg.id,
+    };
+
+    const nextDecision = getNextJourneyStep(
+      "TRANSIT",
+      pkg.id,
+      allSelectedServices,
+      origin,
+      dest,
+      hub,
+      storedIntent.services_availability,
+      existingPkgs,
+      {
         ...(bookingSearch || {}),
         source: "airport_page",
-        airport: hub,
-        airport_name: hubCityName,
         origin,
         destination: dest,
         transit: hub,
-        direction: "transit",
+        package_id: pkg.id,
+        package_name: pkg.title || pkg.name || pkg.id,
+        package_price: pkg.price || "",
         travel_type: category.toLowerCase(),
         flight_type: category,
         transit_type: category,
         terminal: isDel && category.includes("INTERNATIONAL") ? "Terminal 3" : terminal,
-        service_id: pkg.id,
-        booking_mode: "package",
-        package_id: pkg.id,
-        package_name: pkg.title || pkg.name || pkg.id,
-        package_price: pkg.price || "",
-        from_hero: "true",
-      } as any,
-    });
+      }
+    );
+
+    if (nextDecision.type === "AIRPORT_PAGE" && nextDecision.targetAirport) {
+      navigate({
+        to: "/airports/$code",
+        params: { code: nextDecision.targetAirport },
+        hash: "available-services",
+        search: nextDecision.searchParams as any,
+      });
+    } else {
+      navigate({
+        to: "/book",
+        search: nextDecision.searchParams as any,
+      });
+    }
   };
 
   const handleDirectTransitPackageClick = (pkg: any) => {
@@ -1100,62 +1202,18 @@ export function MeetGreetPackageComparison({
                         <ArrowRight className="w-4 h-4" />
                       </button>
                     ) : (
-                      <Link
-                        to="/book"
-                      search={
-                        {
-                          ...(bookingSearch || {}),
-                          source: "airport_page",
-                          airport: journeyType === "TRANSIT" ? (journeyTransit || airportCode) : airportCode,
-                          airport_name: journeyType === "TRANSIT" ? transitCity : cityName,
-                          origin:
-                            journeyType === "TRANSIT"
-                              ? journeyOrigin
-                              : (bookingSearch?.origin as string) || journeyOrigin || (journeyType === "DEPARTURE" ? airportCode : ""),
-                          destination:
-                            journeyType === "TRANSIT"
-                              ? journeyDest
-                              : (bookingSearch?.destination as string) || journeyDest || (journeyType === "ARRIVAL" ? airportCode : ""),
-                          transit:
-                            journeyType === "TRANSIT"
-                              ? (journeyTransit || airportCode)
-                              : undefined,
-                          direction:
-                            journeyType === "TRANSIT"
-                              ? "transit"
-                              : journeyType === "DEPARTURE"
-                                ? "departure"
-                                : "arrival",
-                          travel_type:
-                            journeyType === "TRANSIT"
-                              ? effectiveTransitType.toLowerCase()
-                              : (isCategoryLocked ? lockedFlightType.toLowerCase() : flightType.toLowerCase()),
-                          flight_type:
-                            journeyType === "TRANSIT"
-                              ? effectiveTransitType
-                              : (isCategoryLocked ? lockedFlightType : flightType),
-                          transit_type:
-                            journeyType === "TRANSIT"
-                              ? effectiveTransitType
-                              : undefined,
-                          terminal: (isDel && (isCategoryLocked ? lockedFlightType : flightType) === "INTERNATIONAL") ? "Terminal 3" : terminal,
-                          service_id: pkg.id,
-                          booking_mode: "package",
-                          package_id: pkg.id,
-                          package_name: pkg.title || pkg.name || pkg.id,
-                          package_price: pkg.price || "",
-                          from_hero: "true",
-                        } as any
-                      }
-                      onClick={() => onSelectPackage && onSelectPackage(pkg)}
-                      className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl text-xs font-mono font-bold uppercase tracking-widest transition-all cursor-pointer ${isRec
-                          ? "bg-[#84cc16] text-[#0f172a] hover:bg-[#65a30d] shadow-sm"
-                          : "bg-slate-900 text-white hover:bg-slate-800"
+                      <button
+                        type="button"
+                        onClick={() => handleSelectPackageAndContinue(pkg)}
+                        className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl text-xs font-mono font-bold uppercase tracking-widest transition-all cursor-pointer ${
+                          isRec
+                            ? "bg-[#84cc16] text-[#0f172a] hover:bg-[#65a30d] shadow-sm"
+                            : "bg-slate-900 text-white hover:bg-slate-800"
                         }`}
-                    >
-                      <span>Continue with this Package</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
+                      >
+                        <span>Continue with this Package</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
                     )}
                   </div>
                 )}

@@ -27,7 +27,7 @@ import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { format, parseISO, isValid } from "date-fns";
 import { ApiClient } from "@/lib/ApiClient";
 import { resolveApiUrl } from "@/lib/api/config";
-import { getAirportRegistryEntry, isIndianAirportCode, getTransitCategory, getRouteFlightCategory } from "@/data/airportRegistry";
+import { getAirportRegistryEntry, isIndianAirportCode, getTransitCategory, getRouteFlightCategory, AIRPORT_REGISTRY } from "@/data/airportRegistry";
 import { AirlineLogo } from "./shared/AirlineLogo";
 import { IntelligentAirlineAutocomplete } from "./shared/IntelligentAirlineAutocomplete";
 import { FlightTimePicker } from "./shared/FlightTimePicker";
@@ -334,12 +334,21 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     return ["DEPARTURE"];
   });
   const [packageByService, setPackageByService] = useState<Record<AirportServiceType, string>>(() => {
+    let sessionPkgs: Record<string, string> = {};
+    try {
+      const s = typeof window !== "undefined" ? window.sessionStorage?.getItem("shafsky_booking_intent") : null;
+      if (s) {
+        const parsed = JSON.parse(s);
+        if (parsed.packages_by_service) sessionPkgs = parsed.packages_by_service;
+      }
+    } catch {}
+
     const pkg = searchParams?.package_id || searchParams?.service_id || "";
     const primaryDir = (initialDirection || "departure").toUpperCase();
     return {
-      DEPARTURE: primaryDir === "DEPARTURE" && pkg ? pkg : pkg || "",
-      ARRIVAL: primaryDir === "ARRIVAL" && pkg ? pkg : pkg || "",
-      TRANSIT: primaryDir === "TRANSIT" && pkg ? pkg : "meet_greet",
+      DEPARTURE: (searchParams?.pkg_departure as string) || sessionPkgs.DEPARTURE || (primaryDir === "DEPARTURE" && pkg ? pkg : ""),
+      ARRIVAL: (searchParams?.pkg_arrival as string) || sessionPkgs.ARRIVAL || (primaryDir === "ARRIVAL" && pkg ? pkg : ""),
+      TRANSIT: (searchParams?.pkg_transit as string) || sessionPkgs.TRANSIT || (primaryDir === "TRANSIT" && pkg ? pkg : ""),
     };
   });
   const [multiServiceAvailability, setMultiServiceAvailability] = useState<ServiceItemAvailability[]>([]);
@@ -459,7 +468,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       guest_count: billablePax,
       selected_services: selectedServices.map((st) => ({
         service_type: st,
-        package_slug: packageByService[st] || (st === (direction || "departure").toUpperCase() ? initialPkgId : undefined),
+        package_slug: packageByService[st] || (st === (direction || "departure").toUpperCase() ? (selectedPackageId || initialPkgId) : undefined),
         airport_code: st === "DEPARTURE" ? effOrigin : st === "ARRIVAL" ? effDest : effTransit,
       })),
     })
@@ -501,6 +510,27 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     selectedServices,
     packageByService,
   ]);
+
+  // Only true when an itinerary contains strictly unsupported airports NOT covered in our database
+  const isArrangementOnly = useMemo(() => {
+    if (!multiServiceResponse?.none_available) return false;
+    return selectedServices.some((st) => {
+      const sApt =
+        st === "DEPARTURE"
+          ? cleanOrigin || originCode || (direction === "departure" ? airportCode : "")
+          : st === "ARRIVAL"
+            ? cleanDest || destCode || (direction === "arrival" ? airportCode : "")
+            : cleanTransit || transitCode || searchParams?.transit || (direction === "transit" ? airportCode : "");
+      const sAptClean = (sApt || "").trim().toUpperCase();
+      const avail = multiServiceAvailability.find(
+        (a) => a.service_type === st && (!sAptClean || a.airport_code.toUpperCase() === sAptClean)
+      );
+      if (avail) {
+        return !avail.is_airport_supported;
+      }
+      return Boolean(sAptClean && !AIRPORT_REGISTRY[sAptClean] && sAptClean !== airportCode.toUpperCase());
+    });
+  }, [multiServiceResponse?.none_available, selectedServices, cleanOrigin, originCode, direction, airportCode, cleanDest, destCode, cleanTransit, transitCode, searchParams?.transit, multiServiceAvailability]);
 
   // Mumbai Airport Express Fee rule:
   // For Mumbai Airport (BOM), if booking is created less than 24 hours before actual service start time:
@@ -1658,6 +1688,27 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               setPaymentTransactionId(payResponse.razorpay_payment_id);
               setPaymentStatus("PAID");
               toast.success("Payment verified! Your booking is confirmed.");
+
+              // Link any pending unavailable services as a concierge request under this confirmed booking
+              if (multiServiceResponse?.services?.some((s) => s.status === "REQUEST_REQUIRED")) {
+                const unavail = multiServiceResponse.services.filter((s) => s.status === "REQUEST_REQUIRED");
+                MultiServiceApi.createQuery({
+                  passenger_name: cleanName,
+                  passenger_email: cleanEmail,
+                  passenger_phone: cleanPhone,
+                  flight_num: submissionFlightNum,
+                  service_date: serviceDate,
+                  booking_ref: bookingRefToUse || undefined,
+                  requested_services: selectedServices.map((st) => ({
+                    service_type: st,
+                    airport_code: st === "DEPARTURE" ? cleanOrigin : st === "ARRIVAL" ? cleanDest : (cleanTransit || transitCode || airportCode),
+                  })),
+                  unavailable_services: unavail,
+                  notes: `Linked concierge arrangement for paid booking ${bookingRefToUse}`,
+                }).catch((qErr) => {
+                  console.warn("[AirportBookingFlow] Failed to create linked service query:", qErr);
+                });
+              }
             } else {
               const reason = verifyData?.detail || verifyData?.error || "Payment signature verification failed.";
               toast.error(`Verification failed: ${reason}`);
@@ -2178,6 +2229,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     setSelectedPackageId(pkg.id);
                     setSelectedPackageName(pkg.title);
                     setSelectedPackagePrice(String(pkg.basePrice));
+                    setPackageByService((prev) => ({
+                      ...prev,
+                      [(direction || "departure").toUpperCase()]: pkg.id,
+                    }));
                   }}
                   className={`px-3 py-1 rounded-full text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
                     isSelected
@@ -3947,12 +4002,39 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                     : st === "ARRIVAL"
                       ? "Arrival Service"
                       : "Transit Service";
+                const sAptClean = (sApt || "").trim().toUpperCase();
                 const availItem = multiServiceAvailability.find(
-                  (a) => a.service_type === st && (!sApt || a.airport_code.toUpperCase() === sApt.toUpperCase())
+                  (a) => a.service_type === st && (!sAptClean || a.airport_code.toUpperCase() === sAptClean)
                 );
-                const isAvailable = availItem ? availItem.status === "AVAILABLE" : true;
-                const itemPriceInr = availItem?.total_price ?? (isAvailable ? numericUnitPrice * billablePax : 0);
-                const itemPkg = availItem?.package_name || (isAvailable ? (packageByService[st] || selectedPackageName) : "Concierge Arrangement");
+                // Check whether this airport is covered in our database or registry
+                const isAirportCoveredInDb = availItem
+                  ? availItem.is_airport_supported
+                  : Boolean(sAptClean && (AIRPORT_REGISTRY[sAptClean] || sAptClean === airportCode.toUpperCase()));
+
+                const isAvailable = availItem
+                  ? availItem.status === "AVAILABLE" && availItem.is_airport_supported
+                  : isAirportCoveredInDb;
+                const itemPriceInr = availItem?.total_price && availItem.total_price > 0
+                  ? availItem.total_price
+                  : (isAvailable ? numericUnitPrice * billablePax : 0);
+
+                const formatPkgName = (pkgRaw?: string) => {
+                  if (!pkgRaw) return selectedPackageName;
+                  const l = pkgRaw.toLowerCase();
+                  if (l.includes("platinum")) return "Platinum Service";
+                  if (l.includes("gold")) return "Gold Service";
+                  if (l.includes("silver")) return "Silver Service";
+                  if (l.includes("elite")) return "Elite Service";
+                  if (l.includes("domestic_international")) return "Domestic → International";
+                  if (l.includes("domestic_domestic")) return "Domestic → Domestic";
+                  if (l.includes("international_international")) return "International → International";
+                  if (l.includes("international_domestic")) return "International → Domestic";
+                  return pkgRaw.replace(/[_-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+                };
+
+                const itemPkg = isAvailable
+                  ? (availItem?.package_name || formatPkgName(packageByService[st]))
+                  : "Concierge Arrangement";
 
                 return (
                   <div
@@ -4040,7 +4122,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 {formatPrice(convertedTotalPrice, selectedCurrency)}
               </div>
               <span className="text-[11px] text-slate-500">
-                {multiServiceResponse?.none_available
+                {isArrangementOnly
                   ? "₹0 payable now — Our concierge team will arrange your requested services."
                   : `${formatPrice(convertedTotalPrice, selectedCurrency)} payable today for confirmed services`}
                 {isExpressFeeApplicable && (
@@ -4091,7 +4173,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
                 Share
               </button>
 
-              {multiServiceResponse?.none_available ? (
+              {isArrangementOnly ? (
                 <button
                   type="button"
                   onClick={handleRequestServiceArrangement}
