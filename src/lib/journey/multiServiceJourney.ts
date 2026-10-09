@@ -225,16 +225,17 @@ export function getNextJourneyStep(
   };
 
   if (nextAvailableTarget) {
+    // When transitioning to the next airport page, do not leak previous package details or pre-select a package
+    const { package_id, package_name, package_price, ...cleanBaseSearch } = commonSearch;
     return {
       type: "AIRPORT_PAGE",
       targetAirport: nextAvailableTarget.airportCode,
       targetDirection: nextAvailableTarget.direction,
       packagesByService: updatedPkgs,
       searchParams: {
-        ...commonSearch,
+        ...cleanBaseSearch,
         airport: nextAvailableTarget.airportCode,
         direction: nextAvailableTarget.direction,
-        package_id: updatedPkgs[nextAvailableTarget.serviceType] || undefined,
       },
     };
   }

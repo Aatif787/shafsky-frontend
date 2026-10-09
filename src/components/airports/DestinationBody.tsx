@@ -64,7 +64,11 @@ export function DestinationBody({ a, bookingSearch }: { a: Airport; bookingSearc
 
         {/* Dynamic Master Airport Package Comparison */}
         <div className="mt-10">
-          <MeetGreetPackageComparison airportCode={a.code} bookingSearch={bookingSearch} />
+          <MeetGreetPackageComparison
+            key={`${a.code}-${bookingSearch?.direction || "def"}`}
+            airportCode={a.code}
+            bookingSearch={bookingSearch}
+          />
         </div>
       </section>
 

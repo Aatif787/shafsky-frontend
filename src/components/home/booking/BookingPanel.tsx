@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { airportApi, formatAirportOption } from "@/lib/api/airportApi";
 import { getTransitCategory, getRouteFlightCategory, isIndianAirportCode, AIRPORT_REGISTRY } from "@/data/airportRegistry";
-import { MultiServiceApi } from "@/lib/api/multiServiceApi";
+import { MultiServiceApi, type AirportServiceType } from "@/lib/api/multiServiceApi";
 import { resolveOrderedJourneyTargets, type JourneyServiceTarget } from "@/lib/journey/multiServiceJourney";
 import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
 import {
@@ -181,11 +181,14 @@ export function BookingPanel() {
 
     const transitCategory =
       hasTransit ? getTransitCategory(originCode, destCode) : undefined;
-    const servicesParam = selectedServices.join(",");
+    const mappedServiceTypes: AirportServiceType[] = selectedServices.map((s) =>
+      s === "departure" ? "DEPARTURE" : s === "arrival" ? "ARRIVAL" : "TRANSIT"
+    );
+    const servicesParam = mappedServiceTypes.join(",");
 
     // Resolve service targets in canonical order: DEPARTURE -> TRANSIT -> ARRIVAL
     const orderedTargets = resolveOrderedJourneyTargets(
-      selectedServices,
+      mappedServiceTypes,
       originCode,
       destCode,
       transitCode
@@ -207,7 +210,7 @@ export function BookingPanel() {
         service_date: departDate || undefined,
         guest_count: adults,
         flight_type: travelType.toUpperCase(),
-        selected_services: selectedServices.map((st) => ({
+        selected_services: mappedServiceTypes.map((st) => ({
           service_type: st,
           airport_code: st === "DEPARTURE" ? originCode : st === "ARRIVAL" ? destCode : transitCode,
         })),
@@ -218,26 +221,29 @@ export function BookingPanel() {
     }
 
     if (apiError) {
-      if (apiError.status === 401 || apiError.statusCode === 401) {
-        toast.error("Session expired or authentication failed. Please refresh the page and try again.");
-      } else {
-        toast.error(apiError.message || "Unable to check airport availability. Please check your connection and try again.");
-      }
-      return false;
+      console.warn("[BookingPanel] MultiServiceApi check failed, falling back to service coverage registry:", apiError);
     }
 
-    // Determine available targets (status === "AVAILABLE" and is_airport_supported)
+    // Determine available targets (status === "AVAILABLE" and is_airport_supported, or present in AIRPORT_REGISTRY)
     const availableTargets: Array<{ target: JourneyServiceTarget; item?: any }> = [];
     for (const target of orderedTargets) {
-      if (availResponse && availResponse.services) {
+      if (availResponse && availResponse.services && availResponse.services.length > 0) {
         const item = availResponse.services.find(
           (s: any) =>
             s.service_type === target.serviceType &&
             s.airport_code.toUpperCase() === target.airportCode.toUpperCase()
         );
-        if (item && item.status === "AVAILABLE" && item.is_airport_supported) {
-          availableTargets.push({ target, item });
+        if (item) {
+          if (item.status === "AVAILABLE" && item.is_airport_supported) {
+            availableTargets.push({ target, item });
+          }
+          // If status === "REQUEST_REQUIRED", skip package selection for this target
+          continue;
         }
+      }
+      // Fallback: check database and service coverage configuration
+      if (AIRPORT_REGISTRY[target.airportCode]) {
+        availableTargets.push({ target });
       }
     }
 

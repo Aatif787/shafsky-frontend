@@ -22,6 +22,35 @@ describe("Multi-Service Journey Traversal & State Engine", () => {
       key: () => null,
     };
   });
+  const allAvailableMock: ServiceItemAvailability[] = [
+    {
+      service_type: "DEPARTURE",
+      airport_code: "BOM",
+      is_airport_supported: true,
+      status: "AVAILABLE",
+      currency: "INR",
+      is_bookable_online: true,
+      available_packages: [],
+    },
+    {
+      service_type: "TRANSIT",
+      airport_code: "DEL",
+      is_airport_supported: true,
+      status: "AVAILABLE",
+      currency: "INR",
+      is_bookable_online: true,
+      available_packages: [],
+    },
+    {
+      service_type: "ARRIVAL",
+      airport_code: "BLR",
+      is_airport_supported: true,
+      status: "AVAILABLE",
+      currency: "INR",
+      is_bookable_online: true,
+      available_packages: [],
+    },
+  ];
 
   describe("1. Canonical Journey Target Ordering", () => {
     it("orders Departure only correctly", () => {
@@ -97,36 +126,6 @@ describe("Multi-Service Journey Traversal & State Engine", () => {
   });
 
   describe("2. Step-by-Step Traversal Across Available Airports", () => {
-    const allAvailableMock: ServiceItemAvailability[] = [
-      {
-        service_type: "DEPARTURE",
-        airport_code: "BOM",
-        is_airport_supported: true,
-        status: "AVAILABLE",
-        currency: "INR",
-        is_bookable_online: true,
-        available_packages: [],
-      },
-      {
-        service_type: "TRANSIT",
-        airport_code: "DEL",
-        is_airport_supported: true,
-        status: "AVAILABLE",
-        currency: "INR",
-        is_bookable_online: true,
-        available_packages: [],
-      },
-      {
-        service_type: "ARRIVAL",
-        airport_code: "BLR",
-        is_airport_supported: true,
-        status: "AVAILABLE",
-        currency: "INR",
-        is_bookable_online: true,
-        available_packages: [],
-      },
-    ];
-
     it("transitions from Departure (BOM) to Transit (DEL) when both are available", () => {
       const step = getNextJourneyStep(
         "DEPARTURE",
@@ -270,6 +269,34 @@ describe("Multi-Service Journey Traversal & State Engine", () => {
       // DXB is unavailable, so no more available airport pages exist; navigate to CHECKOUT
       expect(step.type).toBe("CHECKOUT");
       expect(step.packagesByService.DEPARTURE).toBe("platinum");
+    });
+
+    it("does NOT leak previous package_id, package_name, or package_price to the next airport page", () => {
+      const step = getNextJourneyStep(
+        "DEPARTURE",
+        "gold",
+        ["DEPARTURE", "ARRIVAL"],
+        "BOM",
+        "DEL",
+        undefined,
+        allAvailableMock,
+        {},
+        {
+          package_id: "gold",
+          package_name: "Gold VIP Meet & Greet",
+          package_price: "5500",
+        }
+      );
+
+      expect(step.type).toBe("AIRPORT_PAGE");
+      expect(step.targetAirport).toBe("DEL");
+      expect(step.targetDirection).toBe("arrival");
+      // Must NOT leak previous package details so the customer can manually select a package for the next airport
+      expect(step.searchParams.package_id).toBeUndefined();
+      expect(step.searchParams.package_name).toBeUndefined();
+      expect(step.searchParams.package_price).toBeUndefined();
+      // But must retain accumulated packages
+      expect(step.searchParams.pkg_departure).toBe("gold");
     });
   });
 

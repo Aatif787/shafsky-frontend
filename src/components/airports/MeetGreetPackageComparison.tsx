@@ -48,10 +48,27 @@ interface MeetGreetPackageComparisonProps {
   bookingSearch?: Record<string, unknown>;
 }
 
-function journeyFromSearch(search?: Record<string, unknown>): "ARRIVAL" | "DEPARTURE" | "TRANSIT" {
+function journeyFromSearch(
+  search?: Record<string, unknown>,
+  currentAirportCode?: string
+): "ARRIVAL" | "DEPARTURE" | "TRANSIT" {
   const raw = String(search?.direction || search?.journey_type || "").toUpperCase();
   if (raw === "DEPARTURE" || raw === "DEP") return "DEPARTURE";
   if (raw === "TRANSIT" || raw === "CONNECTION") return "TRANSIT";
+  if (raw === "ARRIVAL" || raw === "ARR") return "ARRIVAL";
+
+  const code = (currentAirportCode || String(search?.airport || "")).trim().toUpperCase();
+  const orig = String(search?.origin || "").trim().toUpperCase();
+  const dest = String(search?.destination || "").trim().toUpperCase();
+  const trans = String(search?.transit || "").trim().toUpperCase();
+
+  if (code && code === orig) return "DEPARTURE";
+  if (code && code === trans) return "TRANSIT";
+  if (code && code === dest) return "ARRIVAL";
+
+  const services = String(search?.services || "");
+  if (services.includes("DEPARTURE")) return "DEPARTURE";
+  if (services.includes("TRANSIT")) return "TRANSIT";
   return "ARRIVAL";
 }
 
@@ -126,7 +143,7 @@ export function MeetGreetPackageComparison({
     () => (isCategoryLocked ? lockedFlightType : flightFromSearch(bookingSearch))
   );
   const [journeyType, setJourneyType] = useState<"ARRIVAL" | "DEPARTURE" | "TRANSIT">(
-    () => journeyFromSearch(bookingSearch)
+    () => journeyFromSearch(bookingSearch, airportCode)
   );
 
   const isDirectTransitAccess = journeyType === "TRANSIT" && !isHomeTransitFlow;
@@ -156,7 +173,7 @@ export function MeetGreetPackageComparison({
 
   useEffect(() => {
     if (!bookingSearch?.from_hero && !bookingSearch?.direction && !bookingSearch?.origin && !bookingSearch?.destination) return;
-    setJourneyType(journeyFromSearch(bookingSearch));
+    setJourneyType(journeyFromSearch(bookingSearch, airportCode));
     const flType = isCategoryLocked ? lockedFlightType : flightFromSearch(bookingSearch);
     setFlightType(flType);
     const o = String(bookingSearch?.origin || "").trim().toUpperCase();

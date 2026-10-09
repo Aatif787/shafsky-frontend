@@ -476,18 +476,6 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
         if (!active) return;
         setMultiServiceResponse(res);
         setMultiServiceAvailability(res.services || []);
-        if (res.services && res.services.length > 0) {
-          setPackageByService((prev) => {
-            const next = { ...prev };
-            for (const item of res.services) {
-              const st = item.service_type as AirportServiceType;
-              if (item.status === "AVAILABLE" && item.package_slug && !prev[st]) {
-                next[st] = item.package_slug;
-              }
-            }
-            return next;
-          });
-        }
       })
       .catch((err) => {
         console.warn("[AirportBookingFlow] Multi-service availability error:", err);
