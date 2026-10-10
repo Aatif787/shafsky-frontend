@@ -8,6 +8,7 @@ import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 import planeImg from "@/assets/others/plane.png";
 import meetGreetImg from "@/assets/others/meetgreet.jpeg";
 import servicesImg from "@/assets/others/services.png";
+import specialserImg from "@/assets/others/specialser.png";
 
 
 interface SubServiceOption {
@@ -97,8 +98,8 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     id: "special-services",
     serviceParam: "special",
     title: "Special Services",
-    photo: HOMEPAGE_PHOTOS.destinationCelebration.src,
-    alt: "Luxury Spa, Medevac Air Ambulance, Train ICU, HUM Repatriation, Visa & Pet Logistics",
+    photo: specialserImg,
+    alt: "Shafsky Special Services with Taj Mahal Agra",
     badge: "Special Services",
     description: "24/7 medevac air & train ambulance, HUM repatriation, fast-track visa assist, cargo & AVI pet logistics, couple spas, and PSO close protection.",
     subServices: [
@@ -311,14 +312,11 @@ export function EnterpriseSolutions() {
                 >
                   {/* Circular Authentic Photo */}
                   <div className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-slate-100 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.12)] group-hover:border-lime-500 group-hover:shadow-[0_15px_30px_-5px_rgba(132,204,22,0.35)] group-hover:scale-105 transition-all duration-500 bg-white mb-4">
-                    <picture className="w-full h-full block">
-                      <source srcSet={srv.photo} type="image/jpeg" />
-                      <img width={1600} height={900} src={srv.photo}
-                        alt={srv.alt}
-                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                        loading="lazy"
-                      />
-                    </picture>
+                    <img width={1600} height={900} src={srv.photo}
+                      alt={srv.alt}
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      loading="lazy"
+                    />
                     <div className="absolute inset-0 rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.08)] pointer-events-none group-hover:shadow-[inset_0_0_15px_rgba(132,204,22,0.2)] transition-shadow duration-300" />
                   </div>
 
@@ -358,14 +356,11 @@ export function EnterpriseSolutions() {
                     }}
                     className="group relative rounded-full overflow-hidden cursor-pointer shadow-[0_10px_25px_-5px_rgba(0,0,0,0.15)] ring-2 ring-[#d4af37]/40 ring-offset-4 ring-offset-white transition-all duration-500 bg-slate-900 flex-shrink-0 w-[5.5rem] h-[5.5rem] sm:w-24 sm:h-24 z-10"
                   >
-                    <picture className="w-full h-full block">
-                      <source srcSet={srv.photo} type="image/jpeg" />
-                      <img width={1600} height={900} src={srv.photo}
-                        alt={srv.alt}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        loading="lazy"
-                      />
-                    </picture>
+                    <img width={1600} height={900} src={srv.photo}
+                      alt={srv.alt}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
+                    />
                     
                     {/* Luxury Vignette/Gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10 group-hover:via-black/25 transition-all duration-500" />
