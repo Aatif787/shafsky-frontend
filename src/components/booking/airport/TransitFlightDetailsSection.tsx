@@ -18,6 +18,7 @@ import { IntelligentAirlineAutocomplete } from "../shared/IntelligentAirlineAuto
 import { FlightTimePicker } from "../shared/FlightTimePicker";
 import { AirportSuggestionPicker } from "../shared/AirportSuggestionPicker";
 import { FlightData } from "@/services/flight/FlightTypes";
+import { RouteMismatchInfo } from "./types";
 import { TransitConnectingLegSection } from "./TransitConnectingLegSection";
 
 export interface TransitFlightDetailsSectionProps {
@@ -102,6 +103,20 @@ export interface TransitFlightDetailsSectionProps {
   setManualArrTime2: (t: string) => void;
   manualArrTerminal2: string;
   setManualArrTerminal2: (t: string) => void;
+  // Route Mismatch Props for Leg 1
+  routeMismatch?: RouteMismatchInfo | null;
+  setRouteMismatch?: (info: RouteMismatchInfo | null) => void;
+  confirmingRouteUpdate?: boolean;
+  setConfirmingRouteUpdate?: (confirm: boolean) => void;
+  handleKeepSelectedRoute?: () => void;
+  handleUseFlightRoute?: () => void;
+  // Route Mismatch Props for Leg 2
+  routeMismatch2?: RouteMismatchInfo | null;
+  setRouteMismatch2?: (info: RouteMismatchInfo | null) => void;
+  confirmingRouteUpdate2?: boolean;
+  setConfirmingRouteUpdate2?: (confirm: boolean) => void;
+  handleKeepSelectedRoute2?: () => void;
+  handleUseFlightRoute2?: () => void;
 }
 
 export const TransitFlightDetailsSection: React.FC<TransitFlightDetailsSectionProps> = ({
@@ -186,6 +201,18 @@ export const TransitFlightDetailsSection: React.FC<TransitFlightDetailsSectionPr
   setManualArrTime2,
   manualArrTerminal2,
   setManualArrTerminal2,
+  routeMismatch,
+  setRouteMismatch,
+  confirmingRouteUpdate,
+  setConfirmingRouteUpdate,
+  handleKeepSelectedRoute,
+  handleUseFlightRoute,
+  routeMismatch2,
+  setRouteMismatch2,
+  confirmingRouteUpdate2,
+  setConfirmingRouteUpdate2,
+  handleKeepSelectedRoute2,
+  handleUseFlightRoute2,
 }) => {
   return (
     <div className="space-y-6">
@@ -368,6 +395,8 @@ export const TransitFlightDetailsSection: React.FC<TransitFlightDetailsSectionPr
                       setVerifiedFlight(null);
                       setFlightFetchError(null);
                       setIsCutoffUrgent(false);
+                      setRouteMismatch?.(null);
+                      setConfirmingRouteUpdate?.(false);
                     }}
                     placeholder="e.g. AI101, 6E202"
                     onKeyDown={(e) => {
@@ -443,7 +472,73 @@ export const TransitFlightDetailsSection: React.FC<TransitFlightDetailsSectionPr
               </div>
             )}
 
-            {flightFetchError && !isCutoffUrgent && (
+            {/* Route Mismatch Warning & Resolution for Leg 1 */}
+            {routeMismatch && (
+              <div
+                data-testid="route-mismatch-warning-leg1"
+                className="rounded-2xl border-2 border-amber-400 bg-amber-50/95 p-5 text-xs text-amber-950 space-y-3.5 shadow-xs"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-800 shrink-0 mt-0.5">
+                    <AlertCircle size={20} className="text-amber-700" />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <h4 className="font-serif text-sm font-bold text-amber-950">
+                      Flight Route Doesn't Match
+                    </h4>
+                    <p className="text-xs text-amber-900 leading-relaxed font-sans">
+                      {routeMismatch.message}
+                    </p>
+                  </div>
+                </div>
+
+                {!confirmingRouteUpdate ? (
+                  <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleKeepSelectedRoute}
+                      className="h-10 px-4 rounded-xl bg-slate-900 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition cursor-pointer flex items-center gap-2 shadow-xs"
+                    >
+                      Keep My Selected Route
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingRouteUpdate?.(true)}
+                      className="h-10 px-4 rounded-xl border border-amber-600 bg-white text-amber-900 font-mono text-xs font-bold uppercase tracking-wider hover:bg-amber-100 transition cursor-pointer flex items-center gap-2"
+                    >
+                      Use Flight Route
+                    </button>
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-amber-300 bg-white/95 p-4 space-y-3">
+                    <p className="font-semibold text-amber-950 text-xs">
+                      Confirm route change: Update journey from{" "}
+                      <span className="font-bold underline">{routeMismatch.userOriginCity} ({routeMismatch.userOrigin}) → {routeMismatch.userDestCity} ({routeMismatch.userDest})</span>{" "}
+                      to{" "}
+                      <span className="font-bold text-lime-800 underline">{routeMismatch.apiOriginCity} ({routeMismatch.apiOrigin}) → {routeMismatch.apiDestCity} ({routeMismatch.apiDest})</span>?
+                    </p>
+                    <div className="flex items-center gap-2.5 pt-1">
+                      <button
+                        type="button"
+                        onClick={handleUseFlightRoute}
+                        className="h-9 px-4 rounded-lg bg-amber-600 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-amber-700 transition cursor-pointer"
+                      >
+                        Confirm & Update Route
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmingRouteUpdate?.(false)}
+                        className="h-9 px-3 rounded-lg border border-slate-300 bg-white text-slate-700 font-mono text-xs font-semibold hover:bg-slate-50 transition cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {flightFetchError && !isCutoffUrgent && !routeMismatch && (
               <div className="rounded-2xl border border-amber-300 bg-amber-50/70 p-4 text-xs text-amber-900 flex items-start gap-3">
                 <AlertCircle size={18} className="text-amber-700 shrink-0 mt-0.5" />
                 <div className="flex-1 space-y-1">
@@ -708,6 +803,12 @@ export const TransitFlightDetailsSection: React.FC<TransitFlightDetailsSectionPr
         setManualArrTime2={setManualArrTime2}
         manualArrTerminal2={manualArrTerminal2}
         setManualArrTerminal2={setManualArrTerminal2}
+        routeMismatch2={routeMismatch2}
+        setRouteMismatch2={setRouteMismatch2}
+        confirmingRouteUpdate2={confirmingRouteUpdate2}
+        setConfirmingRouteUpdate2={setConfirmingRouteUpdate2}
+        handleKeepSelectedRoute2={handleKeepSelectedRoute2}
+        handleUseFlightRoute2={handleUseFlightRoute2}
       />
     </div>
   );

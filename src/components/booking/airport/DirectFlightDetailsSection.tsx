@@ -18,6 +18,7 @@ import { IntelligentAirlineAutocomplete } from "../shared/IntelligentAirlineAuto
 import { FlightTimePicker } from "../shared/FlightTimePicker";
 import { AirportSuggestionPicker } from "../shared/AirportSuggestionPicker";
 import { FlightData } from "@/services/flight/FlightTypes";
+import { RouteMismatchInfo } from "./types";
 
 export interface DirectFlightDetailsSectionProps {
   isManualMode: boolean;
@@ -66,6 +67,12 @@ export interface DirectFlightDetailsSectionProps {
   setManualArrTime: (t: string) => void;
   manualArrTerminal: string;
   setManualArrTerminal: (t: string) => void;
+  routeMismatch?: RouteMismatchInfo | null;
+  setRouteMismatch?: (info: RouteMismatchInfo | null) => void;
+  confirmingRouteUpdate?: boolean;
+  setConfirmingRouteUpdate?: (confirm: boolean) => void;
+  handleKeepSelectedRoute?: () => void;
+  handleUseFlightRoute?: () => void;
 }
 
 export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProps> = ({
@@ -115,6 +122,12 @@ export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProp
   setManualArrTime,
   manualArrTerminal,
   setManualArrTerminal,
+  routeMismatch,
+  setRouteMismatch,
+  confirmingRouteUpdate,
+  setConfirmingRouteUpdate,
+  handleKeepSelectedRoute,
+  handleUseFlightRoute,
 }) => {
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
@@ -165,6 +178,8 @@ export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProp
                       setVerifiedFlight(null);
                       setFlightFetchError(null);
                       setIsCutoffUrgent(false);
+                      setRouteMismatch?.(null);
+                      setConfirmingRouteUpdate?.(false);
                     }}
                     placeholder="Flight number"
                     onKeyDown={(e) => {
@@ -310,8 +325,88 @@ export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProp
             </div>
           )}
 
-          {/* Automatic Fetch / Airport Mismatch Warning (Never blocks - offers manual entry immediately) */}
-          {flightFetchError && !isCutoffUrgent && (
+          {/* Flight Route Mismatch Warning & Resolution (Requirements 4, 5, 6, 7) */}
+          {routeMismatch && (
+            <div
+              data-testid="route-mismatch-warning"
+              className="rounded-2xl border-2 border-amber-400 bg-amber-50/95 p-5 text-xs text-amber-950 space-y-3.5 shadow-xs"
+            >
+              <div className="flex items-start gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-800 shrink-0 mt-0.5">
+                  <AlertCircle size={20} className="text-amber-700" />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <h4 className="font-serif text-sm font-bold text-amber-950">
+                    Flight Route Doesn't Match
+                  </h4>
+                  <p className="text-xs text-amber-900 leading-relaxed font-sans">
+                    {routeMismatch.message}
+                  </p>
+                </div>
+              </div>
+
+              {!confirmingRouteUpdate ? (
+                <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleKeepSelectedRoute}
+                    className="h-10 px-4 rounded-xl bg-slate-900 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition cursor-pointer flex items-center gap-2 shadow-xs"
+                  >
+                    Keep My Selected Route
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingRouteUpdate?.(true)}
+                    className="h-10 px-4 rounded-xl border border-amber-600 bg-white text-amber-900 font-mono text-xs font-bold uppercase tracking-wider hover:bg-amber-100 transition cursor-pointer flex items-center gap-2"
+                  >
+                    Use Flight Route
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleKeepSelectedRoute?.();
+                      setIsManualMode(true);
+                      setManualFlightNum(flightNumber);
+                    }}
+                    className="text-xs font-mono font-bold text-slate-600 hover:text-slate-950 underline cursor-pointer ml-auto"
+                  >
+                    Enter flight details manually
+                  </button>
+                </div>
+              ) : (
+                <div className="rounded-xl border border-amber-300 bg-white/95 p-4 space-y-3">
+                  <p className="font-semibold text-amber-950 text-xs">
+                    Confirm route change: Update your journey from{" "}
+                    <span className="font-bold underline">{routeMismatch.userOriginCity} ({routeMismatch.userOrigin}) → {routeMismatch.userDestCity} ({routeMismatch.userDest})</span>{" "}
+                    to{" "}
+                    <span className="font-bold text-lime-800 underline">{routeMismatch.apiOriginCity} ({routeMismatch.apiOrigin}) → {routeMismatch.apiDestCity} ({routeMismatch.apiDest})</span>?
+                  </p>
+                  <p className="text-[11px] text-slate-500 font-mono">
+                    This will update your selected airports and refresh package availability for the new route.
+                  </p>
+                  <div className="flex items-center gap-2.5 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleUseFlightRoute}
+                      className="h-9 px-4 rounded-lg bg-amber-600 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-amber-700 transition cursor-pointer"
+                    >
+                      Confirm & Update Route
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingRouteUpdate?.(false)}
+                      className="h-9 px-3 rounded-lg border border-slate-300 bg-white text-slate-700 font-mono text-xs font-semibold hover:bg-slate-50 transition cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Automatic Fetch / Generic Error Warning (Never shown during route mismatch) */}
+          {flightFetchError && !isCutoffUrgent && !routeMismatch && (
             <div className="rounded-2xl border border-amber-300 bg-amber-50/70 p-4 text-xs text-amber-900 flex items-start gap-3">
               <AlertCircle size={18} className="text-amber-700 shrink-0 mt-0.5" />
               <div className="flex-1 space-y-1">

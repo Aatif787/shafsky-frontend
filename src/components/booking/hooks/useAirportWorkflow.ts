@@ -666,11 +666,35 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
           setBusy(false);
           return false;
         }
+        if (originCode && state.originCode && originCode !== state.originCode.trim().toUpperCase()) {
+          const mismatch = `The flight departs from ${originCode}, but your selected origin is ${state.originCode}. Please check your flight number or selected airports.`;
+          updateState({
+            flightStateMode: "ERROR",
+            flightErrorMessage: mismatch,
+            routeMatchError: mismatch,
+            isFlightValidated: false,
+            validatedFlightData: flightInfo,
+          });
+          setBusy(false);
+          return false;
+        }
         targetAirportCode = selectedServiceAirport || destCode;
         targetAirportName = flightInfo.destination?.name || destCode;
       } else if (state.direction === "departure") {
         if (originCode && selectedServiceAirport && originCode !== selectedServiceAirport) {
           const mismatch = `This flight departs from ${originCode}, but departure services were selected for ${selectedServiceAirport}. Please verify the flight number or enter the correct itinerary manually.`;
+          updateState({
+            flightStateMode: "ERROR",
+            flightErrorMessage: mismatch,
+            routeMatchError: mismatch,
+            isFlightValidated: false,
+            validatedFlightData: flightInfo,
+          });
+          setBusy(false);
+          return false;
+        }
+        if (destCode && state.destCode && destCode !== state.destCode.trim().toUpperCase()) {
+          const mismatch = `The flight arrives at ${destCode}, but your selected destination is ${state.destCode}. Please check your flight number or selected airports.`;
           updateState({
             flightStateMode: "ERROR",
             flightErrorMessage: mismatch,

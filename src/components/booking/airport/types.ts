@@ -1,5 +1,22 @@
+import { FlightData } from "@/services/flight/FlightTypes";
+
 export interface AirportBookingFlowProps {
   searchParams?: Record<string, any>;
+}
+
+export interface RouteMismatchInfo {
+  flightNum: string;
+  flightData: FlightData;
+  apiOrigin: string;
+  apiOriginCity: string;
+  apiDest: string;
+  apiDestCity: string;
+  userOrigin: string;
+  userOriginCity: string;
+  userDest: string;
+  userDestCity: string;
+  message: string;
+  leg?: 1 | 2;
 }
 
 export interface PassengerDetail {

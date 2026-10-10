@@ -16,6 +16,7 @@ import { AirlineLogo } from "../shared/AirlineLogo";
 import { IntelligentAirlineAutocomplete } from "../shared/IntelligentAirlineAutocomplete";
 import { FlightTimePicker } from "../shared/FlightTimePicker";
 import { FlightData } from "@/services/flight/FlightTypes";
+import { RouteMismatchInfo } from "./types";
 
 export interface TransitConnectingLegSectionProps {
   airportCode: string;
@@ -58,6 +59,12 @@ export interface TransitConnectingLegSectionProps {
   setManualArrTime2: (v: string) => void;
   manualArrTerminal2: string;
   setManualArrTerminal2: (v: string) => void;
+  routeMismatch2?: RouteMismatchInfo | null;
+  setRouteMismatch2?: (info: RouteMismatchInfo | null) => void;
+  confirmingRouteUpdate2?: boolean;
+  setConfirmingRouteUpdate2?: (confirm: boolean) => void;
+  handleKeepSelectedRoute2?: () => void;
+  handleUseFlightRoute2?: () => void;
 }
 
 export const TransitConnectingLegSection: React.FC<TransitConnectingLegSectionProps> = ({
@@ -101,6 +108,12 @@ export const TransitConnectingLegSection: React.FC<TransitConnectingLegSectionPr
   setManualArrTime2,
   manualArrTerminal2,
   setManualArrTerminal2,
+  routeMismatch2,
+  setRouteMismatch2,
+  confirmingRouteUpdate2,
+  setConfirmingRouteUpdate2,
+  handleKeepSelectedRoute2,
+  handleUseFlightRoute2,
 }) => {
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
@@ -156,6 +169,8 @@ export const TransitConnectingLegSection: React.FC<TransitConnectingLegSectionPr
                     setVerifiedFlight2(null);
                     setFlightFetchError2(null);
                     setIsCutoffUrgent2(false);
+                    setRouteMismatch2?.(null);
+                    setConfirmingRouteUpdate2?.(false);
                   }}
                   placeholder="e.g. EK504, 6E224"
                   onKeyDown={(e) => {
@@ -239,7 +254,73 @@ export const TransitConnectingLegSection: React.FC<TransitConnectingLegSectionPr
             </div>
           )}
 
-          {flightFetchError2 && (
+          {/* Route Mismatch Warning & Options for Leg 2 */}
+          {routeMismatch2 && (
+            <div
+              data-testid="route-mismatch-warning-leg2"
+              className="rounded-2xl border-2 border-amber-400 bg-amber-50/95 p-5 text-xs text-amber-950 space-y-3.5 shadow-xs"
+            >
+              <div className="flex items-start gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-800 shrink-0 mt-0.5">
+                  <AlertCircle size={20} className="text-amber-700" />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <h4 className="font-serif text-sm font-bold text-amber-950">
+                    Flight Route Doesn't Match
+                  </h4>
+                  <p className="text-xs text-amber-900 leading-relaxed font-sans">
+                    {routeMismatch2.message}
+                  </p>
+                </div>
+              </div>
+
+              {!confirmingRouteUpdate2 ? (
+                <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleKeepSelectedRoute2}
+                    className="h-10 px-4 rounded-xl bg-slate-900 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition cursor-pointer flex items-center gap-2 shadow-xs"
+                  >
+                    Keep My Selected Route
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingRouteUpdate2?.(true)}
+                    className="h-10 px-4 rounded-xl border border-amber-600 bg-white text-amber-900 font-mono text-xs font-bold uppercase tracking-wider hover:bg-amber-100 transition cursor-pointer flex items-center gap-2"
+                  >
+                    Use Flight Route
+                  </button>
+                </div>
+              ) : (
+                <div className="rounded-xl border border-amber-300 bg-white/95 p-4 space-y-3">
+                  <p className="font-semibold text-amber-950 text-xs">
+                    Confirm route change: Update connecting flight destination from{" "}
+                    <span className="font-bold underline">{routeMismatch2.userDestCity} ({routeMismatch2.userDest})</span>{" "}
+                    to{" "}
+                    <span className="font-bold text-lime-800 underline">{routeMismatch2.apiDestCity} ({routeMismatch2.apiDest})</span>?
+                  </p>
+                  <div className="flex items-center gap-2.5 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleUseFlightRoute2}
+                      className="h-9 px-4 rounded-lg bg-amber-600 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-amber-700 transition cursor-pointer"
+                    >
+                      Confirm & Update Route
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingRouteUpdate2?.(false)}
+                      className="h-9 px-3 rounded-lg border border-slate-300 bg-white text-slate-700 font-mono text-xs font-semibold hover:bg-slate-50 transition cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {flightFetchError2 && !routeMismatch2 && (
             <div className="rounded-2xl border border-amber-300 bg-amber-50/70 p-4 text-xs text-amber-950 space-y-2">
               <div className="flex items-center gap-2 font-bold font-mono uppercase text-amber-800">
                 <AlertCircle size={15} className="text-amber-600 shrink-0" />
@@ -264,10 +345,7 @@ export const TransitConnectingLegSection: React.FC<TransitConnectingLegSectionPr
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <AirlineLogo
-                    iataCode={verifiedFlight2.carrier.iata}
-                    airlineName={verifiedFlight2.carrier.name}
-                    logoUrl={verifiedFlight2.carrier.logo}
-                    size="md"
+                    iata={verifiedFlight2.carrier.iata}
                   />
                   <div>
                     <div className="flex items-center gap-2">

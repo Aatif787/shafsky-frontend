@@ -73,23 +73,25 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       : extractIata(searchParams?.transit)) ||
     "";
 
-  const [airportCode] = useState<string>(rawAirportCode);
+  const [airportCode, setAirportCode] = useState<string>(rawAirportCode);
+  const [explicitlyAcceptedRoute, setExplicitlyAcceptedRoute] = useState<{ origin: string; dest: string } | null>(null);
   const [direction] = useState<"arrival" | "departure" | "transit">(initialDirection);
   const [travelType, setTravelType] = useState<"domestic" | "international">(initialTravelType);
 
   const handleTravelTypeChange = (newType: "domestic" | "international") => {
-    if (isCategoryLocked) {
-      // Category is locked by the homepage booking flow route
+    if (isCategoryLocked && !explicitlyAcceptedRoute) {
+      // Category is locked by the homepage booking flow route unless explicitly accepted
       return;
     }
     setTravelType(newType);
   };
 
   useEffect(() => {
+    if (explicitlyAcceptedRoute) return;
     if (isCategoryLocked && travelType !== initialTravelType) {
       setTravelType(initialTravelType);
     }
-  }, [isCategoryLocked, initialTravelType, travelType]);
+  }, [isCategoryLocked, initialTravelType, travelType, explicitlyAcceptedRoute]);
 
   const registryEntry = getAirportRegistryEntry(airportCode);
   const airportCityName = searchParams?.airport_name || registryEntry?.city || registryEntry?.name || airportCode;
@@ -165,6 +167,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     searchParams,
     rawAirportCode,
     airportCode,
+    setAirportCode,
     direction,
     travelType,
     setTravelType,
@@ -175,6 +178,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     setOriginCode,
     destCode,
     setDestCode,
+    transitCode,
+    onExplicitRouteAccepted: (orig, dest) => setExplicitlyAcceptedRoute({ origin: orig, dest }),
   });
 
   const handleDateChange = (newDate: Date | undefined) => {
@@ -787,6 +792,18 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               setManualArrTime2={flightVerification.setManualArrTime2}
               manualArrTerminal2={flightVerification.manualArrTerminal2}
               setManualArrTerminal2={flightVerification.setManualArrTerminal2}
+              routeMismatch={flightVerification.routeMismatch}
+              setRouteMismatch={flightVerification.setRouteMismatch}
+              confirmingRouteUpdate={flightVerification.confirmingRouteUpdate}
+              setConfirmingRouteUpdate={flightVerification.setConfirmingRouteUpdate}
+              handleKeepSelectedRoute={flightVerification.handleKeepSelectedRoute}
+              handleUseFlightRoute={flightVerification.handleUseFlightRoute}
+              routeMismatch2={flightVerification.routeMismatch2}
+              setRouteMismatch2={flightVerification.setRouteMismatch2}
+              confirmingRouteUpdate2={flightVerification.confirmingRouteUpdate2}
+              setConfirmingRouteUpdate2={flightVerification.setConfirmingRouteUpdate2}
+              handleKeepSelectedRoute2={flightVerification.handleKeepSelectedRoute2}
+              handleUseFlightRoute2={flightVerification.handleUseFlightRoute2}
             />
           ) : (
             <DirectFlightDetailsSection
@@ -836,6 +853,12 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               setManualArrTime={flightVerification.setManualArrTime}
               manualArrTerminal={flightVerification.manualArrTerminal}
               setManualArrTerminal={flightVerification.setManualArrTerminal}
+              routeMismatch={flightVerification.routeMismatch}
+              setRouteMismatch={flightVerification.setRouteMismatch}
+              confirmingRouteUpdate={flightVerification.confirmingRouteUpdate}
+              setConfirmingRouteUpdate={flightVerification.setConfirmingRouteUpdate}
+              handleKeepSelectedRoute={flightVerification.handleKeepSelectedRoute}
+              handleUseFlightRoute={flightVerification.handleUseFlightRoute}
             />
           )}
 

@@ -4,12 +4,21 @@ import { ApiClient } from "@/lib/ApiClient";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegistry";
 import { formatFlightLookupError } from "../../hooks/useAirportWorkflow";
-import { sanitizeFlightInput, buildAnchoredServiceClock } from "../utils";
+import {
+  sanitizeFlightInput,
+  buildAnchoredServiceClock,
+  getAirportDisplayName,
+  buildRouteMismatchWarning,
+  evaluateFlightRouteMatch,
+  evaluateConnectingLegRouteMatch,
+} from "../utils";
+import { RouteMismatchInfo } from "../types";
 
 interface UseFlightVerificationProps {
   searchParams?: Record<string, any>;
   rawAirportCode: string;
   airportCode: string;
+  setAirportCode?: (val: string) => void;
   direction: "arrival" | "departure" | "transit";
   travelType: "domestic" | "international";
   setTravelType: (type: "domestic" | "international") => void;
@@ -20,12 +29,16 @@ interface UseFlightVerificationProps {
   setOriginCode: (val: string) => void;
   destCode: string;
   setDestCode: (val: string) => void;
+  transitCode?: string;
+  setTransitCode?: (val: string) => void;
+  onExplicitRouteAccepted?: (newOrigin: string, newDest: string) => void;
 }
 
 export function useFlightVerification({
   searchParams,
   rawAirportCode,
   airportCode,
+  setAirportCode,
   direction,
   travelType,
   setTravelType,
@@ -36,6 +49,9 @@ export function useFlightVerification({
   setOriginCode,
   destCode,
   setDestCode,
+  transitCode,
+  setTransitCode,
+  onExplicitRouteAccepted,
 }: UseFlightVerificationProps) {
   // 1. Primary Flight State (Leg 1 or Direct Journey)
   const [flightNumber, setFlightNumber] = useState<string>(searchParams?.flight_number || "");
@@ -44,6 +60,14 @@ export function useFlightVerification({
   const [verifiedFlight, setVerifiedFlight] = useState<FlightData | null>(null);
   const [flightFetchError, setFlightFetchError] = useState<string | null>(null);
   const [isCutoffUrgent, setIsCutoffUrgent] = useState<boolean>(false);
+
+  // Route Mismatch State for Leg 1 / Direct Flights
+  const [routeMismatch, setRouteMismatch] = useState<RouteMismatchInfo | null>(null);
+  const [confirmingRouteUpdate, setConfirmingRouteUpdate] = useState<boolean>(false);
+
+  // Route Mismatch State for Leg 2 (Connecting Flight in Transit)
+  const [routeMismatch2, setRouteMismatch2] = useState<RouteMismatchInfo | null>(null);
+  const [confirmingRouteUpdate2, setConfirmingRouteUpdate2] = useState<boolean>(false);
 
   // Manual Flight State
   const [isManualMode, setIsManualMode] = useState<boolean>(false);
@@ -196,64 +220,60 @@ export function useFlightVerification({
             },
           };
 
-          // Strict Airport Mismatch Verification
+          // Strict Airport Route Evaluation
           const selectedServiceAirport = (airportCode || "").trim().toUpperCase();
           const flOrigin = (flightData.origin?.code || "").trim().toUpperCase();
           const flDest = (flightData.destination?.code || "").trim().toUpperCase();
 
-          if (flOrigin && flDest && flOrigin === flDest) {
-            const sameErr = `Flight route origin and destination cannot be the same airport (${flOrigin}). Please verify your flight number.`;
-            setFlightFetchError(sameErr);
+          const evalResult = evaluateFlightRouteMatch({
+            direction,
+            flOrigin,
+            flDest,
+            userOrigin: originCode,
+            userDest: destCode,
+            selectedServiceAirport,
+            transitHub: transitCode,
+            flightType: flightObj?.flight_type || flightObj?.travel_type,
+          });
+
+          if (evalResult.isSameAirport) {
+            setFlightFetchError(evalResult.sameAirportError || `Flight route origin and destination cannot be the same airport (${flOrigin}). Please verify your flight number.`);
             setIsFlightVerified(false);
             setVerifiedFlight(null);
+            setManualFlightNum(cleaned);
+            setRouteMismatch(null);
+            return;
+          }
+
+          if (evalResult.hasMismatch) {
+            setRouteMismatch({
+              flightNum: cleaned,
+              flightData,
+              apiOrigin: evalResult.flOrigin,
+              apiOriginCity: getAirportDisplayName(evalResult.flOrigin),
+              apiDest: evalResult.flDest,
+              apiDestCity: getAirportDisplayName(evalResult.flDest),
+              userOrigin: evalResult.userOrigin,
+              userOriginCity: getAirportDisplayName(evalResult.userOrigin),
+              userDest: evalResult.userDest,
+              userDestCity: getAirportDisplayName(evalResult.userDest),
+              message: evalResult.mismatchWarning || "",
+              leg: 1,
+            });
+
+            // DO NOT automatically change destination, travelType, origin, package, pricing, or booking state!
+            setIsFlightVerified(false);
+            setVerifiedFlight(null);
+            setFlightFetchError(null);
             setManualFlightNum(cleaned);
             return;
           }
 
-          if (direction === "departure") {
-            if (flOrigin && selectedServiceAirport && flOrigin !== selectedServiceAirport) {
-              const mismatch = `This flight departs from ${flOrigin} (${flightData.origin?.city || flightData.origin?.name || "Departure"}), but departure services were selected for ${selectedServiceAirport}. Please verify your flight or enter details manually.`;
-              setFlightFetchError(mismatch);
-              setIsFlightVerified(false);
-              setVerifiedFlight(null);
-              setManualFlightNum(cleaned);
-              return;
-            }
-          } else if (direction === "arrival") {
-            if (flDest && selectedServiceAirport && flDest !== selectedServiceAirport) {
-              const mismatch = `This flight arrives at ${flDest} (${flightData.destination?.city || flightData.destination?.name || "Arrival"}), but arrival services were selected for ${selectedServiceAirport}. Please verify your flight or enter details manually.`;
-              setFlightFetchError(mismatch);
-              setIsFlightVerified(false);
-              setVerifiedFlight(null);
-              setManualFlightNum(cleaned);
-              return;
-            }
-          }
+          // Routes match! Proceed normally with verified flight details
+          setRouteMismatch(null);
+          setConfirmingRouteUpdate(false);
 
-          // Accurate Route Classification:
-          // Check if either origin or destination is outside India
-          const depCountry = (flightData.origin?.country || "").trim().toUpperCase();
-          const arrCountry = (flightData.destination?.country || "").trim().toUpperCase();
-          const depReg = getAirportRegistryEntry(flOrigin);
-          const arrReg = getAirportRegistryEntry(flDest);
-
-          const isOriginIndia =
-            depCountry === "IN" ||
-            depCountry === "INDIA" ||
-            depCountry === "IND" ||
-            Boolean(depReg) ||
-            isIndianAirportCode(flOrigin);
-          const isDestIndia =
-            arrCountry === "IN" ||
-            arrCountry === "INDIA" ||
-            arrCountry === "IND" ||
-            Boolean(arrReg) ||
-            isIndianAirportCode(flDest);
-
-          const isFlightTypeIntl = String(flightObj?.flight_type || flightObj?.travel_type || "").toUpperCase() === "INTERNATIONAL";
-          const isActuallyIntl = isFlightTypeIntl || (!isOriginIndia || !isDestIndia);
-
-          if (isActuallyIntl) {
+          if (evalResult.isActuallyIntl) {
             if (travelType !== "international") {
               setTravelType("international");
               toast.info(`International route detected (${flOrigin} → ${flDest}). Switched to International service.`);
@@ -266,7 +286,7 @@ export function useFlightVerification({
           }
 
           // Rule: If Delhi (DEL) and International, ALWAYS Terminal 3
-          if (selectedServiceAirport === "DEL" && isActuallyIntl) {
+          if (selectedServiceAirport === "DEL" && evalResult.isActuallyIntl) {
             if (flightData.departure && (flOrigin === "DEL" || direction === "departure")) {
               flightData.departure.terminal = "3";
             }
@@ -277,11 +297,11 @@ export function useFlightVerification({
             setManualArrTerminal("3");
           }
 
-          // Keep origin and destination state synchronized with verified flight
-          if (flOrigin) {
+          // Auto-fill origin/destination only if previously unset
+          if (!originCode && flOrigin) {
             setOriginCode(flOrigin);
           }
-          if (flDest) {
+          if (!destCode && flDest) {
             setDestCode(flDest);
           }
 
@@ -415,26 +435,55 @@ export function useFlightVerification({
             },
           };
 
+          // Connecting Flight Leg 2: Transit Hub -> Final Destination
+          const transitHub = (transitCode || airportCode || "").trim().toUpperCase();
           const flOrigin = (flightData.origin?.code || "").trim().toUpperCase();
           const flDest = (flightData.destination?.code || "").trim().toUpperCase();
+          const userDest = (destCode || "").trim().toUpperCase();
 
-          if (flOrigin && flDest && flOrigin === flDest) {
-            setFlightFetchError2(`Connecting flight route origin and destination cannot be the same (${flOrigin}).`);
+          const leg2Eval = evaluateConnectingLegRouteMatch({
+            transitHub,
+            flOrigin,
+            flDest,
+            userDest,
+          });
+
+          if (leg2Eval.isSameAirport) {
+            setFlightFetchError2(leg2Eval.sameAirportError || `Connecting flight route origin and destination cannot be the same (${flOrigin}).`);
             setIsFlightVerified2(false);
             setVerifiedFlight2(null);
+            setManualFlightNum2(cleaned);
+            setRouteMismatch2(null);
+            return;
+          }
+
+          if (leg2Eval.hasMismatch) {
+            setRouteMismatch2({
+              flightNum: cleaned,
+              flightData,
+              apiOrigin: flOrigin,
+              apiOriginCity: getAirportDisplayName(flOrigin),
+              apiDest: flDest,
+              apiDestCity: getAirportDisplayName(flDest),
+              userOrigin: transitHub || flOrigin,
+              userOriginCity: getAirportDisplayName(transitHub || flOrigin),
+              userDest: userDest || flDest,
+              userDestCity: getAirportDisplayName(userDest || flDest),
+              message: leg2Eval.mismatchWarning || "",
+              leg: 2,
+            });
+
+            setIsFlightVerified2(false);
+            setVerifiedFlight2(null);
+            setFlightFetchError2(null);
             setManualFlightNum2(cleaned);
             return;
           }
 
-          if (flOrigin && airportCode && flOrigin !== airportCode.toUpperCase()) {
-            setFlightFetchError2(`This connecting flight departs from ${flOrigin}, but your transit hub is ${airportCode}. Please verify or enter manually.`);
-            setIsFlightVerified2(false);
-            setVerifiedFlight2(null);
-            setManualFlightNum2(cleaned);
-            return;
-          }
+          setRouteMismatch2(null);
+          setConfirmingRouteUpdate2(false);
 
-          if (flDest && destCode && flDest !== destCode.toUpperCase()) {
+          if (!userDest && flDest) {
             setDestCode(flDest);
           }
 
@@ -466,6 +515,74 @@ export function useFlightVerification({
     }
   };
 
+  // User Actions for Route Mismatch Resolution
+  const handleKeepSelectedRoute = () => {
+    const currentMismatch = routeMismatch;
+    setRouteMismatch(null);
+    setConfirmingRouteUpdate(false);
+    setIsFlightVerified(false);
+    setVerifiedFlight(null);
+    toast.info(
+      `Retained your selected route (${currentMismatch?.userOriginCity || originCode} → ${currentMismatch?.userDestCity || destCode}). You can correct your flight number or enter flight details manually.`
+    );
+  };
+
+  const handleUseFlightRoute = () => {
+    if (!routeMismatch) return;
+    const { apiOrigin, apiDest, flightData } = routeMismatch;
+
+    setOriginCode(apiOrigin);
+    setDestCode(apiDest);
+    if (setAirportCode) {
+      if (direction === "departure") {
+        setAirportCode(apiOrigin);
+      } else if (direction === "arrival") {
+        setAirportCode(apiDest);
+      }
+    }
+
+    const isOriginIndia = isIndianAirportCode(apiOrigin);
+    const isDestIndia = isIndianAirportCode(apiDest);
+    const isActuallyIntl = !isOriginIndia || !isDestIndia;
+    const targetCategory = isActuallyIntl ? "international" : "domestic";
+    setTravelType(targetCategory);
+
+    onExplicitRouteAccepted?.(apiOrigin, apiDest);
+
+    setVerifiedFlight(flightData);
+    setIsFlightVerified(true);
+    setIsManualMode(false);
+    setRouteMismatch(null);
+    setConfirmingRouteUpdate(false);
+    setFlightFetchError(null);
+    toast.success(`Journey updated to ${apiOrigin} → ${apiDest} and flight ${flightData.flightNum} verified.`);
+  };
+
+  const handleKeepSelectedRoute2 = () => {
+    setRouteMismatch2(null);
+    setConfirmingRouteUpdate2(false);
+    setIsFlightVerified2(false);
+    setVerifiedFlight2(null);
+    toast.info(
+      `Retained your selected connecting route. You can correct your flight number or enter flight details manually.`
+    );
+  };
+
+  const handleUseFlightRoute2 = () => {
+    if (!routeMismatch2) return;
+    const { apiDest, flightData } = routeMismatch2;
+
+    setDestCode(apiDest);
+
+    setVerifiedFlight2(flightData);
+    setIsFlightVerified2(true);
+    setIsManualMode2(false);
+    setRouteMismatch2(null);
+    setConfirmingRouteUpdate2(false);
+    setFlightFetchError2(null);
+    toast.success(`Connecting flight ${flightData.flightNum} to ${apiDest} verified.`);
+  };
+
   // Auto-verify if flight_number is passed in URL query params so mismatch is immediately visible on screen
   useEffect(() => {
     if (searchParams?.flight_number?.trim() && !isFlightVerified) {
@@ -487,6 +604,12 @@ export function useFlightVerification({
     setVerifiedFlight,
     flightFetchError,
     setFlightFetchError,
+    routeMismatch,
+    setRouteMismatch,
+    confirmingRouteUpdate,
+    setConfirmingRouteUpdate,
+    handleKeepSelectedRoute,
+    handleUseFlightRoute,
     isCutoffUrgent,
     setIsCutoffUrgent,
     isManualMode,
@@ -517,6 +640,12 @@ export function useFlightVerification({
     setVerifiedFlight2,
     flightFetchError2,
     setFlightFetchError2,
+    routeMismatch2,
+    setRouteMismatch2,
+    confirmingRouteUpdate2,
+    setConfirmingRouteUpdate2,
+    handleKeepSelectedRoute2,
+    handleUseFlightRoute2,
     isCutoffUrgent2,
     setIsCutoffUrgent2,
     isManualMode2,

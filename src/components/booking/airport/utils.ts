@@ -1,4 +1,208 @@
 import { ICAO_TO_IATA_MAP } from "./types";
+import { lookupAirport } from "../shared/AirportSuggestionPicker";
+import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegistry";
+
+/**
+ * Resolves a human-friendly city/airport name for display (e.g. BOM -> Mumbai, DEL -> Delhi, DXB -> Dubai).
+ */
+export function getAirportDisplayName(code?: string, fallback?: string): string {
+  if (!code) return fallback || "";
+  const clean = code.trim().toUpperCase();
+  if (clean === "DEL") return "Delhi";
+  if (clean === "BOM") return "Mumbai";
+  if (clean === "DXB") return "Dubai";
+  
+  const found = lookupAirport(clean);
+  if (found?.city) {
+    if (found.city.toLowerCase() === "new delhi") return "Delhi";
+    return found.city;
+  }
+  const reg = getAirportRegistryEntry(clean);
+  if (reg?.city) {
+    if (reg.city.toLowerCase() === "new delhi") return "Delhi";
+    return reg.city;
+  }
+  return fallback || clean;
+}
+
+/**
+ * Builds the canonical warning message for flight route mismatch.
+ */
+export function buildRouteMismatchWarning(
+  apiOrigin: string,
+  apiDest: string,
+  userOrigin: string,
+  userDest: string
+): string {
+  const apiOrigCity = getAirportDisplayName(apiOrigin);
+  const apiDestCity = getAirportDisplayName(apiDest);
+  const userOrigCity = getAirportDisplayName(userOrigin);
+  const userDestCity = getAirportDisplayName(userDest);
+  return `The flight number you entered is for ${apiOrigCity} (${apiOrigin}) → ${apiDestCity} (${apiDest}), but your selected journey is ${userOrigCity} (${userOrigin}) → ${userDestCity} (${userDest}). Please check your flight number or selected airports.`;
+}
+
+export interface FlightRouteEvaluationParams {
+  direction: "arrival" | "departure" | "transit";
+  flOrigin: string;
+  flDest: string;
+  userOrigin?: string;
+  userDest?: string;
+  selectedServiceAirport?: string;
+  transitHub?: string;
+  flightType?: string;
+}
+
+export interface RouteEvaluationResult {
+  hasMismatch: boolean;
+  isSameAirport: boolean;
+  sameAirportError?: string;
+  mismatchWarning?: string;
+  isActuallyIntl: boolean;
+  suggestedCategory: "domestic" | "international";
+  flOrigin: string;
+  flDest: string;
+  userOrigin: string;
+  userDest: string;
+}
+
+/**
+ * Pure evaluation function for comparing flight API route against user selected journey.
+ */
+export function evaluateFlightRouteMatch(params: FlightRouteEvaluationParams): RouteEvaluationResult {
+  const flOrigin = (params.flOrigin || "").trim().toUpperCase();
+  const flDest = (params.flDest || "").trim().toUpperCase();
+  const selectedServiceAirport = (params.selectedServiceAirport || "").trim().toUpperCase();
+  const transitHub = (params.transitHub || selectedServiceAirport).trim().toUpperCase();
+
+  // Same airport check
+  if (flOrigin && flDest && flOrigin === flDest) {
+    return {
+      hasMismatch: true,
+      isSameAirport: true,
+      sameAirportError: `Flight route origin and destination cannot be the same airport (${flOrigin}). Please verify your flight number.`,
+      isActuallyIntl: false,
+      suggestedCategory: "domestic",
+      flOrigin,
+      flDest,
+      userOrigin: params.userOrigin || flOrigin,
+      userDest: params.userDest || flDest,
+    };
+  }
+
+  // Resolve user's expected endpoints
+  const userOrigin = (
+    params.userOrigin ||
+    (params.direction === "departure" ? selectedServiceAirport : "")
+  ).trim().toUpperCase();
+
+  const userDest = (
+    params.userDest ||
+    (params.direction === "arrival" ? selectedServiceAirport : "")
+  ).trim().toUpperCase();
+
+  const effectiveUserOrigin = userOrigin || flOrigin;
+  const effectiveUserDest = userDest || flDest;
+
+  let hasMismatch = false;
+  if (params.direction === "departure") {
+    if (selectedServiceAirport && flOrigin && flOrigin !== selectedServiceAirport) {
+      hasMismatch = true;
+    } else if (userOrigin && flOrigin && flOrigin !== userOrigin) {
+      hasMismatch = true;
+    }
+    if (userDest && flDest && flDest !== userDest) {
+      hasMismatch = true;
+    }
+  } else if (params.direction === "arrival") {
+    if (selectedServiceAirport && flDest && flDest !== selectedServiceAirport) {
+      hasMismatch = true;
+    } else if (userDest && flDest && flDest !== userDest) {
+      hasMismatch = true;
+    }
+    if (userOrigin && flOrigin && flOrigin !== userOrigin) {
+      hasMismatch = true;
+    }
+  } else if (params.direction === "transit") {
+    if (userOrigin && flOrigin && flOrigin !== userOrigin) {
+      hasMismatch = true;
+    }
+    if (transitHub && flDest && flDest !== transitHub) {
+      hasMismatch = true;
+    }
+  }
+
+  // International vs Domestic classification of the flight
+  const isOriginIndia = isIndianAirportCode(flOrigin);
+  const isDestIndia = isIndianAirportCode(flDest);
+  const isFlightTypeIntl = String(params.flightType || "").toUpperCase() === "INTERNATIONAL";
+  const isActuallyIntl = isFlightTypeIntl || (!isOriginIndia || !isDestIndia);
+  const suggestedCategory: "domestic" | "international" = isActuallyIntl ? "international" : "domestic";
+
+  const mismatchWarning = hasMismatch
+    ? buildRouteMismatchWarning(flOrigin, flDest, effectiveUserOrigin, effectiveUserDest)
+    : undefined;
+
+  return {
+    hasMismatch,
+    isSameAirport: false,
+    mismatchWarning,
+    isActuallyIntl,
+    suggestedCategory,
+    flOrigin,
+    flDest,
+    userOrigin: effectiveUserOrigin,
+    userDest: effectiveUserDest,
+  };
+}
+
+/**
+ * Pure evaluation function for Leg 2 (Transit Hub -> Final Destination).
+ */
+export function evaluateConnectingLegRouteMatch(params: {
+  transitHub: string;
+  flOrigin: string;
+  flDest: string;
+  userDest?: string;
+}): {
+  hasMismatch: boolean;
+  isSameAirport: boolean;
+  sameAirportError?: string;
+  mismatchWarning?: string;
+} {
+  const transitHub = (params.transitHub || "").trim().toUpperCase();
+  const flOrigin = (params.flOrigin || "").trim().toUpperCase();
+  const flDest = (params.flDest || "").trim().toUpperCase();
+  const userDest = (params.userDest || "").trim().toUpperCase();
+
+  if (flOrigin && flDest && flOrigin === flDest) {
+    return {
+      hasMismatch: true,
+      isSameAirport: true,
+      sameAirportError: `Connecting flight route origin and destination cannot be the same (${flOrigin}).`,
+    };
+  }
+
+  let hasMismatch = false;
+  if (transitHub && flOrigin && flOrigin !== transitHub) {
+    hasMismatch = true;
+  }
+  if (userDest && flDest && flDest !== userDest) {
+    hasMismatch = true;
+  }
+
+  const effectiveUserOrigin = transitHub || flOrigin;
+  const effectiveUserDest = userDest || flDest;
+
+  const mismatchWarning = hasMismatch
+    ? buildRouteMismatchWarning(flOrigin, flDest, effectiveUserOrigin, effectiveUserDest)
+    : undefined;
+
+  return {
+    hasMismatch,
+    isSameAirport: false,
+    mismatchWarning,
+  };
+}
 
 /**
  * Safely extracts a 3-letter IATA airport code from raw strings (e.g., "(DEL)", "DEL", "Delhi (DEL)").
