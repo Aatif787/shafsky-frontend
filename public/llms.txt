@@ -3,7 +3,6 @@
 > VIP airport Meet & Greet, airside concierge, luxury transfers, and private charter across 20+ Indian airports.
 
 - Site: https://shafskyaviation.com
-- India: https://shafskyaviation.in
 - Contact: ops@shafskyaviation.com
 - Phone / WhatsApp: +91 9599087959
 - HQ: 8/5, Ground Floor, West Mehram Nagar Gate No.1, Opp. IGI Airport Terminal 1, New Delhi 110010
@@ -12,8 +11,9 @@
 
 - Airport Meet & Greet and lounge access: https://shafskyaviation.com/solutions/concierge
 - Private jet and helicopter charter: https://shafskyaviation.com/solutions/aviation
-- Chauffeured airport transfers: https://shafskyaviation.com/solutions/cargo
-- Luxury and airport hotels: https://shafskyaviation.com/solutions/travel
+- Chauffeured airport transfers: https://shafskyaviation.com/solutions/transport
+- Luxury and airport hotels: https://shafskyaviation.com/solutions/hotels
+- Special assistance & VIP services: https://shafskyaviation.com/solutions/special-services
 - Coverage / book by airport: https://shafskyaviation.com/airports
 - Instant booking: https://shafskyaviation.com/book
 

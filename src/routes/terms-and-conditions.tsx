@@ -1,16 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/terms-and-conditions")({
-  head: () => ({
-    meta: [
-      { title: "Terms and Conditions | Shafsky Aviation Services Pvt. Ltd." },
-      {
-        name: "description",
-        content:
-          "Terms and Conditions of service for Shafsky Aviation Services Pvt. Ltd. (SUSWAGATAM) covering Meet and Greet, Lounge Services, booking, and airport conditions.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Terms and Conditions | Shafsky Aviation Services Pvt. Ltd.",
+      description:
+        "Terms and Conditions of service for Shafsky Aviation Services Pvt. Ltd. (SUSWAGATAM) covering Meet and Greet, Lounge Services, booking, and airport conditions.",
+      path: "/terms-and-conditions",
+    }),
   component: TermsAndConditionsPage,
 });
 

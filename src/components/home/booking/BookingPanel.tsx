@@ -418,7 +418,7 @@ export function BookingPanel() {
             </div>
 
             {/* Service Selection: Departure, Transit, Arrival + Other Services */}
-            <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200 overflow-x-auto no-scrollbar">
+            <div className="grid grid-cols-2 gap-1 sm:flex sm:gap-0 items-center p-1 rounded-2xl bg-transparent border border-slate-200 overflow-x-auto no-scrollbar">
               {serviceOptions.map(([k, label, Icon]) => {
                 const active = activeMode === "airport" && selectedServices.includes(k);
                 return (
@@ -433,7 +433,7 @@ export function BookingPanel() {
                         toggleService(k);
                       }
                     }}
-                    className={`relative z-10 flex flex-1 sm:flex-initial h-9 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                    className={`relative z-10 flex sm:flex-initial h-9 max-sm:min-w-0 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                       active
                         ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-xs"
                         : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50"
@@ -450,7 +450,7 @@ export function BookingPanel() {
               <button
                 type="button"
                 onClick={() => setActiveMode("other")}
-                className={`relative z-10 flex flex-1 sm:flex-initial h-9 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                className={`relative z-10 flex sm:flex-initial h-9 max-sm:min-w-0 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                   activeMode === "other"
                     ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-xs"
                     : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50"

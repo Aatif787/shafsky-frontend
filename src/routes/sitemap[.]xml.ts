@@ -5,17 +5,16 @@ import { BUSINESS } from "@/lib/constants";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
 const COM = BUSINESS.BASE_URL;
-const IN = BUSINESS.IN_URL;
 const TODAY = new Date().toISOString().split("T")[0];
 
-interface SitemapEntry {
+export interface SitemapEntry {
   path: string;
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: string;
   lastmod?: string;
 }
 
-const STATIC_PAGES: SitemapEntry[] = [
+export const STATIC_PAGES: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/airports", changefreq: "weekly", priority: "0.9" },
   { path: "/solutions/concierge", changefreq: "weekly", priority: "0.9" },
@@ -25,7 +24,11 @@ const STATIC_PAGES: SitemapEntry[] = [
   { path: "/solutions/hotels", changefreq: "monthly", priority: "0.7" },
   { path: "/solutions/special-services", changefreq: "monthly", priority: "0.6" },
   { path: "/services/guide", changefreq: "monthly", priority: "0.7" },
+  { path: "/about-us", changefreq: "monthly", priority: "0.7" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
+  { path: "/privacy-policy", changefreq: "monthly", priority: "0.5" },
+  { path: "/terms-and-conditions", changefreq: "monthly", priority: "0.5" },
+  { path: "/cancellation-and-refund", changefreq: "monthly", priority: "0.5" },
   { path: "/hotels/airport-hotel", changefreq: "monthly", priority: "0.6" },
   { path: "/hotels/castle-blue", changefreq: "monthly", priority: "0.5" },
   { path: "/hotels/classic-diplomat", changefreq: "monthly", priority: "0.5" },
@@ -60,31 +63,23 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         const entries = [...staticList, ...airportEntries];
 
-        const urls = entries.flatMap((e) => {
-          const com = `${COM}${e.path}`;
-          const inn = `${IN}${e.path}`;
-          const hreflang = [
-            `    <xhtml:link rel="alternate" hreflang="en-IN" href="${inn}"/>`,
-            `    <xhtml:link rel="alternate" hreflang="x-default" href="${com}"/>`,
-          ];
-          const body = (loc: string) =>
-            [
-              `  <url>`,
-              `    <loc>${loc}</loc>`,
-              `    <lastmod>${e.lastmod || TODAY}</lastmod>`,
-              e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
-              e.priority ? `    <priority>${e.priority}</priority>` : null,
-              ...hreflang,
-              `  </url>`,
-            ]
-              .filter(Boolean)
-              .join("\n");
-          return [body(com), body(inn)];
+        const urls = entries.map((e) => {
+          const loc = `${COM}${e.path}`;
+          return [
+            `  <url>`,
+            `    <loc>${loc}</loc>`,
+            `    <lastmod>${e.lastmod || TODAY}</lastmod>`,
+            e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
+            e.priority ? `    <priority>${e.priority}</priority>` : null,
+            `  </url>`,
+          ]
+            .filter(Boolean)
+            .join("\n");
         });
 
         const xml = [
           `<?xml version="1.0" encoding="UTF-8"?>`,
-          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`,
+          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
           ...urls,
           `</urlset>`,
         ].join("\n");

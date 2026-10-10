@@ -140,9 +140,7 @@ export async function apiAuthRefresh(): Promise<{ data?: AuthResponseData; error
   try {
     const res = await authFetch("/api/auth/refresh", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       credentials: "include", // Sends HttpOnly refreshToken cookie automatically
-      body: JSON.stringify({}),
     });
 
     if (!res.ok) {

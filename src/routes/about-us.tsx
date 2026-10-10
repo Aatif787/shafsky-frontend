@@ -1,17 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/about-us")({
-  head: () => ({
-    meta: [
-      { title: "About Us | Shafsky Aviation Services Pvt. Ltd. (SUSWAGATAM)" },
-      {
-        name: "description",
-        content:
-          "Learn about Shafsky Aviation Services Pvt. Ltd. and brand SUSWAGATAM – delivering personalized airport Meet & Greet and concierge services with a legacy dating back to 1986.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "About Us | Shafsky Aviation Services Pvt. Ltd. (SUSWAGATAM)",
+      description:
+        "Learn about Shafsky Aviation Services Pvt. Ltd. and brand SUSWAGATAM – delivering personalized airport Meet & Greet and concierge services with a legacy dating back to 1986.",
+      path: "/about-us",
+    }),
   component: AboutUsPage,
 });
 

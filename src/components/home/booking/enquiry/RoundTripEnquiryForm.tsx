@@ -171,7 +171,9 @@ export const RoundTripEnquiryForm: React.FC<RoundTripEnquiryFormProps> = ({
             value={origin}
             inputClassName={INPUT}
             placeholder="Select airport"
+            showIcon={false}
             onSelect={(ap) => setOrigin(formatAirportOption(ap))}
+            onChangeText={(txt) => setOrigin(txt)}
           />
         </div>
 
@@ -186,7 +188,9 @@ export const RoundTripEnquiryForm: React.FC<RoundTripEnquiryFormProps> = ({
             value={destination}
             inputClassName={INPUT}
             placeholder="Select airport"
+            showIcon={false}
             onSelect={(ap) => setDestination(formatAirportOption(ap))}
+            onChangeText={(txt) => setDestination(txt)}
           />
         </div>
       </div>

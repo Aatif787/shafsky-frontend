@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { MapPin, Loader2 } from "lucide-react";
 import { airportApi, formatAirportOption } from "@/lib/api/airportApi";
+import { GLOBAL_HUBS_FALLBACK } from "@/data/globalAirportsFallback";
 
 export interface SelectedAirportDetails {
   id?: string;
@@ -23,6 +24,7 @@ interface IntelligentAirportAutocompleteProps {
   /** supported = Neon supported_airports; global = airports.csv */
   mode?: "global" | "supported";
   journeyType?: "ARRIVAL" | "DEPARTURE" | "TRANSIT";
+  showIcon?: boolean;
 }
 
 const UNSUPPORTED_MESSAGE = "This airport is currently not supported for online booking.";
@@ -47,14 +49,44 @@ export async function searchAirports(
 ): Promise<SelectedAirportDetails[]> {
   const q = (query || "").trim();
   const iata = extractIata(q);
-  const searchTerm = iata && q.length <= 5 ? iata : q;
 
-  const res = await airportApi.search(searchTerm, mode, journeyType);
-  if (res && (res as any).success === false && (res as any).error) {
-    console.warn(`[IntelligentAirportAutocomplete] Failed to search airports (${mode}):`, (res as any).error);
+  let searchTerm = q;
+  if (iata) {
+    searchTerm = iata;
+  } else if (q.includes(" — ")) {
+    searchTerm = q.split(" — ")[0].trim();
   }
-  const rows = (res as any)?.data || [];
-  return Array.isArray(rows) ? rows : [];
+
+  try {
+    const res = await airportApi.search(searchTerm, mode, journeyType);
+    if (res && (res as any).success === false && (res as any).error) {
+      console.warn(`[IntelligentAirportAutocomplete] Failed to search airports (${mode}):`, (res as any).error);
+    }
+    const rows = (res as any)?.data || [];
+    if (Array.isArray(rows) && rows.length > 0) {
+      return rows;
+    }
+  } catch (err) {
+    console.warn("[IntelligentAirportAutocomplete] airportApi search error:", err);
+  }
+
+  // Fallback for mode === "global": search against GLOBAL_HUBS_FALLBACK parsed from airports.csv
+  if (mode === "global") {
+    const cleanSearch = searchTerm.toLowerCase();
+    if (!cleanSearch) {
+      return GLOBAL_HUBS_FALLBACK;
+    }
+    const filtered = GLOBAL_HUBS_FALLBACK.filter(
+      (a) =>
+        a.code.toLowerCase().includes(cleanSearch) ||
+        a.name.toLowerCase().includes(cleanSearch) ||
+        a.city.toLowerCase().includes(cleanSearch) ||
+        a.country.toLowerCase().includes(cleanSearch)
+    );
+    return filtered.length > 0 ? filtered : GLOBAL_HUBS_FALLBACK.slice(0, 10);
+  }
+
+  return [];
 }
 
 export function IntelligentAirportAutocomplete({
@@ -66,6 +98,7 @@ export function IntelligentAirportAutocomplete({
   inputClassName,
   mode = "global",
   journeyType,
+  showIcon,
 }: IntelligentAirportAutocompleteProps) {
   const [inputValue, setInputValue] = useState(value || "");
   const [isOpen, setIsOpen] = useState(false);
@@ -203,13 +236,20 @@ export function IntelligentAirportAutocomplete({
         ? UNSUPPORTED_MESSAGE
         : "No configured airports found."
       : (inputValue || "").trim()
-        ? "No matching airports found"
-        : "Loading global airports...";
+        ? "No matching airports found in airports.csv"
+        : "Search an airport name, city or 3-letter IATA code...";
+
+  const renderIcon =
+    showIcon !== undefined
+      ? showIcon
+      : !inputClassName || inputClassName.includes("pl-");
 
   return (
     <div ref={containerRef} className={`relative w-full ${className}`}>
       <div className="relative">
-        <MapPin className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+        {renderIcon && (
+          <MapPin className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+        )}
         <input
           type="text"
           value={inputValue}
@@ -245,6 +285,12 @@ export function IntelligentAirportAutocomplete({
               zIndex: 9999,
             }}
           >
+            {mode === "global" && (
+              <div className="flex items-center justify-between px-3.5 py-1.5 bg-slate-50/90 border-b border-slate-100 text-[10px] font-mono text-slate-500 uppercase tracking-wider sticky top-0 z-10 backdrop-blur-xs">
+                <span>Airport Suggestions</span>
+                <span className="text-lime-700 font-bold">airports.csv</span>
+              </div>
+            )}
             {loading ? (
               <div className="flex items-center justify-center gap-2 p-4 text-xs text-slate-500 font-mono" style={monoFont}>
                 <Loader2 className="h-4 w-4 animate-spin text-purple-600" />

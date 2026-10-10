@@ -112,7 +112,7 @@ describe("ICICI Review Mode Specifications", () => {
       const reviewServices = filterServices(true);
       expect(reviewServices).toHaveLength(1);
       expect(reviewServices[0].href).toBe("/solutions/concierge");
-      expect(reviewServices[0].title).toBe("Meet & Greet and Lounge Service");
+      expect(reviewServices[0].title).toBe("Meet & Greet & Lounge");
 
       const fullServices = filterServices(false);
       expect(fullServices).toHaveLength(5);
@@ -120,7 +120,7 @@ describe("ICICI Review Mode Specifications", () => {
       expect(serviceHrefs).toContain("/solutions/aviation");
       expect(serviceHrefs).toContain("/solutions/transport");
       expect(serviceHrefs).toContain("/solutions/hotels");
-      expect(serviceHrefs).toContain("/solutions/special-services");
+      expect(serviceHrefs).toContain("/solutions/special-services?sub=ticketing");
     });
   });
 
@@ -139,11 +139,11 @@ describe("ICICI Review Mode Specifications", () => {
     const getDisplayedItems = (isReviewMode: boolean) =>
       isReviewMode
         ? ALL_ITEMS.filter(
-            (it) =>
-              it.title !== "Private Jets On-Demand" &&
-              it.title !== "Luxury Doorstep Cars" &&
-              it.title !== "All-in-One Easy Booking"
-          )
+          (it) =>
+            it.title !== "Private Jets On-Demand" &&
+            it.title !== "Luxury Doorstep Cars" &&
+            it.title !== "All-in-One Easy Booking"
+        )
         : ALL_ITEMS;
 
     it("hides Private Jets, Luxury Cars, and Multi-Service Booking in Review Mode", () => {
@@ -276,8 +276,8 @@ describe("ICICI Review Mode Specifications", () => {
     const getStaticList = (isReviewMode: boolean) =>
       isReviewMode
         ? STATIC_PAGES.filter(
-            (page) => !NON_REVIEW_PREFIXES.some((prefix) => page.path.startsWith(prefix))
-          )
+          (page) => !NON_REVIEW_PREFIXES.some((prefix) => page.path.startsWith(prefix))
+        )
         : STATIC_PAGES;
 
     it("excludes non-Meet-and-Greet service paths from sitemap in Review Mode", () => {

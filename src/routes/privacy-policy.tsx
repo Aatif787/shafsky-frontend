@@ -1,16 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/privacy-policy")({
-  head: () => ({
-    meta: [
-      { title: "Privacy Policy | Shafsky Aviation Services Pvt. Ltd." },
-      {
-        name: "description",
-        content:
-          "Privacy Policy of Shafsky Aviation Services Pvt. Ltd. (SUSWAGATAM). Learn how we collect, use, and protect your personal information.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Privacy Policy | Shafsky Aviation Services Pvt. Ltd.",
+      description:
+        "Privacy Policy of Shafsky Aviation Services Pvt. Ltd. (SUSWAGATAM). Learn how we collect, use, and protect your personal information.",
+      path: "/privacy-policy",
+    }),
   component: PrivacyPolicyPage,
 });
 

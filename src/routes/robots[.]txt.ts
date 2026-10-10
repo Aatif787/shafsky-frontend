@@ -20,6 +20,7 @@ export const Route = createFileRoute("/robots.txt")({
           "Disallow: /_authenticated/",
           "Disallow: /verify/",
           "Disallow: /flight-verification",
+          "Disallow: /book/payment-result",
           "Disallow: /gallery",
           "",
           "User-agent: GPTBot",
@@ -32,9 +33,7 @@ export const Route = createFileRoute("/robots.txt")({
           "Allow: /",
           "",
           `Sitemap: ${BUSINESS.BASE_URL}/sitemap.xml`,
-          `Sitemap: ${BUSINESS.IN_URL}/sitemap.xml`,
           `LLMs-Txt: ${BUSINESS.BASE_URL}/llms.txt`,
-          `LLMs-Txt: ${BUSINESS.IN_URL}/llms.txt`,
         ].join("\n");
 
         return new Response(robotsTxt, {
