@@ -2,12 +2,17 @@ import { apiFetch, ApiResponse } from "./client";
 
 export type EnquiryCategory =
   | "Ground Transport"
+  | "Transport"
+  | "Round Trip"
+  | "Ticketing"
   | "Travel Support"
   | "Medical Assistance"
   | "Cargo & Logistics";
 
 export interface ServiceEnquiryPayload {
   passengerName: string;
+  firstName?: string;
+  lastName?: string;
   passengerEmail: string;
   passengerPhone: string;
   serviceCategory: EnquiryCategory;

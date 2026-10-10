@@ -14,13 +14,19 @@ import {
   CalendarDays,
   Users,
   Package, X,
-  ArrowRight
+  ArrowRight,
+  Car,
+  Ticket,
+  ArrowRightLeft,
+  Plane,
+  Sparkles,
 } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { format, parseISO, isValid } from "date-fns";
 import { mono, display } from "../theme";
 import { DoublePlaneIcon } from "./DoublePlaneIcon";
+import { OtherServicesEnquiryFlow, type OtherServiceType } from "./enquiry/OtherServicesEnquiryFlow";
 
 const FIELD =
   "flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300 bg-transparent px-4 text-xs font-semibold text-slate-900 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-none";
@@ -30,8 +36,11 @@ const AIRPORT_INPUT =
   "h-12 w-full rounded-2xl border border-slate-300 bg-transparent pl-10 pr-4 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-none";
 const LABEL = "h-4 text-[10.5px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5";
 
+export type BookingServiceMode = "airport" | "other";
+
 export function BookingPanel() {
   const navigate = useNavigate();
+  const [activeMode, setActiveMode] = useState<BookingServiceMode>("airport");
   const [originCode, setOriginCode] = useState<string>("");
   const [destCode, setDestCode] = useState<string>("");
   const [transitCode, setTransitCode] = useState<string>("");
@@ -357,24 +366,28 @@ export function BookingPanel() {
   return (
     <section id="book" className="relative mt-6 sm:mt-10 mb-16 sm:mb-24 md:mb-28 px-4 sm:px-8 md:px-14">
       <motion.div
-        initial={{ opacity: 0, y: 25 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0, y: 35, scale: 0.97 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: false, amount: 0.15 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         className="relative mx-auto max-w-[960px] rounded-[2rem] bg-transparent border-2 border-slate-200 shadow-sm z-20 overflow-hidden"
       >
         {/* Header Title */}
         <div className="px-6 pt-6 pb-4 md:px-10 md:pt-8 md:pb-5 bg-transparent text-center border-b border-slate-200">
-          <h2
+          <motion.h2
+            key={activeMode}
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
             className="text-center text-lg sm:text-xl font-bold text-slate-950 tracking-tight"
             style={display}
           >
-            Book Airport Service
-          </h2>
+            {activeMode === "airport" ? "Book Airport Service" : "Other Services Enquiry"}
+          </motion.h2>
         </div>
 
         <div className="p-6 md:p-8 space-y-6">
-          {/* Top Control Bar: Domestic/International (Upper) + Direction Tabs (Services) */}
+          {/* Top Control Bar: Domestic/International (Upper) + Direction & Service Controls */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
             {/* Domestic / International Toggle (Upper on Mobile) */}
             <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200 self-start sm:self-auto w-full sm:w-auto">
@@ -385,9 +398,12 @@ export function BookingPanel() {
                   <button
                     key={kind}
                     type="button"
-                    onClick={() => handleCategoryToggle(kind)}
+                    onClick={() => {
+                      if (activeMode !== "airport") setActiveMode("airport");
+                      handleCategoryToggle(kind);
+                    }}
                     className={`relative z-10 flex-1 sm:flex-initial h-9 sm:px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 rounded-xl ${
-                      active
+                      active && activeMode === "airport"
                         ? "text-white bg-slate-950 shadow-xs cursor-default"
                         : isLockedOut
                           ? "text-slate-400 opacity-60 cursor-not-allowed hover:bg-slate-100/30"
@@ -401,15 +417,22 @@ export function BookingPanel() {
               })}
             </div>
 
-            {/* Multi-Service Selection: Departure, Transit, Arrival */}
-            <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200">
+            {/* Service Selection: Departure, Transit, Arrival + Other Services */}
+            <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200 overflow-x-auto no-scrollbar">
               {serviceOptions.map(([k, label, Icon]) => {
-                const active = selectedServices.includes(k);
+                const active = activeMode === "airport" && selectedServices.includes(k);
                 return (
                   <button
                     key={k}
                     type="button"
-                    onClick={() => toggleService(k)}
+                    onClick={() => {
+                      if (activeMode !== "airport") {
+                        setActiveMode("airport");
+                        setSelectedServices([k]);
+                      } else {
+                        toggleService(k);
+                      }
+                    }}
                     className={`relative z-10 flex flex-1 sm:flex-initial h-9 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                       active
                         ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-xs"
@@ -422,8 +445,34 @@ export function BookingPanel() {
                   </button>
                 );
               })}
+
+              {/* Other Services Option alongside Departure, Transit, Arrival */}
+              <button
+                type="button"
+                onClick={() => setActiveMode("other")}
+                className={`relative z-10 flex flex-1 sm:flex-initial h-9 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                  activeMode === "other"
+                    ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-xs"
+                    : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50"
+                }`}
+                style={mono}
+              >
+                <Sparkles className={`h-3.5 w-3.5 shrink-0 ${activeMode === "other" ? "text-white md:text-slate-950" : "text-lime-600"}`} />
+                <span className="truncate">Other Services</span>
+              </button>
             </div>
           </div>
+
+          {activeMode === "other" ? (
+            <OtherServicesEnquiryFlow
+              initialOrigin={originLabel || originCode}
+              initialDestination={destLabel || destCode}
+              initialDate={departDate}
+              initialPax={totalPax}
+              onBackToAirport={() => setActiveMode("airport")}
+            />
+          ) : (
+            <>
 
           {/* Form Inputs Grid */}
           <motion.div
@@ -747,6 +796,8 @@ export function BookingPanel() {
               <ArrowRight className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
             </button>
           </div>
+            </>
+          )}
         </div>
       </motion.div>
     </section>

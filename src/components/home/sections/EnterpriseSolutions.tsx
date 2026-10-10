@@ -126,7 +126,13 @@ export function EnterpriseSolutions() {
     >
       <div className="mx-auto max-w-[1560px]">
         {/* Section Header: Our Services */}
-        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
+        <motion.div
+          initial={{ opacity: 0, x: -60 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center max-w-3xl mx-auto mb-8 sm:mb-10"
+        >
           <div
             className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.45em] text-[#b38a2e] font-bold"
             style={mono}
@@ -141,7 +147,7 @@ export function EnterpriseSolutions() {
           >
             Our <span className="font-bold">Services.</span>
           </h2>
-        </div>
+        </motion.div>
 
         {/* Top Centered Hostess / Services Visual with Animation & Hover Effects */}
         <div className="relative flex flex-col items-center justify-center mb-8 sm:mb-12 pt-2">
@@ -151,7 +157,7 @@ export function EnterpriseSolutions() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: 0.2 }}
             animate={{ y: [0, -8, 0] }}
             transition={{
               y: { duration: 4.5, repeat: Infinity, ease: "easeInOut" },
@@ -262,15 +268,31 @@ export function EnterpriseSolutions() {
           <>
             {/* DESKTOP 5-CARD HORIZONTAL ALIGNMENT SHOWCASE (100% UNTOUCHED FOR DESKTOP) */}
             <div className="hidden lg:grid lg:grid-cols-5 gap-8 items-start justify-items-center max-w-7xl mx-auto">
-              {OFFICIAL_SERVICES.map((srv, idx) => (
-                <motion.div
-                  key={srv.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.08 }}
-                  whileHover={{ y: -6 }}
-                  className="flex flex-col items-center text-center w-full group cursor-pointer"
+              {OFFICIAL_SERVICES.map((srv, idx) => {
+                // Moving effect from sides, corners, and bottom:
+                // Card 0: from far left side
+                // Card 1: from top-left corner
+                // Card 2: from bottom
+                // Card 3: from top-right corner
+                // Card 4: from far right side
+                const serviceOffsets = [
+                  { x: -75, y: 0 },
+                  { x: -40, y: -35 },
+                  { x: 0, y: 50 },
+                  { x: 40, y: -35 },
+                  { x: 75, y: 0 },
+                ];
+                const offset = serviceOffsets[idx] || { x: 0, y: 30 };
+
+                return (
+                  <motion.div
+                    key={srv.id}
+                    initial={{ opacity: 0, x: offset.x, y: offset.y, scale: 0.92 }}
+                    whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+                    viewport={{ once: false, amount: 0.2 }}
+                    transition={{ duration: 0.65, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover={{ y: -6 }}
+                    className="flex flex-col items-center text-center w-full group cursor-pointer"
                   onClick={() => {
                     if (srv.id === "meet-greet-lounge") {
                       navigate({ to: "/solutions/concierge" });
@@ -308,7 +330,8 @@ export function EnterpriseSolutions() {
                     {srv.title}
                   </h3>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
 
             {/* MOBILE & TABLET: 3-2 PORTAL LAYOUT (lg:hidden) */}
@@ -321,7 +344,7 @@ export function EnterpriseSolutions() {
                     key={srv.id}
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false, amount: 0.2 }}
                     transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}

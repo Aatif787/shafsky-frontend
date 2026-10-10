@@ -88,10 +88,10 @@ export function VIPTestimonials() {
         {/* Centered Modern Premium Header */}
         <div className="relative flex flex-col items-center justify-center text-center max-w-2xl mx-auto mb-10 sm:mb-14">
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, x: -55 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="group inline-flex flex-col items-center cursor-default select-none"
           >
             {/* Top Minimalist Eyebrow */}
@@ -130,10 +130,10 @@ export function VIPTestimonials() {
           {TESTIMONIAL_CARDS.map((item, idx) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: idx * 0.05 }}
+              initial={{ opacity: 0, x: 45 + Math.min(idx * 8, 40), y: 25, scale: 0.94 }}
+              whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+              viewport={{ once: false, amount: 0.15 }}
+              transition={{ duration: 0.55, delay: Math.min(idx * 0.07, 0.4), ease: [0.22, 1, 0.36, 1] }}
               whileHover={{ y: -8, scale: 1.02 }}
               className="group relative shrink-0 w-[270px] sm:w-[310px] md:w-[340px] snap-start rounded-3xl overflow-hidden border-2 border-slate-200 shadow-[0_10px_25px_-10px_rgba(0,0,0,0.1)] hover:border-lime-500 hover:shadow-[0_20px_45px_-10px_rgba(132,204,22,0.3)] transition-all duration-500 bg-slate-900 cursor-pointer"
             >

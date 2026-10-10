@@ -60,4 +60,16 @@ describe("BookingPanel Regression & Navigation Tests", () => {
     expect(res.success).toBe(true);
     expect(mockCheck).toHaveBeenCalledWith(payload);
   });
+
+  it("renders Other Services alongside Departure, Transit, and Arrival with no separate Airport Services button", () => {
+    const html = renderToString(React.createElement(BookingPanel));
+    // Verify Departure, Transit, Arrival, and Other Services are all present
+    expect(html).toContain("Departure");
+    expect(html).toContain("Transit");
+    expect(html).toContain("Arrival");
+    expect(html).toContain("Other Services");
+    // Verify there is no separate "Airport Services" button
+    expect(html).not.toContain("Airport Services");
+  });
 });
+

@@ -6,12 +6,15 @@ import { mono, display } from "../theme";
 function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
   const [v, setV] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "0px" });
+  const inView = useInView(ref, { once: false, margin: "0px" });
 
   useEffect(() => {
-    if (!inView) return;
+    if (!inView) {
+      setV(0);
+      return;
+    }
     const start = performance.now();
-    const dur = 1600;
+    const dur = 1400;
     let raf = 0;
     const step = (now: number) => {
       const t = Math.min(1, (now - start) / dur);
@@ -42,16 +45,30 @@ export function TrustBar() {
   return (
     <section className="relative px-6 py-12 md:px-14 md:py-16 bg-white border-y border-slate-100">
       <div className="mx-auto grid max-w-[1480px] grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
-        {stats.map(({ n, suf, l, sub, Icon }, i) => (
-          <motion.div
-            key={l}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -4 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: i * 0.08 }}
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-slate-50/80 border border-slate-200/80 p-6 md:p-7 shadow-xs hover:border-lime-400 hover:shadow-md hover:shadow-lime-500/10 transition-all duration-300"
-          >
+        {stats.map(({ n, suf, l, sub, Icon }, i) => {
+          // Dynamic entrance from sides and corners:
+          // Card 0: from top-left corner
+          // Card 1: from bottom-left corner
+          // Card 2: from bottom-right corner
+          // Card 3: from top-right corner
+          const cornerOffsets = [
+            { x: -55, y: -25 },
+            { x: -30, y: 40 },
+            { x: 30, y: 40 },
+            { x: 55, y: -25 },
+          ];
+          const offset = cornerOffsets[i] || { x: 0, y: 30 };
+
+          return (
+            <motion.div
+              key={l}
+              initial={{ opacity: 0, x: offset.x, y: offset.y, scale: 0.94 }}
+              whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+              whileHover={{ y: -4 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: i * 0.08 }}
+              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-slate-50/80 border border-slate-200/80 p-6 md:p-7 shadow-xs hover:border-lime-400 hover:shadow-md hover:shadow-lime-500/10 transition-all duration-300"
+            >
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div
@@ -77,7 +94,8 @@ export function TrustBar() {
               </div>
             </div>
           </motion.div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 import { Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
 import { ICICI_REVIEW_MODE } from "../../../lib/config/reviewMode";
 
@@ -66,8 +67,14 @@ export function Footer() {
         {/* Content Container (3 Columns) */}
         <div className="relative z-10 mx-auto max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-14 items-start">
-            {/* Column 1: About Us (md:col-span-5) */}
-            <div className="md:col-span-5 space-y-4">
+            {/* Column 1: About Us (md:col-span-5) - Moves in from Left Side */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              className="md:col-span-5 space-y-4"
+            >
               <span className="text-[#cca028] text-xs uppercase tracking-widest font-semibold block">
                 WHO WE ARE
               </span>
@@ -84,10 +91,16 @@ export function Footer() {
                 &amp; Greet and Lounge Service to domestic and international
                 passengers.
               </p>
-            </div>
+            </motion.div>
 
-            {/* Column 2: Quick Links (md:col-span-3) */}
-            <div className="md:col-span-3 space-y-5">
+            {/* Column 2: Quick Links (md:col-span-3) - Moves in from Bottom */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="md:col-span-3 space-y-5"
+            >
               <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                 Quick Links
               </h3>
@@ -103,10 +116,16 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
-            {/* Column 3: Contact Us (md:col-span-4) */}
-            <div className="md:col-span-4 space-y-5">
+            {/* Column 3: Contact Us (md:col-span-4) - Moves in from Right Side */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.65, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="md:col-span-4 space-y-5"
+            >
               <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                 Contact Us
               </h3>
@@ -182,7 +201,7 @@ export function Footer() {
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

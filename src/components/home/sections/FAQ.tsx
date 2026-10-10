@@ -17,7 +17,13 @@ export function FAQ() {
     <section className="relative px-4 py-20 sm:px-8 sm:py-28 md:px-12 bg-white border-b border-slate-200">
       <div className="mx-auto max-w-4xl">
         {/* Upper Side Header (Classical & Centered) */}
-        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+        <motion.div
+          initial={{ opacity: 0, x: -60 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center max-w-2xl mx-auto mb-12 sm:mb-16"
+        >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-slate-950 font-raleway leading-[1.15]">
             Frequently Asked{" "}
             <span className="font-bold">
@@ -28,14 +34,21 @@ export function FAQ() {
           <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
             Need help with your trip? We're here 24/7.
           </p>
-        </div>
+        </motion.div>
 
         {/* Accordion List (Classical & Simple Hairline Design) */}
         <div className="border-t border-slate-200 divide-y divide-slate-200">
           {faqs.map((faq, i) => {
             const isOpen = open === i;
             return (
-              <div key={faq.q} className="transition-colors">
+              <motion.div
+                key={faq.q}
+                initial={{ opacity: 0, x: i % 2 === 0 ? -35 : 35, y: 15 }}
+                whileInView={{ opacity: 1, x: 0, y: 0 }}
+                viewport={{ once: false, amount: 0.15 }}
+                transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                className="transition-colors"
+              >
                 <button
                   type="button"
                   className="flex w-full items-center justify-between gap-6 py-5 sm:py-6 text-left cursor-pointer group"
@@ -114,7 +127,7 @@ export function FAQ() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </motion.div>
             );
           })}
         </div>
