@@ -2,6 +2,7 @@ import React from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, MapPin, ExternalLink } from "lucide-react";
 import { display } from "@/components/home/theme";
+import { Footer } from "@/components/home/sections/Footer";
 import hotelPageImg from "@/assets/others/hotelpage.png";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
@@ -587,6 +588,7 @@ function DedicatedLuxuryHotelsPage() {
       </section>
 
 
+      <Footer />
     </div>
   );
 }

@@ -327,7 +327,6 @@ function AirportsListingView() {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-slate-900">All Airports</h3>
-                <p className="text-xs text-slate-500">Browse all 200+ airports in our global network</p>
               </div>
             </div>
 

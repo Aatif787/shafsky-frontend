@@ -23,6 +23,7 @@ import { enquiryApi } from "@/lib/api/enquiryApi";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import toursTravelImg from "@/assets/others/tours-travel.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
+import specialserImg from "@/assets/others/specialser.png";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/solutions/special-services")({
@@ -72,8 +73,15 @@ interface SpecialServiceOptionDef {
   inclusions: string[];
 }
 
-// Exactly the 3 authentic photos that already exist in Shafsky assets (100% full uncropped 16:9 ratio)
+// Authentic photos that exist in Shafsky assets (100% full uncropped 16:9 ratio)
 const SPECIAL_HERO_SLIDES: SpecialHeroSlide[] = [
+  {
+    id: "taj-mahal-tours",
+    label: "Tours & Travel (Taj Mahal & Curated Getaways)",
+    photo: specialserImg,
+    badge: "BESPOKE TOURS, HONEYMOONS & TAJ MAHAL CONCIERGE",
+    linkedOptionId: "Tours & Travel (Honeymoon/Couples)",
+  },
   {
     id: "spa-wellness",
     label: "Spa & Wellness",
@@ -121,7 +129,7 @@ const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     shortLabel: "Tours & Travel",
     badge: "CURATED ROMANTIC GETAWAYS & HONEYMOONS",
     tagline: "Curated romantic itineraries, European honeymoons, private yacht charters, and luxury stays.",
-    photo: toursTravelImg,
+    photo: specialserImg,
     icon: HeartHandshake,
     inclusions: [
       "Tailored Luxury Honeymoon Circuits & Private Romantic Escapes (Paris, Venice, Amalfi, Switzerland)",
@@ -250,7 +258,7 @@ const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
 function DedicatedSpecialServicesPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedOptionId, setSelectedOptionId] = useState<SpecialServiceOptionId>("Spa & Wellness");
+  const [selectedOptionId, setSelectedOptionId] = useState<SpecialServiceOptionId>("Tours & Travel (Honeymoon/Couples)");
   const [heroSlideIndex, setHeroSlideIndex] = useState<number>(0);
   const [dragStartX, setDragStartX] = useState<number | null>(null);
   const [dragOffset, setDragOffset] = useState<number>(0);
