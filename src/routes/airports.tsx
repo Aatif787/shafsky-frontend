@@ -416,7 +416,7 @@ function AirportsListingView() {
             </div>
             <div>
               <h4 className="text-sm font-bold text-slate-900">Can't find your airport?</h4>
-              <p className="text-xs text-slate-600">We cover 20+ airports worldwide. Contact our team for any assistance.</p>
+              <p className="text-xs text-slate-600">We cover 200+ airports worldwide. Contact our team for any assistance.</p>
             </div>
           </div>
 
@@ -436,7 +436,7 @@ function AirportsListingView() {
               <Globe className="w-4 h-4" />
             </div>
             <div>
-              <h5 className="text-xs font-bold text-slate-900">20+ Airports</h5>
+              <h5 className="text-xs font-bold text-slate-900">200+ Airports</h5>
               <p className="text-[10px] text-slate-500">Worldwide Coverage</p>
             </div>
           </div>

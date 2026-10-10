@@ -152,9 +152,7 @@ export const TicketingEnquiryForm: React.FC<TicketingEnquiryFormProps> = ({
             value={origin}
             inputClassName={INPUT}
             placeholder="Select airport"
-            showIcon={false}
             onSelect={(ap) => setOrigin(formatAirportOption(ap))}
-            onChangeText={(txt) => setOrigin(txt)}
           />
         </div>
 
@@ -169,9 +167,7 @@ export const TicketingEnquiryForm: React.FC<TicketingEnquiryFormProps> = ({
             value={destination}
             inputClassName={INPUT}
             placeholder="Select airport"
-            showIcon={false}
             onSelect={(ap) => setDestination(formatAirportOption(ap))}
-            onChangeText={(txt) => setDestination(txt)}
           />
         </div>
       </div>

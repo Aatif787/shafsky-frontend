@@ -20,13 +20,10 @@ import {
 } from "lucide-react";
 import { display } from "@/components/home/theme";
 import { enquiryApi } from "@/lib/api/enquiryApi";
-import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
-import { formatAirportOption } from "@/lib/api/airportApi";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import toursTravelImg from "@/assets/others/tours-travel.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import specialserImg from "@/assets/others/specialser.png";
-import { Footer } from "@/components/home/sections/Footer";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/solutions/special-services")({
@@ -437,8 +434,7 @@ function DedicatedSpecialServicesPage() {
   const [ticketOrigin, setTicketOrigin] = useState("");
   const [ticketDest, setTicketDest] = useState("");
   const [ticketDate, setTicketDate] = useState("");
-  const [ticketClass, setTicketClass] = useState("Economy Class");
-  const [ticketPax, setTicketPax] = useState(1);
+  const [ticketClass, setTicketClass] = useState("Economy Class (1-2 Pax)");
   const [ticketNotes, setTicketNotes] = useState("");
 
   // Common Contact Details (Required for desk follow-up)
@@ -584,12 +580,10 @@ function DedicatedSpecialServicesPage() {
         origin: ticketOrigin,
         destination: ticketDest,
         travel_date: ticketDate,
-        cabin_class: ticketClass,
-        passengers_count: ticketPax,
-        class_passengers: `${ticketClass} (${ticketPax} Pax)`,
+        class_passengers: ticketClass,
         notes: ticketNotes,
       };
-      notes = `Flight Inquiry: ${ticketOrigin} to ${ticketDest} — ${ticketClass} (${ticketPax} Pax) — Notes: ${ticketNotes || "None"}`;
+      notes = `Flight Inquiry: ${ticketOrigin} to ${ticketDest} (${ticketClass}) — Notes: ${ticketNotes || "None"}`;
       serviceType = "Air Ticketing";
     }
 
@@ -642,7 +636,7 @@ function DedicatedSpecialServicesPage() {
     } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
       details = `From: ${cargoOrigin}%0ATo: ${cargoDest}%0ACargo/Pet: ${cargoDetails}%0ADate: ${cargoDate}`;
     } else if (selectedOptionId === "Air Ticketing Services") {
-      details = `Sector: ${ticketOrigin} to ${ticketDest}%0ADate: ${ticketDate}%0ACabin Class: ${ticketClass}%0APassengers: ${ticketPax}%0ANotes: ${ticketNotes || "None"}`;
+      details = `Sector: ${ticketOrigin} to ${ticketDest}%0ADate: ${ticketDate}%0AClass & Pax: ${ticketClass}%0ANotes: ${ticketNotes || "None"}`;
     }
 
     const text = `Hello Shafsky VIP Concierge Desk,%0A%0AI would like to inquire about:%0A*Service:* ${selectedOptionId}%0A${details}%0A%0A*Name:* ${clientName}%0A*Phone:* ${phone}%0A*Email:* ${email || "N/A"}`;
@@ -861,54 +855,7 @@ function DedicatedSpecialServicesPage() {
             </div>
           ) : (
             <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
-              <form onSubmit={handleSubmitRequest} className="space-y-6">
-                {/* User Contact Details (Placed Upper) */}
-                <div className="pb-5 border-b border-slate-100">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-lime-700 block mb-3">
-                    Your Contact Details (For Fast Response)
-                  </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                    <div>
-                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={clientName}
-                        onChange={(e) => setClientName(e.target.value)}
-                        required
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Phone / WhatsApp *
-                      </label>
-                      <input
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        required
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
-                      />
-                    </div>
-                  </div>
-                </div>
-
+              <form onSubmit={handleSubmitRequest} className="space-y-5">
                 {/* 1. Spa & Wellness Minimal Enquiry */}
                 {selectedOptionId === "Spa & Wellness" && (
                   <div className="space-y-4">
@@ -1384,40 +1331,33 @@ function DedicatedSpecialServicesPage() {
                 {/* 9. Air Ticketing Minimal Enquiry */}
                 {selectedOptionId === "Air Ticketing Services" && (
                   <div className="space-y-4">
-                    {/* Airports */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
                           Departure Airport / City *
                         </label>
-                        <IntelligentAirportAutocomplete
-                          mode="global"
+                        <input
+                          type="text"
                           value={ticketOrigin}
-                          placeholder=""
-                          inputClassName="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
-                          showIcon={false}
-                          onSelect={(ap) => setTicketOrigin(formatAirportOption(ap))}
-                          onChangeText={(txt) => setTicketOrigin(txt)}
+                          onChange={(e) => setTicketOrigin(e.target.value)}
+                          required
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
                       <div>
                         <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
                           Destination Airport / City *
                         </label>
-                        <IntelligentAirportAutocomplete
-                          mode="global"
+                        <input
+                          type="text"
                           value={ticketDest}
-                          placeholder=""
-                          inputClassName="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
-                          showIcon={false}
-                          onSelect={(ap) => setTicketDest(formatAirportOption(ap))}
-                          onChangeText={(txt) => setTicketDest(txt)}
+                          onChange={(e) => setTicketDest(e.target.value)}
+                          required
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
                     </div>
-
-                    {/* Travel Date, Cabin Class & Passengers Count (Separated) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
                           Travel Date(s) *
@@ -1427,54 +1367,68 @@ function DedicatedSpecialServicesPage() {
                           value={ticketDate}
                           onChange={(e) => setTicketDate(e.target.value)}
                           required
-                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
                       <div>
                         <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                          Cabin Class *
+                          Cabin & Passengers *
                         </label>
                         <select
                           value={ticketClass}
                           onChange={(e) => setTicketClass(e.target.value)}
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
                         >
-                          <option value="Economy Class">Economy Class</option>
-                          <option value="Premium Economy">Premium Economy</option>
+                          <option value="Economy Class (1-2 Pax)">Economy Class (1-2 Pax)</option>
+                          <option value="Economy Class (3+ Pax)">Economy Class (3+ Pax)</option>
                           <option value="Business Class">Business Class</option>
                           <option value="First Class">First Class</option>
                         </select>
                       </div>
-                      <div>
-                        <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                          Passengers Count *
-                        </label>
-                        <input
-                          type="number"
-                          min={1}
-                          max={50}
-                          value={ticketPax}
-                          onChange={(e) => setTicketPax(Math.max(1, parseInt(e.target.value) || 1))}
-                          required
-                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Specific Notes / Preferences */}
-                    <div>
-                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Specific Flight or Airline Preference (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={ticketNotes}
-                        onChange={(e) => setTicketNotes(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
-                      />
                     </div>
                   </div>
                 )}
+
+                {/* Common Contact Details */}
+                <div className="pt-4 border-t border-slate-100">
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-lime-700 block mb-2.5">
+                    Your Contact Details (For Fast Response)
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Full Name *</label>
+                      <input
+                        type="text"
+                        value={clientName}
+                        onChange={(e) => setClientName(e.target.value)}
+                        required
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Phone / WhatsApp *</label>
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Email Address *</label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+                      />
+                    </div>
+                  </div>
+                </div>
 
                 {/* Action Buttons: Fast WhatsApp + Direct Lead Submit */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3">
@@ -1595,8 +1549,6 @@ function DedicatedSpecialServicesPage() {
 
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

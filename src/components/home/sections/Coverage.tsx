@@ -42,7 +42,7 @@ export function Coverage() {
             {[
               ["20+", "Indian Hubs"],
               ["24/7", "Live Dispatch"],
-              ["Very Quick", "Response"],
+              ["< 12m", "Avg. Response"],
               ["Domestic + Intl", "Full Clearance"],
             ].map(([v, l], i) => (
               <motion.div

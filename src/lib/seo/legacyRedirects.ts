@@ -8,7 +8,11 @@ import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
  * 2. Unmapped / unknown legacy URLs (like /wp-admin, /feed, /author/*) MUST NOT redirect to homepage.
  * 3. Never use a catch-all redirect.
  */
-export const VERIFIED_LEGACY_REDIRECTS: Record<string, string> = {
+/**
+ * TIER 1: CONFIRMED LEGACY REDIRECTS
+ * Directly verified from the legacy WordPress site structure and audit report.
+ */
+export const CONFIRMED_LEGACY_REDIRECTS: Record<string, string> = {
   // Brand & company pages
   "/about-us": "/about-us",
   "/about-us/": "/about-us",
@@ -19,6 +23,22 @@ export const VERIFIED_LEGACY_REDIRECTS: Record<string, string> = {
   // Hub & coverage pages
   "/airports/": "/airports",
 
+  // Legal & compliance
+  "/privacy-policy/": "/privacy-policy",
+  "/terms-and-conditions/": "/terms-and-conditions",
+  "/cancellation-refund": "/cancellation-and-refund",
+  "/cancellation-refund/": "/cancellation-and-refund",
+  "/cancellation-and-refund/": "/cancellation-and-refund",
+};
+
+/**
+ * TIER 2: PENDING VERIFICATION FROM WORDPRESS EXPORT & SEARCH CONSOLE
+ * Common WordPress permalink slug variants for core services.
+ * NOTE: These are provisional heuristic mappings based on previous site service names.
+ * Final confirmation requires cross-referencing the real WordPress XML export / DB dump
+ * and Google Search Console historical crawl data.
+ */
+export const PENDING_VERIFICATION_LEGACY_REDIRECTS: Record<string, string> = {
   // Services: Meet & Greet / VIP Concierge
   "/meet-and-greet": "/solutions/concierge",
   "/meet-and-greet/": "/solutions/concierge",
@@ -51,13 +71,14 @@ export const VERIFIED_LEGACY_REDIRECTS: Record<string, string> = {
   "/special-services/": "/solutions/special-services",
   "/services/special-services": "/solutions/special-services",
   "/services/special-services/": "/solutions/special-services",
+};
 
-  // Legal & compliance
-  "/privacy-policy/": "/privacy-policy",
-  "/terms-and-conditions/": "/terms-and-conditions",
-  "/cancellation-refund": "/cancellation-and-refund",
-  "/cancellation-refund/": "/cancellation-and-refund",
-  "/cancellation-and-refund/": "/cancellation-and-refund",
+/**
+ * Active legacy mapping table combining confirmed and provisional service mappings.
+ */
+export const VERIFIED_LEGACY_REDIRECTS: Record<string, string> = {
+  ...CONFIRMED_LEGACY_REDIRECTS,
+  ...PENDING_VERIFICATION_LEGACY_REDIRECTS,
 };
 
 /**

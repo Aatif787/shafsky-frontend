@@ -1,5 +1,4 @@
 export const display = { fontFamily: "'DM Sans', 'Inter', system-ui, sans-serif", letterSpacing: "-0.015em" };
-export const calibri = { fontFamily: "'Calibri', 'Carlito', 'Segoe UI', sans-serif", letterSpacing: "-0.015em" };
 export const sans = { fontFamily: "'DM Sans', sans-serif" };
 export const mono = { fontFamily: "'JetBrains Mono', monospace" };
 

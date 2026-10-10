@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { ShieldCheck, Globe2, Users, Clock } from "lucide-react";
-import { mono, calibri } from "../theme";
+import { mono, display } from "../theme";
 
 function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
   const [v, setV] = useState(0);
@@ -27,34 +27,25 @@ function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
   }, [inView, end]);
 
   return (
-    <span ref={ref} className="inline-flex items-baseline" style={calibri}>
+    <span ref={ref} className="inline-flex items-baseline font-serif" style={display}>
       <span className="font-bold tracking-tight text-slate-950">{v.toLocaleString()}</span>
-      <span className="text-2xl sm:text-3xl font-extrabold text-lime-600 ml-1" style={calibri}>{suffix}</span>
+      <span className="text-2xl sm:text-3xl font-extrabold text-lime-600 ml-1 font-sans">{suffix}</span>
     </span>
   );
 }
 
 export function TrustBar() {
-  type Stat = {
-    n?: number;
-    suf?: string;
-    bigText?: string;
-    l: string;
-    sub?: string;
-    Icon: typeof ShieldCheck;
-  };
-
-  const stats: Stat[] = [
-    { n: 100, suf: "%", l: "Reliability", Icon: ShieldCheck },
+  const stats = [
+    { n: 100, suf: "%", l: "Reliability", sub: "DGCA compliant airside safety record", Icon: ShieldCheck },
     { n: 20, suf: "+", l: "Airports", sub: "Live Indian hub operations", Icon: Globe2 },
     { n: 42000, suf: "+", l: "Guests", sub: "Welcomed across our network", Icon: Users },
-    { bigText: "Very Quick", l: "Response", sub: "We respond very quickly", Icon: Clock },
+    { n: 12, suf: "min", l: "Response", sub: "Average 24/7 support response", Icon: Clock },
   ];
 
   return (
     <section className="relative px-6 py-12 md:px-14 md:py-16 bg-white border-y border-slate-100">
       <div className="mx-auto grid max-w-[1480px] grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
-        {stats.map(({ n, suf, l, sub, bigText, Icon }, i) => {
+        {stats.map(({ n, suf, l, sub, Icon }, i) => {
           // Dynamic entrance from sides and corners:
           // Card 0: from top-left corner
           // Card 1: from bottom-left corner
@@ -88,16 +79,7 @@ export function TrustBar() {
               </div>
 
               <div className="text-3xl sm:text-4xl md:text-5xl leading-none">
-                {bigText ? (
-                  <span
-                    className="font-bold tracking-tight text-slate-950 text-2xl sm:text-3xl md:text-4xl leading-none"
-                    style={calibri}
-                  >
-                    {bigText}
-                  </span>
-                ) : (
-                  <Counter end={n ?? 0} suffix={suf} />
-                )}
+                <Counter end={n} suffix={suf} />
               </div>
 
               <div
@@ -107,11 +89,9 @@ export function TrustBar() {
                 {l}
               </div>
 
-              {sub ? (
-                <div className="mt-1 text-xs text-slate-600 font-normal">
-                  {sub}
-                </div>
-              ) : null}
+              <div className="mt-1 text-xs text-slate-600 font-normal">
+                {sub}
+              </div>
             </div>
           </motion.div>
           );
