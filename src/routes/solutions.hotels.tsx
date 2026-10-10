@@ -243,11 +243,6 @@ function DedicatedLuxuryHotelsPage() {
               <ArrowLeft size={14} />
               <span>Back</span>
             </button>
-
-            <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-lime-300 uppercase tracking-widest bg-black/50 px-3.5 py-1.5 rounded-full backdrop-blur-md border border-white/20 shadow-sm pointer-events-auto">
-              <span className="w-2 h-2 rounded-full bg-lime-400 inline-block animate-pulse" />
-              <span>VIP ACCOMMODATIONS & PALACE RESORTS</span>
-            </div>
           </div>
 
           {/* Clean Overlay: COMFORT & LUXURY / HOTELS / BOOK NOW */}
