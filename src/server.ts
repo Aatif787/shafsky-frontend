@@ -5,6 +5,8 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
+import { resolveServerRedirect } from "./lib/seo/legacyRedirects";
+
 const resendApiKey = process.env.RESEND_API_KEY;
 const emailFrom = process.env.EMAIL_FROM || process.env.RESEND_FROM_EMAIL;
 const emailReplyTo = process.env.EMAIL_REPLY_TO;
@@ -92,6 +94,18 @@ export default {
       request.headers.get("cf-connecting-ip") ||
       request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
       "127.0.0.1";
+
+    const hostHeader = request.headers.get("x-forwarded-host") || request.headers.get("host");
+    const redirectUrl = resolveServerRedirect(request.url, hostHeader);
+    if (redirectUrl) {
+      return new Response(null, {
+        status: 301,
+        headers: {
+          Location: redirectUrl,
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    }
 
     const url = new URL(request.url);
     const isFlightValidate = url.pathname === "/api/flight/validate";

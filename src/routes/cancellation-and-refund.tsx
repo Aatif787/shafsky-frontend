@@ -1,16 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/cancellation-and-refund")({
-  head: () => ({
-    meta: [
-      { title: "Cancellation and Refund Policy | Shafsky Aviation Services Pvt. Ltd." },
-      {
-        name: "description",
-        content:
-          "Cancellations and Refund policy applicable for Shafsky Aviation Meet and Greet Services across 10+ airports in India.",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "Cancellation and Refund Policy | Shafsky Aviation Services Pvt. Ltd.",
+      description:
+        "Cancellations and Refund policy applicable for Shafsky Aviation Meet and Greet Services across 10+ airports in India.",
+      path: "/cancellation-and-refund",
+    }),
   component: CancellationAndRefundPage,
 });
 

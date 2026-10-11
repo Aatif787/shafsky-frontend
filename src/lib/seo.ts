@@ -97,8 +97,6 @@ export function pageHead({
     ],
     links: [
       { rel: "canonical", href: url },
-      { rel: "alternate", hrefLang: "en-IN", href: inAbsoluteUrl(path) },
-      { rel: "alternate", hrefLang: "x-default", href: url },
     ],
     scripts: jsonLd.map(jsonLdScript),
   };
@@ -122,7 +120,7 @@ export function organizationJsonLd() {
     email: CONTACT.EMAIL,
     areaServed: { "@type": "Country", name: "India" },
     address: { "@type": "PostalAddress", ...HQ_ADDRESS },
-    sameAs: [...SOCIAL_LINKS.map((s) => s.href).filter(Boolean), BUSINESS.IN_URL],
+    sameAs: SOCIAL_LINKS.map((s) => s.href).filter(Boolean),
     contactPoint: [
       {
         "@type": "ContactPoint",
@@ -178,7 +176,7 @@ export function localBusinessJsonLd() {
       opens: "00:00",
       closes: "23:59",
     },
-    sameAs: [...SOCIAL_LINKS.map((s) => s.href).filter(Boolean), BUSINESS.IN_URL],
+    sameAs: SOCIAL_LINKS.map((s) => s.href).filter(Boolean),
     parentOrganization: { "@id": `${BUSINESS.BASE_URL}/#organization` },
   };
 }
@@ -192,7 +190,7 @@ export function websiteJsonLd() {
     url: BUSINESS.BASE_URL,
     inLanguage: "en-IN",
     publisher: { "@id": `${BUSINESS.BASE_URL}/#organization` },
-    sameAs: [BUSINESS.IN_URL],
+    sameAs: SOCIAL_LINKS.map((s) => s.href).filter(Boolean),
     potentialAction: {
       "@type": "SearchAction",
       target: {

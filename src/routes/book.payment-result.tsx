@@ -5,6 +5,8 @@ import { ApiClient } from "@/lib/ApiClient";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/home/sections/Footer";
 
+import { pageHead } from "@/lib/seo";
+
 const searchSchema = z.object({
   ref: z.string().optional().catch(""),
   status: z.string().optional().catch(""),
@@ -13,6 +15,13 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/book/payment-result")({
   validateSearch: searchSchema,
+  head: () =>
+    pageHead({
+      title: "Booking Payment Result | Shafsky Aviation",
+      description: "Payment verification status for your Shafsky Aviation booking.",
+      path: "/book/payment-result",
+      robots: "noindex, nofollow",
+    }),
   component: PaymentResultPage,
 });
 
