@@ -8,18 +8,29 @@ import {
 import serverEntry from "@/server";
 
 describe("Domain Migration Server Redirects", () => {
-  describe("Host Normalization (.in and www to .com)", () => {
-    it("redirects shafskyaviation.in root to https://shafskyaviation.com/", () => {
-      const redirect = resolveServerRedirect("http://shafskyaviation.in/", "shafskyaviation.in");
-      expect(redirect).toBe("https://shafskyaviation.com/");
+  describe("Host Normalization (Serving .in and .com, www to apex)", () => {
+    it("serves shafskyaviation.in directly without redirect (resolveServerRedirect returns null)", () => {
+      const redirect = resolveServerRedirect(
+        "https://shafskyaviation.in/",
+        "shafskyaviation.in"
+      );
+      expect(redirect).toBeNull();
     });
 
-    it("redirects https://shafskyaviation.in/airports to https://shafskyaviation.com/airports", () => {
+    it("serves https://shafskyaviation.in/airports directly without redirect", () => {
       const redirect = resolveServerRedirect(
         "https://shafskyaviation.in/airports",
         "shafskyaviation.in"
       );
-      expect(redirect).toBe("https://shafskyaviation.com/airports");
+      expect(redirect).toBeNull();
+    });
+
+    it("redirects www.shafskyaviation.in to https://shafskyaviation.in/", () => {
+      const redirect = resolveServerRedirect(
+        "https://www.shafskyaviation.in/",
+        "www.shafskyaviation.in"
+      );
+      expect(redirect).toBe("https://shafskyaviation.in/");
     });
 
     it("redirects www.shafskyaviation.com to https://shafskyaviation.com/", () => {
@@ -30,20 +41,36 @@ describe("Domain Migration Server Redirects", () => {
       expect(redirect).toBe("https://shafskyaviation.com/");
     });
 
-    it("redirects www.shafskyaviation.in to https://shafskyaviation.com/", () => {
+    it("redirects http://shafskyaviation.in/ to https://shafskyaviation.in/", () => {
       const redirect = resolveServerRedirect(
-        "https://www.shafskyaviation.in/",
-        "www.shafskyaviation.in"
+        "http://shafskyaviation.in/",
+        "shafskyaviation.in"
+      );
+      expect(redirect).toBe("https://shafskyaviation.in/");
+    });
+
+    it("redirects http://shafskyaviation.com/ to https://shafskyaviation.com/", () => {
+      const redirect = resolveServerRedirect(
+        "http://shafskyaviation.com/",
+        "shafskyaviation.com"
       );
       expect(redirect).toBe("https://shafskyaviation.com/");
     });
 
-    it("preserves query strings during host normalization", () => {
-      const redirect = resolveServerRedirect(
-        "https://shafskyaviation.in/book?service=meet-greet&pax=2&airport=DEL",
-        "shafskyaviation.in"
+    it("preserves query strings during www to apex host normalization", () => {
+      const redirectIn = resolveServerRedirect(
+        "https://www.shafskyaviation.in/book?service=meet-greet&pax=2&airport=DEL",
+        "www.shafskyaviation.in"
       );
-      expect(redirect).toBe(
+      expect(redirectIn).toBe(
+        "https://shafskyaviation.in/book?service=meet-greet&pax=2&airport=DEL"
+      );
+
+      const redirectCom = resolveServerRedirect(
+        "https://www.shafskyaviation.com/book?service=meet-greet&pax=2&airport=DEL",
+        "www.shafskyaviation.com"
+      );
+      expect(redirectCom).toBe(
         "https://shafskyaviation.com/book?service=meet-greet&pax=2&airport=DEL"
       );
     });
@@ -77,6 +104,29 @@ describe("Domain Migration Server Redirects", () => {
         resolveServerRedirect(
           "https://shafskyaviation.com/contact",
           "shafskyaviation.com"
+        )
+      ).toBeNull();
+    });
+
+    it("does NOT redirect canonical public routes on shafskyaviation.in", () => {
+      expect(
+        resolveServerRedirect(
+          "https://shafskyaviation.in/solutions/concierge",
+          "shafskyaviation.in"
+        )
+      ).toBeNull();
+
+      expect(
+        resolveServerRedirect(
+          "https://shafskyaviation.in/airports/DEL",
+          "shafskyaviation.in"
+        )
+      ).toBeNull();
+
+      expect(
+        resolveServerRedirect(
+          "https://shafskyaviation.in/contact",
+          "shafskyaviation.in"
         )
       ).toBeNull();
     });
@@ -177,7 +227,7 @@ describe("Domain Migration Server Redirects", () => {
         "shafskyaviation.in"
       );
       expect(redirect).toBe(
-        "https://shafskyaviation.com/solutions/concierge?utm_source=google&pax=3"
+        "https://shafskyaviation.in/solutions/concierge?utm_source=google&pax=3"
       );
     });
 
@@ -185,6 +235,14 @@ describe("Domain Migration Server Redirects", () => {
       const redirect = resolveServerRedirect(
         "https://www.shafskyaviation.in/airport-transfers/",
         "www.shafskyaviation.in"
+      );
+      expect(redirect).toBe("https://shafskyaviation.in/solutions/transport");
+    });
+
+    it("resolves www.shafskyaviation.com and legacy path in a single hop", () => {
+      const redirect = resolveServerRedirect(
+        "https://www.shafskyaviation.com/airport-transfers/",
+        "www.shafskyaviation.com"
       );
       expect(redirect).toBe("https://shafskyaviation.com/solutions/transport");
     });
@@ -246,13 +304,23 @@ describe("Domain Migration Server Redirects", () => {
   });
 
   describe("Server Fetch Entry Integration", () => {
-    it("returns HTTP 301 before SSR when incoming host is shafskyaviation.in", async () => {
+    it("returns HTTP 301 before SSR when incoming host is insecure http://shafskyaviation.in", async () => {
       const request = new Request("http://shafskyaviation.in/airports", {
         headers: { Host: "shafskyaviation.in" },
       });
       const response = await serverEntry.fetch(request, {}, {});
       expect(response.status).toBe(301);
-      expect(response.headers.get("Location")).toBe("https://shafskyaviation.com/airports");
+      expect(response.headers.get("Location")).toBe("https://shafskyaviation.in/airports");
+      expect(response.headers.get("Cache-Control")).toContain("public");
+    });
+
+    it("returns HTTP 301 before SSR when incoming host is www.shafskyaviation.in", async () => {
+      const request = new Request("https://www.shafskyaviation.in/airports", {
+        headers: { Host: "www.shafskyaviation.in" },
+      });
+      const response = await serverEntry.fetch(request, {}, {});
+      expect(response.status).toBe(301);
+      expect(response.headers.get("Location")).toBe("https://shafskyaviation.in/airports");
       expect(response.headers.get("Cache-Control")).toContain("public");
     });
 

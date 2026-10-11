@@ -36,6 +36,25 @@ function Deferred({
 }
 
 export function Hero({ visible = true }: { visible?: boolean }) {
+  React.useEffect(() => {
+    const handleHashScroll = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        const id = hash.replace("#", "");
+        const el = document.getElementById(id);
+        if (el) {
+          setTimeout(() => {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 100);
+        }
+      }
+    };
+
+    handleHashScroll();
+    window.addEventListener("hashchange", handleHashScroll);
+    return () => window.removeEventListener("hashchange", handleHashScroll);
+  }, []);
+
   return (
     <div
       className="sticky-safe relative min-h-screen"
@@ -52,9 +71,11 @@ export function Hero({ visible = true }: { visible?: boolean }) {
       </Deferred>
 
       {/* 2. OUR SERVICES: Core Aviation & Hospitality Suite */}
-      <Deferred height={720}>
-        <EnterpriseSolutions />
-      </Deferred>
+      <div id="services" className="scroll-mt-24">
+        <Deferred height={720}>
+          <EnterpriseSolutions />
+        </Deferred>
+      </div>
 
       {/* 3. VIP GUEST TESTIMONIALS: Celebrities, Cricketers & Leaders */}
       <Deferred height={680}>

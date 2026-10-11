@@ -122,7 +122,6 @@ export function EnterpriseSolutions() {
 
   return (
     <section
-      id="services"
       className="relative px-4 pt-8 pb-16 sm:px-8 sm:pt-12 sm:pb-24 md:px-10 lg:px-12 md:pt-14 md:pb-28 bg-white text-slate-900 overflow-hidden border-b border-slate-200"
     >
       <div className="mx-auto max-w-[1560px]">

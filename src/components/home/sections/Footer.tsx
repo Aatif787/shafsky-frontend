@@ -5,12 +5,11 @@ import { Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
 import { ICICI_REVIEW_MODE } from "../../../lib/config/reviewMode";
 
 export function Footer() {
-  const allQuickLinks = [
+  const allQuickLinks: { label: string; href: string; hash?: string }[] = [
     { label: "About us", href: "/about-us" },
     { label: "Contact us", href: "/contact" },
     { label: "My account", href: "/auth" },
-    { label: "Our services", href: "/solutions/concierge" },
-    { label: "Hotels", href: "/hotels/airport-hotel" },
+    { label: "Our services", href: "/#services", hash: "services" },
     { label: "Blog", href: "/services/guide" },
     { label: "Wishlist", href: "/book" },
     { label: "Privacy policy", href: "/privacy-policy" },
@@ -107,12 +106,32 @@ export function Footer() {
               <ul className="space-y-1.5 text-sm sm:text-[14.5px]">
                 {quickLinks.map((link, idx) => (
                   <li key={idx}>
-                    <Link
-                      to={link.href}
-                      className="text-white/95 hover:text-[#cca028] transition-colors duration-150 inline-block py-0.5"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.hash === "services" ? (
+                      <a
+                        href="/#services"
+                        onClick={(e) => {
+                          if (typeof window !== "undefined" && window.location.pathname === "/") {
+                            e.preventDefault();
+                            const el = document.getElementById("services");
+                            if (el) {
+                              el.scrollIntoView({ behavior: "smooth", block: "start" });
+                            }
+                            window.history.replaceState(null, "", "/#services");
+                          }
+                        }}
+                        className="text-white/95 hover:text-[#cca028] transition-colors duration-150 inline-block py-0.5 cursor-pointer"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        hash={link.hash}
+                        className="text-white/95 hover:text-[#cca028] transition-colors duration-150 inline-block py-0.5"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

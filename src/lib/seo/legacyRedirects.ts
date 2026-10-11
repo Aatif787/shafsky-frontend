@@ -102,10 +102,19 @@ export const CANONICAL_HOST = "shafskyaviation.com";
 export const CANONICAL_ORIGIN = `https://${CANONICAL_HOST}`;
 
 const REDIRECT_HOSTS = new Set([
-  "shafskyaviation.in",
   "www.shafskyaviation.in",
   "www.shafskyaviation.com",
 ]);
+
+const APEX_SERVED_HOSTS = new Set([
+  CANONICAL_HOST,
+  "shafskyaviation.in",
+]);
+
+const WWW_TO_APEX_HOSTS: Record<string, string> = {
+  "www.shafskyaviation.in": "shafskyaviation.in",
+  "www.shafskyaviation.com": "shafskyaviation.com",
+};
 
 // Build set of valid uppercase airport codes from registry
 const VALID_AIRPORT_CODES = new Set(
@@ -114,8 +123,8 @@ const VALID_AIRPORT_CODES = new Set(
 
 /**
  * Resolves whether a request needs an HTTP 301 redirect to normalize:
- * 1. Hostname (.in or www.* -> shafskyaviation.com)
- * 2. Protocol (http -> https on production hosts)
+ * 1. Hostname (www.shafskyaviation.in -> shafskyaviation.in, www.shafskyaviation.com -> shafskyaviation.com; both apex domains serve directly with no cross-domain redirect)
+ * 2. Protocol (http -> https on apex serving domains and www redirect hosts)
  * 3. Verified legacy WordPress routes
  * 4. Airport route casing and trailing slashes (/airports/del/ -> /airports/DEL)
  * 5. General trailing slashes (except root /)
@@ -134,12 +143,11 @@ export function resolveServerRedirect(
   const hostname = rawHost.split(":")[0].toLowerCase();
 
   const isProductionRedirectHost = REDIRECT_HOSTS.has(hostname);
-  const isCanonicalHost = hostname === CANONICAL_HOST;
+  const isApexHost = APEX_SERVED_HOSTS.has(hostname);
 
-  // If host is neither a known redirect host nor canonical, only apply path rewrites
-  // if on localhost/preview (or preserve local host)
-  const targetHost = isProductionRedirectHost ? CANONICAL_HOST : hostname;
-  const targetProtocol = isProductionRedirectHost ? "https:" : url.protocol;
+  const targetHost = isProductionRedirectHost
+    ? WWW_TO_APEX_HOSTS[hostname]
+    : hostname;
 
   const rawPath = url.pathname;
 
@@ -167,18 +175,19 @@ export function resolveServerRedirect(
   }
 
   // Determine if redirect is required
-  const hostChanged = isProductionRedirectHost && hostname !== CANONICAL_HOST;
+  const hostChanged = isProductionRedirectHost && hostname !== targetHost;
+  const protocolChanged = (isProductionRedirectHost || isApexHost) && url.protocol === "http:";
   const pathChanged = targetPath !== rawPath;
 
-  if (!hostChanged && !pathChanged) {
+  if (!hostChanged && !protocolChanged && !pathChanged) {
     return null; // Already canonical, no redirect needed
   }
 
   // Construct target URL
   const destination = new URL(url.toString());
-  if (isProductionRedirectHost || isCanonicalHost) {
+  if (isProductionRedirectHost || isApexHost) {
     destination.protocol = "https:";
-    destination.host = CANONICAL_HOST;
+    destination.host = targetHost;
   }
   destination.pathname = targetPath;
   destination.search = url.search; // Preserves query string exactly
