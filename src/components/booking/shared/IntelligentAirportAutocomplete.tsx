@@ -236,7 +236,7 @@ export function IntelligentAirportAutocomplete({
         ? UNSUPPORTED_MESSAGE
         : "No configured airports found."
       : (inputValue || "").trim()
-        ? "No matching airports found in airports.csv"
+        ? "No matching airports found."
         : "Search an airport name, city or 3-letter IATA code...";
 
   const renderIcon =
@@ -286,9 +286,8 @@ export function IntelligentAirportAutocomplete({
             }}
           >
             {mode === "global" && (
-              <div className="flex items-center justify-between px-3.5 py-1.5 bg-slate-50/90 border-b border-slate-100 text-[10px] font-mono text-slate-500 uppercase tracking-wider sticky top-0 z-10 backdrop-blur-xs">
-                <span>Airport Suggestions</span>
-                <span className="text-lime-700 font-bold">airports.csv</span>
+              <div className="px-3.5 py-1.5 bg-slate-50/90 border-b border-slate-100 text-[10px] font-mono text-slate-500 uppercase tracking-wider sticky top-0 z-10 backdrop-blur-xs">
+                Airport Suggestions
               </div>
             )}
             {loading ? (

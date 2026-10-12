@@ -245,7 +245,7 @@ export function useAirportPayment({
                 package: packageByService[st] || "silver",
               }))
         ) as any,
-        notes: "Customer requested airport concierge arrangement.",
+        notes: "Customer requested airport service arrangement.",
       });
 
       setServiceQuerySuccessRef(qRes.query_ref);
