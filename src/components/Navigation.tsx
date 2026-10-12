@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { getSessionInfo } from "@/lib/session";
 import { AuthContext } from "@/auth-system/AuthProvider";
@@ -15,6 +15,8 @@ import {
   ArrowLeft,
   User,
   LogIn,
+  MapPin,
+  Image as ImageIcon,
 } from "lucide-react";
 import { useBranding } from "@/lib/branding/branding.context";
 import { mono } from "@/components/home/theme";
@@ -111,6 +113,8 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [roles, setRoles] = useState<string[]>([]);
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(64);
 
   const auth = useContext(AuthContext);
   const authUser = auth?.user;
@@ -186,10 +190,58 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     setMobileOpen(false);
   }, [location.pathname]);
 
+  // Dynamically update header height for mobile drawer positioning
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight);
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, [scrolled, mobileOpen]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  const getItemIcon = (label: string) => {
+    switch (label) {
+      case "Meet & Greet & Lounge":
+        return Crown;
+      case "Transport":
+        return Car;
+      case "Hotel":
+        return Hotel;
+      case "Private Charter":
+        return Plane;
+      case "Ticketing":
+        return Ticket;
+      case "Airports":
+        return MapPin;
+      case "Gallery":
+        return ImageIcon;
+      case "Contact":
+        return PhoneCall;
+      default:
+        return null;
+    }
+  };
+
   if (!visible) return null;
 
   return (
     <header
+      ref={headerRef}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
           ? "apple-glass-navbar-scrolled py-2 sm:py-2.5"
@@ -335,7 +387,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
         </div>
       </div>
 
-      {/* Mobile Drawer (No mega-menu, direct responsive links) */}
+      {/* Mobile Drawer (Direct responsive links) */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -343,19 +395,21 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:hidden apple-glass-drawer fixed inset-x-0 top-full h-[calc(100vh-70px)] p-6 flex flex-col justify-between overflow-y-auto z-50 shadow-2xl"
+            style={{ top: `${headerHeight}px` }}
+            className="lg:hidden apple-glass-drawer fixed inset-x-0 top-16 sm:top-[72px] bottom-0 p-6 flex flex-col justify-between overflow-y-auto z-50 shadow-2xl"
           >
             <div className="space-y-4">
               <div
                 className="text-[10px] uppercase tracking-[0.3em] text-[#0a196f] font-bold pb-2 border-b border-slate-200"
                 style={mono}
               >
-                Navigation Menu
+                Services &amp; Navigation
               </div>
 
               <div className="flex flex-col gap-1">
                 {activeNavItems.map((item) => {
                   const isActive = isItemActive(item.href);
+                  const Icon = getItemIcon(item.label);
                   return (
                     <Link
                       key={item.label}
@@ -367,7 +421,16 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                           : "text-slate-800 hover:text-[#0a196f] hover:bg-slate-100/60"
                       }`}
                     >
-                      <span>{item.label}</span>
+                      <div className="flex items-center gap-2.5">
+                        {Icon && (
+                          <Icon
+                            size={16}
+                            className={isActive ? "text-[#0a196f]" : "text-slate-500"}
+                          />
+                        )}
+                        <span>{item.label}</span>
+                      </div>
+                      <ArrowRight size={13} className="text-slate-400 shrink-0" />
                     </Link>
                   );
                 })}
