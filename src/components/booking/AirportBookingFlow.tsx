@@ -215,7 +215,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   const initialPkgId = searchParams?.package_id || searchParams?.service_id || "gold";
   const [selectedPackageId, setSelectedPackageId] = useState<string>(initialPkgId);
   const [selectedPackageName, setSelectedPackageName] = useState<string>(
-    searchParams?.package_name || (initialPkgId ? `${initialPkgId.charAt(0).toUpperCase() + initialPkgId.slice(1)} Service` : "VIP Concierge Service")
+    searchParams?.package_name || (initialPkgId ? `${initialPkgId.charAt(0).toUpperCase() + initialPkgId.slice(1)} Service` : "VIP Airport Service")
   );
   const [selectedPackagePrice, setSelectedPackagePrice] = useState<string>(searchParams?.package_price || "");
 
@@ -375,24 +375,43 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
   // Only true when an itinerary contains strictly unsupported airports NOT covered in our database
   const isArrangementOnly = useMemo(() => {
-    if (!multiServiceResponse?.none_available) return false;
-    return selectedServices.some((st) => {
-      const sApt =
-        st === "DEPARTURE"
-          ? cleanOrigin || originCode || (direction === "departure" ? airportCode : "")
-          : st === "ARRIVAL"
-            ? cleanDest || destCode || (direction === "arrival" ? airportCode : "")
-            : cleanTransit || transitCode || searchParams?.transit || (direction === "transit" ? airportCode : "");
-      const sAptClean = (sApt || "").trim().toUpperCase();
-      const avail = multiServiceAvailability.find(
-        (a) => a.service_type === st && (!sAptClean || a.airport_code.toUpperCase() === sAptClean)
-      );
-      if (avail) {
-        return !avail.is_airport_supported;
-      }
-      return Boolean(sAptClean && !AIRPORT_REGISTRY[sAptClean] && sAptClean !== airportCode.toUpperCase());
-    });
-  }, [multiServiceResponse?.none_available, selectedServices, cleanOrigin, originCode, direction, airportCode, cleanDest, destCode, cleanTransit, transitCode, searchParams?.transit, multiServiceAvailability]);
+    if (multiServiceResponse) {
+      if (multiServiceResponse.none_available) return true;
+      const hasUnsupported = selectedServices.some((st) => {
+        const sApt =
+          st === "DEPARTURE"
+            ? cleanOrigin || originCode || (direction === "departure" ? airportCode : "")
+            : st === "ARRIVAL"
+              ? cleanDest || destCode || (direction === "arrival" ? airportCode : "")
+              : cleanTransit || transitCode || searchParams?.transit || (direction === "transit" ? airportCode : "");
+        const sAptClean = (sApt || "").trim().toUpperCase();
+        const avail = multiServiceAvailability.find(
+          (a) => a.service_type === st && (!sAptClean || a.airport_code.toUpperCase() === sAptClean)
+        );
+        return avail ? !avail.is_airport_supported : false;
+      });
+      if (hasUnsupported && !multiServiceResponse.any_available) return true;
+    }
+    if (!isPackagesLoading && availablePackages.length === 0 && airportCode) {
+      return true;
+    }
+    return false;
+  }, [
+    multiServiceResponse,
+    selectedServices,
+    cleanOrigin,
+    originCode,
+    direction,
+    airportCode,
+    cleanDest,
+    destCode,
+    cleanTransit,
+    transitCode,
+    searchParams?.transit,
+    multiServiceAvailability,
+    isPackagesLoading,
+    availablePackages.length,
+  ]);
 
   // Mumbai Airport Express Fee rule
   const expressFeeDetails = useMemo(() => {
@@ -457,16 +476,17 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     baseInrTotalPrice,
   ]);
 
-  const expressFeeInr = expressFeeDetails.feeInr;
-  const isExpressFeeApplicable = expressFeeDetails.isApplicable;
+  const expressFeeInr = isArrangementOnly ? 0 : expressFeeDetails.feeInr;
+  const isExpressFeeApplicable = isArrangementOnly ? false : expressFeeDetails.isApplicable;
   const isMultiService = selectedServices.length > 1;
-  const effectiveBaseInrTotalPrice =
-    isMultiService && multiServiceResponse
-      ? multiServiceResponse.total_payable
-      : baseInrTotalPrice;
-  const totalPrice = effectiveBaseInrTotalPrice + expressFeeInr;
+  const effectiveBaseInrTotalPrice = isArrangementOnly
+    ? 0
+    : isMultiService && multiServiceResponse
+    ? multiServiceResponse.total_payable
+    : baseInrTotalPrice;
+  const totalPrice = isArrangementOnly ? 0 : effectiveBaseInrTotalPrice + expressFeeInr;
   const convertedExpressFee = useMemo(() => convertFromINR(expressFeeInr, selectedCurrency), [expressFeeInr, selectedCurrency]);
-  const convertedTotalPrice = useMemo(() => convertFromINR(totalPrice, selectedCurrency), [totalPrice, selectedCurrency]);
+  const convertedTotalPrice = useMemo(() => (isArrangementOnly ? 0 : convertFromINR(totalPrice, selectedCurrency)), [isArrangementOnly, totalPrice, selectedCurrency]);
 
   // Dynamic Multi-Passenger State
   const [passengers, setPassengers] = useState<PassengerDetail[]>(() => {
@@ -709,7 +729,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
           airportCode={airportCode}
         />
       ) : (
-        <form onSubmit={paymentHook.handleProceedToPayment} className="space-y-6">
+        <form
+          onSubmit={isArrangementOnly ? paymentHook.handleRequestServiceArrangement : paymentHook.handleProceedToPayment}
+          className="space-y-6"
+        >
           {direction === "transit" ? (
             <TransitFlightDetailsSection
               airportCityName={airportCityName}

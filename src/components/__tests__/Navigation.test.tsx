@@ -106,4 +106,10 @@ describe("Navigation navbar (Direct Individual Links)", () => {
     expect(PRIMARY_SERVICES).toHaveLength(5);
     expect(PRIMARY_SERVICES[0].href).toBe("/solutions/concierge");
   });
+
+  it("renders mobile menu toggle button with accessible label", () => {
+    const html = renderToString(React.createElement(Navigation, { visible: true }));
+    expect(html).toContain('aria-label="Toggle menu"');
+  });
 });
+

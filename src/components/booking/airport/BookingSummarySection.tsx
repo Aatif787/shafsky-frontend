@@ -1,5 +1,5 @@
 import React from "react";
-import { ShieldCheck, Lock, MessageSquare, Loader2, Send, ArrowRight, RefreshCw } from "lucide-react";
+import { ShieldCheck, Lock, MessageSquare, Loader2, Send, ArrowRight, RefreshCw, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { SUPPORTED_CURRENCIES, formatPrice, convertFromINR } from "@/lib/currency";
 import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
@@ -167,7 +167,7 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
 
             const itemPkg = isAvailable
               ? (availItem?.package_name || formatPkgName(packageByService[st]))
-              : "Concierge Arrangement";
+              : "Service Arrangement";
 
             return (
               <div
@@ -248,53 +248,70 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
       </div>
 
       {/* Price + payment row */}
-      <div className="rounded-2xl bg-sky-50/60 border border-sky-100 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="font-mono text-[10px] uppercase tracking-wider text-sky-600 font-bold block">Total Payable</span>
-          <div className="font-mono text-2xl sm:text-3xl font-black text-slate-950 mt-0.5">
-            {formatPrice(convertedTotalPrice, selectedCurrency)}
+      {isArrangementOnly ? (
+        <div className="rounded-2xl bg-amber-50/70 border border-amber-200 p-5 flex flex-col gap-2">
+          <div className="flex items-start sm:items-center gap-2 text-amber-950 font-bold text-sm">
+            <AlertCircle size={18} className="text-amber-700 shrink-0 mt-0.5 sm:mt-0" />
+            <span>This airport is not currently serviceable. Submit your request and our team will check availability.</span>
           </div>
-          <span className="text-[11px] text-slate-500">
-            {isArrangementOnly
-              ? "₹0 payable now — Our concierge team will arrange your requested services."
-              : `${formatPrice(convertedTotalPrice, selectedCurrency)} payable today for confirmed services`}
-            {isExpressFeeApplicable && (
-              <span className="text-amber-700 font-bold ml-1">
-                + {formatPrice(convertedExpressFee, selectedCurrency)} (50% Express Fee)
-              </span>
-            )}
-            {paxChildren + paxInfants > 0 && (
-              <span className="text-emerald-600 font-medium ml-1">
-                ({[
-                  paxChildren > 0 ? `${paxChildren} child${paxChildren > 1 ? "ren" : ""} free` : "",
-                  paxInfants > 0 ? `${paxInfants} infant${paxInfants > 1 ? "s" : ""} free` : "",
-                ].filter(Boolean).join(", ")})
-              </span>
-            )}
-            , taxes included
+          <span className="text-xs text-amber-800 pl-6 sm:pl-6.5">
+            Our team will review your request and contact you.
           </span>
-          {isExpressFeeApplicable && (
-            <div className="mt-2 flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-2.5 py-1 text-[11px] text-amber-900 font-medium">
-              <span>⚡ <strong>50% Express Fee Applied:</strong> Mumbai Airport booking under 24 hours before service start time.</span>
+        </div>
+      ) : (
+        <div className="rounded-2xl bg-sky-50/60 border border-sky-100 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span className="font-mono text-[10px] uppercase tracking-wider text-sky-600 font-bold block">Total Payable</span>
+            <div className="font-mono text-2xl sm:text-3xl font-black text-slate-950 mt-0.5">
+              {formatPrice(convertedTotalPrice, selectedCurrency)}
             </div>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          {["UPI", "Google Pay", "Cards", "NetBanking"].map((m) => (
-            <span key={m} className="rounded-lg border border-sky-200 bg-white px-2.5 py-1 font-mono text-[10px] font-bold text-sky-700">
-              {m}
+            <span className="text-[11px] text-slate-500">
+              {`${formatPrice(convertedTotalPrice, selectedCurrency)} payable today for confirmed services`}
+              {isExpressFeeApplicable && (
+                <span className="text-amber-700 font-bold ml-1">
+                  + {formatPrice(convertedExpressFee, selectedCurrency)} (50% Express Fee)
+                </span>
+              )}
+              {paxChildren + paxInfants > 0 && (
+                <span className="text-emerald-600 font-medium ml-1">
+                  ({[
+                    paxChildren > 0 ? `${paxChildren} child${paxChildren > 1 ? "ren" : ""} free` : "",
+                    paxInfants > 0 ? `${paxInfants} infant${paxInfants > 1 ? "s" : ""} free` : "",
+                  ].filter(Boolean).join(", ")})
+                </span>
+              )}
+              , taxes included
             </span>
-          ))}
+            {isExpressFeeApplicable && (
+              <div className="mt-2 flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-2.5 py-1 text-[11px] text-amber-900 font-medium">
+                <span>⚡ <strong>50% Express Fee Applied:</strong> Mumbai Airport booking under 24 hours before service start time.</span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            {["UPI", "Google Pay", "Cards", "NetBanking"].map((m) => (
+              <span key={m} className="rounded-lg border border-sky-200 bg-white px-2.5 py-1 font-mono text-[10px] font-bold text-sky-700">
+                {m}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Action buttons */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
-        <div className="text-xs text-slate-400 flex items-center gap-1.5">
-          <ShieldCheck size={14} className="text-lime-500" />
-          <span>Encrypted payment via Razorpay</span>
-        </div>
+        {isArrangementOnly ? (
+          <div className="text-xs text-amber-800 flex items-center gap-1.5 font-medium">
+            <Send size={14} className="text-amber-600" />
+            <span>Enquiry-only request • No advance payment</span>
+          </div>
+        ) : (
+          <div className="text-xs text-slate-400 flex items-center gap-1.5">
+            <ShieldCheck size={14} className="text-lime-500" />
+            <span>Encrypted payment via Razorpay</span>
+          </div>
+        )}
 
         <div className="w-full sm:w-auto flex items-center gap-2.5">
           <button
