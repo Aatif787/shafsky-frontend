@@ -5,7 +5,7 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
-import { resolveServerRedirect } from "./lib/seo/legacyRedirects";
+import { resolveServerRedirect, extractClientProtocol } from "./lib/seo/legacyRedirects";
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const emailFrom = process.env.EMAIL_FROM || process.env.RESEND_FROM_EMAIL;
@@ -96,13 +96,15 @@ export default {
       "127.0.0.1";
 
     const hostHeader = request.headers.get("x-forwarded-host") || request.headers.get("host");
-    const redirectUrl = resolveServerRedirect(request.url, hostHeader);
+    const protoHeader = extractClientProtocol(request.headers, request.url);
+    const redirectUrl = resolveServerRedirect(request.url, hostHeader, protoHeader);
     if (redirectUrl) {
       return new Response(null, {
         status: 301,
         headers: {
           Location: redirectUrl,
           "Cache-Control": "public, max-age=31536000, immutable",
+          Vary: "X-Forwarded-Proto, X-Forwarded-Host",
         },
       });
     }

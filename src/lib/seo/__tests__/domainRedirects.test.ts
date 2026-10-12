@@ -1,10 +1,18 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   resolveServerRedirect,
+  extractClientProtocol,
   VERIFIED_LEGACY_REDIRECTS,
   UNMAPPED_LEGACY_PATTERNS,
   CANONICAL_HOST,
 } from "../legacyRedirects";
+
+vi.mock("@tanstack/react-start/server-entry", () => ({
+  default: {
+    fetch: async () => new Response("OK", { status: 200 }),
+  },
+}));
+
 import serverEntry from "@/server";
 
 describe("Domain Migration Server Redirects", () => {
@@ -336,6 +344,297 @@ describe("Domain Migration Server Redirects", () => {
       expect(response.headers.get("Location")).toBe(
         "https://shafskyaviation.com/solutions/concierge?ref=partner"
       );
+    });
+
+    it("does NOT return 301 when HTTPS request reaches Node as HTTP behind Hostinger proxy (preventing ERR_TOO_MANY_REDIRECTS)", async () => {
+      // Simulates Hostinger CDN / reverse proxy terminating HTTPS and forwarding to Node over HTTP
+      const request = new Request("http://shafskyaviation.com/", {
+        headers: {
+          Host: "shafskyaviation.com",
+          "X-Forwarded-Proto": "https",
+          "X-Forwarded-Host": "shafskyaviation.com",
+        },
+      });
+      const response = await serverEntry.fetch(request, {}, {});
+      // Must NOT return a redirect loop response (status 301)
+      expect(response.status).toBe(200);
+      expect(await response.text()).toBe("OK");
+      expect(response.headers.get("X-Frame-Options")).toBe("DENY");
+    });
+
+    it("does NOT return 301 when HTTPS request reaches Node on 127.0.0.1 internal port behind proxy", async () => {
+      // Simulates proxy forwarding to Node upstream at 127.0.0.1:3000
+      const request = new Request("http://127.0.0.1:3000/airports/DEL", {
+        headers: {
+          Host: "127.0.0.1:3000",
+          "X-Forwarded-Host": "shafskyaviation.com",
+          "X-Forwarded-Proto": "https",
+        },
+      });
+      const response = await serverEntry.fetch(request, {}, {});
+      expect(response.status).toBe(200);
+      expect(await response.text()).toBe("OK");
+    });
+
+    it("returns 301 with Vary headers when genuinely insecure HTTP request is received", async () => {
+      const request = new Request("http://shafskyaviation.com/", {
+        headers: {
+          Host: "shafskyaviation.com",
+          "X-Forwarded-Proto": "http",
+        },
+      });
+      const response = await serverEntry.fetch(request, {}, {});
+      expect(response.status).toBe(301);
+      expect(response.headers.get("Location")).toBe("https://shafskyaviation.com/");
+      expect(response.headers.get("Vary")).toContain("X-Forwarded-Proto");
+      expect(response.headers.get("Vary")).toContain("X-Forwarded-Host");
+    });
+  });
+
+  describe("Client Protocol Extraction from Proxy Headers", () => {
+    it("extracts single x-forwarded-proto header", () => {
+      expect(extractClientProtocol({ "x-forwarded-proto": "https" })).toBe("https");
+      expect(extractClientProtocol({ "x-forwarded-proto": "http" })).toBe("http");
+      expect(extractClientProtocol(new Headers({ "x-forwarded-proto": "https" }))).toBe("https");
+    });
+
+    it("extracts leftmost proto from multi-hop comma-separated x-forwarded-proto", () => {
+      expect(extractClientProtocol({ "x-forwarded-proto": "https, http" })).toBe("https");
+      expect(extractClientProtocol({ "x-forwarded-proto": "http, https" })).toBe("http");
+      expect(extractClientProtocol({ "x-forwarded-proto": "https,https" })).toBe("https");
+    });
+
+    it("extracts scheme from Cloudflare cf-visitor JSON header", () => {
+      expect(extractClientProtocol({ "cf-visitor": '{"scheme":"https"}' })).toBe("https");
+      expect(extractClientProtocol({ "cf-visitor": '{"scheme":"http"}' })).toBe("http");
+    });
+
+    it("extracts https from x-forwarded-ssl: on", () => {
+      expect(extractClientProtocol({ "x-forwarded-ssl": "on" })).toBe("https");
+      expect(extractClientProtocol({ "x-forwarded-ssl": "ON" })).toBe("https");
+      expect(extractClientProtocol({ "x-forwarded-ssl": "1" })).toBe("https");
+    });
+
+    it("extracts https from front-end-https: on", () => {
+      expect(extractClientProtocol({ "front-end-https": "on" })).toBe("https");
+    });
+
+    it("extracts proto from x-url-scheme", () => {
+      expect(extractClientProtocol({ "x-url-scheme": "https" })).toBe("https");
+      expect(extractClientProtocol({ "x-url-scheme": "http" })).toBe("http");
+    });
+
+    it("extracts proto from RFC 7239 Forwarded header", () => {
+      expect(
+        extractClientProtocol({ forwarded: "for=192.0.2.60;proto=https;by=203.0.113.43" })
+      ).toBe("https");
+      expect(
+        extractClientProtocol({ forwarded: "proto=http" })
+      ).toBe("http");
+    });
+
+    it("falls back to URL scheme when headers are absent", () => {
+      expect(extractClientProtocol(null, "https://shafskyaviation.com/")).toBe("https");
+      expect(extractClientProtocol(null, "http://shafskyaviation.com/")).toBe("http");
+      expect(extractClientProtocol({}, "https://shafskyaviation.com/")).toBe("https");
+    });
+
+    it("defaults to http when neither headers nor URL are provided", () => {
+      expect(extractClientProtocol(null, null)).toBe("http");
+    });
+  });
+
+  describe("Reverse Proxy & Hostinger CDN HTTPS Requests (Loop Prevention)", () => {
+    it("does NOT redirect canonical https://shafskyaviation.com/ when reaching Node as HTTP with x-forwarded-proto: https", () => {
+      const redirect = resolveServerRedirect(
+        "http://shafskyaviation.com/",
+        "shafskyaviation.com",
+        "https"
+      );
+      expect(redirect).toBeNull();
+    });
+
+    it("does NOT redirect canonical routes when reaching Node as HTTP with x-forwarded-proto: https", () => {
+      expect(
+        resolveServerRedirect(
+          "http://shafskyaviation.com/solutions/concierge",
+          "shafskyaviation.com",
+          "https"
+        )
+      ).toBeNull();
+
+      expect(
+        resolveServerRedirect(
+          "http://shafskyaviation.com/airports/DEL",
+          "shafskyaviation.com",
+          "https"
+        )
+      ).toBeNull();
+
+      expect(
+        resolveServerRedirect(
+          "http://shafskyaviation.com/contact",
+          "shafskyaviation.com",
+          "https"
+        )
+      ).toBeNull();
+    });
+
+    it("does NOT redirect when internal URL is 127.0.0.1:3000 but x-forwarded-host is shafskyaviation.com and proto is https", () => {
+      const redirect = resolveServerRedirect(
+        "http://127.0.0.1:3000/",
+        "shafskyaviation.com",
+        "https"
+      );
+      expect(redirect).toBeNull();
+    });
+
+    it("does NOT redirect when multi-hop proxy sends x-forwarded-proto: https, http", () => {
+      const redirect = resolveServerRedirect(
+        "http://shafskyaviation.com/",
+        "shafskyaviation.com",
+        "https, http"
+      );
+      expect(redirect).toBeNull();
+    });
+
+    it("does NOT redirect when Headers object with cf-visitor scheme: https is passed", () => {
+      const headers = new Headers({
+        "cf-visitor": '{"scheme":"https"}',
+      });
+      const redirect = resolveServerRedirect(
+        "http://shafskyaviation.com/",
+        "shafskyaviation.com",
+        headers
+      );
+      expect(redirect).toBeNull();
+    });
+
+    it("does NOT redirect https://shafskyaviation.in/ when reaching Node as HTTP behind proxy", () => {
+      const redirect = resolveServerRedirect(
+        "http://shafskyaviation.in/",
+        "shafskyaviation.in",
+        "https"
+      );
+      expect(redirect).toBeNull();
+    });
+  });
+
+  describe("Insecure HTTP-to-HTTPS Upgrades Behind Proxy", () => {
+    it("redirects insecure HTTP to HTTPS on shafskyaviation.com", () => {
+      const redirect = resolveServerRedirect(
+        "http://shafskyaviation.com/",
+        "shafskyaviation.com",
+        "http"
+      );
+      expect(redirect).toBe("https://shafskyaviation.com/");
+    });
+
+    it("redirects insecure HTTP to HTTPS on shafskyaviation.in", () => {
+      const redirect = resolveServerRedirect(
+        "http://shafskyaviation.in/",
+        "shafskyaviation.in",
+        "http"
+      );
+      expect(redirect).toBe("https://shafskyaviation.in/");
+    });
+
+    it("preserves query parameters during HTTP-to-HTTPS redirect", () => {
+      const redirect = resolveServerRedirect(
+        "http://shafskyaviation.com/book?service=concierge&airport=DEL&step=2",
+        "shafskyaviation.com",
+        "http"
+      );
+      expect(redirect).toBe(
+        "https://shafskyaviation.com/book?service=concierge&airport=DEL&step=2"
+      );
+    });
+  });
+
+  describe("Proxy www Normalization", () => {
+    it("normalizes www.shafskyaviation.com to https://shafskyaviation.com/ behind HTTPS proxy", () => {
+      const redirect = resolveServerRedirect(
+        "http://www.shafskyaviation.com/",
+        "www.shafskyaviation.com",
+        "https"
+      );
+      expect(redirect).toBe("https://shafskyaviation.com/");
+    });
+
+    it("normalizes www.shafskyaviation.com to https://shafskyaviation.com/ from insecure HTTP in a single hop", () => {
+      const redirect = resolveServerRedirect(
+        "http://www.shafskyaviation.com/",
+        "www.shafskyaviation.com",
+        "http"
+      );
+      expect(redirect).toBe("https://shafskyaviation.com/");
+    });
+
+    it("normalizes www.shafskyaviation.in to https://shafskyaviation.in/ behind HTTPS proxy without cross-domain redirect", () => {
+      const redirect = resolveServerRedirect(
+        "http://www.shafskyaviation.in/",
+        "www.shafskyaviation.in",
+        "https"
+      );
+      expect(redirect).toBe("https://shafskyaviation.in/");
+    });
+
+    it("preserves query parameters during www normalization behind proxy", () => {
+      const redirect = resolveServerRedirect(
+        "http://www.shafskyaviation.com/contact?utm_campaign=winter2026",
+        "www.shafskyaviation.com",
+        "https"
+      );
+      expect(redirect).toBe("https://shafskyaviation.com/contact?utm_campaign=winter2026");
+    });
+  });
+
+  describe("Proxy Legacy SEO Route Normalization", () => {
+    it("redirects legacy WordPress route /about-us/ to /about-us behind proxy", () => {
+      const redirect = resolveServerRedirect(
+        "http://shafskyaviation.com/about-us/",
+        "shafskyaviation.com",
+        "https"
+      );
+      expect(redirect).toBe("https://shafskyaviation.com/about-us");
+    });
+
+    it("redirects legacy service URL /services/meet-and-greet/ to /solutions/concierge behind proxy", () => {
+      const redirect = resolveServerRedirect(
+        "http://shafskyaviation.com/services/meet-and-greet/",
+        "shafskyaviation.com",
+        "https"
+      );
+      expect(redirect).toBe("https://shafskyaviation.com/solutions/concierge");
+    });
+
+    it("normalizes www, legacy route, and query string in a single hop behind proxy", () => {
+      const redirect = resolveServerRedirect(
+        "http://www.shafskyaviation.com/services/meet-and-greet/?ref=promo",
+        "www.shafskyaviation.com",
+        "https"
+      );
+      expect(redirect).toBe("https://shafskyaviation.com/solutions/concierge?ref=promo");
+    });
+
+    it("normalizes airport lowercase code and trailing slash behind proxy", () => {
+      const redirect = resolveServerRedirect(
+        "http://shafskyaviation.com/airports/del/",
+        "shafskyaviation.com",
+        "https"
+      );
+      expect(redirect).toBe("https://shafskyaviation.com/airports/DEL");
+    });
+
+    it("does not redirect unmapped legacy admin routes behind proxy", () => {
+      UNMAPPED_LEGACY_PATTERNS.forEach((pattern) => {
+        const redirect = resolveServerRedirect(
+          `http://shafskyaviation.com${pattern}`,
+          "shafskyaviation.com",
+          "https"
+        );
+        expect(redirect).not.toBe("https://shafskyaviation.com/");
+      });
     });
   });
 });
