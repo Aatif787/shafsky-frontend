@@ -104,7 +104,7 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
                     legs[idx] = { ...legs[idx], fromAirport: e.target.value };
                     onChange({ multiCityLegs: legs });
                   }}
-                  placeholder="Departure Airport"
+                  placeholder="Search airport (e.g. DEL, BOM, DXB)"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm font-sans font-medium"
                 />
               </div>
@@ -121,7 +121,7 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
                     legs[idx] = { ...legs[idx], toAirport: e.target.value };
                     onChange({ multiCityLegs: legs });
                   }}
-                  placeholder="Arrival Airport"
+                  placeholder="Search airport (e.g. DEL, BOM, DXB)"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm font-sans font-medium"
                 />
               </div>
@@ -154,7 +154,7 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
               type="text"
               value={data.fromAirport}
               onChange={(e) => onChange({ fromAirport: e.target.value })}
-              placeholder="Departure airport or city"
+              placeholder="Search airport (e.g. DEL, BOM, DXB)"
               className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
             />
           </div>
@@ -167,7 +167,7 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
               type="text"
               value={data.toAirport}
               onChange={(e) => onChange({ toAirport: e.target.value })}
-              placeholder="Arrival destination or airport"
+              placeholder="Search airport (e.g. DEL, BOM, DXB)"
               className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-sans font-medium"
             />
           </div>

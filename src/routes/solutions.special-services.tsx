@@ -1393,7 +1393,7 @@ function DedicatedSpecialServicesPage() {
                         <IntelligentAirportAutocomplete
                           mode="global"
                           value={ticketOrigin}
-                          placeholder=""
+                          placeholder="Search airport (e.g. DEL, BOM, DXB)"
                           inputClassName="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
                           showIcon={false}
                           onSelect={(ap) => setTicketOrigin(formatAirportOption(ap))}
@@ -1407,7 +1407,7 @@ function DedicatedSpecialServicesPage() {
                         <IntelligentAirportAutocomplete
                           mode="global"
                           value={ticketDest}
-                          placeholder=""
+                          placeholder="Search airport (e.g. DEL, BOM, DXB)"
                           inputClassName="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
                           showIcon={false}
                           onSelect={(ap) => setTicketDest(formatAirportOption(ap))}

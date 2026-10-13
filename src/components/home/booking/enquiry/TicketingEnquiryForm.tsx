@@ -151,7 +151,7 @@ export const TicketingEnquiryForm: React.FC<TicketingEnquiryFormProps> = ({
             mode="global"
             value={origin}
             inputClassName={INPUT}
-            placeholder="Select airport"
+            placeholder="Search airport (e.g. DEL, BOM, DXB)"
             showIcon={false}
             onSelect={(ap) => setOrigin(formatAirportOption(ap))}
             onChangeText={(txt) => setOrigin(txt)}
@@ -168,7 +168,7 @@ export const TicketingEnquiryForm: React.FC<TicketingEnquiryFormProps> = ({
             mode="global"
             value={destination}
             inputClassName={INPUT}
-            placeholder="Select airport"
+            placeholder="Search airport (e.g. DEL, BOM, DXB)"
             showIcon={false}
             onSelect={(ap) => setDestination(formatAirportOption(ap))}
             onChangeText={(txt) => setDestination(txt)}
