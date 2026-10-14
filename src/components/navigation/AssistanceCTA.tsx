@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { PhoneCall, Sparkles, ArrowRight, ShieldCheck, Headphones } from "lucide-react";
 import { Magnetic, FadeInView } from "@/components/ui/interactions";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
 interface AssistanceCTAProps {
   heading?: string;
@@ -23,6 +24,9 @@ export function AssistanceCTA({
     : "Reserve custom airside escort, lounge, or private transport.";
   const activeSubheading = subheading || defaultSubheading;
   const lockedCode = (airportCode || "").trim().toUpperCase();
+
+  const { getPrimaryContact } = useWebsiteContacts();
+  const primaryContact = getPrimaryContact("meet_greet_lounge");
   const reservationSearch = lockedCode
     ? {
         source: "airport_page",
@@ -78,15 +82,17 @@ export function AssistanceCTA({
               </Link>
             </Magnetic>
 
-            <Magnetic strength={0.2}>
-              <a
-                href="tel:+919599087959"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 font-mono text-xs font-semibold uppercase tracking-widest hover:border-[#7c3aed] transition-all duration-300 w-full"
-              >
-                <PhoneCall className="w-4 h-4 text-[#7c3aed]" />
-                <span>+91 9599087959</span>
-              </a>
-            </Magnetic>
+            {primaryContact && (
+              <Magnetic strength={0.2}>
+                <a
+                  href={primaryContact.tel_link}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 font-mono text-xs font-semibold uppercase tracking-widest hover:border-[#7c3aed] transition-all duration-300 w-full"
+                >
+                  <PhoneCall className="w-4 h-4 text-[#7c3aed]" />
+                  <span>{primaryContact.formatted}</span>
+                </a>
+              </Magnetic>
+            )}
           </div>
         </div>
       </section>

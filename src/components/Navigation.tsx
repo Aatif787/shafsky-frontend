@@ -22,6 +22,7 @@ import { useBranding } from "@/lib/branding/branding.context";
 import { mono } from "@/components/home/theme";
 import { motion, AnimatePresence } from "framer-motion";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
 export interface ServiceMenuItem {
   title: string;
@@ -120,6 +121,10 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
   const authUser = auth?.user;
   const authRole = auth?.profile?.role;
   const isLoggedIn = Boolean(authUser || auth?.profile || roles.length > 0);
+
+  const { getContacts, getPrimaryContact } = useWebsiteContacts();
+  const contactNumbers = getContacts("contact");
+  const primaryContact = getPrimaryContact("contact");
 
   const activeNavItems = ICICI_REVIEW_MODE
     ? NAV_ITEMS.filter(
@@ -320,17 +325,19 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
           {/* Right Action Controls */}
           <div className="hidden sm:flex items-center gap-2 xl:gap-3 shrink-0">
-            <a
-              href="tel:+919599087959"
-              className="hidden 2xl:flex apple-glass-pill items-center gap-2 px-3 py-1.5 rounded-full text-[11px] text-slate-800 hover:text-slate-950 font-semibold cursor-pointer whitespace-nowrap"
-              style={mono}
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-500 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-lime-600" />
-              </span>
-              <span className="tracking-wide">24/7: +91 9599087959</span>
-            </a>
+            {primaryContact && (
+              <a
+                href={primaryContact.tel_link}
+                className="hidden 2xl:flex apple-glass-pill items-center gap-2 px-3 py-1.5 rounded-full text-[11px] text-slate-800 hover:text-slate-950 font-semibold cursor-pointer whitespace-nowrap"
+                style={mono}
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-500 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-lime-600" />
+                </span>
+                <span className="tracking-wide">24/7: {primaryContact.formatted}</span>
+              </a>
+            )}
 
             {isLoggedIn ? (
               <Link
@@ -461,14 +468,21 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                 </Link>
               )}
 
-              <a
-                href="tel:+919599087959"
-                className="apple-glass-pill w-full flex items-center justify-center gap-2.5 py-3 rounded-full text-xs font-bold text-slate-900 tracking-wider uppercase"
-                style={mono}
-              >
-                <PhoneCall size={14} className="text-[#0a196f]" />
-                <span>Call 24/7 Desk (+91 9599087959)</span>
-              </a>
+              {contactNumbers.length > 0 && (
+                <div className="w-full flex flex-col gap-2">
+                  {contactNumbers.map((c, idx) => (
+                    <a
+                      key={idx}
+                      href={c.tel_link}
+                      className="apple-glass-pill w-full flex items-center justify-center gap-2.5 py-3 rounded-full text-xs font-bold text-slate-900 tracking-wider uppercase"
+                      style={mono}
+                    >
+                      <PhoneCall size={14} className="text-[#0a196f]" />
+                      <span>Call 24/7 Desk ({c.formatted})</span>
+                    </a>
+                  ))}
+                </div>
+              )}
 
               <a
                 href="/#book"

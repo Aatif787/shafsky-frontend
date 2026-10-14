@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { PrivateCharterRequestFlow } from "./PrivateCharterRequestFlow";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
 const FLEET_CATEGORIES = [
   {
@@ -110,6 +111,9 @@ export function PrivateJetHero() {
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
+  const { getPrimaryContact } = useWebsiteContacts();
+  const primaryCharterContact = getPrimaryContact("private_charter");
+
   const navLinks = [
     { name: "Start", href: "#start" },
     { name: "Story", href: "#story" },
@@ -172,13 +176,22 @@ export function PrivateJetHero() {
 
               {/* Desktop Direct Action */}
               <div className="hidden md:flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={openWhatsAppSpecialist}
-                  className="px-4 py-2 rounded-full border border-white/30 hover:border-[#84CC16] text-xs font-semibold text-white hover:text-white transition flex items-center gap-1.5 backdrop-blur-sm"
-                >
-                  <Phone className="w-3.5 h-3.5 text-[#84CC16]" /> Specialist
-                </button>
+                {primaryCharterContact ? (
+                  <a
+                    href={primaryCharterContact.tel_link}
+                    className="px-4 py-2 rounded-full border border-white/30 hover:border-[#84CC16] text-xs font-semibold text-white hover:text-white transition flex items-center gap-1.5 backdrop-blur-sm"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-[#84CC16]" /> {primaryCharterContact.formatted}
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={openWhatsAppSpecialist}
+                    className="px-4 py-2 rounded-full border border-white/30 hover:border-[#84CC16] text-xs font-semibold text-white hover:text-white transition flex items-center gap-1.5 backdrop-blur-sm"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-[#84CC16]" /> Specialist
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => setIsRequestModalOpen(true)}
@@ -228,6 +241,16 @@ export function PrivateJetHero() {
                     >
                       Request a Charter
                     </button>
+                    {primaryCharterContact && (
+                      <a
+                        href={primaryCharterContact.tel_link}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="w-full py-2.5 rounded-full border border-[#DCD5C9] text-[#1A1715] font-semibold text-xs text-center transition flex items-center justify-center gap-2"
+                      >
+                        <Phone className="w-3.5 h-3.5 text-[#4D7C0F]" />
+                        <span>Call Specialist ({primaryCharterContact.formatted})</span>
+                      </a>
+                    )}
                     <button
                       type="button"
                       onClick={() => {

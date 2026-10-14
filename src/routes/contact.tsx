@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { display } from "@/components/home/theme";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
 export const Route = createFileRoute("/contact")({
   head: () =>
@@ -64,16 +65,30 @@ function ContactPage() {
     }
   }
 
+  const { getContacts, getPrimaryContact } = useWebsiteContacts();
+  const contactPhones = getContacts("contact");
+  const primaryPhone = getPrimaryContact("contact");
+
+  const phoneDisplayValue =
+    contactPhones.length > 0
+      ? contactPhones.map((p) => p.formatted).join(" / ")
+      : "+91 9599087959 / +91 9599615459";
+  const phoneActionHref = primaryPhone ? primaryPhone.tel_link : "tel:+919599087959";
+
   const contactMethods = [
-    {
-      title: "24/7 Helpline & Mobile",
-      value: "+91 9599087959 / +91 9599615459",
-      desc: "Instant phone assistance anytime",
-      actionText: "Call Now",
-      actionHref: "tel:+919599087959",
-      icon: PhoneCall,
-      highlight: true,
-    },
+    ...(contactPhones.length > 0
+      ? [
+          {
+            title: "24/7 Helpline & Mobile",
+            value: phoneDisplayValue,
+            desc: "Instant phone assistance anytime",
+            actionText: "Call Now",
+            actionHref: phoneActionHref,
+            icon: PhoneCall,
+            highlight: true,
+          },
+        ]
+      : []),
     {
       title: "WhatsApp & Support",
       value: "+91 9599087959",
@@ -205,12 +220,22 @@ function ContactPage() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-lime-50/70 border border-lime-200 text-xs text-lime-900 font-mono">
-                <strong>Need Immediate Assistance?</strong>
-                <p className="mt-1 text-slate-700 font-sans">
-                  Call our 24/7 hotline directly at <a href="tel:+919599087959" className="font-bold text-lime-800 underline">+91 9599087959</a> or <a href="tel:+919599615459" className="font-bold text-lime-800 underline">+91 9599615459</a>.
-                </p>
-              </div>
+              {contactPhones.length > 0 && (
+                <div className="p-4 rounded-2xl bg-lime-50/70 border border-lime-200 text-xs text-lime-900 font-mono">
+                  <strong>Need Immediate Assistance?</strong>
+                  <p className="mt-1 text-slate-700 font-sans">
+                    Call our 24/7 hotline directly at{" "}
+                    {contactPhones.map((p, idx) => (
+                      <React.Fragment key={idx}>
+                        {idx > 0 && " or "}
+                        <a href={p.tel_link} className="font-bold text-lime-800 underline">
+                          {p.formatted}
+                        </a>
+                      </React.Fragment>
+                    ))}.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Right: Clean Form */}

@@ -15,6 +15,7 @@ import {
   UserCheck,
   AlertTriangle,
   Headphones,
+  PhoneCall,
 } from "lucide-react";
 import { pageDisplay, pageMono, Panel } from "@/components/site/PageShell";
 import { checkStaffAccess } from "@/lib/admin.functions";
@@ -81,6 +82,8 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     "audit:read",
     "settings:read",
     "settings:write",
+    "contacts:read",
+    "contacts:write",
     "reports:read",
   ],
   admin: [
@@ -97,6 +100,8 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     "notifications:retry",
     "staff:read",
     "staff:write",
+    "contacts:read",
+    "contacts:write",
     "reports:read",
   ],
   customer: [],
@@ -228,6 +233,12 @@ function AdminLayout() {
       show: true,
     },
     {
+      label: "Website Contacts",
+      path: "/admin/contact-settings",
+      icon: PhoneCall,
+      show: clientHasPermission(roles, "contacts:read"),
+    },
+    {
       label: "Settings",
       path: "/admin/settings",
       icon: Settings,
@@ -249,6 +260,7 @@ function AdminLayout() {
     { path: "/admin/analytics", action: "reports:read" },
     { path: "/admin/audit-logs", action: "audit:read" },
     { path: "/admin/profile", action: "bookings:read" }, // Profile is accessible to anyone logged in as admin/staff
+    { path: "/admin/contact-settings", action: "contacts:read" },
     { path: "/admin/settings", action: "settings:read" },
   ].find((item) => currentPath.startsWith(item.path));
 

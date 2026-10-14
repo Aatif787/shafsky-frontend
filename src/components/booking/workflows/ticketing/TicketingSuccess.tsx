@@ -1,5 +1,6 @@
 import { BookingSuccessPass } from "../../shared/BookingSuccessPass";
 import { MessageCircle, Phone, Mail, Clock, UserCheck } from "lucide-react";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
 interface TicketingSuccessProps {
   bookingRef: string;
@@ -8,6 +9,8 @@ interface TicketingSuccessProps {
 }
 
 export function TicketingSuccess({ bookingRef, routeSummary, guestSummary }: TicketingSuccessProps) {
+  const { getPrimaryContact } = useWebsiteContacts();
+  const primaryTicketingContact = getPrimaryContact("ticketing");
   return (
     <div className="space-y-6">
       <BookingSuccessPass
@@ -56,16 +59,18 @@ export function TicketingSuccess({ bookingRef, routeSummary, guestSummary }: Tic
             </div>
           </a>
 
-          <a
-            href="tel:+919599087959"
-            className="p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/70 flex items-center gap-3 transition-all"
-          >
-            <Phone className="w-4 h-4 text-emerald-400" />
-            <div>
-              <span className="text-xs font-bold block text-slate-100">Priority Hotline</span>
-              <span className="text-[10px] text-slate-400 font-mono">+91 9599087959</span>
-            </div>
-          </a>
+          {primaryTicketingContact && (
+            <a
+              href={primaryTicketingContact.tel_link}
+              className="p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/70 flex items-center gap-3 transition-all"
+            >
+              <Phone className="w-4 h-4 text-emerald-400" />
+              <div>
+                <span className="text-xs font-bold block text-slate-100">Priority Hotline</span>
+                <span className="text-[10px] text-slate-400 font-mono">{primaryTicketingContact.formatted}</span>
+              </div>
+            </a>
+          )}
 
           <a
             href="mailto:concierge@shafskyaviation.com"

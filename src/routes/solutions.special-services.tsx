@@ -23,6 +23,7 @@ import { enquiryApi } from "@/lib/api/enquiryApi";
 import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
 import { formatAirportOption } from "@/lib/api/airportApi";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 import toursTravelImg from "@/assets/others/tours-travel.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import specialserImg from "@/assets/others/specialser.png";
@@ -261,6 +262,10 @@ const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
 function DedicatedSpecialServicesPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { getContacts, getPrimaryContact } = useWebsiteContacts();
+  const meetContacts = getContacts("meet_greet_lounge");
+  const primaryMeetContact = getPrimaryContact("meet_greet_lounge");
+
   const [selectedOptionId, setSelectedOptionId] = useState<SpecialServiceOptionId>("Tours & Travel (Honeymoon/Couples)");
   const [heroSlideIndex, setHeroSlideIndex] = useState<number>(0);
   const [dragStartX, setDragStartX] = useState<number | null>(null);
@@ -1572,13 +1577,15 @@ function DedicatedSpecialServicesPage() {
                       <ShieldAlert size={14} className="text-lime-400" />
                       <span className="font-mono text-[11px]">Strict Confidentiality & SLA Guarantee</span>
                     </div>
-                    <a
-                      href="tel:+919599087959"
-                      className="inline-flex items-center gap-1.5 text-lime-400 hover:text-lime-300 font-mono text-[11px] font-bold"
-                    >
-                      <PhoneCall size={12} />
-                      <span>+91 95990 87959</span>
-                    </a>
+                    {primaryMeetContact && (
+                      <a
+                        href={primaryMeetContact.tel_link}
+                        className="inline-flex items-center gap-1.5 text-lime-400 hover:text-lime-300 font-mono text-[11px] font-bold"
+                      >
+                        <PhoneCall size={12} />
+                        <span>{primaryMeetContact.formatted}</span>
+                      </a>
+                    )}
                   </div>
                 </div>
               )}

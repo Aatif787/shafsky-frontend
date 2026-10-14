@@ -5,10 +5,12 @@ import {
   ArrowRight,
   CheckCircle2,
   Car,
+  PhoneCall,
 } from "lucide-react";
 import { display } from "@/components/home/theme";
 import home5Img from "@/assets/homepage/home5.jpeg";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
 export const Route = createFileRoute("/solutions/transport")({
   head: () =>
@@ -61,6 +63,9 @@ const TRANSPORT_HERO_SLIDES = [
 
 function DedicatedTransportServicePage() {
   const navigate = useNavigate();
+  const { getPrimaryContact } = useWebsiteContacts();
+  const primaryTransportContact = getPrimaryContact("transport");
+
   const [selectedOptionId, setSelectedOptionId] = useState<TransportOptionId>("Luxury Vehicles");
   const [activeVehicleId, setActiveVehicleId] = useState<string>("merc-maybach-s-class");
   const [heroSlideIndex, setHeroSlideIndex] = useState(0);
@@ -112,7 +117,15 @@ function DedicatedTransportServicePage() {
             </button>
 
             <div className="flex items-center gap-2.5">
-
+              {primaryTransportContact && (
+                <a
+                  href={primaryTransportContact.tel_link}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-semibold shadow-2xs transition-colors"
+                >
+                  <PhoneCall size={12} className="text-lime-400" />
+                  <span className="hidden sm:inline">Dispatch:</span> {primaryTransportContact.formatted}
+                </a>
+              )}
               <button
                 type="button"
                 onClick={() => {

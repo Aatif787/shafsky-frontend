@@ -213,6 +213,30 @@ function CentralizedSettingsView() {
         </p>
       </div>
 
+      {/* Website Contact Settings Quick Banner */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border border-[#5ed3ff]/30 bg-[#5ed3ff]/5">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-[#5ed3ff]/10 border border-[#5ed3ff]/20 flex items-center justify-center shrink-0">
+            <ExternalLink className="w-4 h-4 text-[#5ed3ff]" />
+          </div>
+          <div>
+            <div className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+              Website Contact Management System
+            </div>
+            <div className="text-[11px] text-white/60">
+              Manage live phone numbers across all 6 website services without code changes or redeployments.
+            </div>
+          </div>
+        </div>
+        <Link
+          to="/admin/contact-settings"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#5ed3ff] hover:bg-[#5ed3ff]/90 text-black text-xs font-bold font-mono transition shrink-0"
+        >
+          Open Website Contact Settings
+          <ExternalLink className="w-3.5 h-3.5" />
+        </Link>
+      </div>
+
       {/* Tabs Bar */}
       <div className="flex overflow-x-auto gap-1 border-b border-white/10 pb-2 scrollbar-none font-mono text-xs">
         {[

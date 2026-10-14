@@ -51,6 +51,7 @@ import { Route as AuthenticatedAdminAuditLogsRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminBookingsRouteImport } from './routes/_authenticated/admin.bookings'
 import { Route as AuthenticatedAdminCasesRouteImport } from './routes/_authenticated/admin.cases'
 import { Route as AuthenticatedAdminCharterRouteImport } from './routes/_authenticated/admin.charter'
+import { Route as AuthenticatedAdminContactSettingsRouteImport } from './routes/_authenticated/admin.contact-settings'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin.customers'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
 import { Route as AuthenticatedAdminFlightsRouteImport } from './routes/_authenticated/admin.flights'
@@ -295,6 +296,12 @@ const AuthenticatedAdminCharterRoute =
     path: '/charter',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminContactSettingsRoute =
+  AuthenticatedAdminContactSettingsRouteImport.update({
+    id: '/contact-settings',
+    path: '/contact-settings',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminCustomersRoute =
   AuthenticatedAdminCustomersRouteImport.update({
     id: '/customers',
@@ -507,6 +514,7 @@ export interface FileRoutesByFullPath {
   '/admin/bookings': typeof AuthenticatedAdminBookingsRouteWithChildren
   '/admin/cases': typeof AuthenticatedAdminCasesRoute
   '/admin/charter': typeof AuthenticatedAdminCharterRoute
+  '/admin/contact-settings': typeof AuthenticatedAdminContactSettingsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/flights': typeof AuthenticatedAdminFlightsRoute
@@ -577,6 +585,7 @@ export interface FileRoutesByTo {
   '/admin/bookings': typeof AuthenticatedAdminBookingsRouteWithChildren
   '/admin/cases': typeof AuthenticatedAdminCasesRoute
   '/admin/charter': typeof AuthenticatedAdminCharterRoute
+  '/admin/contact-settings': typeof AuthenticatedAdminContactSettingsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/flights': typeof AuthenticatedAdminFlightsRoute
@@ -651,6 +660,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/bookings': typeof AuthenticatedAdminBookingsRouteWithChildren
   '/_authenticated/admin/cases': typeof AuthenticatedAdminCasesRoute
   '/_authenticated/admin/charter': typeof AuthenticatedAdminCharterRoute
+  '/_authenticated/admin/contact-settings': typeof AuthenticatedAdminContactSettingsRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/flights': typeof AuthenticatedAdminFlightsRoute
@@ -725,6 +735,7 @@ export interface FileRouteTypes {
     | '/admin/bookings'
     | '/admin/cases'
     | '/admin/charter'
+    | '/admin/contact-settings'
     | '/admin/customers'
     | '/admin/dashboard'
     | '/admin/flights'
@@ -795,6 +806,7 @@ export interface FileRouteTypes {
     | '/admin/bookings'
     | '/admin/cases'
     | '/admin/charter'
+    | '/admin/contact-settings'
     | '/admin/customers'
     | '/admin/dashboard'
     | '/admin/flights'
@@ -868,6 +880,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/bookings'
     | '/_authenticated/admin/cases'
     | '/_authenticated/admin/charter'
+    | '/_authenticated/admin/contact-settings'
     | '/_authenticated/admin/customers'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/flights'
@@ -1232,6 +1245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCharterRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/contact-settings': {
+      id: '/_authenticated/admin/contact-settings'
+      path: '/contact-settings'
+      fullPath: '/admin/contact-settings'
+      preLoaderRoute: typeof AuthenticatedAdminContactSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/customers': {
       id: '/_authenticated/admin/customers'
       path: '/customers'
@@ -1458,6 +1478,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminBookingsRoute: typeof AuthenticatedAdminBookingsRouteWithChildren
   AuthenticatedAdminCasesRoute: typeof AuthenticatedAdminCasesRoute
   AuthenticatedAdminCharterRoute: typeof AuthenticatedAdminCharterRoute
+  AuthenticatedAdminContactSettingsRoute: typeof AuthenticatedAdminContactSettingsRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminFlightsRoute: typeof AuthenticatedAdminFlightsRoute
@@ -1478,6 +1499,8 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminBookingsRoute: AuthenticatedAdminBookingsRouteWithChildren,
   AuthenticatedAdminCasesRoute: AuthenticatedAdminCasesRoute,
   AuthenticatedAdminCharterRoute: AuthenticatedAdminCharterRoute,
+  AuthenticatedAdminContactSettingsRoute:
+    AuthenticatedAdminContactSettingsRoute,
   AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminFlightsRoute: AuthenticatedAdminFlightsRoute,

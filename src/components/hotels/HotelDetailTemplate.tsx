@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 import {
   HotelInfo,
   AmenityItem,
@@ -64,8 +65,12 @@ export function HotelDetailTemplate({
   const [checkOutDate, setCheckOutDate] = React.useState("");
   const [guestCount, setGuestCount] = React.useState("2");
 
+  const { getPrimaryContact } = useWebsiteContacts();
+  const primaryHotel = getPrimaryContact("hotel");
+
   const whatsAppPhone = hotel.whatsAppNumber || "919217522660";
-  const displayPhone = hotel.contactPhone || "+91 92175 22660";
+  const displayPhone = primaryHotel ? primaryHotel.formatted : (hotel.contactPhone || "+91 92175 22660");
+  const telLink = primaryHotel ? primaryHotel.tel_link : `tel:${displayPhone.replace(/[^0-9+]/g, "")}`;
 
   const openLightbox = (src: string, title: string) => {
     setLightboxSrc(src);
@@ -209,14 +214,16 @@ export function HotelDetailTemplate({
               <span className="hidden sm:inline">WhatsApp</span>
               <span className="sm:hidden">WhatsApp</span>
             </button>
-            <a
-              href={`tel:${displayPhone.replace(/[^0-9+]/g, "")}`}
-              className="inline-flex items-center space-x-2 px-3.5 sm:px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition-all shadow-sm transform hover:-translate-y-0.5 active:translate-y-0"
-            >
-              <Phone className="w-3.5 h-3.5 text-slate-300" />
-              <span className="hidden md:inline">{displayPhone}</span>
-              <span className="md:hidden">Call</span>
-            </a>
+            {displayPhone && (
+              <a
+                href={telLink}
+                className="inline-flex items-center space-x-2 px-3.5 sm:px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition-all shadow-sm transform hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <Phone className="w-3.5 h-3.5 text-slate-300" />
+                <span className="hidden md:inline">{displayPhone}</span>
+                <span className="md:hidden">Call</span>
+              </a>
+            )}
           </div>
         </div>
       </header>
