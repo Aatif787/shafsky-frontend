@@ -16,6 +16,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/home/sections/Footer";
 import { display } from "@/components/home/theme";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
 export const Route = createFileRoute("/services/guide")({
   head: () =>
@@ -36,6 +37,9 @@ export const Route = createFileRoute("/services/guide")({
 });
 
 function ServiceGuidePage() {
+  const { getPrimaryContact } = useWebsiteContacts();
+  const primaryMeetContact = getPrimaryContact("meet_greet_lounge");
+
   const steps = [
     {
       num: "01",
@@ -149,13 +153,15 @@ function ServiceGuidePage() {
               <span>Book Airport Service</span>
               <ArrowRight size={14} />
             </a>
-            <a
-              href="tel:+919599087959"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-mono text-xs font-bold transition"
-            >
-              <PhoneCall size={14} className="text-lime-600" />
-              <span>24/7 Helpline: +91 9599087959</span>
-            </a>
+            {primaryMeetContact && (
+              <a
+                href={primaryMeetContact.tel_link}
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-mono text-xs font-bold transition"
+              >
+                <PhoneCall size={14} className="text-lime-600" />
+                <span>24/7 Helpline: {primaryMeetContact.formatted}</span>
+              </a>
+            )}
           </div>
         </section>
 

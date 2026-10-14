@@ -3,8 +3,12 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
 import { ICICI_REVIEW_MODE } from "../../../lib/config/reviewMode";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
 export function Footer() {
+  const { getContacts } = useWebsiteContacts();
+  const contactPhones = getContacts("contact");
+
   const allQuickLinks: { label: string; href: string; hash?: string }[] = [
     { label: "About us", href: "/about-us" },
     { label: "Contact us", href: "/contact" },
@@ -177,22 +181,22 @@ export function Footer() {
 
               {/* Contact Details */}
               <div className="space-y-3.5 text-xs sm:text-[14px] text-white/95 leading-snug">
-                <div>
-                  <span className="font-bold">Mobile: </span>
-                  <a
-                    href="tel:+919599087959"
-                    className="hover:text-[#cca028] transition-colors font-medium font-sans"
-                  >
-                    +919599087959
-                  </a>
-                  {", "}
-                  <a
-                    href="tel:+919599615459"
-                    className="hover:text-[#cca028] transition-colors font-medium font-sans"
-                  >
-                    +919599615459
-                  </a>
-                </div>
+                {contactPhones.length > 0 && (
+                  <div>
+                    <span className="font-bold">Mobile: </span>
+                    {contactPhones.map((cp, idx) => (
+                      <React.Fragment key={idx}>
+                        {idx > 0 && ", "}
+                        <a
+                          href={cp.tel_link}
+                          className="hover:text-[#cca028] transition-colors font-medium font-sans"
+                        >
+                          {cp.formatted}
+                        </a>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                )}
 
                 <div>
                   <span className="font-bold">Email: </span>

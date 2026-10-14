@@ -736,7 +736,7 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
                   mode="global"
                   value={tktOrigin}
                   inputClassName={INPUT}
-                  placeholder="Select airport"
+                  placeholder="Search airport (e.g. DEL, BOM, DXB)"
                   showIcon={false}
                   onSelect={(ap) => setTktOrigin(formatAirportOption(ap))}
                   onChangeText={(txt) => setTktOrigin(txt)}
@@ -753,7 +753,7 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
                   mode="global"
                   value={tktDestination}
                   inputClassName={INPUT}
-                  placeholder="Select airport"
+                  placeholder="Search airport (e.g. DEL, BOM, DXB)"
                   showIcon={false}
                   onSelect={(ap) => setTktDestination(formatAirportOption(ap))}
                   onChangeText={(txt) => setTktDestination(txt)}

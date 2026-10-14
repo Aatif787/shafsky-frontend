@@ -16,6 +16,7 @@ import { charterApi, CharterRequestPayload } from "@/lib/api/charterApi";
 
 import jetTarmac from "@/assets/homepage/home2.jpeg";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
+import { Footer } from "@/components/home/sections/Footer";
 
 export const Route = createFileRoute("/solutions/aviation")({
   head: () =>
@@ -1247,6 +1248,8 @@ function DedicatedAirCharterPage() {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

@@ -80,6 +80,37 @@ export async function apiPost<T = any>(
 }
 
 /**
+ * Make a PUT request to the FastAPI backend.
+ */
+export async function apiPut<T = any>(
+  path: string,
+  body: unknown,
+  token?: string,
+): Promise<T> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const bearer = token || getAccessToken();
+  if (bearer) headers.Authorization = `Bearer ${bearer}`;
+
+  const res = await fetchBackend(path, {
+    method: "PUT",
+    headers,
+    credentials: "include",
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`FastAPI ${res.status}: ${text}`);
+  }
+
+  const json = (await res.json()) as FastApiResponse<T>;
+  if (!json.success && json.error) {
+    throw new Error(json.error);
+  }
+  return (json.data ?? json) as T;
+}
+
+/**
  * Make a PATCH request to the FastAPI backend.
  */
 export async function apiPatch<T = any>(

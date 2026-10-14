@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { StandardHotelEnquiryForm } from "@/components/hotels/StandardHotelEnquiryForm";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
 export const Route = createFileRoute("/hotels/holiday-inn-express")({
   head: () =>
@@ -211,6 +212,8 @@ const GALLERY_IMAGES = [
 
 function HolidayInnExpressDetailPage() {
   const navigate = useNavigate();
+  const { getPrimaryContact } = useWebsiteContacts();
+  const primaryHotelContact = getPrimaryContact("hotel");
 
   // Filters & State
   const [activeTab, setActiveTab] = useState<"all" | "domestic" | "international">("all");
@@ -310,13 +313,15 @@ function HolidayInnExpressDetailPage() {
               <span>Airside & Landside Transit Hub</span>
             </div>
 
-            <a
-              href="tel:+919217522660"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors shadow-2xs"
-            >
-              <Phone size={12} className="text-amber-400" />
-              <span className="hidden sm:inline">24/7 Desk:</span> +91 92175 22660
-            </a>
+            {primaryHotelContact && (
+              <a
+                href={primaryHotelContact.tel_link}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors shadow-2xs"
+              >
+                <Phone size={12} className="text-amber-400" />
+                <span className="hidden sm:inline">24/7 Desk:</span> {primaryHotelContact.formatted}
+              </a>
+            )}
           </div>
         </div>
       </header>
