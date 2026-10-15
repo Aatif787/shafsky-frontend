@@ -330,6 +330,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     const effTransit = cleanTransit || transitCode || searchParams?.transit || (direction === "transit" ? airportCode : "");
 
     if (!effOrigin && !effDest && !airportCode) return;
+    if (!selectedServices || selectedServices.length === 0) return;
+    if (!billablePax || billablePax < 1) return;
 
     setIsMultiServiceLoading(true);
 

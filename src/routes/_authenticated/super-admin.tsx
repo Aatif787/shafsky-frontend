@@ -21,6 +21,7 @@ import {
   LogOut,
   AlertTriangle,
   Palette,
+  PhoneCall,
 } from "lucide-react";
 import { saTheme, saMono, saDisplay } from "@/components/super-admin/SAComponents";
 import { checkSuperAdminAccess } from "@/lib/super-admin.functions";
@@ -128,6 +129,7 @@ const NAV_SECTIONS: NavSection[] = [
   {
     title: "Platform",
     items: [
+      { label: "Website Contacts", path: "/admin/contact-settings", icon: PhoneCall },
       { label: "System", path: "/super-admin/system", icon: Cpu },
       { label: "Security", path: "/super-admin/security", icon: ShieldAlert },
       { label: "Audit Logs", path: "/super-admin/audit-logs", icon: FileText },

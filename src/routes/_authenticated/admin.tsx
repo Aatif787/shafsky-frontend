@@ -108,7 +108,10 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
 };
 
 function clientHasPermission(roles: string[], action: string): boolean {
-  return roles.some((role) => ROLE_PERMISSIONS[role]?.includes(action));
+  return roles.some((role) => {
+    const r = (role || "").trim().toLowerCase().replace("-", "_");
+    return ROLE_PERMISSIONS[r]?.includes(action);
+  });
 }
 
 function AdminLayout() {
@@ -269,7 +272,7 @@ function AdminLayout() {
   return (
     <div className="min-h-screen flex text-white/90" style={{ background: "#06090f" }}>
       {/* Sidebar for Desktop */}
-      <aside className="hidden lg:flex flex-col w-64 border-r border-white/10 shrink-0 bg-[#090d16] p-6 justify-between">
+      <aside className="hidden lg:flex flex-col w-64 border-r border-white/10 shrink-0 bg-[#090d16] p-6 justify-between h-screen sticky top-0 overflow-y-auto">
         <div className="space-y-6">
           <div>
             <div
@@ -343,7 +346,7 @@ function AdminLayout() {
 
         {/* Mobile Navigation Drawer */}
         {mobileOpen && (
-          <div className="lg:hidden fixed inset-0 z-40 bg-[#06090f] flex flex-col p-8 pt-20 space-y-6">
+          <div className="lg:hidden fixed inset-0 z-40 bg-[#06090f] flex flex-col p-8 pt-20 space-y-6 overflow-y-auto">
             <button
               onClick={() => setMobileOpen(false)}
               className="absolute top-6 right-6 text-white/80 hover:text-white"

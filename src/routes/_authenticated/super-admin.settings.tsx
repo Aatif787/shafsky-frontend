@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { listSystemSettings, upsertSystemSetting } from "@/lib/super-admin.functions";
 import { SAPageHeader, saMono, saTheme } from "@/components/super-admin/SAComponents";
-import { Settings, Save } from "lucide-react";
+import { Settings, Save, PhoneCall, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/super-admin/settings")({
@@ -64,6 +64,30 @@ function SettingsPage() {
         subtitle="Global platform branding, contact parameters, and token configuration"
         breadcrumbs={[{ label: "Super Admin", href: "/super-admin" }, { label: "Settings" }]}
       />
+
+      {/* Website Contact Settings Quick Banner */}
+      <div className="max-w-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-lg border border-[#a78bfa]/30 bg-[#a78bfa]/5">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-[#a78bfa]/10 border border-[#a78bfa]/20 flex items-center justify-center shrink-0">
+            <PhoneCall className="w-4 h-4 text-[#a78bfa]" />
+          </div>
+          <div>
+            <div className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+              Website Contact Management System
+            </div>
+            <div className="text-[11px] text-white/60">
+              Manage live phone numbers across all 6 website services without code changes or redeployments.
+            </div>
+          </div>
+        </div>
+        <Link
+          to="/admin/contact-settings"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#a78bfa] hover:bg-[#9672f5] text-white text-xs font-bold font-mono transition shrink-0 cursor-pointer"
+        >
+          Open Contact Settings
+          <ExternalLink className="w-3.5 h-3.5" />
+        </Link>
+      </div>
 
       <form
         onSubmit={handleSave}
