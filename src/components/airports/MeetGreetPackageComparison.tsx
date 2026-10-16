@@ -345,7 +345,7 @@ export function MeetGreetPackageComparison({
                       "Baggage Assist (Up to 3 Pieces)",
                       "Assist at the Baggage Belt Area",
                       "Coordination with the Receiving Party",
-                      "Escort to the Car Parking Area",
+                      "ASSIST GUEST TILL THE CAR PARKING AREA",
                     ];
                   } else if (slug === "elite") {
                     itemFeatures = [
@@ -354,7 +354,7 @@ export function MeetGreetPackageComparison({
                       "Baggage Assist",
                       "Assist at the Baggage Belt Area",
                       "Coordination with the Receiving Party",
-                      "Escort to the Car Parking Area",
+                      "ASSIST GUEST TILL THE CAR PARKING AREA",
                     ];
                   }
                 }
@@ -368,6 +368,9 @@ export function MeetGreetPackageComparison({
 
                 const cleanPackageText = (txt: string) => {
                   if (typeof txt !== "string") return txt;
+                  if (/^(Escort to the Car Parking Area|Escort to the Parking Area|DROP OFF TILL CAR PARKING AREA\.?|DROP OFF CAR PARKING AREA|DROP OFF TILL CAR PARKING\.?|ASSIST GUEST TILL THE PARKING AREA\.?|ASSIST GUEST TILL THE CAR PARKING AREA\.?)$/i.test(txt.trim())) {
+                    return "ASSIST GUEST TILL THE CAR PARKING AREA";
+                  }
                   let cleaned = txt
                     .replace(/\bAssistance\b/g, "Assist")
                     .replace(/\bassistance\b/g, "assist")
