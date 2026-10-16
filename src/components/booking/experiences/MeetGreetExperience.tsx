@@ -246,7 +246,7 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
 
   const getWhatsAppLink = () => {
     const text = encodeURIComponent(
-      `Hello Shafsky Aviation,%0A%0AI would like to request Meet & Greet and Lounge Service:%0A• Option: ${subService}${subService === "Transit Service" ? ` (${transitType})` : ""}%0A• Airport: ${selectedAirportObj.name}%0A• Date: ${travelDate || "TBD"}%0A• Passengers: ${adults} Adults${childrenCount ? `, ${childrenCount} Children` : ""}%0A• Guest: ${guestName || "Guest"} (${guestPhone || "Phone"})%0A${flightNumber ? `• Flight: ${flightNumber}%0A` : ""}%0APlease confirm availability.`
+      `Hello Shafsky Aviation,%0A%0AI would like to request Meet & Greet Lounge Service:%0A• Option: ${subService}${subService === "Transit Service" ? ` (${transitType})` : ""}%0A• Airport: ${selectedAirportObj.name}%0A• Date: ${travelDate || "TBD"}%0A• Passengers: ${adults} Adults${childrenCount ? `, ${childrenCount} Children` : ""}%0A• Guest: ${guestName || "Guest"} (${guestPhone || "Phone"})%0A${flightNumber ? `• Flight: ${flightNumber}%0A` : ""}%0APlease confirm availability.`
     );
     return `https://wa.me/919599087959?text=${text}`;
   };
@@ -526,7 +526,7 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
           setStep(1);
         }}
         referenceId={submittedRef || ""}
-        serviceTitle="Meet & Greet and Lounge Service"
+        serviceTitle="Meet & Greet Lounge Service"
         subServiceTitle={subService}
         customerName={guestName}
         customerPhone={guestPhone}

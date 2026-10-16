@@ -32,7 +32,7 @@ interface ServiceCategoryMeta {
 export const PRIMARY_SERVICES: ServiceCategoryMeta[] = [
   {
     id: "meet-greet",
-    title: "Meet & Greet and Lounge Service",
+    title: "Meet & Greet Lounge Service",
     shortTitle: "Meet & Greet",
     icon: Plane,
     subtitle: "Airport VIP Escort & Lounge",

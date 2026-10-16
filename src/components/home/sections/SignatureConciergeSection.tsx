@@ -45,7 +45,7 @@ export function SignatureConciergeSection() {
             className="mt-4 sm:mt-5 text-[clamp(2.2rem,4.5vw,4.2rem)] leading-[1.06] text-slate-950 tracking-tight font-bold"
             style={display}
           >
-            Meet & Greet and{" "}
+            Meet & Greet{" "}
             <span className="font-bold">
               Lounge Service.
             </span>

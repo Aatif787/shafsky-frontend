@@ -22,9 +22,9 @@ import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 export const Route = createFileRoute("/solutions/concierge")({
   head: () =>
     pageHead({
-      title: "Airport Meet & Greet and Lounge Service in India | Shafsky",
+      title: "Airport Meet & Greet Lounge Service in India | Shafsky",
       description:
-        "Official Shafsky Meet & Greet and lounge service for domestic and international arrival, departure, and transit. Aerobridge greeting, fast-track, and VIP lounge access.",
+        "Official Shafsky Meet & Greet Lounge service for domestic and international arrival, departure, and transit. Aerobridge greeting, fast-track, and VIP lounge access.",
       path: "/solutions/concierge",
       keywords: [
         "airport meet and greet",
@@ -260,7 +260,7 @@ function MeetGreetDedicatedPage() {
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-tight text-center"
               style={display}
             >
-              Meet & Greet and Lounge Service
+              Meet & Greet Lounge Service
             </h1>
           </div>
 
@@ -268,7 +268,7 @@ function MeetGreetDedicatedPage() {
           <div className="max-w-6xl mx-auto">
             <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center">
               <img width={1600} height={900} src={meetGreetImg}
-                alt="Shafsky Meet & Greet and Lounge Service Airport Team"
+                alt="Shafsky Meet & Greet Lounge Service Airport Team"
                 className="w-full h-auto object-contain object-center select-none block max-h-[580px]"
                 loading="eager"
               />

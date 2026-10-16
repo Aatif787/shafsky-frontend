@@ -32,9 +32,9 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
   {
     id: "meet-greet-lounge",
     serviceParam: "meet-greet",
-    title: "Meet & Greet and Lounge Service",
+    title: "Meet & Greet Lounge Service",
     photo: meetGreetImg,
-    alt: "Shafsky Meet & Greet and Lounge Service Departure and Arrival Airport Team",
+    alt: "Shafsky Meet & Greet Lounge Service Departure and Arrival Airport Team",
     badge: "Airport Concierge",
     description: "Personal airport assistance with dedicated hosts, security fast-track, and premier VIP lounge access.",
     subServices: [
@@ -191,7 +191,7 @@ export function EnterpriseSolutions() {
             <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 bg-slate-50/80 rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-sm mb-10">
               <div className="relative w-44 h-44 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-white shadow-lg shrink-0">
                 <img width={1600} height={900} src={meetGreetImg}
-                  alt="Shafsky Meet & Greet and Lounge Service"
+                  alt="Shafsky Meet & Greet Lounge Service"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -204,7 +204,7 @@ export function EnterpriseSolutions() {
                   <span>Airport Assistance & Lounge</span>
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-bold text-slate-950 tracking-tight" style={display}>
-                  Meet & Greet and Lounge Service
+                  Meet & Greet Lounge Service
                 </h3>
                 <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
                   Personal airport assistance with dedicated hosts, security fast-track, VIP lounge access, and baggage assistance across 20+ Indian airports.
