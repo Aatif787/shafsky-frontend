@@ -21,7 +21,7 @@ describe("Website Contact Settings - Client Architecture & Contracts", () => {
 
     const names = CANONICAL_SERVICES.map((s) => s.name);
     expect(names).toEqual([
-      "Meet & Greet & Lounge",
+      "Meet & Greet Lounge",
       "Transport",
       "Hotel",
       "Private Charter",

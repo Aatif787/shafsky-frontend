@@ -112,7 +112,7 @@ describe("ICICI Review Mode Specifications", () => {
       const reviewServices = filterServices(true);
       expect(reviewServices).toHaveLength(1);
       expect(reviewServices[0].href).toBe("/solutions/concierge");
-      expect(reviewServices[0].title).toBe("Meet & Greet & Lounge");
+      expect(reviewServices[0].title).toBe("Meet & Greet Lounge");
 
       const fullServices = filterServices(false);
       expect(fullServices).toHaveLength(5);

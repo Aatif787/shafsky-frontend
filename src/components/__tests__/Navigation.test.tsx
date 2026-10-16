@@ -25,10 +25,10 @@ vi.mock("@/lib/branding/branding.context", () => ({
 
 describe("Navigation navbar (Direct Individual Links)", () => {
   it("defines NAV_ITEMS in the exact required order with correct routes", () => {
-    expect(NAV_ITEMS).toHaveLength(8);
+    expect(NAV_ITEMS).toHaveLength(7);
 
     expect(NAV_ITEMS[0]).toEqual({
-      label: "Meet & Greet & Lounge",
+      label: "Meet & Greet Lounge",
       href: "/solutions/concierge",
     });
     expect(NAV_ITEMS[1]).toEqual({
@@ -52,16 +52,12 @@ describe("Navigation navbar (Direct Individual Links)", () => {
       href: "/solutions/special-services?sub=ticketing",
     });
     expect(NAV_ITEMS[6]).toEqual({
-      label: "Gallery",
-      href: "/gallery",
-    });
-    expect(NAV_ITEMS[7]).toEqual({
       label: "Contact",
       href: "/contact",
     });
   });
 
-  it("renders all 8 individual links directly in the navbar without a dropdown or mega-menu", () => {
+  it("renders all 7 individual links directly in the navbar without a dropdown or mega-menu", () => {
     const html = renderToString(React.createElement(Navigation, { visible: true }));
 
     // NO dropdown or mega-menu trigger
@@ -70,7 +66,7 @@ describe("Navigation navbar (Direct Individual Links)", () => {
 
     // All 5 services appear directly as links
     expect(html).toContain('href="/solutions/concierge"');
-    expect(html).toContain("Meet &amp; Greet &amp; Lounge");
+    expect(html).toContain("Meet &amp; Greet Lounge");
 
     expect(html).toContain('href="/solutions/transport"');
     expect(html).toContain(">Transport</span>");
@@ -88,8 +84,7 @@ describe("Navigation navbar (Direct Individual Links)", () => {
     expect(html).toContain('href="/airports"');
     expect(html).toContain(">Airports</span>");
 
-    expect(html).toContain('href="/gallery"');
-    expect(html).toContain(">Gallery</span>");
+    expect(html).not.toContain('href="/gallery"');
 
     expect(html).toContain('href="/contact"');
     expect(html).toContain(">Contact</span>");

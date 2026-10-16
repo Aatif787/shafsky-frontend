@@ -61,7 +61,7 @@ export type PublicContactSettingsData = Record<ServiceKey, PublicServiceContact>
 export const CANONICAL_SERVICES: { key: ServiceKey; name: string; description: string }[] = [
   {
     key: "meet_greet_lounge",
-    name: "Meet & Greet & Lounge",
+    name: "Meet & Greet Lounge",
     description: "Airport tarmac reception, VIP lounge access, and expedited airside assistance.",
   },
   {

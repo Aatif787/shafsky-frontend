@@ -265,7 +265,7 @@ export function serviceCatalogJsonLd() {
     {
       "@type": "ListItem",
       position: 1,
-      name: "Airport Meet & Greet & Lounge Services",
+      name: "Airport Meet & Greet Lounge Services",
       url: absoluteUrl("/solutions/concierge"),
     },
   ];

@@ -142,7 +142,6 @@ export async function apiAuthRefresh(): Promise<{ data?: AuthResponseData; error
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include", // Sends HttpOnly refreshToken cookie automatically
-      body: JSON.stringify({}),
     });
 
     if (!res.ok) {

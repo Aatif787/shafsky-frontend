@@ -36,7 +36,7 @@ export interface ServiceMenuItem {
 
 export const PRIMARY_SERVICES: ServiceMenuItem[] = [
   {
-    title: "Meet & Greet & Lounge",
+    title: "Meet & Greet Lounge",
     href: "/solutions/concierge",
     descriptor: "Airport assistance • Domestic • International • Transit",
     icon: Crown,
@@ -93,17 +93,16 @@ export interface NavItem {
 }
 
 /**
- * 8 Navbar Navigation Items in exact specified order:
- * Meet & Greet & Lounge | Airports | Transport | Hotel | Private Charter | Ticketing | Gallery | Contact
+ * 7 Navbar Navigation Items in exact specified order:
+ * Meet & Greet Lounge | Airports | Transport | Hotel | Private Charter | Ticketing | Contact
  */
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Meet & Greet & Lounge", href: "/solutions/concierge" },
+  { label: "Meet & Greet Lounge", href: "/solutions/concierge" },
   { label: "Airports", href: "/airports" },
   { label: "Transport", href: "/solutions/transport" },
   { label: "Hotel", href: "/solutions/hotels" },
   { label: "Private Charter", href: "/solutions/aviation" },
   { label: "Ticketing", href: "/solutions/special-services?sub=ticketing" },
-  { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -221,6 +220,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
   const getItemIcon = (label: string) => {
     switch (label) {
+      case "Meet & Greet Lounge":
       case "Meet & Greet & Lounge":
         return Crown;
       case "Transport":

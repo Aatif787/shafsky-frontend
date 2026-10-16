@@ -14,7 +14,6 @@ export function Footer() {
     { label: "Contact us", href: "/contact" },
     { label: "My account", href: "/auth" },
     { label: "Our services", href: "/#services", hash: "services" },
-    { label: "Blog", href: "/services/guide" },
     { label: "Wishlist", href: "/book" },
     { label: "Privacy policy", href: "/privacy-policy" },
     { label: "Terms and conditions", href: "/terms-and-conditions" },
