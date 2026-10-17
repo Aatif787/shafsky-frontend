@@ -108,6 +108,7 @@ export default defineConfig(({ mode }) => {
             "/terms-and-conditions",
             "/cancellation-and-refund",
             "/gallery",
+            "/prestigious-projects",
             "/robots.txt",
             "/sitemap.xml",
           ],

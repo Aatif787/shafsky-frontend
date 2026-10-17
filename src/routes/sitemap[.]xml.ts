@@ -25,6 +25,7 @@ export const STATIC_PAGES: SitemapEntry[] = [
   { path: "/solutions/special-services", changefreq: "monthly", priority: "0.6" },
   { path: "/services/guide", changefreq: "monthly", priority: "0.7" },
   { path: "/about-us", changefreq: "monthly", priority: "0.7" },
+  { path: "/prestigious-projects", changefreq: "monthly", priority: "0.7" },
   { path: "/support", changefreq: "monthly", priority: "0.7" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
   { path: "/privacy-policy", changefreq: "monthly", priority: "0.5" },

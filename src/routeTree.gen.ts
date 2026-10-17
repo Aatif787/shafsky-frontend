@@ -22,6 +22,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FlightVerificationRouteImport } from './routes/flight-verification'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrestigiousProjectsRouteImport } from './routes/prestigious-projects'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -145,6 +146,11 @@ const GalleryRoute = GalleryRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrestigiousProjectsRoute = PrestigiousProjectsRouteImport.update({
+  id: '/prestigious-projects',
+  path: '/prestigious-projects',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
@@ -492,6 +498,7 @@ export interface FileRoutesByFullPath {
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/prestigious-projects': typeof PrestigiousProjectsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -566,6 +573,7 @@ export interface FileRoutesByTo {
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/prestigious-projects': typeof PrestigiousProjectsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -640,6 +648,7 @@ export interface FileRoutesById {
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/prestigious-projects': typeof PrestigiousProjectsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -716,6 +725,7 @@ export interface FileRouteTypes {
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/prestigious-projects'
     | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -790,6 +800,7 @@ export interface FileRouteTypes {
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/prestigious-projects'
     | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -863,6 +874,7 @@ export interface FileRouteTypes {
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/prestigious-projects'
     | '/privacy-policy'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -939,6 +951,7 @@ export interface RootRouteChildren {
   FlightVerificationRoute: typeof FlightVerificationRoute
   GalleryRoute: typeof GalleryRoute
   LoginRoute: typeof LoginRoute
+  PrestigiousProjectsRoute: typeof PrestigiousProjectsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -1053,6 +1066,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prestigious-projects': {
+      id: '/prestigious-projects'
+      path: '/prestigious-projects'
+      fullPath: '/prestigious-projects'
+      preLoaderRoute: typeof PrestigiousProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy-policy': {
@@ -1641,6 +1661,7 @@ const rootRouteChildren: RootRouteChildren = {
   FlightVerificationRoute: FlightVerificationRoute,
   GalleryRoute: GalleryRoute,
   LoginRoute: LoginRoute,
+  PrestigiousProjectsRoute: PrestigiousProjectsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

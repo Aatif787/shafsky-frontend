@@ -20,6 +20,7 @@ export const CONFIRMED_LEGACY_REDIRECTS: Record<string, string> = {
   "/contact-us/": "/contact",
   "/contact/": "/contact",
   "/support/": "/support",
+  "/prestigious-projects/": "/prestigious-projects",
 
   // Hub & coverage pages
   "/airports/": "/airports",

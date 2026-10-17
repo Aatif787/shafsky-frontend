@@ -11,6 +11,7 @@ export function Footer() {
 
   const allQuickLinks: { label: string; href: string; hash?: string }[] = [
     { label: "About us", href: "/about-us" },
+    { label: "Prestigious Projects Handled", href: "/prestigious-projects" },
     { label: "Contact us", href: "/contact" },
     { label: "My account", href: "/auth" },
     { label: "Our services", href: "/#services", hash: "services" },
