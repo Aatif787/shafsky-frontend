@@ -52,7 +52,7 @@ describe("Navigation navbar (Direct Individual Links)", () => {
       href: "/solutions/special-services?sub=ticketing",
     });
     expect(NAV_ITEMS[6]).toEqual({
-      label: "Contact",
+      label: "Support",
       href: "/contact",
     });
   });
@@ -87,7 +87,7 @@ describe("Navigation navbar (Direct Individual Links)", () => {
     expect(html).not.toContain('href="/gallery"');
 
     expect(html).toContain('href="/contact"');
-    expect(html).toContain(">Contact</span>");
+    expect(html).toContain(">Support</span>");
 
     // Right-side items
     expect(html).toContain("+91 9599087959");

@@ -17,12 +17,14 @@ import {
   LogIn,
   MapPin,
   Image as ImageIcon,
+  ChevronDown,
 } from "lucide-react";
 import { useBranding } from "@/lib/branding/branding.context";
 import { mono } from "@/components/home/theme";
 import { motion, AnimatePresence } from "framer-motion";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
+import { SupportPanel, SupportMobileAccordion } from "@/components/navigation/SupportPanel";
 
 export interface ServiceMenuItem {
   title: string;
@@ -94,7 +96,7 @@ export interface NavItem {
 
 /**
  * 7 Navbar Navigation Items in exact specified order:
- * Meet & Greet Lounge | Airports | Transport | Hotel | Private Charter | Ticketing | Contact
+ * Meet & Greet Lounge | Airports | Transport | Hotel | Private Charter | Ticketing | Support
  */
 export const NAV_ITEMS: NavItem[] = [
   { label: "Meet & Greet Lounge", href: "/solutions/concierge" },
@@ -103,7 +105,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Hotel", href: "/solutions/hotels" },
   { label: "Private Charter", href: "/solutions/aviation" },
   { label: "Ticketing", href: "/solutions/special-services?sub=ticketing" },
-  { label: "Contact", href: "/contact" },
+  { label: "Support", href: "/contact" },
 ];
 
 export function Navigation({ visible = true }: { visible?: boolean }) {
@@ -112,6 +114,9 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
+  const [mobileSupportOpen, setMobileSupportOpen] = useState(false);
+  const supportTriggerRef = useRef<HTMLAnchorElement>(null);
   const [roles, setRoles] = useState<string[]>([]);
   const headerRef = useRef<HTMLElement>(null);
   const [headerHeight, setHeaderHeight] = useState(64);
@@ -189,9 +194,11 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
+  // Close mobile menu & support panels on route change
   useEffect(() => {
     setMobileOpen(false);
+    setSupportOpen(false);
+    setMobileSupportOpen(false);
   }, [location.pathname]);
 
   // Dynamically update header height for mobile drawer positioning
@@ -235,6 +242,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
         return MapPin;
       case "Gallery":
         return ImageIcon;
+      case "Support":
       case "Contact":
         return PhoneCall;
       default:
@@ -303,10 +311,41 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
             </Link>
           </div>
 
-          {/* Desktop Navigation Links (Individual direct links, no mega-menu or dropdown) */}
+          {/* Desktop Navigation Links (Individual direct links with Support Directory dropdown) */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 2xl:gap-2">
             {activeNavItems.map((item) => {
               const isActive = isItemActive(item.href);
+
+              if (item.label === "Support") {
+                return (
+                  <a
+                    key={item.label}
+                    ref={supportTriggerRef}
+                    href={item.href}
+                    role="button"
+                    aria-haspopup="dialog"
+                    aria-expanded={supportOpen}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSupportOpen((prev) => !prev);
+                    }}
+                    className={`inline-flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-full text-[11.5px] xl:text-[12.5px] 2xl:text-[13px] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 ${
+                      supportOpen || isActive
+                        ? "apple-glass-nav-item-active"
+                        : "apple-glass-nav-item"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    <ChevronDown
+                      size={12}
+                      className={`transition-transform duration-200 ${
+                        supportOpen ? "rotate-180 text-lime-700" : "text-slate-500"
+                      }`}
+                    />
+                  </a>
+                );
+              }
+
               return (
                 <Link
                   key={item.label}
@@ -394,6 +433,17 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
         </div>
       </div>
 
+      {/* Desktop Support Mega-Panel */}
+      <div className="hidden lg:block relative mx-auto max-w-[1560px] px-4 sm:px-6 md:px-8 xl:px-10 pointer-events-none">
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[calc(100vw-32px)] sm:w-[640px] md:w-[768px] lg:w-[980px] xl:w-[1080px] max-w-[1100px] z-50 pointer-events-auto">
+          <SupportPanel
+            isOpen={supportOpen}
+            onClose={() => setSupportOpen(false)}
+            triggerRef={supportTriggerRef}
+          />
+        </div>
+      </div>
+
       {/* Mobile Drawer (Direct responsive links) */}
       <AnimatePresence>
         {mobileOpen && (
@@ -417,6 +467,61 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                 {activeNavItems.map((item) => {
                   const isActive = isItemActive(item.href);
                   const Icon = getItemIcon(item.label);
+
+                  if (item.label === "Support") {
+                    return (
+                      <div
+                        key={item.label}
+                        className="rounded-xl border border-slate-200/80 bg-slate-50/50 overflow-hidden transition-all"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setMobileSupportOpen((prev) => !prev)}
+                          aria-expanded={mobileSupportOpen}
+                          className={`w-full flex items-center justify-between py-2.5 px-3 text-sm font-semibold transition-colors cursor-pointer ${
+                            mobileSupportOpen || isActive
+                              ? "bg-[#0a196f]/10 text-[#0a196f] font-bold"
+                              : "text-slate-800 hover:text-[#0a196f] hover:bg-slate-100/60"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            {Icon && (
+                              <Icon
+                                size={16}
+                                className={
+                                  mobileSupportOpen || isActive
+                                    ? "text-[#0a196f]"
+                                    : "text-slate-500"
+                                }
+                              />
+                            )}
+                            <span>{item.label}</span>
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-lime-100 text-lime-900 border border-lime-300/70">
+                              5 Depts
+                            </span>
+                          </div>
+                          <ChevronDown
+                            size={14}
+                            className={`text-slate-400 transition-transform duration-200 shrink-0 ${
+                              mobileSupportOpen ? "rotate-180 text-[#0a196f]" : ""
+                            }`}
+                          />
+                        </button>
+
+                        {mobileSupportOpen && (
+                          <div className="p-3 border-t border-slate-200/60 bg-white">
+                            <SupportMobileAccordion
+                              onClose={() => {
+                                setMobileSupportOpen(false);
+                                setMobileOpen(false);
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+
                   return (
                     <Link
                       key={item.label}
