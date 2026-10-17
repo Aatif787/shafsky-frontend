@@ -5,19 +5,30 @@ import {
   SUPPORT_DEPARTMENTS,
   SupportDepartment,
 } from "../navigation/supportData";
-import {
-  SupportPanel,
-  DepartmentCard,
-  SupportMobileAccordion,
-} from "../navigation/SupportPanel";
+import { SupportPage } from "@/routes/support";
 
 // Mock router primitives
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ to, children, ...props }: any) =>
     React.createElement("a", { ...props, href: to }, children),
+  useLocation: () => ({ pathname: "/support", search: "" }),
+  useNavigate: () => vi.fn(),
+  createFileRoute: () => () => ({}),
 }));
 
-describe("Support Department Directory & Panel Verification", () => {
+vi.mock("@/lib/session", () => ({
+  getSessionInfo: vi.fn().mockResolvedValue({ userId: null, roles: [], isStaff: false }),
+}));
+
+vi.mock("@/lib/branding/branding.context", () => ({
+  useBranding: () => ({
+    branding: { logo_url: "/logo.png" },
+    isLoading: false,
+    refetch: () => {},
+  }),
+}));
+
+describe("Support Department Directory & Dedicated /support Page Verification", () => {
   it("contains exactly 5 canonical departments with complete data", () => {
     expect(SUPPORT_DEPARTMENTS).toHaveLength(5);
   });
@@ -65,37 +76,37 @@ describe("Support Department Directory & Panel Verification", () => {
     expect(dept3.departmentNumber).toBe(3);
     expect(dept3.title).toBe("Whole Guest Relationship Department");
 
-    // Email exact string and mailto: link
-    expect(dept3.emails).toHaveLength(1);
-    expect(dept3.emails[0].display).toBe("Gro.shafskyaviation@gmail.com");
-    expect(dept3.emails[0].email).toBe("mailto:Gro.shafskyaviation@gmail.com");
-
-    // Two Phone numbers exact string and tel: link
+    // 2 Phone numbers
     expect(dept3.phones).toHaveLength(2);
     expect(dept3.phones[0].display).toBe("+91-9599087959");
     expect(dept3.phones[0].tel).toBe("tel:+919599087959");
     expect(dept3.phones[1].display).toBe("+91 95996 15459");
     expect(dept3.phones[1].tel).toBe("tel:+919599615459");
+
+    // Email
+    expect(dept3.emails).toHaveLength(1);
+    expect(dept3.emails[0].display).toBe("Gro.shafskyaviation@gmail.com");
+    expect(dept3.emails[0].email).toBe("mailto:Gro.shafskyaviation@gmail.com");
   });
 
-  it("DEPARTMENT 4 — Escalation with two emails and two phone numbers clearly distinct", () => {
+  it("DEPARTMENT 4 — Escalation", () => {
     const dept4 = SUPPORT_DEPARTMENTS[3];
     expect(dept4.departmentNumber).toBe(4);
     expect(dept4.title).toBe("Escalation");
 
-    // Two emails exact strings and mailto: links
-    expect(dept4.emails).toHaveLength(2);
-    expect(dept4.emails[0].display).toBe("gm.shafskyaviation@gmail.com");
-    expect(dept4.emails[0].email).toBe("mailto:gm.shafskyaviation@gmail.com");
-    expect(dept4.emails[1].display).toBe("hr.shafskyaviation@gmail.com");
-    expect(dept4.emails[1].email).toBe("mailto:hr.shafskyaviation@gmail.com");
-
-    // Two phone numbers exact strings and tel: links
+    // 2 Phone numbers
     expect(dept4.phones).toHaveLength(2);
     expect(dept4.phones[0].display).toBe("+91 98188 50755");
     expect(dept4.phones[0].tel).toBe("tel:+919818850755");
     expect(dept4.phones[1].display).toBe("+91 95992 24680");
     expect(dept4.phones[1].tel).toBe("tel:+919599224680");
+
+    // 2 Email addresses
+    expect(dept4.emails).toHaveLength(2);
+    expect(dept4.emails[0].display).toBe("gm.shafskyaviation@gmail.com");
+    expect(dept4.emails[0].email).toBe("mailto:gm.shafskyaviation@gmail.com");
+    expect(dept4.emails[1].display).toBe("hr.shafskyaviation@gmail.com");
+    expect(dept4.emails[1].email).toBe("mailto:hr.shafskyaviation@gmail.com");
   });
 
   it("DEPARTMENT 5 — Finance", () => {
@@ -103,31 +114,28 @@ describe("Support Department Directory & Panel Verification", () => {
     expect(dept5.departmentNumber).toBe(5);
     expect(dept5.title).toBe("Finance");
 
+    // Phone exact string and tel: link
+    expect(dept5.phones).toHaveLength(1);
+    expect(dept5.phones[0].display).toBe("+91 88006 98554");
+    expect(dept5.phones[0].tel).toBe("tel:+918800698554");
+
     // Email exact string and mailto: link
     expect(dept5.emails).toHaveLength(1);
     expect(dept5.emails[0].display).toBe("financeshafskyaviation@gmail.com");
     expect(dept5.emails[0].email).toBe(
       "mailto:financeshafskyaviation@gmail.com"
     );
-
-    // Phone exact string and tel: link
-    expect(dept5.phones).toHaveLength(1);
-    expect(dept5.phones[0].display).toBe("+91 88006 98554");
-    expect(dept5.phones[0].tel).toBe("tel:+918800698554");
   });
 
-  it("renders SupportPanel when open with all 5 department titles and contact details", () => {
-    const html = renderToString(
-      React.createElement(SupportPanel, {
-        isOpen: true,
-        onClose: vi.fn(),
-      })
-    );
+  it("renders dedicated SupportPage with all 5 department titles and contact details", () => {
+    const html = renderToString(React.createElement(SupportPage));
 
-    // Header & Dialog structure
-    expect(html).toContain("Shafsky Aviation Support Directory");
-    expect(html).toContain("Departmental Contact Directory");
-    expect(html).toContain('role="dialog"');
+    // Page Introduction
+    expect(html).toContain("SUPPORT &amp; CONTACT");
+    expect(html).toContain("How can we help you?");
+    expect(html).toContain(
+      "Connect directly with the right Shafsky Aviation team for reservations, travel assistance, guest relations, escalations, and finance enquiries."
+    );
 
     // All Department titles
     expect(html).toContain("Air Ticketing, Event Management, Transportation &amp; Hotels");
@@ -170,43 +178,14 @@ describe("Support Department Directory & Panel Verification", () => {
     expect(html).toContain('href="mailto:financeshafskyaviation@gmail.com"');
 
     // Call and Email buttons
-    expect(html).toContain(">Call</span>");
-    expect(html).toContain(">Email</span>");
+    expect(html).toContain(">Call Now</span>");
+    expect(html).toContain(">Send Email</span>");
 
-    // Link to Full Contact page
-    expect(html).toContain('href="/contact"');
-    expect(html).toContain("Visit Full Contact &amp; Inquiry Page");
-  });
-
-  it("does not render SupportPanel markup when isOpen is false", () => {
-    const html = renderToString(
-      React.createElement(SupportPanel, {
-        isOpen: false,
-        onClose: vi.fn(),
-      })
-    );
-    expect(html).toBe("");
-  });
-
-  it("renders SupportMobileAccordion with all 5 departments and Call/Email buttons", () => {
-    const html = renderToString(
-      React.createElement(SupportMobileAccordion, {
-        onClose: vi.fn(),
-      })
-    );
-
-    expect(html).toContain("Air Ticketing, Event Management, Transportation &amp; Hotels");
-    expect(html).toContain("Visa Assistance, Air Ticketing, Hotels &amp; General Inquiry");
-    expect(html).toContain("Whole Guest Relationship Department");
-    expect(html).toContain("Escalation");
-    expect(html).toContain("Finance");
-
-    // Both Call and Email action buttons present
-    expect(html).toContain(">Call</span>");
-    expect(html).toContain(">Email</span>");
-
-    // Full contact link present
-    expect(html).toContain('href="/contact"');
-    expect(html).toContain("Open Full Contact Form");
+    // Full website footer is present at the bottom
+    expect(html).toContain("About Shafsky Aviation Services");
+    expect(html).toContain("SUSWAGATAM");
+    expect(html).toContain("Quick Links");
+    expect(html).toContain("Contact Us");
+    expect(html).toContain("Copyright 2024 Shafsky Aviation Services Pvt. Ltd.");
   });
 });

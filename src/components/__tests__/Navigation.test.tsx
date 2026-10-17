@@ -53,7 +53,7 @@ describe("Navigation navbar (Direct Individual Links)", () => {
     });
     expect(NAV_ITEMS[6]).toEqual({
       label: "Support",
-      href: "/contact",
+      href: "/support",
     });
   });
 
@@ -61,6 +61,7 @@ describe("Navigation navbar (Direct Individual Links)", () => {
     const html = renderToString(React.createElement(Navigation, { visible: true }));
 
     // NO dropdown or mega-menu trigger
+    expect(html).not.toContain('aria-haspopup="dialog"');
     expect(html).not.toContain('aria-haspopup="true"');
     expect(html).not.toContain(">Services</span>");
 
@@ -86,7 +87,7 @@ describe("Navigation navbar (Direct Individual Links)", () => {
 
     expect(html).not.toContain('href="/gallery"');
 
-    expect(html).toContain('href="/contact"');
+    expect(html).toContain('href="/support"');
     expect(html).toContain(">Support</span>");
 
     // Right-side items
