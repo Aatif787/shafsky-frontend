@@ -100,7 +100,7 @@ export function DepartmentCard({
       </div>
 
       {/* Contact Entries: Phones & Emails */}
-      <div className="space-y-3 pt-2 border-t border-slate-100">
+      <div className={`pt-2 border-t border-slate-100 ${isEscalation ? "grid grid-cols-1 sm:grid-cols-2 gap-3" : "space-y-3"}`}>
         {/* Phone list */}
         {dept.phones.length > 0 && (
           <div className="space-y-1.5">
@@ -218,26 +218,26 @@ export function SupportPanel({
           role="dialog"
           aria-modal="true"
           aria-label="Shafsky Support Directory"
-          initial={{ opacity: 0, y: 12, scale: 0.98 }}
+          initial={{ opacity: 0, y: 10, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.98 }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className={`apple-glass-dropdown rounded-3xl p-4 sm:p-6 lg:p-7 text-slate-900 border border-slate-200/90 shadow-[0_25px_60px_-12px_rgba(15,23,42,0.22)] bg-[#FAF9F5]/98 backdrop-blur-2xl max-h-[calc(100vh-90px)] overflow-y-auto ${className}`}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className={`apple-glass-dropdown rounded-3xl p-4 sm:p-5 lg:p-6 text-slate-900 border border-slate-200/90 shadow-[0_25px_60px_-12px_rgba(15,23,42,0.22)] bg-[#FAF9F5]/98 backdrop-blur-2xl max-h-[calc(100vh-90px)] overflow-y-auto ${className}`}
         >
           {/* Panel Top Header Bar */}
-          <div className="flex items-start justify-between gap-4 pb-5 border-b border-slate-200">
-            <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-100 text-lime-900 text-[10.5px] font-mono font-bold tracking-wider uppercase border border-lime-300">
+          <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-200">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-lime-100 text-lime-900 text-[10.5px] font-mono font-bold tracking-wider uppercase border border-lime-300">
                 <Sparkles size={12} className="text-lime-700" />
                 <span>Shafsky Aviation Support Directory</span>
               </div>
               <h2
-                className="text-lg sm:text-xl lg:text-2xl font-black text-slate-950 tracking-tight"
+                className="text-base sm:text-lg lg:text-xl font-black text-slate-950 tracking-tight"
                 style={display}
               >
                 Departmental Contact Directory
               </h2>
-              <p className="text-xs sm:text-sm text-slate-700 max-w-2xl leading-relaxed">
+              <p className="text-xs text-slate-700 max-w-xl leading-relaxed">
                 Connect directly with our 5 specialized aviation operations, ticketing, guest care, escalation, and finance desks.
               </p>
             </div>
@@ -253,20 +253,20 @@ export function SupportPanel({
             </button>
           </div>
 
-          {/* Department Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 pt-5">
+          {/* Department Cards Grid (Right-Aligned 2-Column Desktop Grid) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5 pt-4">
             {/* Dept 1 */}
-            <DepartmentCard dept={SUPPORT_DEPARTMENTS[0]} onActionClick={onClose} />
+            <DepartmentCard dept={SUPPORT_DEPARTMENTS[0]} onActionClick={onClose} compact />
             {/* Dept 2 */}
-            <DepartmentCard dept={SUPPORT_DEPARTMENTS[1]} onActionClick={onClose} />
+            <DepartmentCard dept={SUPPORT_DEPARTMENTS[1]} onActionClick={onClose} compact />
             {/* Dept 3 */}
-            <DepartmentCard dept={SUPPORT_DEPARTMENTS[2]} onActionClick={onClose} />
-            {/* Dept 4: Escalation (Spans 2 columns on lg screens for balanced symmetry) */}
-            <div className="lg:col-span-2">
-              <DepartmentCard dept={SUPPORT_DEPARTMENTS[3]} onActionClick={onClose} />
-            </div>
+            <DepartmentCard dept={SUPPORT_DEPARTMENTS[2]} onActionClick={onClose} compact />
             {/* Dept 5 */}
-            <DepartmentCard dept={SUPPORT_DEPARTMENTS[4]} onActionClick={onClose} />
+            <DepartmentCard dept={SUPPORT_DEPARTMENTS[4]} onActionClick={onClose} compact />
+            {/* Dept 4: Escalation (Spans across both columns) */}
+            <div className="md:col-span-2">
+              <DepartmentCard dept={SUPPORT_DEPARTMENTS[3]} onActionClick={onClose} compact />
+            </div>
           </div>
 
           {/* Panel Footer Bar */}

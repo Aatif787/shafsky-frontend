@@ -325,8 +325,10 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                     role="button"
                     aria-haspopup="dialog"
                     aria-expanded={supportOpen}
+                    data-no-transition="true"
                     onClick={(e) => {
                       e.preventDefault();
+                      e.stopPropagation();
                       setSupportOpen((prev) => !prev);
                     }}
                     className={`inline-flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-full text-[11.5px] xl:text-[12.5px] 2xl:text-[13px] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 ${
@@ -433,9 +435,9 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
         </div>
       </div>
 
-      {/* Desktop Support Mega-Panel */}
+      {/* Desktop Support Mega-Panel (Right-Aligned under Support Item & Action Area) */}
       <div className="hidden lg:block relative mx-auto max-w-[1560px] px-4 sm:px-6 md:px-8 xl:px-10 pointer-events-none">
-        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[calc(100vw-32px)] sm:w-[640px] md:w-[768px] lg:w-[980px] xl:w-[1080px] max-w-[1100px] z-50 pointer-events-auto">
+        <div className="absolute top-2 right-4 sm:right-6 md:right-8 xl:right-10 left-auto w-[calc(100vw-32px)] sm:w-[560px] md:w-[680px] lg:w-[760px] xl:w-[820px] max-w-[820px] z-50 pointer-events-auto">
           <SupportPanel
             isOpen={supportOpen}
             onClose={() => setSupportOpen(false)}

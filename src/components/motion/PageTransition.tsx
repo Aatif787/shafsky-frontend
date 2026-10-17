@@ -15,8 +15,11 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 function isInternalPageLink(anchor: HTMLAnchorElement) {
   if (anchor.target && anchor.target !== "" && anchor.target !== "_self") return false;
   if (anchor.hasAttribute("download")) return false;
+  if (anchor.getAttribute("role") === "button") return false;
+  if (anchor.hasAttribute("aria-haspopup")) return false;
+  if (anchor.getAttribute("data-no-transition") === "true") return false;
   const href = anchor.getAttribute("href");
-  if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) {
+  if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:") || href.startsWith("javascript:")) {
     return false;
   }
   try {
@@ -42,6 +45,7 @@ export function PageTransition() {
   const coverStarted = useRef(0);
   const revealTimer = useRef<number>(0);
   const idleTimer = useRef<number>(0);
+  const fallbackAbortTimer = useRef<number>(0);
   const lastPath = useRef(pathname);
 
   const stageRef = useRef<Stage>("idle");
@@ -51,13 +55,20 @@ export function PageTransition() {
     if (reduce) return;
     window.clearTimeout(revealTimer.current);
     window.clearTimeout(idleTimer.current);
+    window.clearTimeout(fallbackAbortTimer.current);
     coverStarted.current = performance.now();
     document.documentElement.classList.add("route-cover");
     document.documentElement.classList.remove("route-enter");
     flushSync(() => setStage("cover"));
+
+    // Failsafe: auto-reveal if navigation does not complete within 1200ms
+    fallbackAbortTimer.current = window.setTimeout(() => {
+      startReveal();
+    }, 1200);
   };
 
   const startReveal = () => {
+    window.clearTimeout(fallbackAbortTimer.current);
     const elapsed = performance.now() - coverStarted.current;
     const wait = Math.max(0, COVER_MS - elapsed);
     window.clearTimeout(revealTimer.current);
@@ -124,6 +135,7 @@ export function PageTransition() {
     return () => {
       window.clearTimeout(revealTimer.current);
       window.clearTimeout(idleTimer.current);
+      window.clearTimeout(fallbackAbortTimer.current);
       document.documentElement.classList.remove("route-cover", "route-enter");
     };
   }, []);
