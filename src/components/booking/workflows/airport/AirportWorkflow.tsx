@@ -360,6 +360,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       const res = await ApiClient.fetchWithAuth("/api/bookings", {
         method: "POST",
         body: JSON.stringify({
+          preferredGateway: "RAZORPAY",
           passengerName: state.fullName,
           passengerEmail: state.email,
           passengerPhone: state.phone,
@@ -472,6 +473,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
         body: JSON.stringify({
           booking_ref: bookingRef,
           payment_token: paymentToken,
+          preferred_gateway: "RAZORPAY",
         }),
       });
       const result = await res.json().catch(() => null);

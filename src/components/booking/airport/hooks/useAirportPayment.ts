@@ -454,6 +454,7 @@ export function useAirportPayment({
       const createRes = await ApiClient.fetchWithAuth("/api/bookings", {
         method: "POST",
         body: JSON.stringify({
+          preferredGateway: "RAZORPAY",
           passengerName: cleanName,
           passengerEmail: cleanEmail,
           passengerPhone: cleanPhone,
@@ -779,6 +780,7 @@ export function useAirportPayment({
         body: JSON.stringify({
           booking_ref: activeBookingRef,
           payment_token: paymentToken,
+          preferred_gateway: "RAZORPAY",
         }),
       });
       const retryData = await retryRes.json().catch(() => null);

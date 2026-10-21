@@ -243,29 +243,37 @@ function RootComponent() {
     </AppErrorBoundary>
   );
 
-  if (!publishableKey) return application;
+  let effectiveKey = publishableKey;
+  // If deployed with unresolved clerk.shafskyaviation.in key, normalize to the active clerk.shafskyaviation.com key
+  if (effectiveKey === "pk_live_Y2xlcmsuc2hhZnNreWF2aWF0aW9uLmluJA") {
+    effectiveKey = "pk_live_Y2xlcmsuc2hhZnNreWF2aWF0aW9uLmNvbSQ=";
+  }
 
-  const isProdKey = publishableKey.startsWith("pk_live_");
+  if (!effectiveKey) return application;
+
+  const isProdKey = effectiveKey.startsWith("pk_live_");
 
   return (
-    <ClerkProvider
-      publishableKey={publishableKey}
-      signInUrl="/auth"
-      signUpUrl="/auth"
-      signInFallbackRedirectUrl="/"
-      signUpFallbackRedirectUrl="/"
-      {...(isProdKey
-        ? {
-            allowedRedirectOrigins: [
-              "https://shafskyaviation.com",
-              "https://shafskyaviation.in",
-              "https://www.shafskyaviation.com",
-              "https://www.shafskyaviation.in",
-            ],
-          }
-        : {})}
-    >
-      {application}
-    </ClerkProvider>
+    <AppErrorBoundary name="ClerkProviderBoundary" fallback={application}>
+      <ClerkProvider
+        publishableKey={effectiveKey}
+        signInUrl="/auth"
+        signUpUrl="/auth"
+        signInFallbackRedirectUrl="/"
+        signUpFallbackRedirectUrl="/"
+        {...(isProdKey
+          ? {
+              allowedRedirectOrigins: [
+                "https://shafskyaviation.com",
+                "https://shafskyaviation.in",
+                "https://www.shafskyaviation.com",
+                "https://www.shafskyaviation.in",
+              ],
+            }
+          : {})}
+      >
+        {application}
+      </ClerkProvider>
+    </AppErrorBoundary>
   );
 }
