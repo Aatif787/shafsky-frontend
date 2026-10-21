@@ -310,17 +310,23 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               const isActive = isItemActive(item.href);
 
               return (
-                <Link
+                <motion.div
                   key={item.label}
-                  to={item.href}
-                  className={`inline-flex items-center px-2 lg:px-2.5 xl:px-3 py-1.5 rounded-full text-[11.5px] xl:text-[12.5px] 2xl:text-[13px] font-semibold transition-all duration-200 whitespace-nowrap ${
-                    isActive
-                      ? "apple-glass-nav-item-active"
-                      : "apple-glass-nav-item"
-                  }`}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 25 }}
                 >
-                  <span>{item.label}</span>
-                </Link>
+                  <Link
+                    to={item.href}
+                    className={`inline-flex items-center px-2 lg:px-2.5 xl:px-3 py-1.5 rounded-full text-[11.5px] xl:text-[12.5px] 2xl:text-[13px] font-semibold transition-all duration-200 whitespace-nowrap ${
+                      isActive
+                        ? "apple-glass-nav-item-active"
+                        : "apple-glass-nav-item"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                  </Link>
+                </motion.div>
               );
             })}
           </nav>

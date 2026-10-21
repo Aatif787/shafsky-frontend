@@ -290,8 +290,9 @@ export function EnterpriseSolutions() {
                     initial={{ opacity: 0, x: offset.x, y: offset.y, scale: 0.92 }}
                     whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
                     viewport={{ once: false, amount: 0.2 }}
-                    transition={{ duration: 0.65, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                    whileHover={{ y: -6 }}
+                    transition={{ duration: 0.7, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ y: -6, scale: 1.02 }}
+                    whileTap={{ scale: 0.96 }}
                     className="flex flex-col items-center text-center w-full group cursor-pointer"
                   onClick={() => {
                     if (srv.id === "meet-greet-lounge") {

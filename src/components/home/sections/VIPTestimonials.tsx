@@ -121,34 +121,43 @@ export function VIPTestimonials() {
           </motion.div>
         </div>
 
-        {/* Clean Testimonial Cards Carousel Rail */}
-        <div
-          ref={scrollRef}
-          className="flex gap-5 sm:gap-6 overflow-x-auto pb-6 pt-2 scrollbar-none snap-x snap-mandatory"
-          style={{ scrollBehavior: "smooth" }}
-        >
-          {TESTIMONIAL_CARDS.map((item, idx) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, x: 45 + Math.min(idx * 8, 40), y: 25, scale: 0.94 }}
-              whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-              viewport={{ once: false, amount: 0.15 }}
-              transition={{ duration: 0.55, delay: Math.min(idx * 0.07, 0.4), ease: [0.22, 1, 0.36, 1] }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="group relative shrink-0 w-[270px] sm:w-[310px] md:w-[340px] snap-start rounded-3xl overflow-hidden border-2 border-slate-200 shadow-[0_10px_25px_-10px_rgba(0,0,0,0.1)] hover:border-lime-500 hover:shadow-[0_20px_45px_-10px_rgba(132,204,22,0.3)] transition-all duration-500 bg-slate-900 cursor-pointer"
-            >
-              {/* Full Crisp Uncropped Graphic */}
-              <div className="relative w-full aspect-[4/5] overflow-hidden">
-                <img width={1600} height={900} src={item.image}
-                  alt={item.alt}
-                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none"
-                  loading="lazy"
-                />
-                {/* Subtle Hover Glow Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-              </div>
-            </motion.div>
-          ))}
+        {/* Clean Testimonial Cards Carousel Rail with Apple edge masks */}
+        <div className="relative group/testimonials">
+          <div className="hidden md:block absolute left-0 inset-y-0 w-12 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
+          <div className="hidden md:block absolute right-0 inset-y-0 w-12 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none" />
+
+          <div
+            ref={scrollRef}
+            className="flex gap-5 sm:gap-6 overflow-x-auto pb-6 pt-2 scrollbar-none snap-x snap-mandatory"
+            style={{ scrollBehavior: "smooth" }}
+          >
+            {TESTIMONIAL_CARDS.map((item, idx) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, x: 45 + Math.min(idx * 8, 40), y: 25, scale: 0.94 }}
+                whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+                viewport={{ once: false, amount: 0.15 }}
+                transition={{ duration: 0.65, delay: Math.min(idx * 0.07, 0.35), ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ y: -8, scale: 1.025 }}
+                whileTap={{ scale: 0.98 }}
+                className="group relative shrink-0 w-[270px] sm:w-[310px] md:w-[340px] snap-start rounded-3xl overflow-hidden border-2 border-slate-200/90 shadow-[0_10px_25px_-10px_rgba(0,0,0,0.1)] hover:border-lime-500 hover:shadow-[0_24px_50px_-10px_rgba(132,204,22,0.35)] transition-all duration-500 bg-slate-900 cursor-pointer"
+              >
+                {/* Specular Top Inset Highlight */}
+                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/60 to-transparent z-10 pointer-events-none" />
+
+                {/* Full Crisp Uncropped Graphic */}
+                <div className="relative w-full aspect-[4/5] overflow-hidden">
+                  <img width={1600} height={900} src={item.image}
+                    alt={item.alt}
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none"
+                    loading="lazy"
+                  />
+                  {/* Subtle Hover Glow Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -73,11 +73,14 @@ export function TrustBar() {
               key={l}
               initial={{ opacity: 0, x: offset.x, y: offset.y, scale: 0.94 }}
               whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-              whileHover={{ y: -4 }}
+              whileHover={{ y: -6, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               viewport={{ once: false, amount: 0.2 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: i * 0.08 }}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-slate-50/80 border border-slate-200/80 p-6 md:p-7 shadow-xs hover:border-lime-400 hover:shadow-md hover:shadow-lime-500/10 transition-all duration-300"
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: i * 0.08 }}
+              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/90 p-6 md:p-7 shadow-xs hover:border-lime-500 hover:shadow-[0_16px_36px_-10px_rgba(132,204,22,0.22)] transition-all duration-400 cursor-pointer"
             >
+              {/* Specular Top Reflection */}
+              <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent opacity-80 pointer-events-none" />
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div

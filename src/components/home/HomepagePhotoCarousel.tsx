@@ -128,7 +128,11 @@ export function HomepagePhotoCarousel() {
   const INFINITE_PHOTOS = [...ACTIVE_HOMEPAGE_PHOTOS, ...ACTIVE_HOMEPAGE_PHOTOS, ...ACTIVE_HOMEPAGE_PHOTOS];
 
   return (
-    <div className="w-full relative">
+    <div className="w-full relative group/carousel">
+      {/* Apple-style Soft Edge Vignette / Fade Gradients (Desktop) */}
+      <div className="hidden md:block absolute left-0 inset-y-0 w-12 bg-gradient-to-r from-white via-white/70 to-transparent z-20 pointer-events-none" />
+      <div className="hidden md:block absolute right-0 inset-y-0 w-12 bg-gradient-to-l from-white via-white/70 to-transparent z-20 pointer-events-none" />
+
       {/* 3 Photos Align Horizontally in a Row with Strict ZERO CROP / Complete Composition */}
       <div
         ref={containerRef}
@@ -141,14 +145,15 @@ export function HomepagePhotoCarousel() {
         {INFINITE_PHOTOS.map((item, idx) => (
           <motion.div
             key={`${item.id}-${idx}`}
-            className="homepage-carousel-card shine-card snap-center shrink-0 rounded-2xl sm:rounded-3xl border-2 border-[#84cc16]/30 bg-transparent overflow-hidden shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] hover:border-[#84cc16] hover:shadow-[0_14px_40px_-5px_rgba(132,204,22,0.25)] transition-shadow duration-300"
+            className="homepage-carousel-card shine-card snap-center shrink-0 rounded-2xl sm:rounded-3xl border-2 border-[#84cc16]/30 bg-white/40 backdrop-blur-xs overflow-hidden shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] hover:border-[#84cc16] hover:shadow-[0_18px_45px_-8px_rgba(132,204,22,0.32)] transition-shadow duration-300 cursor-pointer"
             style={{
               aspectRatio: "16 / 9",
             }}
             initial={idx < 8 ? { opacity: 0, y: 18 } : false}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: Math.min(idx, 6) * 0.06, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, delay: Math.min(idx, 6) * 0.06, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ y: -8, scale: 1.025 }}
+            whileTap={{ scale: 0.98 }}
           >
             {/* Pure Uncropped Authentic Photograph — 16:9 Widescreen Harmony */}
             <div className="w-full h-full bg-slate-950/20">
@@ -162,7 +167,7 @@ export function HomepagePhotoCarousel() {
                 objectFit="contain" // 100% uncropped full ratio
                 containerBg="bg-transparent"
                 className="w-full h-full"
-                imageClassName="w-full h-full object-contain transition-transform duration-700"
+                imageClassName="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
               />
             </div>
           </motion.div>

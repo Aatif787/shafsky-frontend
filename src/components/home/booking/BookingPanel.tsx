@@ -29,11 +29,11 @@ import { DoublePlaneIcon } from "./DoublePlaneIcon";
 import { OtherServicesEnquiryFlow, type OtherServiceType } from "./enquiry/OtherServicesEnquiryFlow";
 
 const FIELD =
-  "flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300 bg-transparent px-4 text-xs font-semibold text-slate-900 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-none";
+  "flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300/80 bg-white/70 backdrop-blur-md px-4 text-xs font-semibold text-slate-900 outline-none transition-all duration-300 hover:border-lime-500 hover:bg-white focus:border-lime-500 focus:bg-white focus:ring-4 focus:ring-lime-500/15 shadow-xs";
 const DATE_BTN =
-  "relative flex h-12 w-full items-center rounded-2xl border border-slate-300 bg-transparent pl-10 pr-4 text-left text-xs font-semibold text-slate-900 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-none";
+  "relative flex h-12 w-full items-center rounded-2xl border border-slate-300/80 bg-white/70 backdrop-blur-md pl-10 pr-4 text-left text-xs font-semibold text-slate-900 outline-none transition-all duration-300 hover:border-lime-500 hover:bg-white focus:border-lime-500 focus:bg-white focus:ring-4 focus:ring-lime-500/15 shadow-xs cursor-pointer";
 const AIRPORT_INPUT =
-  "h-12 w-full rounded-2xl border border-slate-300 bg-transparent pl-10 pr-4 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-none";
+  "h-12 w-full rounded-2xl border border-slate-300/80 bg-white/70 backdrop-blur-md pl-10 pr-4 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none transition-all duration-300 hover:border-lime-500 hover:bg-white focus:border-lime-500 focus:bg-white focus:ring-4 focus:ring-lime-500/15 shadow-xs";
 const LABEL = "h-4 text-[10.5px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5";
 
 export type BookingServiceMode = "airport" | "other";
@@ -365,20 +365,29 @@ export function BookingPanel() {
 
   return (
     <section id="book" className="relative mt-6 sm:mt-10 mb-16 sm:mb-24 md:mb-28 px-4 sm:px-8 md:px-14">
+      {/* Ambient Apple Vision Pro Aurora Orbs */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1100px] h-[520px] -z-10 pointer-events-none overflow-hidden blur-[90px] sm:blur-[120px] opacity-75">
+        <div className="apple-aurora-glow absolute -top-10 left-1/4 w-[360px] h-[300px] rounded-full bg-gradient-to-tr from-lime-400/35 to-emerald-300/25" />
+        <div className="apple-aurora-glow-secondary absolute -bottom-10 right-1/4 w-[380px] h-[320px] rounded-full bg-gradient-to-bl from-sky-400/25 via-indigo-300/20 to-transparent" />
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 35, scale: 0.97 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: false, amount: 0.15 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="relative mx-auto max-w-[960px] rounded-[2rem] bg-transparent border-2 border-slate-200 shadow-sm z-20 overflow-hidden"
+        transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+        className="apple-specular-card relative mx-auto max-w-[960px] rounded-[2rem] z-20 overflow-hidden"
       >
+        {/* Specular Top Reflection Highlight */}
+        <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white to-transparent opacity-90 z-30 pointer-events-none" />
+
         {/* Header Title */}
-        <div className="px-6 pt-6 pb-4 md:px-10 md:pt-8 md:pb-5 bg-transparent text-center border-b border-slate-200">
+        <div className="px-6 pt-6 pb-4 md:px-10 md:pt-8 md:pb-5 bg-white/50 text-center border-b border-slate-200/80 backdrop-blur-md">
           <motion.h2
             key={activeMode}
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25 }}
+            initial={{ opacity: 0, y: -6, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="text-center text-lg sm:text-xl font-bold text-slate-950 tracking-tight"
             style={display}
           >
@@ -388,43 +397,49 @@ export function BookingPanel() {
 
         <div className="p-6 md:p-8 space-y-6">
           {/* Top Control Bar: Domestic/International (Upper) + Direction & Service Controls */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/80">
             {/* Domestic / International Toggle (Upper on Mobile) */}
-            <div className="flex items-center p-1 rounded-2xl bg-transparent border border-slate-200 self-start sm:self-auto w-full sm:w-auto">
+            <div className="flex items-center p-1 rounded-2xl bg-slate-100/70 backdrop-blur-md border border-slate-200/80 self-start sm:self-auto w-full sm:w-auto shadow-inner">
               {(["domestic", "international"] as const).map((kind) => {
                 const active = travelType === kind;
                 const isLockedOut = Boolean(routeDeterminedCategory && kind !== routeDeterminedCategory);
                 return (
-                  <button
+                  <motion.button
                     key={kind}
                     type="button"
+                    whileHover={!isLockedOut && !active ? { scale: 1.02 } : undefined}
+                    whileTap={!isLockedOut ? { scale: 0.96 } : undefined}
+                    transition={{ type: "spring", stiffness: 450, damping: 28 }}
                     onClick={() => {
                       if (activeMode !== "airport") setActiveMode("airport");
                       handleCategoryToggle(kind);
                     }}
                     className={`relative z-10 flex-1 sm:flex-initial h-9 sm:px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 rounded-xl ${
                       active && activeMode === "airport"
-                        ? "text-white bg-slate-950 shadow-xs cursor-default"
+                        ? "text-white bg-slate-950 shadow-sm cursor-default"
                         : isLockedOut
                           ? "text-slate-400 opacity-60 cursor-not-allowed hover:bg-slate-100/30"
-                          : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50 cursor-pointer"
+                          : "text-slate-600 hover:text-slate-950 hover:bg-white/70 cursor-pointer"
                     }`}
                     style={mono}
                   >
                     <span>{kind}</span>
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
 
             {/* Service Selection: Departure, Transit, Arrival + Other Services */}
-            <div className="grid grid-cols-2 gap-1 sm:flex sm:gap-0 items-center p-1 rounded-2xl bg-transparent border border-slate-200 overflow-x-auto no-scrollbar">
+            <div className="grid grid-cols-2 gap-1 sm:flex sm:gap-1 items-center p-1 rounded-2xl bg-slate-100/70 backdrop-blur-md border border-slate-200/80 overflow-x-auto no-scrollbar shadow-inner">
               {serviceOptions.map(([k, label, Icon]) => {
                 const active = activeMode === "airport" && selectedServices.includes(k);
                 return (
-                  <button
+                  <motion.button
                     key={k}
                     type="button"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.96 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 28 }}
                     onClick={() => {
                       if (activeMode !== "airport") {
                         setActiveMode("airport");
@@ -435,31 +450,34 @@ export function BookingPanel() {
                     }}
                     className={`relative z-10 flex sm:flex-initial h-9 max-sm:min-w-0 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                       active
-                        ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-xs"
-                        : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50"
+                        ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-sm"
+                        : "text-slate-600 hover:text-slate-950 hover:bg-white/70"
                     }`}
                     style={mono}
                   >
                     <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-white md:text-slate-950" : "text-slate-500"}`} />
                     <span className="truncate">{label}</span>
-                  </button>
+                  </motion.button>
                 );
               })}
 
               {/* Other Services Option alongside Departure, Transit, Arrival */}
-              <button
+              <motion.button
                 type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 450, damping: 28 }}
                 onClick={() => setActiveMode("other")}
                 className={`relative z-10 flex sm:flex-initial h-9 max-sm:min-w-0 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                   activeMode === "other"
-                    ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-xs"
-                    : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/50"
+                    ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-sm"
+                    : "text-slate-600 hover:text-slate-950 hover:bg-white/70"
                 }`}
                 style={mono}
               >
                 <Sparkles className={`h-3.5 w-3.5 shrink-0 ${activeMode === "other" ? "text-white md:text-slate-950" : "text-lime-600"}`} />
                 <span className="truncate">Other Services</span>
-              </button>
+              </motion.button>
             </div>
           </div>
 
@@ -782,19 +800,21 @@ export function BookingPanel() {
           </motion.div>
 
           {/* Bottom Bar: Central Super CTA */}
-          <div className="pt-5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-end gap-4">
-
-            <button
+          <div className="pt-5 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-end gap-4">
+            <motion.button
               type="button"
+              whileHover={{ scale: 1.025, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 420, damping: 24 }}
               onClick={handleContinueToPackages}
-              className="group/btn relative overflow-hidden w-full sm:w-auto min-w-[220px] inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r max-sm:from-[#6e22db] max-sm:via-[#7c3aed] max-sm:to-[#6e22db] max-sm:text-white max-sm:shadow-[0_10px_30px_rgba(110,34,219,0.35)] sm:from-[#84cc16] sm:via-[#9ee838] sm:to-[#84cc16] sm:text-slate-950 sm:shadow-[0_10px_30px_rgba(132,204,22,0.45),inset_0_1px_2px_rgba(255,255,255,0.75)] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:shadow-[0_15px_40px_rgba(110,34,219,0.45)] hover:-translate-y-0.5 cursor-pointer"
+              className="group/btn relative overflow-hidden w-full sm:w-auto min-w-[220px] inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r max-sm:from-[#6e22db] max-sm:via-[#7c3aed] max-sm:to-[#6e22db] max-sm:text-white max-sm:shadow-[0_10px_30px_rgba(110,34,219,0.35)] sm:from-[#84cc16] sm:via-[#9ee838] sm:to-[#84cc16] sm:text-slate-950 sm:shadow-[0_10px_30px_rgba(132,204,22,0.45),inset_0_1px_2px_rgba(255,255,255,0.75)] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-shadow duration-300 hover:shadow-[0_16px_45px_rgba(132,204,22,0.55)] cursor-pointer"
               style={mono}
             >
               <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/60 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
               <span className="relative z-10 font-extrabold drop-shadow-2xs">Book Now</span>
               <ArrowRight className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
-            </button>
+            </motion.button>
           </div>
             </>
           )}
