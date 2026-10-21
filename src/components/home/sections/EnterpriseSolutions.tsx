@@ -3,6 +3,8 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowRight, Sparkles, CheckCircle2, ChevronRight, PhoneCall } from "lucide-react";
 import { display, mono } from "../theme";
+import { EditorialReveal } from "@/components/motion/EditorialReveal";
+import { CardTilt3D } from "@/components/motion/CardTilt3D";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 import planeImg from "@/assets/others/plane.png";
@@ -141,12 +143,14 @@ export function EnterpriseSolutions() {
             <span>EXCELLENCE IN AVIATION</span>
             <span className="h-px w-8 bg-[#d4af37]" />
           </div>
-          <h2
-            className="mt-2 text-[clamp(2.2rem,4.5vw,4rem)] leading-[1.06] text-slate-950 tracking-tight font-bold"
-            style={display}
-          >
-            Our <span className="font-bold">Services.</span>
-          </h2>
+          <EditorialReveal>
+            <h2
+              className="mt-2 text-[clamp(2.2rem,4.5vw,4rem)] leading-[1.06] text-slate-950 tracking-tight font-bold"
+              style={display}
+            >
+              Our <span className="font-bold">Services.</span>
+            </h2>
+          </EditorialReveal>
         </motion.div>
 
         {/* Top Centered Hostess / Services Visual with Animation & Hover Effects */}
@@ -237,30 +241,36 @@ export function EnterpriseSolutions() {
             {/* 5 Core Offerings Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {OFFICIAL_SERVICES[0].subServices.map((sub, idx) => (
-                <div
+                <CardTilt3D
                   key={sub.label}
+                  maxTilt={4}
+                  glareOpacity={0.16}
+                  className="rounded-2xl"
                   onClick={() => navigate({ to: "/solutions/concierge" })}
-                  className="group p-6 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-lime-500 hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col justify-between"
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-mono font-bold text-lime-700 uppercase tracking-wider">
-                        Touchpoint 0{idx + 1}
-                      </span>
-                      <ChevronRight size={16} className="text-slate-400 group-hover:text-lime-600 group-hover:translate-x-1 transition-all" />
+                  <div
+                    className="group h-full p-6 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-lime-500 hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs font-mono font-bold text-lime-700 uppercase tracking-wider">
+                          Touchpoint 0{idx + 1}
+                        </span>
+                        <ChevronRight size={16} className="text-slate-400 group-hover:text-lime-600 group-hover:translate-x-1 transition-all" />
+                      </div>
+                      <h4 className="text-base font-bold text-slate-950 group-hover:text-lime-700 transition-colors" style={display}>
+                        {sub.label}
+                      </h4>
+                      <p className="text-xs text-slate-600 mt-1.5 leading-relaxed font-normal">
+                        {sub.tagline}
+                      </p>
                     </div>
-                    <h4 className="text-base font-bold text-slate-950 group-hover:text-lime-700 transition-colors" style={display}>
-                      {sub.label}
-                    </h4>
-                    <p className="text-xs text-slate-600 mt-1.5 leading-relaxed font-normal">
-                      {sub.tagline}
-                    </p>
+                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-mono text-slate-500 group-hover:text-slate-800 font-semibold">
+                      <CheckCircle2 size={13} className="text-lime-600" />
+                      <span>Dedicated Escort Included</span>
+                    </div>
                   </div>
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-mono text-slate-500 group-hover:text-slate-800 font-semibold">
-                    <CheckCircle2 size={13} className="text-lime-600" />
-                    <span>Dedicated Escort Included</span>
-                  </div>
-                </div>
+                </CardTilt3D>
               ))}
             </div>
           </div>

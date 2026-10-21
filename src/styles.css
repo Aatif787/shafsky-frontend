@@ -964,3 +964,42 @@ html.route-cover .sticky-safe {
     animation: none !important;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * CLASSICAL LUXURY MOTION & LENIS MOMENTUM SCROLL
+ * ─────────────────────────────────────────────────────────────────────────── */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Mechanical Departure Board Counter Styling */
+.split-flap-digit {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 3D Perspective Canvas */
+.perspective-stage {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}

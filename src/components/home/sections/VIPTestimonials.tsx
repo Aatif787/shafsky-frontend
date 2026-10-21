@@ -1,6 +1,8 @@
 import { useRef } from "react";
 import { motion } from "framer-motion";
 import { display, mono } from "../theme";
+import { EditorialReveal } from "@/components/motion/EditorialReveal";
+import { CardTilt3D } from "@/components/motion/CardTilt3D";
 
 import sachinImg from "@/assets/testimonials/Sachin-Tendulkar.png";
 import gambhirImg from "@/assets/testimonials/gambheer.png";
@@ -104,13 +106,15 @@ export function VIPTestimonials() {
               <span className="h-px w-8 bg-lime-500" />
             </div>
 
-            {/* Modern Premium Centered Title (Without Dot) with Ambient Text Glow */}
-            <h2
-              className="relative mt-3 text-[clamp(2.4rem,4.8vw,4.4rem)] leading-[1.04] text-slate-950 font-bold tracking-tight transition-all duration-500 group-hover:tracking-normal group-hover:text-lime-700"
-              style={display}
-            >
-              Testimonials
-            </h2>
+            {/* Modern Premium Centered Title with Classical Editorial Reveal */}
+            <EditorialReveal>
+              <h2
+                className="relative mt-3 text-[clamp(2.4rem,4.8vw,4.4rem)] leading-[1.04] text-slate-950 font-bold tracking-tight transition-all duration-500 group-hover:tracking-normal group-hover:text-lime-700"
+                style={display}
+              >
+                Testimonials
+              </h2>
+            </EditorialReveal>
 
             {/* Modern Premium Center Accents on Hover */}
             <div className="relative mt-3 flex items-center justify-center gap-1.5">
@@ -121,7 +125,7 @@ export function VIPTestimonials() {
           </motion.div>
         </div>
 
-        {/* Clean Testimonial Cards Carousel Rail with Apple edge masks */}
+        {/* Clean Testimonial Cards Carousel Rail with Apple edge masks & 3D Tilt */}
         <div className="relative group/testimonials">
           <div className="hidden md:block absolute left-0 inset-y-0 w-12 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
           <div className="hidden md:block absolute right-0 inset-y-0 w-12 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none" />
@@ -132,30 +136,36 @@ export function VIPTestimonials() {
             style={{ scrollBehavior: "smooth" }}
           >
             {TESTIMONIAL_CARDS.map((item, idx) => (
-              <motion.div
+              <CardTilt3D
                 key={item.id}
-                initial={{ opacity: 0, x: 45 + Math.min(idx * 8, 40), y: 25, scale: 0.94 }}
-                whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-                viewport={{ once: false, amount: 0.15 }}
-                transition={{ duration: 0.65, delay: Math.min(idx * 0.07, 0.35), ease: [0.16, 1, 0.3, 1] }}
-                whileHover={{ y: -8, scale: 1.025 }}
-                whileTap={{ scale: 0.98 }}
-                className="group relative shrink-0 w-[270px] sm:w-[310px] md:w-[340px] snap-start rounded-3xl overflow-hidden border-2 border-slate-200/90 shadow-[0_10px_25px_-10px_rgba(0,0,0,0.1)] hover:border-lime-500 hover:shadow-[0_24px_50px_-10px_rgba(132,204,22,0.35)] transition-all duration-500 bg-slate-900 cursor-pointer"
+                maxTilt={5}
+                glareOpacity={0.22}
+                className="shrink-0 snap-start rounded-3xl"
               >
-                {/* Specular Top Inset Highlight */}
-                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/60 to-transparent z-10 pointer-events-none" />
+                <motion.div
+                  initial={{ opacity: 0, x: 45 + Math.min(idx * 8, 40), y: 25, scale: 0.94 }}
+                  whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+                  viewport={{ once: false, amount: 0.15 }}
+                  transition={{ duration: 0.65, delay: Math.min(idx * 0.07, 0.35), ease: [0.16, 1, 0.3, 1] }}
+                  whileHover={{ y: -8, scale: 1.025 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group relative w-[270px] sm:w-[310px] md:w-[340px] rounded-3xl overflow-hidden border-2 border-slate-200/90 shadow-[0_10px_25px_-10px_rgba(0,0,0,0.1)] hover:border-lime-500 hover:shadow-[0_24px_50px_-10px_rgba(132,204,22,0.35)] transition-all duration-500 bg-slate-900 cursor-pointer"
+                >
+                  {/* Specular Top Inset Highlight */}
+                  <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/60 to-transparent z-10 pointer-events-none" />
 
-                {/* Full Crisp Uncropped Graphic */}
-                <div className="relative w-full aspect-[4/5] overflow-hidden">
-                  <img width={1600} height={900} src={item.image}
-                    alt={item.alt}
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none"
-                    loading="lazy"
-                  />
-                  {/* Subtle Hover Glow Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                </div>
-              </motion.div>
+                  {/* Full Crisp Uncropped Graphic */}
+                  <div className="relative w-full aspect-[4/5] overflow-hidden">
+                    <img width={1600} height={900} src={item.image}
+                      alt={item.alt}
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none"
+                      loading="lazy"
+                    />
+                    {/* Subtle Hover Glow Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  </div>
+                </motion.div>
+              </CardTilt3D>
             ))}
           </div>
         </div>

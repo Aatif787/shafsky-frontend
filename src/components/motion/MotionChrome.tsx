@@ -7,6 +7,7 @@ import {
   useSpring,
 } from "framer-motion";
 import { PageTransition } from "./PageTransition";
+import { SmoothScroll } from "./SmoothScroll";
 
 function useIsClient() {
   const [ready, setReady] = useState(false);
@@ -66,6 +67,7 @@ function ClientMotionFX() {
   if (!ready) return null;
   return (
     <>
+      <SmoothScroll />
       <ScrollProgress />
       <CursorGlow />
       <PageTransition />

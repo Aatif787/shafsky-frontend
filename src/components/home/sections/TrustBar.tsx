@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { ShieldCheck, Globe2, Users, Clock } from "lucide-react";
 import { mono, calibri } from "../theme";
+import { CardTilt3D } from "@/components/motion/CardTilt3D";
 
 function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
   const [v, setV] = useState(0);
@@ -14,11 +15,12 @@ function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
       return;
     }
     const start = performance.now();
-    const dur = 1400;
+    const dur = 1350;
     let raf = 0;
     const step = (now: number) => {
       const t = Math.min(1, (now - start) / dur);
-      const eased = 1 - Math.pow(1 - t, 3);
+      // Classical mechanical Solari departure board deceleration curve
+      const eased = 1 - Math.pow(1 - t, 3.5);
       setV(Math.round(end * eased));
       if (t < 1) raf = requestAnimationFrame(step);
     };
@@ -27,8 +29,8 @@ function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
   }, [inView, end]);
 
   return (
-    <span ref={ref} className="inline-flex items-baseline" style={calibri}>
-      <span className="font-bold tracking-tight text-slate-950">{v.toLocaleString()}</span>
+    <span ref={ref} className="inline-flex items-baseline font-mono tabular-nums" style={calibri}>
+      <span className="font-bold tracking-tight text-slate-950 split-flap-digit">{v.toLocaleString()}</span>
       <span className="text-2xl sm:text-3xl font-extrabold text-lime-600 ml-1" style={calibri}>{suffix}</span>
     </span>
   );
@@ -69,54 +71,60 @@ export function TrustBar() {
           const offset = cornerOffsets[i] || { x: 0, y: 30 };
 
           return (
-            <motion.div
+            <CardTilt3D
               key={l}
-              initial={{ opacity: 0, x: offset.x, y: offset.y, scale: 0.94 }}
-              whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-              whileHover={{ y: -6, scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              viewport={{ once: false, amount: 0.2 }}
-              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: i * 0.08 }}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/90 p-6 md:p-7 shadow-xs hover:border-lime-500 hover:shadow-[0_16px_36px_-10px_rgba(132,204,22,0.22)] transition-all duration-400 cursor-pointer"
+              maxTilt={5}
+              glareOpacity={0.2}
+              className="rounded-2xl"
             >
-              {/* Specular Top Reflection */}
-              <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent opacity-80 pointer-events-none" />
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div
-                  className="grid h-11 w-11 place-items-center rounded-xl bg-lime-50 border border-lime-300 text-lime-700 transition-transform duration-300 group-hover:scale-105"
-                >
-                  <Icon className="h-5 w-5" />
-                </div>
-              </div>
-
-              <div className="text-3xl sm:text-4xl md:text-5xl leading-none">
-                {bigText ? (
-                  <span
-                    className="font-bold tracking-tight text-slate-950 text-2xl sm:text-3xl md:text-4xl leading-none"
-                    style={calibri}
-                  >
-                    {bigText}
-                  </span>
-                ) : (
-                  <Counter end={n ?? 0} suffix={suf} />
-                )}
-              </div>
-
-              <div
-                className="mt-4 text-[10.5px] uppercase tracking-[0.25em] font-mono font-bold text-lime-700"
-                style={mono}
+              <motion.div
+                initial={{ opacity: 0, x: offset.x, y: offset.y, scale: 0.94 }}
+                whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+                whileHover={{ y: -6, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                viewport={{ once: false, amount: 0.2 }}
+                transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: i * 0.08 }}
+                className="group relative h-full flex flex-col justify-between overflow-hidden rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/90 p-6 md:p-7 shadow-xs hover:border-lime-500 hover:shadow-[0_16px_36px_-10px_rgba(132,204,22,0.22)] transition-all duration-400 cursor-pointer"
               >
-                {l}
-              </div>
+                {/* Specular Top Reflection */}
+                <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent opacity-80 pointer-events-none" />
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div
+                      className="grid h-11 w-11 place-items-center rounded-xl bg-lime-50 border border-lime-300 text-lime-700 transition-transform duration-300 group-hover:scale-105"
+                    >
+                      <Icon className="h-5 w-5" />
+                    </div>
+                  </div>
 
-              {sub ? (
-                <div className="mt-1 text-xs text-slate-600 font-normal">
-                  {sub}
+                  <div className="text-3xl sm:text-4xl md:text-5xl leading-none">
+                    {bigText ? (
+                      <span
+                        className="font-bold tracking-tight text-slate-950 text-2xl sm:text-3xl md:text-4xl leading-none"
+                        style={calibri}
+                      >
+                        {bigText}
+                      </span>
+                    ) : (
+                      <Counter end={n ?? 0} suffix={suf} />
+                    )}
+                  </div>
+
+                  <div
+                    className="mt-4 text-[10.5px] uppercase tracking-[0.25em] font-mono font-bold text-lime-700"
+                    style={mono}
+                  >
+                    {l}
+                  </div>
+
+                  {sub ? (
+                    <div className="mt-1 text-xs text-slate-600 font-normal">
+                      {sub}
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
-            </div>
-          </motion.div>
+              </motion.div>
+            </CardTilt3D>
           );
         })}
       </div>
