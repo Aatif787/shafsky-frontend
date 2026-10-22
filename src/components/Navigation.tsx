@@ -17,6 +17,7 @@ import {
   LogIn,
   MapPin,
   Image as ImageIcon,
+  MessageSquare,
 } from "lucide-react";
 import { useBranding } from "@/lib/branding/branding.context";
 import { mono } from "@/components/home/theme";
@@ -347,6 +348,18 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               </a>
             )}
 
+            <a
+              href="https://wa.me/917428300207?text=Hi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden 2xl:flex apple-glass-pill items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] text-emerald-800 hover:text-emerald-950 font-semibold cursor-pointer whitespace-nowrap bg-emerald-50/70 border border-emerald-200/80 transition-colors"
+              style={mono}
+              title="24/7 WhatsApp Booking Bot (+91 74283 00207)"
+            >
+              <MessageSquare size={12} className="text-emerald-600 shrink-0" />
+              <span>Bot: +91 74283 00207</span>
+            </a>
+
             {isLoggedIn ? (
               <Link
                 to={getDashboardPath()}
@@ -492,6 +505,18 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                   ))}
                 </div>
               )}
+
+              <a
+                href="https://wa.me/917428300207?text=Hi"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
+                className="apple-glass-pill w-full flex items-center justify-center gap-2.5 py-3 rounded-full text-xs font-bold text-emerald-800 bg-emerald-50/90 border border-emerald-200 tracking-wider uppercase transition-colors"
+                style={mono}
+              >
+                <MessageSquare size={14} className="text-emerald-600" />
+                <span>WhatsApp Booking Bot (+91 74283 00207)</span>
+              </a>
 
               <a
                 href="/#book"

@@ -90,9 +90,18 @@ function ContactPage() {
         ]
       : []),
     {
+      title: "WhatsApp Booking Bot",
+      value: "+91 74283 00207",
+      desc: "Instant 24/7 automated booking for flights, meet & greet & lounges",
+      actionText: "Book via Bot",
+      actionHref: "https://wa.me/917428300207?text=Hi",
+      icon: MessageSquare,
+      highlight: true,
+    },
+    {
       title: "WhatsApp & Support",
       value: "+91 9599087959",
-      desc: "Fast responses on WhatsApp",
+      desc: "Direct support from our live concierge team",
       actionText: "Chat on WhatsApp",
       actionHref: "https://wa.me/919599087959?text=Hello%20Shafsky%20Aviation,%20I%20have%20an%20inquiry.",
       icon: MessageSquare,

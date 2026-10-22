@@ -11,6 +11,7 @@ interface TicketingSuccessProps {
 export function TicketingSuccess({ bookingRef, routeSummary, guestSummary }: TicketingSuccessProps) {
   const { getPrimaryContact } = useWebsiteContacts();
   const primaryTicketingContact = getPrimaryContact("ticketing");
+  const waNumber = primaryTicketingContact?.full_phone_number?.replace(/\D/g, "") || "919599087957";
   return (
     <div className="space-y-6">
       <BookingSuccessPass
@@ -47,7 +48,7 @@ export function TicketingSuccess({ bookingRef, routeSummary, guestSummary }: Tic
         {/* 24/7 Support Channels */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
           <a
-            href="https://wa.me/919599087959"
+            href={`https://wa.me/${waNumber}`}
             target="_blank"
             rel="noopener noreferrer"
             className="p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/70 flex items-center gap-3 transition-all"
