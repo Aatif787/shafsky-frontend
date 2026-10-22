@@ -77,9 +77,9 @@ export function StickyMobileBookingBar({
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
-            title="Chat with 24/7 WhatsApp Booking Bot (+91 74283 00207)"
+            title="24/7 WhatsApp Booking (+91 74283 00207)"
             className="flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition shadow-2xs active:scale-95"
-            aria-label="Chat with 24/7 WhatsApp Booking Bot (+91 74283 00207)"
+            aria-label="24/7 WhatsApp Booking (+91 74283 00207)"
           >
             <MessageSquare size={18} />
           </a>

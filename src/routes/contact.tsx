@@ -90,10 +90,10 @@ function ContactPage() {
         ]
       : []),
     {
-      title: "WhatsApp Booking Bot",
+      title: "24/7 WhatsApp Booking",
       value: "+91 74283 00207",
-      desc: "Instant 24/7 automated booking for flights, meet & greet & lounges",
-      actionText: "Book via Bot",
+      desc: "Instant 24/7 booking for flights, meet & greet & lounges",
+      actionText: "Book on WhatsApp",
       actionHref: "https://wa.me/917428300207?text=Hi",
       icon: MessageSquare,
       highlight: true,

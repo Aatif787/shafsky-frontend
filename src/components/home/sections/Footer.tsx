@@ -199,14 +199,14 @@ export function Footer() {
                 )}
 
                 <div>
-                  <span className="font-bold">WhatsApp Bot: </span>
+                  <span className="font-bold">24/7 WhatsApp Booking: </span>
                   <a
                     href="https://wa.me/917428300207?text=Hi"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-[#cca028] transition-colors font-medium font-sans text-emerald-400"
                   >
-                    +91 74283 00207 (24/7 Booking Bot)
+                    +91 74283 00207
                   </a>
                 </div>
 

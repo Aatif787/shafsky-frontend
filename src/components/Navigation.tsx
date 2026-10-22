@@ -354,10 +354,10 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               rel="noopener noreferrer"
               className="hidden 2xl:flex apple-glass-pill items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] text-emerald-800 hover:text-emerald-950 font-semibold cursor-pointer whitespace-nowrap bg-emerald-50/70 border border-emerald-200/80 transition-colors"
               style={mono}
-              title="24/7 WhatsApp Booking Bot (+91 74283 00207)"
+              title="24/7 WhatsApp Booking (+91 74283 00207)"
             >
               <MessageSquare size={12} className="text-emerald-600 shrink-0" />
-              <span>Bot: +91 74283 00207</span>
+              <span>WhatsApp: +91 74283 00207</span>
             </a>
 
             {isLoggedIn ? (
@@ -515,7 +515,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                 style={mono}
               >
                 <MessageSquare size={14} className="text-emerald-600" />
-                <span>WhatsApp Booking Bot (+91 74283 00207)</span>
+                <span>24/7 WhatsApp Booking (+91 74283 00207)</span>
               </a>
 
               <a

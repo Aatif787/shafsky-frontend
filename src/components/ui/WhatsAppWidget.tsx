@@ -51,14 +51,14 @@ export function WhatsAppWidget() {
               </div>
               <div className="min-w-0 pr-4">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-semibold text-emerald-300 truncate">WhatsApp Booking Bot</span>
+                  <span className="font-semibold text-emerald-300 truncate">24/7 WhatsApp Booking</span>
                   <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                 </div>
                 <div className="font-mono text-[11px] text-white/70 font-semibold">+91 74283 00207</div>
               </div>
             </div>
             <div className="text-white/80 text-xs leading-snug">
-              Instant 24/7 automated reservations for Meet &amp; Greet, airport lounges &amp; private charters.
+              Instant 24/7 reservations for Meet &amp; Greet, airport lounges &amp; private charters.
             </div>
             <a
               href={waUrl}
@@ -67,7 +67,7 @@ export function WhatsAppWidget() {
               onClick={() => setShowNotification(false)}
               className="mt-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-md transition hover:brightness-110 active:scale-95"
             >
-              <span>Chat with Booking Bot</span>
+              <span>24/7 WhatsApp Booking</span>
             </a>
           </motion.div>
         )}
@@ -78,7 +78,7 @@ export function WhatsAppWidget() {
         href={waUrl}
         target="_blank"
         rel="noopener noreferrer"
-        title="24/7 WhatsApp Booking Bot (+91 74283 00207)"
+        title="24/7 WhatsApp Booking (+91 74283 00207)"
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setShowNotification(false)}
