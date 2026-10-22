@@ -199,6 +199,18 @@ export function Footer() {
                 )}
 
                 <div>
+                  <span className="font-bold">WhatsApp Bot: </span>
+                  <a
+                    href="https://wa.me/917428300207?text=Hi"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-[#cca028] transition-colors font-medium font-sans text-emerald-400"
+                  >
+                    +91 74283 00207 (24/7 Booking Bot)
+                  </a>
+                </div>
+
+                <div>
                   <span className="font-bold">Email: </span>
                   <a
                     href="mailto:info@shafskyaviation.com"

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { PhoneCall, Sparkles, ArrowRight, ShieldCheck, Headphones } from "lucide-react";
+import { PhoneCall, Sparkles, ArrowRight, ShieldCheck, Headphones, MessageSquare } from "lucide-react";
 import { Magnetic, FadeInView } from "@/components/ui/interactions";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
@@ -80,6 +80,18 @@ export function AssistanceCTA({
                 <span>Proceed to Reservation</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
+            </Magnetic>
+
+            <Magnetic strength={0.2}>
+              <a
+                href="https://wa.me/917428300207?text=Hi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-mono text-xs font-semibold uppercase tracking-widest hover:border-emerald-400 hover:bg-emerald-100 transition-all duration-300 w-full"
+              >
+                <MessageSquare className="w-4 h-4 text-emerald-600" />
+                <span>Bot: +91 74283 00207</span>
+              </a>
             </Magnetic>
 
             {primaryContact && (

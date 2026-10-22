@@ -23,8 +23,7 @@ export function WhatsAppWidget() {
     return () => clearTimeout(hideTimer);
   }, [showNotification]);
 
-  const waUrl =
-    "https://wa.me/919599087959?text=Hi!%20I'm%20interested%20in%20booking%20airport%20concierge%20services.";
+  const waUrl = "https://wa.me/917428300207?text=Hi";
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-3 font-sans">
@@ -34,26 +33,42 @@ export function WhatsAppWidget() {
             initial={{ opacity: 0, scale: 0.8, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
-            className="relative flex max-w-[280px] items-center gap-3 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#0d2a36]/90 p-4 text-[13px] text-white shadow-2xl backdrop-blur-md"
+            className="relative flex max-w-[310px] flex-col gap-2.5 rounded-2xl border border-[rgba(255,255,255,0.12)] bg-[#0d2a36]/95 p-4 text-[13px] text-white shadow-2xl backdrop-blur-md"
           >
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setShowNotification(false);
               }}
-              className="absolute right-2 top-2 text-white/40 hover:text-white"
+              className="absolute right-2.5 top-2.5 text-white/40 hover:text-white cursor-pointer"
+              aria-label="Close notification"
             >
-              <X className="h-3 w-3" />
+              <X className="h-3.5 w-3.5" />
             </button>
-            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#5fb5ad] text-[#0d2a36]">
-              <MessageSquare className="h-4 w-4" />
-            </div>
-            <div>
-              <div className="font-semibold text-[#5fb5ad]">Suswagatam Concierge</div>
-              <div className="mt-0.5 text-white/80 leading-snug">
-                Need slot check or quick booking assistance? Chat with us now.
+            <div className="flex items-center gap-3">
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-400 text-[#0d2a36]">
+                <MessageSquare className="h-4 w-4" />
+              </div>
+              <div className="min-w-0 pr-4">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-emerald-300 truncate">WhatsApp Booking Bot</span>
+                  <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                </div>
+                <div className="font-mono text-[11px] text-white/70 font-semibold">+91 74283 00207</div>
               </div>
             </div>
+            <div className="text-white/80 text-xs leading-snug">
+              Instant 24/7 automated reservations for Meet &amp; Greet, airport lounges &amp; private charters.
+            </div>
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setShowNotification(false)}
+              className="mt-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-md transition hover:brightness-110 active:scale-95"
+            >
+              <span>Chat with Booking Bot</span>
+            </a>
           </motion.div>
         )}
       </AnimatePresence>
@@ -63,6 +78,7 @@ export function WhatsAppWidget() {
         href={waUrl}
         target="_blank"
         rel="noopener noreferrer"
+        title="24/7 WhatsApp Booking Bot (+91 74283 00207)"
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setShowNotification(false)}

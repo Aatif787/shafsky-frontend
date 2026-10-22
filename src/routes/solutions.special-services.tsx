@@ -651,7 +651,8 @@ function DedicatedSpecialServicesPage() {
     }
 
     const text = `Hello Shafsky VIP Concierge Desk,%0A%0AI would like to inquire about:%0A*Service:* ${selectedOptionId}%0A${details}%0A%0A*Name:* ${clientName}%0A*Phone:* ${phone}%0A*Email:* ${email || "N/A"}`;
-    return `https://wa.me/919599087959?text=${text}`;
+    const targetPhone = selectedOptionId === "Air Ticketing Services" ? "919599087957" : "919599087959";
+    return `https://wa.me/${targetPhone}?text=${text}`;
   };
 
   return (
