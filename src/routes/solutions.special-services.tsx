@@ -1554,7 +1554,7 @@ function DedicatedSpecialServicesPage() {
                     className="w-full h-full object-contain object-center select-none bg-white"
                   />
                 </div>
-              ) : (
+              ) : activeOption.id !== "Air Ticketing Services" ? (
                 <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-900 text-white p-6 sm:p-7 shadow-sm">
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl bg-lime-500 text-slate-950 flex items-center justify-center shrink-0 shadow-md">
@@ -1589,7 +1589,7 @@ function DedicatedSpecialServicesPage() {
                     )}
                   </div>
                 </div>
-              )}
+              ) : null}
 
               <div className="space-y-4">
                 {activeOption.inclusions.map((inc, i) => (
