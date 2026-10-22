@@ -357,7 +357,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
               title="24/7 WhatsApp Booking (+91 74283 00207)"
             >
               <MessageSquare size={12} className="text-emerald-600 shrink-0" />
-              <span>WhatsApp: +91 74283 00207</span>
+              <span>24/7 WhatsApp: +91 74283 00207</span>
             </a>
 
             {isLoggedIn ? (

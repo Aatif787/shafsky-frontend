@@ -90,7 +90,7 @@ export function AssistanceCTA({
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-mono text-xs font-semibold uppercase tracking-widest hover:border-emerald-400 hover:bg-emerald-100 transition-all duration-300 w-full"
               >
                 <MessageSquare className="w-4 h-4 text-emerald-600" />
-                <span>WhatsApp: +91 74283 00207</span>
+                <span>24/7 WhatsApp: +91 74283 00207</span>
               </a>
             </Magnetic>
 
