@@ -13,6 +13,7 @@ import {
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
 import { TRANSPORT_OPTIONS } from "@/data/transportation/options";
 import type { TransportationVehicleItem } from "@/data/transportation/types";
@@ -59,6 +60,10 @@ export function TransportExperience({
   initialVehicleId,
   initialVehicleName,
 }: TransportExperienceProps) {
+  const { getPrimaryContact } = useWebsiteContacts();
+  const primaryTransportContact = getPrimaryContact("transport");
+  const waNumber = primaryTransportContact?.full_phone_number?.replace(/\D/g, "") || "919599087957";
+
   // Resolve preselected canonical vehicle from catalog if vehicle ID or name is provided
   const allVehicles: TransportationVehicleItem[] = React.useMemo(() => {
     return TRANSPORT_OPTIONS.flatMap((opt) => opt.vehicles || []);
@@ -200,7 +205,7 @@ export function TransportExperience({
   const getWhatsAppLink = () => {
     const vehicleDetail = preselectedVehicle ? `Vehicle: ${preselectedVehicle.name} (${preselectedVehicle.id})%0A` : "";
     const summary = `Service: Transport Service%0ACategory: ${subService}%0A${vehicleDetail}Pickup: ${pickup}%0ADrop-off: ${dropoff}%0ADate & Time: ${pickupDate} at ${pickupTime}%0APassengers: ${passengers} Guests, ${luggage} Bags${flightNumber ? `%0AFlight: ${flightNumber}` : ""}%0A%0AGuest: ${guestName}%0APhone: ${guestPhone}%0AEmail: ${guestEmail || "N/A"}%0ARequests: ${specialRequests || "None"}`;
-    return `https://wa.me/919599087959?text=Hello%20Shafsky%20Transport%20Desk,%20I%20would%20like%20to%20book%20ground%20transport:%0A%0A${summary}`;
+    return `https://wa.me/${waNumber}?text=Hello%20Shafsky%20Transport%20Desk,%20I%20would%20like%20to%20book%20ground%20transport:%0A%0A${summary}`;
   };
 
   return (

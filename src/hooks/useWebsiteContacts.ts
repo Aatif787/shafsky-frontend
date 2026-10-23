@@ -25,7 +25,7 @@ const DEFAULT_FALLBACKS: Record<ServiceKey, PublicContactSlot[]> = {
     { country_code: "+91", phone_number: "9599087959", full_phone_number: "+919599087959" },
   ],
   transport: [
-    { country_code: "+91", phone_number: "9599087959", full_phone_number: "+919599087959" },
+    { country_code: "+91", phone_number: "9599087957", full_phone_number: "+919599087957" },
   ],
   hotel: [
     { country_code: "+91", phone_number: "9217522660", full_phone_number: "+919217522660" },
