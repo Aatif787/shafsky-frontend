@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import { TRANSPORT_OPTIONS } from "@/data/transportation/options";
 import type {
@@ -52,6 +53,9 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
   inline = false,
 }) => {
   const queryClient = useQueryClient();
+  const { getPrimaryContact } = useWebsiteContacts();
+  const primaryTransportContact = getPrimaryContact("transport");
+  const waNumber = primaryTransportContact?.full_phone_number?.replace(/\D/g, "") || "919599087957";
 
   // Category & Vehicle Selection
   const [selectedCategory, setSelectedCategory] = useState<TransportOptionId>(
@@ -263,7 +267,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
         (message ? `• Notes: ${message}\n\n` : `\n`) +
         `Please confirm our chauffeur dispatch details.`
     );
-    return `https://wa.me/919599087959?text=${text}`;
+    return `https://wa.me/${waNumber}?text=${text}`;
   };
 
   const modalCard = (

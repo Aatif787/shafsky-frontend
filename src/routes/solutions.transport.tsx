@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Car,
   PhoneCall,
+  MessageSquare,
 } from "lucide-react";
 import { display } from "@/components/home/theme";
 import home5Img from "@/assets/homepage/home5.jpeg";
@@ -126,6 +127,16 @@ function DedicatedTransportServicePage() {
                   <span className="hidden sm:inline">Dispatch:</span> {primaryTransportContact.formatted}
                 </a>
               )}
+              <a
+                href={`https://wa.me/${primaryTransportContact?.full_phone_number?.replace(/\D/g, "") || "919599087957"}?text=${encodeURIComponent("Hello Shafsky Aviation Transport Desk, I would like to inquire about chauffeur transportation.")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-mono text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                title="Chat with Transport Desk on WhatsApp"
+              >
+                <MessageSquare size={12} className="text-white" />
+                <span className="hidden sm:inline">WhatsApp</span>
+              </a>
               <button
                 type="button"
                 onClick={() => {
