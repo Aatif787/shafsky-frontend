@@ -94,6 +94,17 @@
     "vite": "^8.0.16",
     "vitest": "^4.1.11"
   },
+  "overrides": {
+    "zod": "$zod",
+    "js-yaml": ">=4.3.2",
+    "nanoid": ">=3.3.18",
+    "postcss": ">=8.5.23",
+    "seroval": ">=1.6.3",
+    "source-map-js": ">=1.2.2"
+  },
+  "resolutions": {
+    "zod": ">=4.6.6"
+  },
   "pnpm": {
     "overrides": {
       "js-yaml": ">=4.3.2",
