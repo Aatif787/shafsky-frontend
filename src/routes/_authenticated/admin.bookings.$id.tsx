@@ -24,7 +24,8 @@ import {
   Eye, RefreshCw,
   Send,
   Trash2,
-  Calculator
+  Calculator,
+  UtensilsCrossed,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -784,6 +785,133 @@ function BookingDetailsView() {
                     </div>
                   )}
                 </div>
+
+                {/* On-board Meal Arrangement Details (Admin Portal) */}
+                {(() => {
+                  const rawMeta = ((booking?.metadataJson || (booking as any)?.metadata || {}) as Record<string, any>);
+                  const rawDetails = ((rawMeta.details || (booking as any)?.service_options || {}) as Record<string, any>);
+                  const isMealArrangement =
+                    booking?.service_type === "On-board Meal Arrangements for Group Meet & Greet Bookings" ||
+                    rawDetails.service_name?.includes("Meal") ||
+                    rawMeta.details?.service?.includes("Meal") ||
+                    rawDetails.meal_types !== undefined;
+                  if (!isMealArrangement) return null;
+                  const mealDetails = { ...rawDetails, ...(rawMeta.details || {}) };
+
+                  return (
+                    <div className="pt-4 border-t border-white/5 space-y-3.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase tracking-wider text-[#5ed3ff] font-mono font-bold flex items-center gap-1.5">
+                          <UtensilsCrossed className="w-3.5 h-3.5" />
+                          On-board Meal Arrangement Specifications
+                        </span>
+                        {mealDetails.declaration_confirmed && (
+                          <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            Declaration Confirmed
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono bg-black/20 p-4 rounded-xl border border-white/5">
+                        <div>
+                          <span className="text-white/40 text-[9px] block">Passenger Name</span>
+                          <span className="font-semibold text-white/90">{mealDetails.passenger_name || booking.passenger_name}</span>
+                        </div>
+                        <div>
+                          <span className="text-white/40 text-[9px] block">Flight Number</span>
+                          <span className="font-semibold text-white/90">{mealDetails.flight_number || booking.flight_num || "N/A"}</span>
+                        </div>
+                        <div>
+                          <span className="text-white/40 text-[9px] block">Travel Date</span>
+                          <span className="font-semibold text-white/90">{mealDetails.travel_date || mealDetails.service_date || booking.depart_date}</span>
+                        </div>
+                        <div>
+                          <span className="text-white/40 text-[9px] block">Sector / Route</span>
+                          <span className="font-semibold text-white/90">{mealDetails.sector || `${booking.origin_code || ""} – ${booking.dest_code || ""}`}</span>
+                        </div>
+                        <div>
+                          <span className="text-white/40 text-[9px] block">Number of Meals</span>
+                          <span className="font-bold text-[#5ed3ff]">{mealDetails.meal_count || 1} Meals</span>
+                        </div>
+                        <div className="col-span-1 md:col-span-3">
+                          <span className="text-white/40 text-[9px] block mb-1">Meal Types</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {Array.isArray(mealDetails.meal_types) && mealDetails.meal_types.length > 0 ? (
+                              mealDetails.meal_types.map((t: string) => (
+                                <span key={t} className="px-2 py-0.5 rounded text-[10px] bg-sky-500/10 text-sky-300 border border-sky-500/20">
+                                  {t}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-white/40">Standard</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-span-2">
+                          <span className="text-white/40 text-[9px] block mb-1">Meal Preferences</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {Array.isArray(mealDetails.meal_preferences) && mealDetails.meal_preferences.length > 0 ? (
+                              mealDetails.meal_preferences.map((p: string) => (
+                                <span key={p} className="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                                  {p}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-white/40">None</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-span-2">
+                          <span className="text-white/40 text-[9px] block mb-1">Allergies & Special Requirements</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {Array.isArray(mealDetails.allergies) && mealDetails.allergies.length > 0 ? (
+                              mealDetails.allergies.map((a: string) => (
+                                <span
+                                  key={a}
+                                  className={`px-2 py-0.5 rounded text-[10px] ${
+                                    a === "None"
+                                      ? "bg-slate-500/10 text-slate-300 border border-slate-500/20"
+                                      : "bg-amber-500/10 text-amber-300 border border-amber-500/20"
+                                  }`}
+                                >
+                                  {a}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-white/40">None</span>
+                            )}
+                          </div>
+                        </div>
+                        {mealDetails.additional_instructions && (
+                          <div className="col-span-2 md:col-span-4 border-t border-white/5 pt-2 mt-1">
+                            <span className="text-white/40 text-[9px] block mb-0.5">Additional Instructions</span>
+                            <span className="text-white/80">{mealDetails.additional_instructions}</span>
+                          </div>
+                        )}
+                        {(mealDetails.id_type || mealDetails.id_number || mealDetails.id_proof_attached !== undefined) && (
+                          <div className="col-span-2 md:col-span-4 border-t border-white/5 pt-2 mt-1 flex flex-wrap gap-4 text-[10px]">
+                            {mealDetails.id_type && (
+                              <div>
+                                <span className="text-white/40">ID Type:</span>{" "}
+                                <span className="text-white/90">{mealDetails.id_type}</span>
+                              </div>
+                            )}
+                            {mealDetails.id_number && (
+                              <div>
+                                <span className="text-white/40">ID Number:</span>{" "}
+                                <span className="text-white/90">{mealDetails.id_number}</span>
+                              </div>
+                            )}
+                            <div>
+                              <span className="text-white/40">ID Proof Attached:</span>{" "}
+                              <span className="text-white/90">{mealDetails.id_proof_attached ? "Yes" : "No"}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {parsedFlights.length > 0 && (
                   <div className="pt-4 border-t border-white/5 space-y-3.5">
