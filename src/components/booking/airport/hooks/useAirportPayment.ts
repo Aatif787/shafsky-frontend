@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { ApiClient } from "@/lib/ApiClient";
 import { MultiServiceApi, AirportServiceType, MultiServiceAvailabilityResponse } from "@/lib/api/multiServiceApi";
 import { loadRazorpayScript } from "@/lib/razorpay";
-import { toRazorpayContact, normalizePhoneForStorage } from "../../validation/sharedValidation";
+import { toRazorpayContact, normalizePhoneForStorage, isValidEmailAddress, isValidPassengerName, isValidPhoneNumber } from "../../validation/sharedValidation";
 import { getTransitCategory } from "@/data/airportRegistry";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { PassengerDetail, PaymentStatus } from "../types";
@@ -154,27 +154,35 @@ export function useAirportPayment({
     // 1. Validate All Passenger Details
     for (let i = 0; i < passengers.length; i++) {
       const p = passengers[i];
-      const pName = (p.fullName || "").trim();
-      if (!pName || pName.length < 2) {
-        toast.error(`Please enter the full name for Passenger ${i + 1}.`);
+      if (!isValidPassengerName(p.fullName || "")) {
+        toast.error(`Please enter a valid full name for Passenger ${i + 1} using letters only.`);
+        return;
+      }
+      if (p.phone?.trim() && !isValidPhoneNumber(p.phone)) {
+        toast.error(`Please enter a valid phone number for Passenger ${i + 1}.`);
+        return;
+      }
+      if (p.email?.trim() && !isValidEmailAddress(p.email)) {
+        toast.error(`Please enter a valid email address for Passenger ${i + 1}.`);
         return;
       }
     }
 
     const cleanName = fullName.trim();
     const cleanEmail = email.trim();
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!cleanEmail || !emailPattern.test(cleanEmail)) {
+    if (!isValidPassengerName(cleanName)) {
+      toast.error("Please enter a valid full name for Passenger 1 using letters only.");
+      return;
+    }
+    if (!isValidEmailAddress(cleanEmail)) {
       toast.error("Please enter a valid email address for Passenger 1.");
       return;
     }
-
-    const cleanPhone = normalizePhoneForStorage(phone);
-    const phoneDigits = cleanPhone.replace(/\D/g, "");
-    if (phoneDigits.length < 7 || phoneDigits.length > 15) {
+    if (!isValidPhoneNumber(phone)) {
       toast.error("Please enter a valid mobile number, including your country code.");
       return;
     }
+    const cleanPhone = normalizePhoneForStorage(phone);
 
     const effFlightNum1 = (
       isFlightVerified && verifiedFlight
@@ -265,9 +273,16 @@ export function useAirportPayment({
     // 1. Validate All Passenger Details
     for (let i = 0; i < passengers.length; i++) {
       const p = passengers[i];
-      const pName = (p.fullName || "").trim();
-      if (!pName || pName.length < 2) {
-        toast.error(`Please enter the full name for Passenger ${i + 1}.`);
+      if (!isValidPassengerName(p.fullName || "")) {
+        toast.error(`Please enter a valid full name for Passenger ${i + 1} using letters only.`);
+        return;
+      }
+      if (p.phone?.trim() && !isValidPhoneNumber(p.phone)) {
+        toast.error(`Please enter a valid phone number for Passenger ${i + 1}.`);
+        return;
+      }
+      if (p.email?.trim() && !isValidEmailAddress(p.email)) {
+        toast.error(`Please enter a valid email address for Passenger ${i + 1}.`);
         return;
       }
       if (p.age && (Number(p.age) < 1 || Number(p.age) > 120)) {
@@ -278,18 +293,19 @@ export function useAirportPayment({
 
     const cleanName = fullName.trim();
     const cleanEmail = email.trim();
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!cleanEmail || !emailPattern.test(cleanEmail)) {
+    if (!isValidPassengerName(cleanName)) {
+      toast.error("Please enter a valid full name for Passenger 1 using letters only.");
+      return;
+    }
+    if (!isValidEmailAddress(cleanEmail)) {
       toast.error("Please enter a valid email address for Passenger 1.");
       return;
     }
-
-    const cleanPhone = normalizePhoneForStorage(phone);
-    const phoneDigits = cleanPhone.replace(/\D/g, "");
-    if (phoneDigits.length < 7 || phoneDigits.length > 15) {
+    if (!isValidPhoneNumber(phone)) {
       toast.error("Please enter a valid mobile number, including your country code.");
       return;
     }
+    const cleanPhone = normalizePhoneForStorage(phone);
 
     // 2. Validate Flight Numbers (Separate validation for Transit legs)
     const activeFlightNum1 = (
