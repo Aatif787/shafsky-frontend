@@ -34,6 +34,7 @@ export interface TransportBookingModalProps {
   onClose?: () => void;
   initialVehicle?: TransportationVehicleItem | null;
   initialCategory?: TransportOptionId;
+  initialRegion?: "domestic" | "international";
   mode?: "enquiry" | "callback";
   inline?: boolean;
 }
@@ -49,6 +50,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
   onClose = () => {},
   initialVehicle,
   initialCategory,
+  initialRegion = "domestic",
   mode = "enquiry",
   inline = false,
 }) => {
@@ -56,6 +58,9 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
   const { getPrimaryContact } = useWebsiteContacts();
   const primaryTransportContact = getPrimaryContact("transport");
   const waNumber = primaryTransportContact?.full_phone_number?.replace(/\D/g, "") || "919599087957";
+
+  // Service Region: "domestic" | "international"
+  const [serviceRegion, setServiceRegion] = useState<"domestic" | "international">(initialRegion);
 
   // Category & Vehicle Selection
   const [selectedCategory, setSelectedCategory] = useState<TransportOptionId>(
@@ -106,6 +111,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
   useEffect(() => {
     if (inline) return;
     if (isOpen) {
+      setServiceRegion(initialRegion);
       if (initialVehicle) {
         setSelectedCategory(initialVehicle.category);
         setSelectedVehicleId(initialVehicle.id);
@@ -118,7 +124,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
       }
       setBookingResult(null);
     }
-  }, [isOpen, initialVehicle, initialCategory, inline]);
+  }, [isOpen, initialVehicle, initialCategory, initialRegion, inline]);
 
   // List of vehicles in active category
   const activeCategoryVehicles = useMemo(() => {
@@ -166,7 +172,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
       toast.error("Please enter a valid mobile number with country code.");
       return;
     }
-    if (!selectedVehicleId) {
+    if (serviceRegion === "domestic" && !selectedVehicleId) {
       toast.error("Please select a vehicle model.");
       return;
     }
@@ -183,7 +189,10 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
       return;
     }
 
-    const vehicleName = activeVehicle?.name || "Premium Fleet Vehicle";
+    const vehicleName =
+      serviceRegion === "international"
+        ? `${selectedCategory} (International)`
+        : (activeVehicle?.name || selectedCategory || "Premium Fleet Vehicle");
     const fullServiceDate = date.trim();
 
     setIsSubmitting(true);
@@ -195,6 +204,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
       if (message.trim()) {
         notesArray.push(message.trim());
       }
+      notesArray.push(`Service Region: ${serviceRegion === "international" ? "International" : "Domestic"}`);
       notesArray.push(`Vehicle: ${vehicleName} (Count: ${vehicles})`);
       notesArray.push(`Passengers: ${passengers}`);
 
@@ -209,7 +219,11 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
         serviceDate: fullServiceDate,
         notes: notesArray.join(" | "),
         details: {
-          vehicle_id: activeVehicle?.id || selectedVehicleId,
+          service_region: serviceRegion,
+          vehicle_id:
+            serviceRegion === "international"
+              ? `intl-${selectedCategory.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`
+              : (activeVehicle?.id || selectedVehicleId),
           vehicle_name: vehicleName,
           vehicle_category: selectedCategory,
           passenger_count: passengers,
@@ -255,12 +269,18 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
 
   const getWhatsAppLink = () => {
     const ref = bookingResult?.bookingRef || "NEW";
+    const vehicleDisplay =
+      serviceRegion === "international"
+        ? `${selectedCategory} [International]`
+        : (activeVehicle?.name || selectedCategory || "Fleet");
+
     const text = encodeURIComponent(
       `Hello Shafsky Aviation Desk,\n\nI have submitted a Ground Transport booking.\n` +
+        `• Service Region: ${serviceRegion === "international" ? "International" : "Domestic"}\n` +
         `• Booking Reference: ${ref}\n` +
         `• Lead Passenger: ${name}\n` +
         `• Contact Phone: ${phone}\n` +
-        `• Vehicle: ${activeVehicle?.name || "Fleet"} (${vehicles} vehicle${vehicles > 1 ? "s" : ""})\n` +
+        `• Vehicle: ${vehicleDisplay} (${vehicles} unit${vehicles > 1 ? "s" : ""})\n` +
         `• Passengers: ${passengers} Pax\n` +
         `• Travel Date: ${date}\n` +
         `• Pickup: ${pickup}\n` +
@@ -368,7 +388,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
               <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5 text-left space-y-3 font-sans text-xs shadow-2xs">
                 <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
                   <span className="text-slate-500 font-mono uppercase text-[10px] tracking-wider">
-                    Service & Fleet
+                    Service & Fleet ({serviceRegion === "international" ? "International" : "Domestic"})
                   </span>
                   <span className="font-bold text-slate-900 font-mono">
                     {bookingResult.vehicleName} ({vehicles} Unit{vehicles > 1 ? "s" : ""})
@@ -436,12 +456,38 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
             /* ──────────────── BOOKING FORM ──────────────── */
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Form Upper Header */}
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
-                <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3.5 gap-2">
+                <div className="flex items-center gap-2.5 shrink-0">
                   <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
                   <h3 className="text-lg sm:text-xl font-black uppercase tracking-wider text-slate-950 font-mono">
                     Enquiry
                   </h3>
+                </div>
+
+                {/* Domestic & International Selector (Right side of upper form) */}
+                <div className="inline-flex items-center p-1 bg-slate-100/90 rounded-2xl border border-slate-200 shadow-inner">
+                  <button
+                    type="button"
+                    onClick={() => setServiceRegion("domestic")}
+                    className={`px-3 sm:px-4 py-1.5 rounded-xl text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                      serviceRegion === "domestic"
+                        ? "bg-lime-500 text-slate-950 shadow-2xs font-extrabold"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                    }`}
+                  >
+                    Domestic
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setServiceRegion("international")}
+                    className={`px-3 sm:px-4 py-1.5 rounded-xl text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                      serviceRegion === "international"
+                        ? "bg-lime-500 text-slate-950 shadow-2xs font-extrabold"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                    }`}
+                  >
+                    International
+                  </button>
                 </div>
               </div>
 
@@ -591,51 +637,53 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
                   })}
                 </div>
 
-                {/* Specific Vehicle Model Dropdown */}
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3.5 space-y-2">
-                  <label className="block text-[11px] font-mono font-semibold uppercase text-slate-600">
-                    Specific Vehicle Model
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={selectedVehicleId}
-                      onChange={(e) => setSelectedVehicleId(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 font-semibold focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 appearance-none pr-9 cursor-pointer"
-                    >
-                      <option value="">Select Vehicle Model</option>
-                      {activeCategoryVehicles.map((v) => (
-                        <option key={v.id} value={v.id}>
-                          {v.name} {v.passengerCapacity ? `(Up to ${v.passengerCapacity} Pax)` : ""}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      size={16}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                    />
-                  </div>
-
-                  {activeVehicle && (
-                    <div className="flex items-center gap-3 pt-1">
-                      {activeVehicle.image && (
-                        <img
-                          src={activeVehicle.image}
-                          alt={activeVehicle.name}
-                          className="w-14 h-9 object-cover rounded-lg border border-slate-200 bg-white shrink-0"
-                          loading="lazy"
-                        />
-                      )}
-                      <div className="text-[11px] text-slate-500 leading-tight">
-                        <strong className="text-slate-900 block font-sans">
-                          {activeVehicle.name}
-                        </strong>
-                        <span className="font-mono">
-                          {activeVehicle.passengerCapacity || 4} Passenger Capacity • Air Conditioned • Chauffeur Driven
-                        </span>
-                      </div>
+                {/* Specific Vehicle Model Dropdown (Domestic Only) */}
+                {serviceRegion === "domestic" && (
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3.5 space-y-2">
+                    <label className="block text-[11px] font-mono font-semibold uppercase text-slate-600">
+                      Specific Vehicle Model
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={selectedVehicleId}
+                        onChange={(e) => setSelectedVehicleId(e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 font-semibold focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 appearance-none pr-9 cursor-pointer"
+                      >
+                        <option value="">Select Vehicle Model</option>
+                        {activeCategoryVehicles.map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.name} {v.passengerCapacity ? `(Up to ${v.passengerCapacity} Pax)` : ""}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown
+                        size={16}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      />
                     </div>
-                  )}
-                </div>
+
+                    {activeVehicle && (
+                      <div className="flex items-center gap-3 pt-1">
+                        {activeVehicle.image && (
+                          <img
+                            src={activeVehicle.image}
+                            alt={activeVehicle.name}
+                            className="w-14 h-9 object-cover rounded-lg border border-slate-200 bg-white shrink-0"
+                            loading="lazy"
+                          />
+                        )}
+                        <div className="text-[11px] text-slate-500 leading-tight">
+                          <strong className="text-slate-900 block font-sans">
+                            {activeVehicle.name}
+                          </strong>
+                          <span className="font-mono">
+                            {activeVehicle.passengerCapacity || 4} Passenger Capacity • Air Conditioned • Chauffeur Driven
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* SECTION C: Number of Vehicles */}

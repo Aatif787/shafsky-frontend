@@ -92,4 +92,51 @@ describe("TransportBookingModal SSR & Field Rendering Tests", () => {
 
     expect(html).toBe("");
   });
+
+  it("renders Domestic and International toggle buttons on upper right side", () => {
+    const html = renderToString(
+      <QueryClientProvider client={queryClient}>
+        <TransportBookingModal
+          isOpen={true}
+          onClose={vi.fn()}
+          initialVehicle={mockVehicle}
+        />
+      </QueryClientProvider>
+    );
+
+    expect(html).toContain("Domestic");
+    expect(html).toContain("International");
+    // Domestic mode renders specific vehicle model dropdown
+    expect(html).toContain("Specific Vehicle Model");
+    expect(html).toContain("Select Vehicle Model");
+  });
+
+  it("in international mode, renders categories/types but omits specific vehicle models", () => {
+    const html = renderToString(
+      <QueryClientProvider client={queryClient}>
+        <TransportBookingModal
+          isOpen={true}
+          onClose={vi.fn()}
+          initialRegion="international"
+        />
+      </QueryClientProvider>
+    );
+
+    // Domestic & International toggles are present
+    expect(html).toContain("Domestic");
+    expect(html).toContain("International");
+    // Category pills are present so user can select types
+    expect(html).toContain("Luxury Vehicles");
+    expect(html).toContain("MUV / Large Vehicles");
+    expect(html).toContain("Economy / Standard");
+    // Specific vehicle models dropdown and options must NOT be rendered in international
+    expect(html).not.toContain("Specific Vehicle Model");
+    expect(html).not.toContain("Select Vehicle Model");
+    // Standard passenger details & travel details are preserved
+    expect(html).toContain("Passenger Details");
+    expect(html).toContain("Number of Vehicles");
+    expect(html).toContain("Travel Date");
+    expect(html).toContain("Pickup Location");
+    expect(html).toContain("Drop Location");
+  });
 });
