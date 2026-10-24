@@ -75,6 +75,11 @@ function BookRoutePage() {
       return <Navigate to="/solutions/aviation" />;
     }
 
+    // If Special Services requested:
+    if (s.includes("special") || s.includes("meal") || s.includes("catering") || s.includes("onboard")) {
+      return <Navigate to="/solutions/special-services" search={search.sub ? { sub: search.sub } : undefined} />;
+    }
+
     // If Transport / Chauffeured Ground Fleet requested:
     if (s.includes("transport") || s.includes("vehicle") || search.vehicle_id) {
       return (

@@ -103,8 +103,9 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     photo: specialserImg,
     alt: "Shafsky Special Services with Taj Mahal Agra",
     badge: "Special Services",
-    description: "24/7 medevac air & train ambulance, HUM repatriation, fast-track visa assist, cargo & AVI pet logistics, couple spas, and PSO close protection.",
+    description: "On-board meal arrangements, 24/7 medevac air & train ambulance, HUM repatriation, fast-track visa assist, cargo & AVI pet logistics, couple spas, and PSO close protection.",
     subServices: [
+      { label: "On-board Meal Arrangements", subParam: "onboard_meals", tagline: "Gourmet in-flight catering & dietary curation for group meet & greet" },
       { label: "Air Ambulance (Airborne ICU)", subParam: "Air Ambulance", tagline: "24/7 dedicated airborne ICU jets & bed-to-bed medevac" },
       { label: "Train Ambulance (ICU Escort)", subParam: "Train Ambulance", tagline: "Long-distance rail patient transfer with ICU team & oxygen" },
       { label: "HUM (Human Remains Transport)", subParam: "HUM Repatriation", tagline: "Dignified mortal remains repatriation across domestic & global sectors" },
@@ -543,17 +544,19 @@ export function EnterpriseSolutions() {
                     style={mono}
                   >
                     Choose Option to Begin:
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[42vh] overflow-y-auto pr-1">
+                  </div>                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[42vh] overflow-y-auto pr-1">
                     {selectedService.subServices.map((sub, sidx) => (
                       <Link
                         key={sidx}
-                        to="/book"
-                        search={{
-                          service: selectedService.serviceParam,
-                          sub: sub.subParam,
-                        }}
+                        to={selectedService.id === "special-services" ? "/solutions/special-services" : "/book"}
+                        search={
+                          selectedService.id === "special-services"
+                            ? { sub: sub.subParam }
+                            : {
+                                service: selectedService.serviceParam,
+                                sub: sub.subParam,
+                              }
+                        }
                         onClick={() => setSelectedService(null)}
                         className="group flex flex-col justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-[#d4af37] hover:bg-amber-50/40 transition-all duration-200 shadow-xs cursor-pointer"
                       >
@@ -590,8 +593,12 @@ export function EnterpriseSolutions() {
 
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                   <Link
-                    to="/book"
-                    search={{ service: selectedService.serviceParam }}
+                    to={selectedService.id === "special-services" ? "/solutions/special-services" : "/book"}
+                    search={
+                      selectedService.id === "special-services"
+                        ? undefined
+                        : { service: selectedService.serviceParam }
+                    }
                     onClick={() => setSelectedService(null)}
                     className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 hover:bg-slate-800 px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all font-mono cursor-pointer"
                   >
