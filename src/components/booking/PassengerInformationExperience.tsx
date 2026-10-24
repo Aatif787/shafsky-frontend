@@ -17,6 +17,7 @@ import {
   ChevronUp
 } from "lucide-react";
 import { FloatingInput, FloatingTextArea } from "@/components/ui/interactions";
+import { isValidEmailAddress, isValidPassengerName, isValidPhoneNumber } from "@/components/booking/validation/sharedValidation";
 
 
 export const SPECIAL_ASSISTANCE_OPTIONS = [
@@ -121,10 +122,10 @@ export function PassengerInformationExperience({
   const [internalCountryCode, setInternalCountryCode] = useState(countryCode);
   const [internalAssistance, setInternalAssistance] = useState<string[]>(selectedAssistanceOptions);
 
-  // Validation States
-  const isNameValid = leadPassengerName.trim().length >= 3;
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(passengerEmail.trim());
-  const isPhoneValid = passengerPhone.trim().replace(/[^0-9]/g, "").length >= 7;
+  // Validation States — strict field-specific checks.
+  const isNameValid = isValidPassengerName(leadPassengerName);
+  const isEmailValid = isValidEmailAddress(passengerEmail);
+  const isPhoneValid = isValidPhoneNumber(passengerPhone);
 
   // Auto-Save Notification
   const [autoSaveStatus, setAutoSaveStatus] = useState<string>("Draft Synced");
@@ -224,6 +225,7 @@ export function PassengerInformationExperience({
                   value={leadPassengerName}
                   onChange={(e) => setLeadPassengerName(e.target.value)}
                   success={isNameValid}
+                  error={leadPassengerName && !isNameValid ? "Please enter a valid passenger name." : undefined}
                   required
                 />
                 <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-slate-500 font-sans">
@@ -477,6 +479,7 @@ export function PassengerInformationExperience({
                     />
                   </div>
                 </div>
+                {passengerPhone && !isPhoneValid && <p className="mt-1 text-xs text-red-600">Please enter a valid phone number using digits only.</p>}
                 <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-slate-500 font-sans">
                   <Info className="w-3.5 h-3.5 text-[#7c3aed] shrink-0" />
                   <span>Our airside officer will send real-time WhatsApp updates 30 mins prior to arrival.</span>
