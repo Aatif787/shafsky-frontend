@@ -76,7 +76,6 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
   // Section 2: Valid ID Details
   const [idType, setIdType] = useState<"Passport" | "Government-issued ID" | "Other">("Passport");
   const [idNumber, setIdNumber] = useState("");
-  const [idProofAttached, setIdProofAttached] = useState<"Yes" | "No">("No");
 
   // Section 3: Meal Arrangement Details
   const [selectedMealTypes, setSelectedMealTypes] = useState<string[]>(["Breakfast"]);
@@ -221,7 +220,6 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
       `Allergies/Dietary: ${finalAllergies.join(", ")}`,
       idType ? `ID Type: ${idType}` : null,
       idNumber.trim() ? `ID No: ${idNumber.trim()}` : null,
-      `ID Proof Attached: ${idProofAttached}`,
       additionalInstructions.trim()
         ? `Instructions: ${additionalInstructions.trim()}`
         : null,
@@ -247,7 +245,6 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
       additional_instructions: additionalInstructions.trim() || undefined,
       id_type: idType,
       id_number: idNumber.trim() || undefined,
-      id_proof_attached: idProofAttached === "Yes",
       declaration_confirmed: true,
     };
 
@@ -582,33 +579,6 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                   />
                 </div>
 
-                {/* ID Proof Attached (Yes / No Toggle) */}
-                <div>
-                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    ID Proof Attached
-                  </label>
-                  <div className="flex items-center gap-3 py-1">
-                    {(["Yes", "No"] as const).map((choice) => (
-                      <label
-                        key={choice}
-                        className="inline-flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          name="idProofAttached"
-                          value={choice}
-                          checked={idProofAttached === choice}
-                          onChange={() => setIdProofAttached(choice)}
-                          className="w-4 h-4 text-[#0a196f] focus:ring-[#0a196f]/20 accent-[#0a196f] cursor-pointer"
-                        />
-                        <span>{choice}</span>
-                      </label>
-                    ))}
-                  </div>
-                  <span className="text-[10px] text-slate-500 font-mono block mt-1">
-                    ID verification may be completed airside during Meet & Greet.
-                  </span>
-                </div>
               </div>
             </div>
 
@@ -896,27 +866,6 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
               </div>
             </div>
 
-            {/* Contact Footer */}
-            <div className="pt-4 border-t border-slate-100 text-center sm:text-left text-[11px] text-slate-500 font-mono flex flex-col sm:flex-row items-center justify-between gap-2">
-              <div>
-                <span>Shafsky VIP Aviation Desk: </span>
-                {primaryContact ? (
-                  <a
-                    href={primaryContact.tel_link}
-                    className="font-bold text-[#0a196f] hover:underline"
-                  >
-                    {primaryContact.formatted}
-                  </a>
-                ) : (
-                  <span className="font-bold text-[#0a196f]">+91 95990 87959</span>
-                )}
-                {" • "}
-                <span className="text-slate-600">contact@shafskyaviation.com</span>
-              </div>
-              <div className="text-slate-400">
-                <span>24/7 Operations Room Coordination</span>
-              </div>
-            </div>
           </form>
         </div>
       )}
