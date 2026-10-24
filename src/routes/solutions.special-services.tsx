@@ -844,13 +844,9 @@ function DedicatedSpecialServicesPage() {
           3. SUPER SIMPLE ENQUIRY PANEL (MINIMUM REQUIRED FIELDS)
           ───────────────────────────────────────────────────────────── */}
       <section id="request-form" className="py-12 sm:py-16 bg-slate-50/70 border-b border-slate-200 px-4 sm:px-6 lg:px-8 scroll-mt-6">
-        <div className={selectedOptionId === "On-board Meal Arrangements for Group Meet & Greet Bookings" ? "mx-auto max-w-5xl" : "mx-auto max-w-3xl"}>
-          {selectedOptionId === "On-board Meal Arrangements for Group Meet & Greet Bookings" ? (
-            <OnboardMealArrangementForm />
-          ) : (
-            <>
-              {/* Active Option Heading */}
-              <div className="text-center mb-8">
+        <div className={selectedOptionId === "On-board Meal Arrangements for Group Meet & Greet Bookings" ? "mx-auto max-w-4xl" : "mx-auto max-w-3xl"}>
+          {/* Active Option Heading */}
+          <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-wider text-lime-700 mb-2">
               <Sparkles size={13} className="text-lime-600" />
               <span>QUICK ENQUIRY • CUSTOM QUOTATION</span>
@@ -863,7 +859,11 @@ function DedicatedSpecialServicesPage() {
             </p>
           </div>
 
-          {/* Success State / Reference Card */}
+          {selectedOptionId === "On-board Meal Arrangements for Group Meet & Greet Bookings" ? (
+            <OnboardMealArrangementForm />
+          ) : (
+            <>
+              {/* Success State / Reference Card */}
           {submittedRef ? (
             <div className="bg-white rounded-3xl border border-lime-400 p-8 sm:p-12 text-center shadow-lg">
               <div className="w-16 h-16 rounded-full bg-lime-100 border border-lime-300 flex items-center justify-center mx-auto mb-4 text-lime-700">

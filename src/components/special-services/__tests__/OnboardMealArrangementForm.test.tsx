@@ -49,13 +49,13 @@ describe("OnboardMealArrangementForm Component", () => {
     vi.clearAllMocks();
   });
 
-  it("renders the authoritative form header and subtitle", () => {
+  it("renders a clean streamlined form without bulky upper banner", () => {
     const html = renderToString(<OnboardMealArrangementForm />);
-    expect(html).toContain("ONBOARD MEAL ARRANGEMENT FORM");
-    expect(html).toContain("Shafsky Aviation Services Pvt. Ltd.");
+    expect(html).toContain("Zero charge • Official enquiry for custom quotation");
+    expect(html).toContain("Submit Enquiry");
   });
 
-  it("renders all four structured form sections", () => {
+  it("renders all four structured form sections in streamlined order", () => {
     const html = renderToString(<OnboardMealArrangementForm />);
 
     // Section 1: Passenger Details
@@ -65,18 +65,18 @@ describe("OnboardMealArrangementForm Component", () => {
     expect(html).toContain("Date of Travel");
     expect(html).toContain("Sector / Route");
 
-    // Section 2: Meal Arrangement Details
-    expect(html).toContain("2. Meal Arrangement Details");
+    // Section 2: Valid ID Details (Shifted immediately after Passenger Details)
+    expect(html).toContain("2. Valid ID Details");
+    expect(html).toContain("ID Type");
+    expect(html).toContain("ID Number");
+    expect(html).toContain("ID Proof Attached");
+
+    // Section 3: Meal Arrangement Details (Optimized Food Selection)
+    expect(html).toContain("3. Meal Arrangement Details");
     expect(html).toContain("A. Meal Type");
     expect(html).toContain("B. Meal Preference");
     expect(html).toContain("C. Number of Meals and Allergies");
     expect(html).toContain("D. Additional Instructions");
-
-    // Section 3: Valid ID Details
-    expect(html).toContain("3. Valid ID Details");
-    expect(html).toContain("ID Type");
-    expect(html).toContain("ID Number");
-    expect(html).toContain("ID Proof Attached");
 
     // Section 4: Declaration
     expect(html).toContain("4. Declaration");
@@ -88,7 +88,21 @@ describe("OnboardMealArrangementForm Component", () => {
     expect(html).toContain("Submit Enquiry");
   });
 
-  it("renders all required Meal Types in Section 2A", () => {
+  it("provides clean placeholders without demo text", () => {
+    const html = renderToString(<OnboardMealArrangementForm />);
+    expect(html).toContain('placeholder="Passenger full name"');
+    expect(html).toContain('placeholder="Flight number"');
+    expect(html).toContain('placeholder="Email address"');
+    expect(html).toContain('placeholder="Phone or WhatsApp number"');
+    expect(html).toContain('placeholder="ID or passport number"');
+
+    // Ensure dummy/demo values are removed
+    expect(html).not.toContain("Rahul Sharma");
+    expect(html).not.toContain("passenger@shafsky.test");
+    expect(html).not.toContain("+91 98765 43210");
+  });
+
+  it("renders all required Meal Types in Section 3A as interactive chips", () => {
     const html = renderToString(<OnboardMealArrangementForm />);
     const expectedTypes = [
       "Breakfast",
@@ -103,7 +117,7 @@ describe("OnboardMealArrangementForm Component", () => {
     }
   });
 
-  it("renders all required Meal Preferences in Section 2B", () => {
+  it("renders all required Meal Preferences in Section 3B as interactive chips", () => {
     const html = renderToString(<OnboardMealArrangementForm />);
     const expectedPreferences = [
       "Vegetarian",
@@ -119,7 +133,7 @@ describe("OnboardMealArrangementForm Component", () => {
     }
   });
 
-  it("renders all Allergies and Special Requirements in Section 2C", () => {
+  it("renders all Allergies and Special Requirements in Section 3C", () => {
     const html = renderToString(<OnboardMealArrangementForm />);
     const expectedAllergies = ["None", "Dairy", "Gluten", "Seafood", "Other"];
     for (const a of expectedAllergies) {
@@ -127,7 +141,7 @@ describe("OnboardMealArrangementForm Component", () => {
     }
   });
 
-  it("renders ID Types dropdown and non-mandatory proof in Section 3", () => {
+  it("renders ID Types dropdown and non-mandatory proof in Section 2", () => {
     const html = renderToString(<OnboardMealArrangementForm />);
     expect(html).toContain("Passport");
     expect(html).toContain("Government-issued ID");
