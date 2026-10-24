@@ -68,10 +68,31 @@ export function normalizePhoneForStorage(raw: string): string {
   return trimmed.replace(/\D/g, "");
 }
 
+/** Validate a passenger name without accepting digits or arbitrary symbols. */
+export function isValidPassengerName(raw: string): boolean {
+  const name = (raw || "").normalize("NFC").trim().replace(/\\s+/g, " ");
+  return name.length >= 2 && name.length <= 120 && /^[\\p{L}\\p{M}]+(?:[ '\\u2019.-][\\p{L}\\p{M}]+)*$/u.test(name);
+}
+
+/** Basic email syntax validation; the backend also validates with Pydantic EmailStr. */
+export function isValidEmailAddress(raw: string): boolean {
+  const email = (raw || "").trim();
+  return email.length <= 254 && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email);
+}
+
+/** Accept 7–15 digits with an optional leading + and common visual separators only. */
+export function isValidPhoneNumber(raw: string): boolean {
+  const compact = (raw || "").trim().replace(/[\\s().-]/g, "");
+  return /^\\+?\\d{7,15}$/.test(compact);
+}
+
 export function validateContactDetails(name: string, phone: string, email: string): string | null {
   if (!name || !name.trim()) return "Please enter Contact Name.";
+  if (!isValidPassengerName(name)) return "Please enter a valid name using letters only.";
   if (!phone || !phone.trim()) return "Please enter Phone Number.";
+  if (!isValidPhoneNumber(phone)) return "Please enter a valid phone number.";
   if (!email || !email.trim()) return "Please enter Email Address.";
+  if (!isValidEmailAddress(email)) return "Please enter a valid email address.";
   return null;
 }
 
