@@ -71,7 +71,7 @@ export function normalizePhoneForStorage(raw: string): string {
 /** Validate a passenger name without accepting digits or arbitrary symbols. */
 export function isValidPassengerName(raw: string): boolean {
   const name = (raw || "").normalize("NFC").trim().replace(/\s+/g, " ");
-  return name.length >= 2 && name.length <= 120 && /^[\p{L}\p{M}]+(?:[ '\u2019.-][\p{L}\p{M}]+)*$/u.test(name);
+  return name.length >= 2 && name.length <= 120 && /^[\p{L}\p{M}]+(?:(?:[ '\u2019-]+|\. ?)[\p{L}\p{M}]+)*$/u.test(name);
 }
 
 /** Basic email syntax validation; the backend also validates with Pydantic EmailStr. */
