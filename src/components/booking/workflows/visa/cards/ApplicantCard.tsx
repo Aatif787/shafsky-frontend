@@ -82,9 +82,9 @@ export function ApplicantCard({
           <input
             type="text"
             value={applicant.passportNumber}
-            onChange={(e) => onUpdate(applicant.id, { passportNumber: e.target.value })}
-            placeholder="Enter passport number"
-            className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500"
+            onChange={(e) => onUpdate(applicant.id, { passportNumber: e.target.value.toUpperCase() })}
+            placeholder="Enter passport number (e.g. A12345678)"
+            className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 font-mono uppercase"
           />
         </div>
 

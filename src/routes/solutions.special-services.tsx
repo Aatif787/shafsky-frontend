@@ -426,11 +426,12 @@ function DedicatedSpecialServicesPage() {
   const [humDate, setHumDate] = useState("");
   const [humScope, setHumScope] = useState("Domestic Repatriation (Airport to Airport)");
 
-  // 7. Visa Assistance (Country, Category, Date, Applicants)
+  // 7. Visa Assistance (Country, Category, Date, Applicants, Passport)
   const [visaCountry, setVisaCountry] = useState("");
   const [visaCategory, setVisaCategory] = useState("Tourist / Visitor Visa");
   const [visaDate, setVisaDate] = useState("");
   const [visaApplicants, setVisaApplicants] = useState(1);
+  const [visaPassport, setVisaPassport] = useState("");
 
   // 8. Cargo & AVI Pet Freight (From, To, Pet/Cargo Details, Date)
   const [cargoOrigin, setCargoOrigin] = useState("");
@@ -563,8 +564,9 @@ function DedicatedSpecialServicesPage() {
         visa_category: visaCategory,
         travel_date: visaDate,
         applicants_count: visaApplicants,
+        passport_number: visaPassport ? visaPassport.trim().toUpperCase() : undefined,
       };
-      notes = `${visaCategory} for ${visaCountry} (${visaApplicants} Applicants)`;
+      notes = `${visaCategory} for ${visaCountry} (${visaApplicants} Applicants)${visaPassport ? ` | Passport: ${visaPassport.trim().toUpperCase()}` : ""}`;
       serviceType = "Visa Assistance";
     } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
       origin = cargoOrigin;
@@ -643,7 +645,7 @@ function DedicatedSpecialServicesPage() {
     } else if (selectedOptionId === "Dignified Human Remains (HUM)") {
       details = `From: ${humOrigin}%0ATo: ${humDest}%0ATimeline: ${humDate}%0AScope: ${humScope}`;
     } else if (selectedOptionId === "Visa Assistance Services") {
-      details = `Country: ${visaCountry}%0ACategory: ${visaCategory}%0ATravel Date: ${visaDate}%0AApplicants: ${visaApplicants}`;
+      details = `Country: ${visaCountry}%0ACategory: ${visaCategory}%0ATravel Date: ${visaDate}%0AApplicants: ${visaApplicants}${visaPassport ? `%0APassport: ${visaPassport.trim().toUpperCase()}` : ""}`;
     } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
       details = `From: ${cargoOrigin}%0ATo: ${cargoDest}%0ACargo/Pet: ${cargoDetails}%0ADate: ${cargoDate}`;
     } else if (selectedOptionId === "Air Ticketing Services") {
@@ -1278,6 +1280,7 @@ function DedicatedSpecialServicesPage() {
                           type="text"
                           value={visaCountry}
                           onChange={(e) => setVisaCountry(e.target.value)}
+                          placeholder="e.g. United Kingdom, UAE, USA, Schengen"
                           required
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
@@ -1325,6 +1328,18 @@ function DedicatedSpecialServicesPage() {
                           className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                         />
                       </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Passport Number (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={visaPassport}
+                        onChange={(e) => setVisaPassport(e.target.value.toUpperCase())}
+                        placeholder="Enter passport number (e.g. A12345678)"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 font-mono uppercase"
+                      />
                     </div>
                   </div>
                 )}
