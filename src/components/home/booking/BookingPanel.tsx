@@ -402,7 +402,7 @@ export function BookingPanel() {
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/90 text-emerald-900 text-[11px] sm:text-xs font-mono font-bold tracking-tight transition-all shadow-2xs hover:shadow-xs group cursor-pointer"
             >
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span>24/7 WhatsApp Booking: <span className="underline decoration-emerald-400 font-extrabold">+91 74283 00207</span></span>
+              <span>24/7 WhatsApp Booking</span>
               <ArrowRight size={12} className="text-emerald-700 transition-transform group-hover:translate-x-0.5" />
             </a>
           </div>
@@ -821,7 +821,7 @@ export function BookingPanel() {
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-xs font-mono font-bold tracking-wider transition-all shadow-2xs hover:shadow-xs active:scale-98 cursor-pointer"
             >
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span>24/7 WhatsApp Booking (+91 74283 00207)</span>
+              <span>24/7 WhatsApp Booking</span>
             </a>
 
             <motion.button
