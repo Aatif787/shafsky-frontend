@@ -36,6 +36,11 @@ export interface LoungeEligibilityCheckPayload {
 export interface LoungeEligibilityResult {
   eligible: boolean;
   is_grace_period: boolean;
+  lounge_category?: string;
+  normal_cutoff_datetime?: string | null;
+  grace_period_end_datetime?: string | null;
+  server_datetime?: string;
+  travel_datetime?: string | null;
   lead_time_hours: number;
   required_notice_hours: number;
   grace_period_hours: number;
@@ -44,6 +49,7 @@ export interface LoungeEligibilityResult {
   server_time: string;
   scheduled_time: string;
   message: string;
+  ineligible_reason?: string | null;
 }
 
 export interface LoungeEnquirySubmission {
