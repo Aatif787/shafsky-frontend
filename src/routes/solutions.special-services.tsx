@@ -28,6 +28,7 @@ import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 import toursTravelImg from "@/assets/others/tours-travel.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import specialserImg from "@/assets/others/specialser.png";
+import airAmbulanceImg from "@/assets/others/air-ambulance.jpg";
 import { Footer } from "@/components/home/sections/Footer";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 import { OnboardMealArrangementForm } from "@/components/special-services/OnboardMealArrangementForm";
@@ -88,6 +89,13 @@ const SPECIAL_HERO_SLIDES: SpecialHeroSlide[] = [
     photo: specialserImg,
     badge: "BESPOKE TOURS, HONEYMOONS & TAJ MAHAL CONCIERGE",
     linkedOptionId: "Tours & Travel (Honeymoon/Couples)",
+  },
+  {
+    id: "air-ambulance",
+    label: "Air Ambulance (Airborne ICU Jet)",
+    photo: airAmbulanceImg,
+    badge: "24/7 AIRBORNE ICU & BED-TO-BED MEDICAL EVACUATION",
+    linkedOptionId: "Air Ambulance (Airborne ICU Jet)",
   },
   {
     id: "spa-wellness",
@@ -186,6 +194,7 @@ const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     shortLabel: "Air Ambulance",
     badge: "24/7 AIRBORNE ICU & BED-TO-BED MEDICAL EVACUATION",
     tagline: "Dedicated ICU aircraft, certified aero-medical doctors, and seamless bed-to-bed hospital transfer across India and worldwide.",
+    photo: airAmbulanceImg,
     icon: Plane,
     inclusions: [
       "Dedicated Airborne ICU Jet (Learjet / Hawker / King Air) on 2-Hour Rapid Standby",
@@ -1127,6 +1136,27 @@ function DedicatedSpecialServicesPage() {
                 {/* 4. Air Ambulance Minimal Enquiry */}
                 {selectedOptionId === "Air Ambulance (Airborne ICU Jet)" && (
                   <div className="space-y-4">
+                    {/* Visual Air Ambulance Banner - Fully Responsive & Mobile-Optimized */}
+                    <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm bg-slate-950">
+                      <img
+                        src={airAmbulanceImg}
+                        alt="Shafsky 24/7 Airborne ICU Air Ambulance Jet & Medical Team"
+                        width={1024}
+                        height={576}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover object-center select-none"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent flex flex-col justify-end p-3 sm:p-5 pointer-events-none">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-lime-500/95 text-slate-950 font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs w-fit shadow-xs">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
+                          24/7 Priority Airborne ICU Jet
+                        </span>
+                        <p className="text-white text-xs sm:text-sm font-semibold tracking-tight drop-shadow-md mt-1">
+                          Full Advanced Life Support ICU Jet & Rapid Bed-to-Bed Medical Transfer
+                        </p>
+                      </div>
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
@@ -1599,7 +1629,7 @@ function DedicatedSpecialServicesPage() {
                     decoding="async"
                     src={activeOption.photo}
                     alt={activeOption.label}
-                    className="w-full h-full object-contain object-center select-none bg-white"
+                    className="w-full h-full object-cover object-center select-none bg-white"
                   />
                 </div>
               ) : activeOption.id !== "Air Ticketing Services" ? (
