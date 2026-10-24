@@ -17,6 +17,7 @@ import {
   PhoneCall,
   Clock,
   ShieldAlert,
+  UtensilsCrossed,
 } from "lucide-react";
 import { display } from "@/components/home/theme";
 import { enquiryApi } from "@/lib/api/enquiryApi";
@@ -29,6 +30,7 @@ import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import specialserImg from "@/assets/others/specialser.png";
 import { Footer } from "@/components/home/sections/Footer";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
+import { OnboardMealArrangementForm } from "@/components/special-services/OnboardMealArrangementForm";
 
 export const Route = createFileRoute("/solutions/special-services")({
   head: () =>
@@ -48,6 +50,7 @@ export const Route = createFileRoute("/solutions/special-services")({
 });
 
 export type SpecialServiceOptionId =
+  | "On-board Meal Arrangements for Group Meet & Greet Bookings"
   | "Spa & Wellness"
   | "Tours & Travel (Honeymoon/Couples)"
   | "PSO (Personal Security Officer / VIP Shopping)"
@@ -110,6 +113,22 @@ const SPECIAL_HERO_SLIDES: SpecialHeroSlide[] = [
 ];
 
 const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
+  {
+    id: "On-board Meal Arrangements for Group Meet & Greet Bookings",
+    label: "On-board Meal Arrangements for Group Meet & Greet Bookings",
+    shortLabel: "On-board Meals",
+    badge: "GOURMET IN-FLIGHT DINING & GROUP MEET & GREET CATERING",
+    tagline: "Bespoke in-flight catering, customized dietary curation, and synchronized airside meal delivery for group and VIP Meet & Greet journeys.",
+    icon: UtensilsCrossed,
+    inclusions: [
+      "Bespoke Gourmet In-Flight Meal Service for Group & VIP Meet & Greet Flights",
+      "Specialized Dietary Curation: Jain, Halal, Vegan, Gluten-Free, Veg & Non-Veg",
+      "Strict In-Flight Allergy Management & Direct Airline Catering Manifesting",
+      "Airside Gate-to-Cabin Meal Coordination Synchronized with Passenger Boarding",
+      "Executive Beverage Selection, Fresh Bakery & Premium Multi-Course Menus",
+      "24/7 Dedicated In-Flight Catering Concierge & Urgent Sector Coordination",
+    ],
+  },
   {
     id: "Spa & Wellness",
     label: "Spa & Wellness",
@@ -279,7 +298,9 @@ function DedicatedSpecialServicesPage() {
     if (!subParam) return;
     const sub = subParam.toLowerCase();
     let targetId: SpecialServiceOptionId | null = null;
-    if (sub.includes("air_amb") || sub.includes("air-amb") || sub === "medevac" || sub === "ambulance") {
+    if (sub.includes("meal") || sub.includes("catering") || sub.includes("onboard") || sub.includes("dining")) {
+      targetId = "On-board Meal Arrangements for Group Meet & Greet Bookings";
+    } else if (sub.includes("air_amb") || sub.includes("air-amb") || sub === "medevac" || sub === "ambulance") {
       targetId = "Air Ambulance (Airborne ICU Jet)";
     } else if (sub.includes("train")) {
       targetId = "Train Ambulance (Train ICU Escort)";
@@ -823,7 +844,7 @@ function DedicatedSpecialServicesPage() {
           3. SUPER SIMPLE ENQUIRY PANEL (MINIMUM REQUIRED FIELDS)
           ───────────────────────────────────────────────────────────── */}
       <section id="request-form" className="py-12 sm:py-16 bg-slate-50/70 border-b border-slate-200 px-4 sm:px-6 lg:px-8 scroll-mt-6">
-        <div className="mx-auto max-w-3xl">
+        <div className={selectedOptionId === "On-board Meal Arrangements for Group Meet & Greet Bookings" ? "mx-auto max-w-4xl" : "mx-auto max-w-3xl"}>
           {/* Active Option Heading */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-wider text-lime-700 mb-2">
@@ -838,7 +859,11 @@ function DedicatedSpecialServicesPage() {
             </p>
           </div>
 
-          {/* Success State / Reference Card */}
+          {selectedOptionId === "On-board Meal Arrangements for Group Meet & Greet Bookings" ? (
+            <OnboardMealArrangementForm />
+          ) : (
+            <>
+              {/* Success State / Reference Card */}
           {submittedRef ? (
             <div className="bg-white rounded-3xl border border-lime-400 p-8 sm:p-12 text-center shadow-lg">
               <div className="w-16 h-16 rounded-full bg-lime-100 border border-lime-300 flex items-center justify-center mx-auto mb-4 text-lime-700">
@@ -1527,6 +1552,8 @@ function DedicatedSpecialServicesPage() {
               </form>
             </div>
           )}
+            </>
+          )}
         </div>
       </section>
 
@@ -1547,7 +1574,7 @@ function DedicatedSpecialServicesPage() {
               Service Details & Inclusions.
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-              Luxury couple wellness, curated honeymoon circuits, close protection, 24/7 medevac & rail ICU, dignified HUM repatriation, visa assistance, cargo pet logistics, and commercial air ticketing.
+              On-board meal arrangements, luxury couple wellness, curated honeymoon circuits, close protection, 24/7 medevac & rail ICU, dignified HUM repatriation, visa assistance, cargo pet logistics, and commercial air ticketing.
             </p>
           </div>
 
