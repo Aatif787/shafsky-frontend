@@ -25,39 +25,43 @@ vi.mock("@/lib/branding/branding.context", () => ({
 
 describe("Navigation navbar (Direct Individual Links)", () => {
   it("defines NAV_ITEMS in the exact required order with correct routes", () => {
-    expect(NAV_ITEMS).toHaveLength(7);
+    expect(NAV_ITEMS).toHaveLength(8);
 
     expect(NAV_ITEMS[0]).toEqual({
-      label: "Meet & Greet Lounge",
+      label: "Meet & Greet",
       href: "/solutions/concierge",
     });
     expect(NAV_ITEMS[1]).toEqual({
+      label: "Lounge",
+      href: "/lounge",
+    });
+    expect(NAV_ITEMS[2]).toEqual({
       label: "Airports",
       href: "/airports",
     });
-    expect(NAV_ITEMS[2]).toEqual({
+    expect(NAV_ITEMS[3]).toEqual({
       label: "Transport",
       href: "/solutions/transport",
     });
-    expect(NAV_ITEMS[3]).toEqual({
+    expect(NAV_ITEMS[4]).toEqual({
       label: "Hotel",
       href: "/solutions/hotels",
     });
-    expect(NAV_ITEMS[4]).toEqual({
+    expect(NAV_ITEMS[5]).toEqual({
       label: "Private Charter",
       href: "/solutions/aviation",
     });
-    expect(NAV_ITEMS[5]).toEqual({
+    expect(NAV_ITEMS[6]).toEqual({
       label: "Ticketing",
       href: "/solutions/special-services?sub=ticketing",
     });
-    expect(NAV_ITEMS[6]).toEqual({
+    expect(NAV_ITEMS[7]).toEqual({
       label: "Support",
       href: "/support",
     });
   });
 
-  it("renders all 7 individual links directly in the navbar without a dropdown or mega-menu", () => {
+  it("renders all individual links directly in the navbar without a dropdown or mega-menu", () => {
     const html = renderToString(React.createElement(Navigation, { visible: true }));
 
     // NO dropdown or mega-menu trigger
@@ -65,9 +69,11 @@ describe("Navigation navbar (Direct Individual Links)", () => {
     expect(html).not.toContain('aria-haspopup="true"');
     expect(html).not.toContain(">Services</span>");
 
-    // All 5 services appear directly as links
+    // All services appear directly as links
     expect(html).toContain('href="/solutions/concierge"');
-    expect(html).toContain("Meet &amp; Greet Lounge");
+    expect(html).toContain("Meet &amp; Greet");
+    expect(html).toContain('href="/lounge"');
+    expect(html).toContain("Lounge");
 
     expect(html).toContain('href="/solutions/transport"');
     expect(html).toContain(">Transport</span>");
