@@ -350,7 +350,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
           { id: "contact_name", label: "Applicant Full Name", type: "text", placeholder: "Full name", required: true, gridCols: 2 },
           { id: "contact_email", label: "Email Address", type: "text", placeholder: "Email address", required: true, gridCols: 2 },
           { id: "contact_phone", label: "Phone Number", type: "phone_input", placeholder: "Mobile number", required: true, gridCols: 2 },
-          { id: "passport_number", label: "Passport Number (Optional)", type: "text", placeholder: "Enter passport number (e.g. A12345678)", required: false, gridCols: 2 },
+          { id: "passport_number", label: "Passport Number", type: "text", placeholder: "Enter passport number (e.g. A12345678)", required: true, gridCols: 2 },
         ],
       },
     ],

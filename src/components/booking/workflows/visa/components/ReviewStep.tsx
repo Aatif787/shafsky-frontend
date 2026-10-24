@@ -63,7 +63,7 @@ export function ReviewStep({
                   {i + 1}. {a.firstName || "Applicant"} {a.lastName} ({a.nationality || passportCountry || "Unspecified"})
                 </div>
                 <div className="flex items-center gap-3 text-slate-600">
-                  <span>Passport: {a.passportNumber || "Provided Later"}</span>
+                  <span className="font-mono">Passport: {a.passportNumber}</span>
                   {a.hasPreviousVisa && <span className="text-emerald-700 font-semibold">Prior Visa Held</span>}
                 </div>
               </div>
