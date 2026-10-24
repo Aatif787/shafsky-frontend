@@ -337,10 +337,14 @@ export function MeetGreetPackageComparison({
               const mapped = data.data.map((item: any) => {
                 const slug = item.service?.slug || item.id;
                 let itemFeatures = item.features || [];
+                const isArrival = item.journey_type === "ARRIVAL" || journeyType === "ARRIVAL";
                 if (!itemFeatures || itemFeatures.length === 0) {
+                  const arrivalWelcome = isArrival
+                    ? "WELCOME GUEST FROM END OF THE AEROBRIDGE"
+                    : "WELCOME IN THE END OF THE AEROBRIDGE";
                   if (slug === "platinum") {
                     itemFeatures = [
-                      "WELCOME IN THE END OF THE AEROBRIDGE",
+                      arrivalWelcome,
                       "Dedicated Staff with Placard",
                       "Baggage Assist (Up to 3 Pieces)",
                       "Assist at the Baggage Belt Area",
@@ -349,7 +353,7 @@ export function MeetGreetPackageComparison({
                     ];
                   } else if (slug === "elite") {
                     itemFeatures = [
-                      "WELCOME IN THE END OF THE AEROBRIDGE",
+                      arrivalWelcome,
                       "Dedicated Staff with Placard",
                       "Baggage Assist",
                       "Assist at the Baggage Belt Area",
@@ -369,7 +373,9 @@ export function MeetGreetPackageComparison({
                 const cleanPackageText = (txt: string) => {
                   if (typeof txt !== "string") return txt;
                   if (/^(WELCOME GUEST FROM AEROBRIDGE\.?|WELCOME GUEST FROM THE AEROBRIDGE\.?|WELCOME AT THE AEROBRIDGE\.?|WELCOME GUEST FROM AEROBRIDGE \.?|WELCOME AT THE END OF THE AEROBRIDGE\.?|WELCOME IN THE END OF THE AEROBRIDGE\.?|WELCOME GUEST FROM END OF THE AEROBRIDGE\.?|Welcome at the End of the Aerobridge\.?|Welcome in the End of the Aerobridge\.?|Welcome at the Aerobridge)$/i.test(txt.trim())) {
-                    return "WELCOME IN THE END OF THE AEROBRIDGE";
+                    return isArrival
+                      ? "WELCOME GUEST FROM END OF THE AEROBRIDGE"
+                      : "WELCOME IN THE END OF THE AEROBRIDGE";
                   }
                   if (/^(Escort to the Car Parking Area|Escort to the Parking Area|DROP OFF TILL CAR PARKING AREA\.?|DROP OFF CAR PARKING AREA|DROP OFF TILL CAR PARKING\.?|ASSIST GUEST TILL THE PARKING AREA\.?|ASSIST GUEST TILL THE CAR PARKING AREA\.?)$/i.test(txt.trim())) {
                     return "ASSIST GUEST TILL THE CAR PARKING AREA";
