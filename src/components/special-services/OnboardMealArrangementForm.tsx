@@ -64,11 +64,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
   // Section 1: Passenger & Route Details
   const [passengerName, setPassengerName] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
-  const [dateOfTravel, setDateOfTravel] = useState(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split("T")[0];
-  });
+  const [dateOfTravel, setDateOfTravel] = useState("");
   const [sectorRoute, setSectorRoute] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -79,10 +75,11 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
   const [idProofAttached, setIdProofAttached] = useState<"Yes" | "No">("No");
 
   // Section 3: Meal Arrangement Details
-  const [selectedMealTypes, setSelectedMealTypes] = useState<string[]>(["Breakfast"]);
-  const [selectedMealPreferences, setSelectedMealPreferences] = useState<string[]>(["Vegetarian"]);
+  // Start with no selections so the enquiry reflects the customer's actual choices.
+  const [selectedMealTypes, setSelectedMealTypes] = useState<string[]>([]);
+  const [selectedMealPreferences, setSelectedMealPreferences] = useState<string[]>([]);
   const [otherMealPreferenceText, setOtherMealPreferenceText] = useState("");
-  const [mealCount, setMealCount] = useState<number>(4);
+  const [mealCount, setMealCount] = useState<number>(1);
   const [selectedAllergies, setSelectedAllergies] = useState<string[]>(["None"]);
   const [otherAllergyText, setOtherAllergyText] = useState("");
   const [additionalInstructions, setAdditionalInstructions] = useState("");
@@ -146,8 +143,8 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
 
     // 1. Validate Passenger Name
     const trimmedName = passengerName.trim();
-    if (!trimmedName || !/^[A-Za-z\s]+$/.test(trimmedName)) {
-      toast.error("Please enter a valid passenger name using letters only.");
+    if (!trimmedName || !/^[\p{L}\p{M}]+(?:[\s.'’\-][\p{L}\p{M}]+)*$/u.test(trimmedName)) {
+      toast.error("Please enter a valid passenger name.");
       return;
     }
 
@@ -220,7 +217,6 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
       `Preferences: ${finalPreferences.join(", ")}`,
       `Allergies/Dietary: ${finalAllergies.join(", ")}`,
       idType ? `ID Type: ${idType}` : null,
-      idNumber.trim() ? `ID No: ${idNumber.trim()}` : null,
       `ID Proof Attached: ${idProofAttached}`,
       additionalInstructions.trim()
         ? `Instructions: ${additionalInstructions.trim()}`
