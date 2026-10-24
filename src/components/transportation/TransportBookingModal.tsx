@@ -82,6 +82,8 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
   // 4. Vehicle Type (controlled via selectedCategory & selectedVehicleId)
   // 5. Number of Passengers
   const [passengers, setPassengers] = useState(2);
+  // Passport Number (Required for International)
+  const [passportNumber, setPassportNumber] = useState("");
   // 6. Number of Vehicles
   const [vehicles, setVehicles] = useState(1);
   // 7. Date
@@ -172,6 +174,10 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
       toast.error("Please enter a valid mobile number with country code.");
       return;
     }
+    if (serviceRegion === "international" && !passportNumber.trim()) {
+      toast.error("Please enter the lead passenger's passport number.");
+      return;
+    }
     if (serviceRegion === "domestic" && !selectedVehicleId) {
       toast.error("Please select a vehicle model.");
       return;
@@ -207,6 +213,9 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
       notesArray.push(`Service Region: ${serviceRegion === "international" ? "International" : "Domestic"}`);
       notesArray.push(`Vehicle: ${vehicleName} (Count: ${vehicles})`);
       notesArray.push(`Passengers: ${passengers}`);
+      if (serviceRegion === "international" && passportNumber.trim()) {
+        notesArray.push(`Passport: ${passportNumber.trim().toUpperCase()}`);
+      }
 
       const res = await enquiryApi.submit({
         passengerName: name.trim(),
@@ -220,6 +229,10 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
         notes: notesArray.join(" | "),
         details: {
           service_region: serviceRegion,
+          passport_number:
+            serviceRegion === "international"
+              ? passportNumber.trim().toUpperCase()
+              : undefined,
           vehicle_id:
             serviceRegion === "international"
               ? `intl-${selectedCategory.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`
@@ -282,6 +295,9 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
         `• Contact Phone: ${phone}\n` +
         `• Vehicle: ${vehicleDisplay} (${vehicles} unit${vehicles > 1 ? "s" : ""})\n` +
         `• Passengers: ${passengers} Pax\n` +
+        (serviceRegion === "international" && passportNumber
+          ? `• Passport: ${passportNumber.trim().toUpperCase()}\n`
+          : "") +
         `• Travel Date: ${date}\n` +
         `• Pickup: ${pickup}\n` +
         `• Drop: ${dropoff}\n` +
@@ -412,6 +428,16 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
                       {passengers} {passengers === 1 ? "Passenger" : "Passengers"}
                     </span>
                   </div>
+                  {serviceRegion === "international" && passportNumber && (
+                    <div className="col-span-2 sm:col-span-1">
+                      <span className="text-slate-500 block text-[10px] font-mono uppercase tracking-wider">
+                        Passport Number
+                      </span>
+                      <span className="font-semibold text-slate-900 font-mono">
+                        {passportNumber.trim().toUpperCase()}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-1 border-t border-slate-200/80 space-y-1">
@@ -562,46 +588,83 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
                   </div>
                 </div>
 
-                {/* Number of Passengers (Shifted into Passenger Details) */}
-                <div className="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 flex items-center justify-between shadow-2xs">
-                  <div className="space-y-0.5">
-                    <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                      <Users size={14} className="text-lime-600" />
-                      Number of Passengers
-                    </span>
-                    <span className="text-[10.5px] text-slate-500 font-mono block">
-                      Total passengers traveling
-                    </span>
+                {/* Passenger Count & International Passport */}
+                <div
+                  className={`grid gap-3 transition-all ${
+                    serviceRegion === "international"
+                      ? "grid-cols-1 sm:grid-cols-2"
+                      : "grid-cols-1"
+                  }`}
+                >
+                  {/* Number of Passengers (Reduced size in international mode) */}
+                  <div className="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 flex items-center justify-between shadow-2xs">
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                        <Users size={14} className="text-lime-600" />
+                        Number of Passengers
+                      </span>
+                      <span className="text-[10.5px] text-slate-500 font-mono block">
+                        Total passengers traveling
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setPassengers((p) => Math.max(1, p - 1))}
+                        className="w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 active:bg-slate-200 text-slate-800 font-bold flex items-center justify-center transition cursor-pointer"
+                        aria-label="Decrease passenger count"
+                      >
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        min={1}
+                        max={50}
+                        value={passengers}
+                        onChange={(e) =>
+                          setPassengers(Math.max(1, Math.min(50, Number(e.target.value) || 1)))
+                        }
+                        className="w-12 text-center py-1 font-mono font-bold text-sm text-slate-900 border border-slate-200 rounded-lg bg-white focus:outline-none focus:border-lime-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setPassengers((p) => Math.min(50, p + 1))}
+                        className="w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 active:bg-slate-200 text-slate-800 font-bold flex items-center justify-center transition cursor-pointer"
+                        aria-label="Increase passenger count"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPassengers((p) => Math.max(1, p - 1))}
-                      className="w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 active:bg-slate-200 text-slate-800 font-bold flex items-center justify-center transition cursor-pointer"
-                      aria-label="Decrease passenger count"
-                    >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      min={1}
-                      max={50}
-                      value={passengers}
-                      onChange={(e) =>
-                        setPassengers(Math.max(1, Math.min(50, Number(e.target.value) || 1)))
-                      }
-                      className="w-12 text-center py-1 font-mono font-bold text-sm text-slate-900 border border-slate-200 rounded-lg bg-white focus:outline-none focus:border-lime-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setPassengers((p) => Math.min(50, p + 1))}
-                      className="w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 active:bg-slate-200 text-slate-800 font-bold flex items-center justify-center transition cursor-pointer"
-                      aria-label="Increase passenger count"
-                    >
-                      +
-                    </button>
-                  </div>
+                  {/* Passport Number (Right Side of Passengers in International Mode) */}
+                  {serviceRegion === "international" && (
+                    <div className="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-col justify-between shadow-2xs">
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                          <FileText size={14} className="text-lime-600" />
+                          <span>
+                            Passport Number <span className="text-rose-500">*</span>
+                          </span>
+                        </label>
+                        <span className="text-[10.5px] text-slate-500 font-mono block">
+                          Lead passenger
+                        </span>
+                      </div>
+
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="Enter passport number (e.g. A12345678)"
+                          value={passportNumber}
+                          onChange={(e) => setPassportNumber(e.target.value.toUpperCase())}
+                          required={serviceRegion === "international"}
+                          className="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 font-mono uppercase transition"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

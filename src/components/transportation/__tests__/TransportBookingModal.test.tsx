@@ -138,5 +138,21 @@ describe("TransportBookingModal SSR & Field Rendering Tests", () => {
     expect(html).toContain("Travel Date");
     expect(html).toContain("Pickup Location");
     expect(html).toContain("Drop Location");
+    // Passport number is rendered in international mode
+    expect(html).toContain("Passport Number");
+  });
+
+  it("in domestic mode, omits passport number", () => {
+    const html = renderToString(
+      <QueryClientProvider client={queryClient}>
+        <TransportBookingModal
+          isOpen={true}
+          onClose={vi.fn()}
+          initialRegion="domestic"
+        />
+      </QueryClientProvider>
+    );
+
+    expect(html).not.toContain("Passport Number");
   });
 });
