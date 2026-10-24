@@ -162,8 +162,13 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
 
   const handleSubmitQuote = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!customerName.trim() || !phone.trim()) {
-      alert("Please provide your name and contact phone number.");
+    const trimmedName = customerName.trim();
+    if (!trimmedName || !/^[A-Za-z\s]+$/.test(trimmedName)) {
+      alert("Please enter a valid passenger name using letters only.");
+      return;
+    }
+    if (!phone.trim()) {
+      alert("Please provide your contact phone number.");
       return;
     }
     if (!email.trim() || !email.includes("@")) {

@@ -153,8 +153,9 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name.trim()) {
-      toast.error("Please enter passenger/contact full name.");
+    const trimmedName = name.trim();
+    if (!trimmedName || !/^[A-Za-z\s]+$/.test(trimmedName)) {
+      toast.error("Please enter a valid passenger name using letters only.");
       return;
     }
     if (!email.trim() || !email.includes("@")) {

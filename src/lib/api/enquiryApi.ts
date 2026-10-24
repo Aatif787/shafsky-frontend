@@ -36,9 +36,13 @@ export interface ServiceEnquiryData {
 
 export const enquiryApi = {
   async submit(payload: ServiceEnquiryPayload): Promise<ApiResponse<ServiceEnquiryData>> {
+    const trimmedName = (payload.passengerName || "").trim();
+    if (!trimmedName || !/^[A-Za-z\s]+$/.test(trimmedName)) {
+      throw new Error("Please enter a valid passenger name using letters only.");
+    }
     return apiFetch<ServiceEnquiryData>("/api/bookings/enquiries", {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ ...payload, passengerName: trimmedName }),
       headers: { "Content-Type": "application/json" },
     });
   },

@@ -83,8 +83,22 @@ export function validateVisaExpiry(expiryStr?: string | null): {
 
 export const PassengerInputSchema = z.object({
   id: z.string().uuid().optional(),
-  first_name: z.string().trim().min(1, "First name is required").max(80),
-  last_name: z.string().trim().min(1, "Last name is required").max(80),
+  first_name: z
+    .string()
+    .trim()
+    .min(1, "First name is required")
+    .max(80)
+    .refine((val) => /^[A-Za-z\s]+$/.test(val), {
+      message: "Please enter a valid passenger name using letters only.",
+    }),
+  last_name: z
+    .string()
+    .trim()
+    .min(1, "Last name is required")
+    .max(80)
+    .refine((val) => /^[A-Za-z\s]+$/.test(val), {
+      message: "Please enter a valid passenger name using letters only.",
+    }),
   gender: z.enum(["male", "female", "other", "unspecified"]).default("unspecified"),
   date_of_birth: z.string().optional().nullable(),
   nationality: z.string().trim().max(80).optional().nullable(),

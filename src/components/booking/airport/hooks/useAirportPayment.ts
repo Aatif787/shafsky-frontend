@@ -155,13 +155,17 @@ export function useAirportPayment({
     for (let i = 0; i < passengers.length; i++) {
       const p = passengers[i];
       const pName = (p.fullName || "").trim();
-      if (!pName || pName.length < 2) {
-        toast.error(`Please enter the full name for Passenger ${i + 1}.`);
+      if (!pName || pName.length < 2 || !/^[A-Za-z\s]+$/.test(pName)) {
+        toast.error("Please enter a valid passenger name using letters only.");
         return;
       }
     }
 
     const cleanName = fullName.trim();
+    if (!cleanName || cleanName.length < 2 || !/^[A-Za-z\s]+$/.test(cleanName)) {
+      toast.error("Please enter a valid passenger name using letters only.");
+      return;
+    }
     const cleanEmail = email.trim();
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!cleanEmail || !emailPattern.test(cleanEmail)) {
@@ -266,8 +270,8 @@ export function useAirportPayment({
     for (let i = 0; i < passengers.length; i++) {
       const p = passengers[i];
       const pName = (p.fullName || "").trim();
-      if (!pName || pName.length < 2) {
-        toast.error(`Please enter the full name for Passenger ${i + 1}.`);
+      if (!pName || pName.length < 2 || !/^[A-Za-z\s]+$/.test(pName)) {
+        toast.error("Please enter a valid passenger name using letters only.");
         return;
       }
       if (p.age && (Number(p.age) < 1 || Number(p.age) > 120)) {
@@ -277,6 +281,10 @@ export function useAirportPayment({
     }
 
     const cleanName = fullName.trim();
+    if (!cleanName || cleanName.length < 2 || !/^[A-Za-z\s]+$/.test(cleanName)) {
+      toast.error("Please enter a valid passenger name using letters only.");
+      return;
+    }
     const cleanEmail = email.trim();
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!cleanEmail || !emailPattern.test(cleanEmail)) {

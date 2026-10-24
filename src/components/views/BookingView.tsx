@@ -166,8 +166,13 @@ export default function BookingView({ searchParams }: BookingViewProps) {
   };
 
   const executeSubmission = async () => {
-    if (!leadPassengerName.trim() || !passengerPhone.trim() || !passengerEmail.trim()) {
-      toast.error("Please fill in Lead Guest Name, Phone Number, and Email.");
+    const trimmedLeadName = leadPassengerName.trim();
+    if (!trimmedLeadName || !/^[A-Za-z\s]+$/.test(trimmedLeadName)) {
+      toast.error("Please enter a valid passenger name using letters only.");
+      return;
+    }
+    if (!passengerPhone.trim() || !passengerEmail.trim()) {
+      toast.error("Please fill in Phone Number and Email.");
       return;
     }
     setBusy(true);

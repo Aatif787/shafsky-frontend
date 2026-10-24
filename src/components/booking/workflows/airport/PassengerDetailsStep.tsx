@@ -97,8 +97,8 @@ export function PassengerDetailsStep({
     }
 
     const nameVal = state.fullName.trim();
-    if (!nameVal || nameVal.length < 2) {
-      errs.full_name = "Please enter a valid lead passenger name (min 2 characters).";
+    if (!nameVal || nameVal.length < 2 || !/^[A-Za-z\s]+$/.test(nameVal)) {
+      errs.full_name = "Please enter a valid passenger name using letters only.";
     }
 
     const emailVal = state.email.trim();

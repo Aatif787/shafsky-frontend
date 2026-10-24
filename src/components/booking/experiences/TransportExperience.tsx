@@ -152,8 +152,13 @@ export function TransportExperience({
 
   const handleSubmitFinal = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!guestName.trim() || !guestPhone.trim()) {
-      alert("Please provide your name and contact phone number.");
+    const trimmedName = guestName.trim();
+    if (!trimmedName || !/^[A-Za-z\s]+$/.test(trimmedName)) {
+      alert("Please enter a valid passenger name using letters only.");
+      return;
+    }
+    if (!guestPhone.trim()) {
+      alert("Please provide your contact phone number.");
       return;
     }
     if (!guestEmail.trim() || !guestEmail.includes("@")) {

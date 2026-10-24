@@ -12,7 +12,14 @@ import type {
 } from "@/types/fastapi";
 
 export const BookingInput = z.object({
-  contact_name: z.string().trim().min(2).max(120),
+  contact_name: z
+    .string()
+    .trim()
+    .min(2, "Please enter a valid passenger name using letters only.")
+    .max(120)
+    .refine((val) => /^[A-Za-z\s]+$/.test(val), {
+      message: "Please enter a valid passenger name using letters only.",
+    }),
   contact_email: z.string().trim().email().max(200),
   contact_phone: z.string().trim().min(6).max(40),
   company: z.string().trim().max(160).optional().or(z.literal("")),

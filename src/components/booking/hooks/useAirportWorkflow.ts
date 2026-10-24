@@ -1040,8 +1040,9 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
 
   const saveDraftWithBackend = useCallback(async (): Promise<boolean> => {
     const fieldErrors: Record<string, string> = {};
-    if (!state.fullName || state.fullName.trim().length < 2) {
-      fieldErrors.fullName = "Please enter full name (at least 2 characters).";
+    const trimmedFullName = (state.fullName || "").trim();
+    if (!trimmedFullName || trimmedFullName.length < 2 || !/^[A-Za-z\s]+$/.test(trimmedFullName)) {
+      fieldErrors.fullName = "Please enter a valid passenger name using letters only.";
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!state.email || !emailRegex.test(state.email.trim())) {

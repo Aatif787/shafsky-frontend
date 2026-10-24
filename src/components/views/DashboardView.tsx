@@ -329,7 +329,19 @@ export default function DashboardView({ userId }: { userId: string }) {
     setBookingSubmitting(true);
     try {
       const contactEmail = bkEmail.trim() || (profile as any)?.contact_email || (authProfile as any)?.email || "";
-      const contactName = bkName.trim() || fullName.trim() || (authProfile as any)?.user_metadata?.full_name || "Valued Guest";
+      const enteredName = bkName.trim();
+      if (enteredName && !/^[A-Za-z\s]+$/.test(enteredName)) {
+        toast.error("Please enter a valid passenger name using letters only.");
+        setBookingSubmitting(false);
+        return;
+      }
+      const rawName = enteredName || fullName.trim() || (authProfile as any)?.user_metadata?.full_name || "";
+      if (rawName && !/^[A-Za-z\s]+$/.test(rawName)) {
+        toast.error("Please enter a valid passenger name using letters only.");
+        setBookingSubmitting(false);
+        return;
+      }
+      const contactName = rawName || "Valued Guest";
       const contactPhone = bkPhone.trim() || phone.trim() || "";
 
       if (!contactEmail) {
@@ -396,8 +408,13 @@ export default function DashboardView({ userId }: { userId: string }) {
   // Saved passengers CRUD
   const handleAddPassenger = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!psName.trim() || !psNat.trim() || !psPass.trim()) {
-      toast.error("Please fill in name, nationality, and passport details.");
+    const trimmedPsName = psName.trim();
+    if (!trimmedPsName || !/^[A-Za-z\s]+$/.test(trimmedPsName)) {
+      toast.error("Please enter a valid passenger name using letters only.");
+      return;
+    }
+    if (!psNat.trim() || !psPass.trim()) {
+      toast.error("Please fill in nationality and passport details.");
       return;
     }
 

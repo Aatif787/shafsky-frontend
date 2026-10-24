@@ -73,8 +73,9 @@ export const TicketingEnquiryForm: React.FC<TicketingEnquiryFormProps> = ({
       toast.error("Please select a travel date.");
       return;
     }
-    if (!name.trim() || name.trim().length < 2) {
-      toast.error("Please enter your full name.");
+    const trimmedName = name.trim();
+    if (!trimmedName || trimmedName.length < 2 || !/^[A-Za-z\s]+$/.test(trimmedName)) {
+      toast.error("Please enter a valid passenger name using letters only.");
       return;
     }
     if (!email.trim() || !email.includes("@")) {

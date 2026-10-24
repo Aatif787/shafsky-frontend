@@ -122,7 +122,8 @@ export function PassengerInformationExperience({
   const [internalAssistance, setInternalAssistance] = useState<string[]>(selectedAssistanceOptions);
 
   // Validation States
-  const isNameValid = leadPassengerName.trim().length >= 3;
+  const trimmedLeadName = leadPassengerName.trim();
+  const isNameValid = trimmedLeadName.length >= 2 && /^[A-Za-z\s]+$/.test(trimmedLeadName);
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(passengerEmail.trim());
   const isPhoneValid = passengerPhone.trim().replace(/[^0-9]/g, "").length >= 7;
 
@@ -226,6 +227,11 @@ export function PassengerInformationExperience({
                   success={isNameValid}
                   required
                 />
+                {leadPassengerName.trim() && !isNameValid && (
+                  <p className="text-xs text-rose-600 font-sans mt-1">
+                    Please enter a valid passenger name using letters only.
+                  </p>
+                )}
                 <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-slate-500 font-sans">
                   <Info className="w-3.5 h-3.5 text-[#7c3aed] shrink-0" />
                   <span>Required for station manifest clearance and aerobridge sign board greeting.</span>

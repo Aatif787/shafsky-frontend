@@ -109,11 +109,13 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
   // Customer Validation
   const validateCustomerDetails = (): boolean => {
     const errs: typeof customerErrors = {};
-    if (!firstName.trim()) {
-      errs.firstName = "First name is required.";
+    const trimmedFirstName = firstName.trim();
+    if (!trimmedFirstName || !/^[A-Za-z\s]+$/.test(trimmedFirstName)) {
+      errs.firstName = "Please enter a valid passenger name using letters only.";
     }
-    if (!lastName.trim()) {
-      errs.lastName = "Last name is required.";
+    const trimmedLastName = lastName.trim();
+    if (!trimmedLastName || !/^[A-Za-z\s]+$/.test(trimmedLastName)) {
+      errs.lastName = "Please enter a valid passenger name using letters only.";
     }
     if (!email.trim() || !email.includes("@")) {
       errs.email = "A valid email is required.";
