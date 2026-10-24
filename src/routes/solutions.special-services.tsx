@@ -466,6 +466,11 @@ function DedicatedSpecialServicesPage() {
       return;
     }
 
+    if (selectedOptionId === "Visa Assistance Services" && !visaPassport.trim()) {
+      alert("Please provide your passport number.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     let origin: string | undefined;
@@ -564,9 +569,9 @@ function DedicatedSpecialServicesPage() {
         visa_category: visaCategory,
         travel_date: visaDate,
         applicants_count: visaApplicants,
-        passport_number: visaPassport ? visaPassport.trim().toUpperCase() : undefined,
+        passport_number: visaPassport.trim().toUpperCase(),
       };
-      notes = `${visaCategory} for ${visaCountry} (${visaApplicants} Applicants)${visaPassport ? ` | Passport: ${visaPassport.trim().toUpperCase()}` : ""}`;
+      notes = `${visaCategory} for ${visaCountry} (${visaApplicants} Applicants) | Passport: ${visaPassport.trim().toUpperCase()}`;
       serviceType = "Visa Assistance";
     } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
       origin = cargoOrigin;
@@ -645,7 +650,7 @@ function DedicatedSpecialServicesPage() {
     } else if (selectedOptionId === "Dignified Human Remains (HUM)") {
       details = `From: ${humOrigin}%0ATo: ${humDest}%0ATimeline: ${humDate}%0AScope: ${humScope}`;
     } else if (selectedOptionId === "Visa Assistance Services") {
-      details = `Country: ${visaCountry}%0ACategory: ${visaCategory}%0ATravel Date: ${visaDate}%0AApplicants: ${visaApplicants}${visaPassport ? `%0APassport: ${visaPassport.trim().toUpperCase()}` : ""}`;
+      details = `Country: ${visaCountry}%0ACategory: ${visaCategory}%0ATravel Date: ${visaDate}%0AApplicants: ${visaApplicants}%0APassport: ${visaPassport.trim().toUpperCase()}`;
     } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
       details = `From: ${cargoOrigin}%0ATo: ${cargoDest}%0ACargo/Pet: ${cargoDetails}%0ADate: ${cargoDate}`;
     } else if (selectedOptionId === "Air Ticketing Services") {
@@ -1331,13 +1336,14 @@ function DedicatedSpecialServicesPage() {
                     </div>
                     <div>
                       <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Passport Number (Optional)
+                        Passport Number *
                       </label>
                       <input
                         type="text"
                         value={visaPassport}
                         onChange={(e) => setVisaPassport(e.target.value.toUpperCase())}
                         placeholder="Enter passport number (e.g. A12345678)"
+                        required
                         className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 font-mono uppercase"
                       />
                     </div>

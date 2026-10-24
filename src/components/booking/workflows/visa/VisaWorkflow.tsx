@@ -231,7 +231,14 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
             onRemoveApplicant={handleRemoveApplicant}
             onUpdateApplicant={updateApplicant}
             onBack={() => setCurrentStep(1)}
-            onNext={() => setCurrentStep(3)}
+            onNext={() => {
+              const missing = applicants.find((a) => !a.passportNumber?.trim());
+              if (missing) {
+                toast.error("Please enter a valid passport number for all travellers.");
+                return;
+              }
+              setCurrentStep(3);
+            }}
           />
         )}
 
