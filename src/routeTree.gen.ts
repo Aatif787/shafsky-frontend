@@ -22,6 +22,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FlightVerificationRouteImport } from './routes/flight-verification'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LoungeRouteImport } from './routes/lounge'
 import { Route as PrestigiousProjectsRouteImport } from './routes/prestigious-projects'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
@@ -44,6 +45,7 @@ import { Route as ServicesGuideRouteImport } from './routes/services.guide'
 import { Route as SolutionsAviationRouteImport } from './routes/solutions.aviation'
 import { Route as SolutionsConciergeRouteImport } from './routes/solutions.concierge'
 import { Route as SolutionsHotelsRouteImport } from './routes/solutions.hotels'
+import { Route as SolutionsLoungeRouteImport } from './routes/solutions.lounge'
 import { Route as SolutionsSpecialServicesRouteImport } from './routes/solutions.special-services'
 import { Route as SolutionsTransportRouteImport } from './routes/solutions.transport'
 import { Route as VerifyIdRouteImport } from './routes/verify.$id'
@@ -146,6 +148,11 @@ const GalleryRoute = GalleryRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoungeRoute = LoungeRouteImport.update({
+  id: '/lounge',
+  path: '/lounge',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrestigiousProjectsRoute = PrestigiousProjectsRouteImport.update({
@@ -256,6 +263,11 @@ const SolutionsConciergeRoute = SolutionsConciergeRouteImport.update({
 const SolutionsHotelsRoute = SolutionsHotelsRouteImport.update({
   id: '/solutions/hotels',
   path: '/solutions/hotels',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolutionsLoungeRoute = SolutionsLoungeRouteImport.update({
+  id: '/solutions/lounge',
+  path: '/solutions/lounge',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SolutionsSpecialServicesRoute =
@@ -498,6 +510,7 @@ export interface FileRoutesByFullPath {
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/lounge': typeof LoungeRoute
   '/prestigious-projects': typeof PrestigiousProjectsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -520,6 +533,7 @@ export interface FileRoutesByFullPath {
   '/solutions/aviation': typeof SolutionsAviationRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
   '/solutions/hotels': typeof SolutionsHotelsRoute
+  '/solutions/lounge': typeof SolutionsLoungeRoute
   '/solutions/special-services': typeof SolutionsSpecialServicesRoute
   '/solutions/transport': typeof SolutionsTransportRoute
   '/verify/$id': typeof VerifyIdRoute
@@ -573,6 +587,7 @@ export interface FileRoutesByTo {
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/lounge': typeof LoungeRoute
   '/prestigious-projects': typeof PrestigiousProjectsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -593,6 +608,7 @@ export interface FileRoutesByTo {
   '/solutions/aviation': typeof SolutionsAviationRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
   '/solutions/hotels': typeof SolutionsHotelsRoute
+  '/solutions/lounge': typeof SolutionsLoungeRoute
   '/solutions/special-services': typeof SolutionsSpecialServicesRoute
   '/solutions/transport': typeof SolutionsTransportRoute
   '/verify/$id': typeof VerifyIdRoute
@@ -648,6 +664,7 @@ export interface FileRoutesById {
   '/flight-verification': typeof FlightVerificationRoute
   '/gallery': typeof GalleryRoute
   '/login': typeof LoginRoute
+  '/lounge': typeof LoungeRoute
   '/prestigious-projects': typeof PrestigiousProjectsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -670,6 +687,7 @@ export interface FileRoutesById {
   '/solutions/aviation': typeof SolutionsAviationRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
   '/solutions/hotels': typeof SolutionsHotelsRoute
+  '/solutions/lounge': typeof SolutionsLoungeRoute
   '/solutions/special-services': typeof SolutionsSpecialServicesRoute
   '/solutions/transport': typeof SolutionsTransportRoute
   '/verify/$id': typeof VerifyIdRoute
@@ -725,6 +743,7 @@ export interface FileRouteTypes {
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/lounge'
     | '/prestigious-projects'
     | '/privacy-policy'
     | '/robots.txt'
@@ -747,6 +766,7 @@ export interface FileRouteTypes {
     | '/solutions/aviation'
     | '/solutions/concierge'
     | '/solutions/hotels'
+    | '/solutions/lounge'
     | '/solutions/special-services'
     | '/solutions/transport'
     | '/verify/$id'
@@ -800,6 +820,7 @@ export interface FileRouteTypes {
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/lounge'
     | '/prestigious-projects'
     | '/privacy-policy'
     | '/robots.txt'
@@ -820,6 +841,7 @@ export interface FileRouteTypes {
     | '/solutions/aviation'
     | '/solutions/concierge'
     | '/solutions/hotels'
+    | '/solutions/lounge'
     | '/solutions/special-services'
     | '/solutions/transport'
     | '/verify/$id'
@@ -874,6 +896,7 @@ export interface FileRouteTypes {
     | '/flight-verification'
     | '/gallery'
     | '/login'
+    | '/lounge'
     | '/prestigious-projects'
     | '/privacy-policy'
     | '/robots.txt'
@@ -896,6 +919,7 @@ export interface FileRouteTypes {
     | '/solutions/aviation'
     | '/solutions/concierge'
     | '/solutions/hotels'
+    | '/solutions/lounge'
     | '/solutions/special-services'
     | '/solutions/transport'
     | '/verify/$id'
@@ -951,6 +975,7 @@ export interface RootRouteChildren {
   FlightVerificationRoute: typeof FlightVerificationRoute
   GalleryRoute: typeof GalleryRoute
   LoginRoute: typeof LoginRoute
+  LoungeRoute: typeof LoungeRoute
   PrestigiousProjectsRoute: typeof PrestigiousProjectsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
@@ -967,6 +992,7 @@ export interface RootRouteChildren {
   SolutionsAviationRoute: typeof SolutionsAviationRoute
   SolutionsConciergeRoute: typeof SolutionsConciergeRoute
   SolutionsHotelsRoute: typeof SolutionsHotelsRoute
+  SolutionsLoungeRoute: typeof SolutionsLoungeRoute
   SolutionsSpecialServicesRoute: typeof SolutionsSpecialServicesRoute
   SolutionsTransportRoute: typeof SolutionsTransportRoute
   VerifyIdRoute: typeof VerifyIdRoute
@@ -1066,6 +1092,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lounge': {
+      id: '/lounge'
+      path: '/lounge'
+      fullPath: '/lounge'
+      preLoaderRoute: typeof LoungeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/prestigious-projects': {
@@ -1220,6 +1253,13 @@ declare module '@tanstack/react-router' {
       path: '/solutions/hotels'
       fullPath: '/solutions/hotels'
       preLoaderRoute: typeof SolutionsHotelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions/lounge': {
+      id: '/solutions/lounge'
+      path: '/solutions/lounge'
+      fullPath: '/solutions/lounge'
+      preLoaderRoute: typeof SolutionsLoungeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/solutions/special-services': {
@@ -1661,6 +1701,7 @@ const rootRouteChildren: RootRouteChildren = {
   FlightVerificationRoute: FlightVerificationRoute,
   GalleryRoute: GalleryRoute,
   LoginRoute: LoginRoute,
+  LoungeRoute: LoungeRoute,
   PrestigiousProjectsRoute: PrestigiousProjectsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
@@ -1677,6 +1718,7 @@ const rootRouteChildren: RootRouteChildren = {
   SolutionsAviationRoute: SolutionsAviationRoute,
   SolutionsConciergeRoute: SolutionsConciergeRoute,
   SolutionsHotelsRoute: SolutionsHotelsRoute,
+  SolutionsLoungeRoute: SolutionsLoungeRoute,
   SolutionsSpecialServicesRoute: SolutionsSpecialServicesRoute,
   SolutionsTransportRoute: SolutionsTransportRoute,
   VerifyIdRoute: VerifyIdRoute,

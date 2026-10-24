@@ -17,6 +17,7 @@ import {
   LogIn,
   MapPin,
   Image as ImageIcon,
+  Armchair,
 } from "lucide-react";
 import { useBranding } from "@/lib/branding/branding.context";
 import { mono } from "@/components/home/theme";
@@ -97,7 +98,8 @@ export interface NavItem {
  * Meet & Greet Lounge | Airports | Transport | Hotel | Private Charter | Ticketing | Support
  */
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Meet & Greet Lounge", href: "/solutions/concierge" },
+  { label: "Meet & Greet", href: "/solutions/concierge" },
+  { label: "Lounge", href: "/lounge" },
   { label: "Airports", href: "/airports" },
   { label: "Transport", href: "/solutions/transport" },
   { label: "Hotel", href: "/solutions/hotels" },
@@ -143,6 +145,9 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
     }
     if (basePath === "/") {
       return location.pathname === "/";
+    }
+    if (basePath === "/lounge") {
+      return location.pathname === "/lounge" || location.pathname === "/solutions/lounge";
     }
     return location.pathname === basePath || location.pathname.startsWith(`${basePath}/`);
   };
@@ -220,9 +225,12 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
 
   const getItemIcon = (label: string) => {
     switch (label) {
+      case "Meet & Greet":
       case "Meet & Greet Lounge":
       case "Meet & Greet & Lounge":
         return Crown;
+      case "Lounge":
+        return Armchair;
       case "Transport":
         return Car;
       case "Hotel":

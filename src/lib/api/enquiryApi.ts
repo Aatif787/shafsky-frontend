@@ -7,7 +7,8 @@ export type EnquiryCategory =
   | "Ticketing"
   | "Travel Support"
   | "Medical Assistance"
-  | "Cargo & Logistics";
+  | "Cargo & Logistics"
+  | "Lounge";
 
 export interface ServiceEnquiryPayload {
   passengerName: string;
