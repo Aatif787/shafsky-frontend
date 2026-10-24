@@ -20,6 +20,7 @@ import {
   ArrowRightLeft,
   Plane,
   Sparkles,
+  Armchair,
 } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
@@ -27,6 +28,7 @@ import { format, parseISO, isValid } from "date-fns";
 import { mono, display } from "../theme";
 import { DoublePlaneIcon } from "./DoublePlaneIcon";
 import { OtherServicesEnquiryFlow, type OtherServiceType } from "./enquiry/OtherServicesEnquiryFlow";
+import { LoungeEnquiryForm } from "@/components/lounge/LoungeEnquiryForm";
 
 const FIELD =
   "flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300/80 bg-white/70 backdrop-blur-md px-4 text-xs font-semibold text-slate-900 outline-none transition-all duration-300 hover:border-lime-500 hover:bg-white focus:border-lime-500 focus:bg-white focus:ring-4 focus:ring-lime-500/15 shadow-xs";
@@ -36,7 +38,7 @@ const AIRPORT_INPUT =
   "h-12 w-full rounded-2xl border border-slate-300/80 bg-white/70 backdrop-blur-md pl-10 pr-4 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none transition-all duration-300 hover:border-lime-500 hover:bg-white focus:border-lime-500 focus:bg-white focus:ring-4 focus:ring-lime-500/15 shadow-xs";
 const LABEL = "h-4 text-[10.5px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5";
 
-export type BookingServiceMode = "airport" | "other";
+export type BookingServiceMode = "airport" | "other" | "lounge";
 
 export function BookingPanel() {
   const navigate = useNavigate();
@@ -391,7 +393,11 @@ export function BookingPanel() {
             className="text-center text-lg sm:text-xl font-bold text-slate-950 tracking-tight"
             style={display}
           >
-            {activeMode === "airport" ? "Book Airport Service" : "Other Services Enquiry"}
+            {activeMode === "airport"
+              ? "Book Airport Service"
+              : activeMode === "lounge"
+              ? "Lounge Enquiry"
+              : "Other Services Enquiry"}
           </motion.h2>
 
           <div className="mt-2.5 flex items-center justify-center">
@@ -474,6 +480,24 @@ export function BookingPanel() {
                 );
               })}
 
+              {/* Lounge Option alongside Departure, Transit, Arrival */}
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 450, damping: 28 }}
+                onClick={() => setActiveMode("lounge")}
+                className={`relative z-10 flex sm:flex-initial h-9 max-sm:min-w-0 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                  activeMode === "lounge"
+                    ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-sm"
+                    : "text-slate-600 hover:text-slate-950 hover:bg-white/70"
+                }`}
+                style={mono}
+              >
+                <Armchair className={`h-3.5 w-3.5 shrink-0 ${activeMode === "lounge" ? "text-white md:text-slate-950" : "text-emerald-700"}`} />
+                <span className="truncate">Lounge</span>
+              </motion.button>
+
               {/* Other Services Option alongside Departure, Transit, Arrival */}
               <motion.button
                 type="button"
@@ -494,7 +518,16 @@ export function BookingPanel() {
             </div>
           </div>
 
-          {activeMode === "other" ? (
+          {activeMode === "lounge" ? (
+            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-slate-200/90 shadow-2xs">
+              <LoungeEnquiryForm
+                initialAirport={originLabel || originCode}
+                initialDate={departDate}
+                initialPax={totalPax}
+                onBackToAirport={() => setActiveMode("airport")}
+              />
+            </div>
+          ) : activeMode === "other" ? (
             <OtherServicesEnquiryFlow
               initialOrigin={originLabel || originCode}
               initialDestination={destLabel || destCode}
