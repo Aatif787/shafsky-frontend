@@ -66,7 +66,7 @@ export function AirportShowcase() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12 sm:mb-16">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-[#7c3aed] text-[10px] font-mono font-bold uppercase tracking-widest mb-3">
           <Crown className="w-3.5 h-3.5" />
-          <span>Curated Global Concierge Hubs ({total} in airports.csv)</span>
+          <span>Curated Global Concierge Hubs ({total} Hubs)</span>
         </div>
 
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-slate-900 font-bold tracking-tight">

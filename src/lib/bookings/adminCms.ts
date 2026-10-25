@@ -862,7 +862,7 @@ export const updateExchangeRates = createServerFn({ method: "POST" })
         code: z.string().length(3),
         rateToInr: z.number().positive(),
         syncMode: z.enum(["auto", "manual"]).default("manual"),
-        providerMetadata: z.record(z.any()).default({}),
+        providerMetadata: z.record(z.string(), z.any()).default({}),
       })
       .parse(d),
   )

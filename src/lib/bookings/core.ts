@@ -45,7 +45,7 @@ export const BookingInput = z.object({
   notes: z.string().trim().max(8000).optional().or(z.literal("")),
   vip_notes: z.string().trim().max(4000).optional().or(z.literal("")),
   dietary_restrictions: z.string().trim().max(2000).optional().or(z.literal("")),
-  ancillaries: z.record(z.any()).optional(),
+  ancillaries: z.record(z.string(), z.any()).optional(),
   verification_type: z.enum(["AUTO_VERIFIED", "MANUAL_ENTRY"]).optional(),
   services: z
     .array(
@@ -56,7 +56,7 @@ export const BookingInput = z.object({
         quantity: z.number().int().positive(),
         unit_price: z.number().nullable().optional(),
         currency: z.string().default("INR"),
-        metadata: z.record(z.any()).nullable().optional(),
+        metadata: z.record(z.string(), z.any()).nullable().optional(),
       }),
     )
     .optional(),
