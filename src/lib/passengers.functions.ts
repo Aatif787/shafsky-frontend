@@ -201,7 +201,7 @@ export const assignPassengersToBooking = createServerFn({ method: "POST" })
       .object({
         bookingId: z.string().uuid(),
         passengerIds: z.array(z.string().uuid()),
-        seatPreferences: z.record(z.string()).optional(),
+        seatPreferences: z.record(z.string(), z.string()).optional(),
         primaryPassengerId: z.string().uuid().optional(),
       })
       .parse(d),

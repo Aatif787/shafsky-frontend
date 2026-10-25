@@ -815,7 +815,7 @@ function BookingDetailsView() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono bg-black/20 p-4 rounded-xl border border-white/5">
                         <div>
                           <span className="text-white/40 text-[9px] block">Passenger Name</span>
-                          <span className="font-semibold text-white/90">{mealDetails.passenger_name || booking.passenger_name}</span>
+                          <span className="font-semibold text-white/90">{mealDetails.passenger_name || booking.passenger_name || booking.contact_name}</span>
                         </div>
                         <div>
                           <span className="text-white/40 text-[9px] block">Flight Number</span>
@@ -827,7 +827,7 @@ function BookingDetailsView() {
                         </div>
                         <div>
                           <span className="text-white/40 text-[9px] block">Sector / Route</span>
-                          <span className="font-semibold text-white/90">{mealDetails.sector || `${booking.origin_code || ""} – ${booking.dest_code || ""}`}</span>
+                          <span className="font-semibold text-white/90">{mealDetails.sector || `${booking.origin_code || booking.origin || ""} – ${booking.dest_code || booking.destination || ""}`.trim()}</span>
                         </div>
                         <div>
                           <span className="text-white/40 text-[9px] block">Number of Meals</span>

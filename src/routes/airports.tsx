@@ -25,8 +25,8 @@ export const Route = createFileRoute("/airports")({
     pageHead({
       title: "Airport Meet & Greet Coverage Across India | Shafsky Aviation",
       description: ICICI_REVIEW_MODE
-        ? "Book VIP Meet & Greet, airside escort, and VIP lounge access across Indian and international airports loaded from airports.csv."
-        : "Book VIP Meet & Greet, airside escort, lounge access, and luxury transfers across global airports loaded from airports.csv.",
+        ? "Book VIP Meet & Greet, airside escort, and VIP lounge access across Indian and international airports."
+        : "Book VIP Meet & Greet, airside escort, lounge access, and luxury transfers across global airports.",
       path: "/airports",
       keywords: [
         "airport meet and greet India",
@@ -146,7 +146,7 @@ function AirportsListingView() {
             <span>✈</span>
             <span className="font-semibold uppercase tracking-wider text-[11px] font-mono">AIRPORT NETWORK</span>
             <span className="inline-block w-1 h-1 rounded-full bg-lime-500" />
-            <span className="text-[10px] text-lime-700 font-mono">airports.csv ({airportsData.length} Hubs)</span>
+            <span className="text-[10px] text-lime-700 font-mono">{airportsData.length} Global Hubs</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading text-slate-900 font-bold tracking-tight">
@@ -154,7 +154,7 @@ function AirportsListingView() {
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 font-sans">
-            Explore our active airports across India and worldwide, loaded dynamically from airports.csv.
+            Explore our active airports across India and worldwide.
           </p>
         </div>
 
