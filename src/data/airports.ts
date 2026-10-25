@@ -4,6 +4,7 @@
 import { ASSETS } from "@/lib/assets";
 import { getAirportHeroImages, getAirportImages } from "@/lib/airport-assets";
 import { AIRPORT_REGISTRY } from "./airportRegistry";
+import { getCsvAirport } from "@/lib/airportsCsv";
 
 const chaarminar = ASSETS.charminar;
 const golkunda = ASSETS.golkunda;
@@ -1429,14 +1430,18 @@ export function getAirport(code: string): Airport {
     return found;
   }
 
-  // Check AIRPORT_REGISTRY or fallback lookup for all 200+ global airports
+  // Check CSV dataset loaded from airports.csv first
+  const csvItem = getCsvAirport(upperCode);
+
+  // Check AIRPORT_REGISTRY or fallback lookup for all global airports
   const reg = AIRPORT_REGISTRY[upperCode];
-  const cityName = reg?.city || upperCode;
-  const countryName = reg?.country || "International";
-  const airportName = reg?.name || `${cityName} International Airport`;
+  const cityName = csvItem?.city || reg?.city || upperCode;
+  const countryName = csvItem?.country || reg?.country || "International";
+  const airportName = csvItem?.name || reg?.name || `${cityName} International Airport`;
 
   const hubImgs = getAirportImages(upperCode);
   const fallbackCover =
+    csvItem?.cover ||
     hubImgs[0] ||
     "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1920&q=95";
   const effectiveSlideshow =
@@ -1453,10 +1458,10 @@ export function getAirport(code: string): Airport {
     icao: reg?.icao || `V${upperCode}`,
     city: cityName,
     country: countryName,
-    countryCode: reg?.countryCode || "IN",
+    countryCode: csvItem?.countryCode || reg?.countryCode || (countryName === "India" ? "IN" : "US"),
     landmark: "VIP Airport Terminal",
     tagline: `Premier Gateway to ${cityName}`,
-    timezone: reg?.timezone || "Asia/Kolkata",
+    timezone: csvItem?.timezone || reg?.timezone || "Asia/Kolkata",
     cover: fallbackCover,
     mobCover: fallbackCover,
     slideshow: effectiveSlideshow,

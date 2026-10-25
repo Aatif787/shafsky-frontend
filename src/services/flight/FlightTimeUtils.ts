@@ -1,4 +1,4 @@
-import { AIRPORTS } from "@/data/airports";
+import { getAirport } from "@/data/airports";
 
 /**
  * Gets the timezone offset of a given IANA timezone at a specific Date
@@ -68,7 +68,7 @@ export function parseFlightDateTime(scheduledTime: string, airportIata: string):
   }
 
   // Find timezone for airport
-  const airport = AIRPORTS.find((a) => a.code.toUpperCase() === airportIata.toUpperCase());
+  const airport = getAirport(airportIata);
   const timeZone = airport?.timezone || "Asia/Kolkata";
 
   // Parse as UTC ISO format first to calculate offset securely
