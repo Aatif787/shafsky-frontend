@@ -42,12 +42,15 @@ export interface BookingItem {
   booking_ref: string;
   customer_id?: string;
   contact_name: string;
+  passenger_name?: string;
   contact_email: string;
   contact_phone: string;
   company?: string;
   trip_type: "one_way" | "round_trip" | "multi_city";
   origin: string;
+  origin_code?: string;
   destination: string;
+  dest_code?: string;
   depart_date: string;
   return_date?: string;
   pax_adults: number;
