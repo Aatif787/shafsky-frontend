@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Search,
   ChevronDown,
@@ -14,8 +14,7 @@ import {
   ChevronRight,
   ChevronLeft
 } from "lucide-react";
-import { AIRPORTS } from "@/data/airports";
-import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
+import { getStaticAirportsFromCsv, fetchAirportsCsv, type CsvAirportItem } from "@/lib/airportsCsv";
 import { getAirportPrimaryImage } from "@/lib/airport-assets";
 import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
@@ -26,8 +25,8 @@ export const Route = createFileRoute("/airports")({
     pageHead({
       title: "Airport Meet & Greet Coverage Across India | Shafsky Aviation",
       description: ICICI_REVIEW_MODE
-        ? "Book VIP Meet & Greet, airside escort, and VIP lounge access at 20+ Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Goa, and Jaipur."
-        : "Book VIP Meet & Greet, airside escort, lounge access, and luxury transfers at 20+ Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Goa, and Jaipur.",
+        ? "Book VIP Meet & Greet, airside escort, and VIP lounge access across Indian and international airports loaded from airports.csv."
+        : "Book VIP Meet & Greet, airside escort, lounge access, and luxury transfers across global airports loaded from airports.csv.",
       path: "/airports",
       keywords: [
         "airport meet and greet India",
@@ -45,28 +44,6 @@ export const Route = createFileRoute("/airports")({
   component: AirportsIndexPage,
 });
 
-// Canonical dynamic airport listing derived from canonical datasets
-const GLOBAL_AIRPORTS_DATA: Array<{
-  code: string;
-  city: string;
-  country: string;
-  stateCountry: string;
-  servicesCount: number;
-  featured?: boolean;
-  cover?: string;
-}> = AIRPORTS.map((a) => {
-  const reg = AIRPORT_REGISTRY[a.code];
-  return {
-    code: a.code,
-    city: a.city,
-    country: a.country,
-    stateCountry: `${a.city}, ${a.country}`,
-    servicesCount: reg?.availableServiceIds?.length || 4,
-    featured: reg?.featured || ["DEL", "BOM", "HYD", "BLR", "AMD", "MAA"].includes(a.code),
-    cover: getAirportPrimaryImage(a.code) || a.cover,
-  };
-});
-
 const ALPHABET = ["All", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")];
 
 function AirportsIndexPage() {
@@ -80,52 +57,74 @@ function AirportsIndexPage() {
 }
 
 function AirportsListingView() {
+  // Loaded dynamically from airports.csv (with instant bundled fallback)
+  const [airportsData, setAirportsData] = useState<CsvAirportItem[]>(() => getStaticAirportsFromCsv());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("All Countries");
   const [featuredOnly, setFeaturedOnly] = useState(false);
   const [selectedLetter, setSelectedLetter] = useState("All");
   const [sortOption, setSortOption] = useState("A - Z");
-  const [displayCount, setDisplayCount] = useState(20);
+  const [displayCount, setDisplayCount] = useState(24);
 
   // Featured Arc Carousel Index
   const [featuredIndex, setFeaturedIndex] = useState(0);
 
-  // Filtered dataset
-  const filteredAirports = useMemo(() => {
-    return GLOBAL_AIRPORTS_DATA.filter((item) => {
-      // Search text query
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
-        const matchesQuery =
-          item.city.toLowerCase().includes(q) ||
-          item.code.toLowerCase().includes(q) ||
-          item.country.toLowerCase().includes(q) ||
-          item.stateCountry.toLowerCase().includes(q);
-        if (!matchesQuery) return false;
+  // Dynamic refresh from runtime /data/airports.csv if updated on server
+  useEffect(() => {
+    fetchAirportsCsv().then((data) => {
+      if (data && data.length > 0) {
+        setAirportsData(data);
       }
-
-      // Featured toggle
-      if (featuredOnly && !item.featured) return false;
-
-      // Country filter
-      if (selectedCountry !== "All Countries") {
-        if (selectedCountry === "India" && item.country !== "India") return false;
-        if (selectedCountry === "International" && item.country === "India") return false;
-      }
-
-      // Alphabet filter
-      if (selectedLetter !== "All") {
-        if (!item.city.toUpperCase().startsWith(selectedLetter)) return false;
-      }
-
-      return true;
     });
-  }, [searchQuery, featuredOnly, selectedCountry, selectedLetter]);
-
-  // Featured list of airports
-  const featuredList = useMemo(() => {
-    return GLOBAL_AIRPORTS_DATA.filter((a) => a.featured);
   }, []);
+
+  // Filtered dataset from airports.csv
+  const filteredAirports = useMemo(() => {
+    return airportsData
+      .filter((item) => {
+        // Search text query
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase().trim();
+          const matchesQuery =
+            item.city.toLowerCase().includes(q) ||
+            item.code.toLowerCase().includes(q) ||
+            item.name.toLowerCase().includes(q) ||
+            item.country.toLowerCase().includes(q) ||
+            item.stateCountry.toLowerCase().includes(q);
+          if (!matchesQuery) return false;
+        }
+
+        // Featured toggle
+        if (featuredOnly && !item.featured) return false;
+
+        // Country filter
+        if (selectedCountry !== "All Countries") {
+          if (selectedCountry === "India" && item.country !== "India") return false;
+          if (selectedCountry === "International" && item.country === "India") return false;
+        }
+
+        // Alphabet filter
+        if (selectedLetter !== "All") {
+          const cityFirst = (item.city || "").trim().toUpperCase()[0];
+          const nameFirst = (item.name || "").trim().toUpperCase()[0];
+          if (cityFirst !== selectedLetter && nameFirst !== selectedLetter) return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortOption === "Z - A") {
+          return b.city.localeCompare(a.city);
+        }
+        return a.city.localeCompare(b.city);
+      });
+  }, [airportsData, searchQuery, featuredOnly, selectedCountry, selectedLetter, sortOption]);
+
+  // Featured list of airports from airports.csv
+  const featuredList = useMemo(() => {
+    const list = airportsData.filter((a) => a.featured);
+    return list.length > 0 ? list : airportsData.slice(0, 12);
+  }, [airportsData]);
 
   // 6 visible items sliced dynamically based on featuredIndex for a single 6-column row
   const visibleFeatured = useMemo(() => {
@@ -146,7 +145,8 @@ function AirportsListingView() {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-lime-50 border border-lime-200 text-lime-800 text-xs font-medium">
             <span>✈</span>
             <span className="font-semibold uppercase tracking-wider text-[11px] font-mono">AIRPORT NETWORK</span>
-            <span>✈</span>
+            <span className="inline-block w-1 h-1 rounded-full bg-lime-500" />
+            <span className="text-[10px] text-lime-700 font-mono">airports.csv ({airportsData.length} Hubs)</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading text-slate-900 font-bold tracking-tight">
@@ -154,7 +154,7 @@ function AirportsListingView() {
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 font-sans">
-            Explore our active airports across India and worldwide.
+            Explore our active airports across India and worldwide, loaded dynamically from airports.csv.
           </p>
         </div>
 
