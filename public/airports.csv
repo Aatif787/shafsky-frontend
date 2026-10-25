@@ -1,0 +1,70 @@
+code,name,city,country,stateCountry,servicesCount,featured,cover,elevation,timezone
+DEL,Indira Gandhi International Airport,New Delhi,India,"New Delhi, India",4,true,/images/airports/del/clean-8.webp,777,Asia/Kolkata
+BOM,Chhatrapati Shivaji Maharaj International Airport,Mumbai,India,"Maharashtra, India",4,true,/images/airports/bom/clean-1.webp,39,Asia/Kolkata
+BLR,Kempegowda International Airport,Bengaluru,India,"Karnataka, India",4,true,/images/airports/blr/clean-1.webp,3000,Asia/Kolkata
+HYD,Rajiv Gandhi International Airport,Hyderabad,India,"Telangana, India",4,true,/images/airports/hyd/clean-1.webp,2024,Asia/Kolkata
+MAA,Chennai International Airport,Chennai,India,"Tamil Nadu, India",4,true,/images/airports/maa/clean-1.webp,52,Asia/Kolkata
+CCU,Netaji Subhash Chandra Bose International Airport,Kolkata,India,"West Bengal, India",4,true,https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=1600&q=85,16,Asia/Kolkata
+GOI,Dabolim Airport,"Dabolim, Goa",India,"Goa, India",4,true,/images/airports/goi/clean-1.webp,184,Asia/Kolkata
+GOX,Manohar International Airport,"Mopa, Goa",India,"Goa, India",4,true,/images/airports/gox/clean-1.webp,558,Asia/Kolkata
+COK,Cochin International Airport,Kochi,India,"Kerala, India",4,true,/images/airports/cok/clean-1.webp,30,Asia/Kolkata
+AMD,Sardar Vallabhbhai Patel International Airport,Ahmedabad,India,"Gujarat, India",4,true,/images/airports/amd/clean-1.webp,189,Asia/Kolkata
+JAI,Jaipur International Airport,Jaipur,India,"Rajasthan, India",4,true,/images/airports/jai/clean-1.webp,1263,Asia/Kolkata
+ATQ,Sri Guru Ram Dass Jee International Airport,Amritsar,India,"Punjab, India",4,true,/images/airports/atq/clean-2.webp,756,Asia/Kolkata
+LKO,Chaudhary Charan Singh International Airport,Lucknow,India,"Uttar Pradesh, India",4,true,/images/airports/lko/clean-1.webp,405,Asia/Kolkata
+BBI,Biju Patnaik International Airport,Bhubaneswar,India,"Odisha, India",4,true,/images/airports/bbi/clean-1.webp,140,Asia/Kolkata
+IXC,Shaheed Bhagat Singh International Airport,Chandigarh,India,"Punjab, India",4,true,/images/airports/ixc/clean-1.webp,1012,Asia/Kolkata
+TRV,Thiruvananthapuram International Airport,Thiruvananthapuram,India,"Kerala, India",4,true,https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=1600&q=85,15,Asia/Kolkata
+VTZ,Visakhapatnam International Airport,Visakhapatnam,India,"Andhra Pradesh, India",4,true,/images/airports/vtz/clean-1.webp,17,Asia/Kolkata
+GAU,Lokpriya Gopinath Bordoloi International Airport,Guwahati,India,"Assam, India",4,true,/images/airports/gau/clean-1.webp,162,Asia/Kolkata
+IXE,Mangalore International Airport,Mangalore,India,"Karnataka, India",4,false,/images/airports/ixe/clean-1.webp,337,Asia/Kolkata
+PNQ,Pune International Airport,Pune,India,"Maharashtra, India",4,false,https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1600&q=85,1942,Asia/Kolkata
+NAG,Dr. Babasaheb Ambedkar International Airport,Nagpur,India,"Maharashtra, India",4,false,https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&w=1600&q=85,1033,Asia/Kolkata
+PAT,Jay Prakash Narayan Airport,Patna,India,"Bihar, India",4,false,https://images.unsplash.com/photo-1517400508447-f8dd518b86db?auto=format&fit=crop&w=1600&q=85,170,Asia/Kolkata
+IDR,Devi Ahilyabai Holkar Airport,Indore,India,"Madhya Pradesh, India",4,false,https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1600&q=85,1849,Asia/Kolkata
+SXR,Sheikh ul-Alam International Airport,Srinagar,India,"Jammu & Kashmir, India",4,false,https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1600&q=85,5445,Asia/Kolkata
+BHO,Raja Bhoj Airport,Bhopal,India,"Madhya Pradesh, India",4,false,https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1600&q=85,1719,Asia/Kolkata
+IXB,Bagdogra International Airport,Siliguri,India,"West Bengal, India",4,false,https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1600&q=85,412,Asia/Kolkata
+UDR,Maharana Pratap Airport,Udaipur,India,"Rajasthan, India",4,false,https://images.unsplash.com/photo-1596178065887-1198b6148b2b?auto=format&fit=crop&w=1600&q=85,1683,Asia/Kolkata
+IXJ,Jammu Airport,Jammu,India,"Jammu & Kashmir, India",4,false,https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=85,1029,Asia/Kolkata
+IXM,Madurai Airport,Madurai,India,"Tamil Nadu, India",4,false,https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1600&q=85,463,Asia/Kolkata
+VNS,Lal Bahadur Shastri International Airport,Varanasi,India,"Uttar Pradesh, India",4,false,https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=1600&q=85,266,Asia/Kolkata
+CJB,Coimbatore International Airport,Coimbatore,India,"Tamil Nadu, India",4,false,https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=85,1319,Asia/Kolkata
+CCJ,Calicut International Airport,Kozhikode,India,"Kerala, India",4,false,https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1600&q=85,342,Asia/Kolkata
+TRZ,Tiruchirappalli International Airport,Tiruchirappalli,India,"Tamil Nadu, India",4,false,https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1600&q=85,288,Asia/Kolkata
+STV,Surat International Airport,Surat,India,"Gujarat, India",4,false,https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=85,16,Asia/Kolkata
+BDQ,Vadodara Airport,Vadodara,India,"Gujarat, India",4,false,https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1600&q=85,127,Asia/Kolkata
+DED,Dehradun Airport,Dehradun,India,"Uttarakhand, India",4,false,https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=85,1831,Asia/Kolkata
+AYJ,Maharshi Valmiki International Airport,Ayodhya,India,"Uttar Pradesh, India",4,false,https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1600&q=85,335,Asia/Kolkata
+DXB,Dubai International Airport,Dubai,United Arab Emirates,"Dubai, UAE",4,true,https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1600&q=85,62,Asia/Dubai
+AUH,Zayed International Airport,Abu Dhabi,United Arab Emirates,"Abu Dhabi, UAE",4,false,https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1600&q=85,88,Asia/Dubai
+DOH,Hamad International Airport,Doha,Qatar,"Doha, Qatar",4,false,https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1600&q=85,13,Asia/Qatar
+LHR,London Heathrow Airport,London,United Kingdom,"England, UK",4,true,https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1600&q=85,83,Europe/London
+LGW,London Gatwick Airport,London,United Kingdom,"England, UK",4,false,https://images.unsplash.com/photo-1520986606214-8b456906c813?auto=format&fit=crop&w=1600&q=85,202,Europe/London
+CDG,Charles de Gaulle Airport,Paris,France,"Île-de-France, France",4,false,https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1600&q=85,392,Europe/Paris
+FRA,Frankfurt Airport,Frankfurt,Germany,"Hesse, Germany",4,false,https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=1600&q=85,364,Europe/Berlin
+AMS,Amsterdam Airport Schiphol,Amsterdam,Netherlands,"North Holland, Netherlands",4,false,https://images.unsplash.com/photo-1534351590666-13e3e96b5017?auto=format&fit=crop&w=1600&q=85,-11,Europe/Amsterdam
+SIN,Singapore Changi Airport,Singapore,Singapore,Singapore,4,true,https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1600&q=85,22,Asia/Singapore
+BKK,Suvarnabhumi Airport,Bangkok,Thailand,"Bangkok, Thailand",4,false,https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=1600&q=85,5,Asia/Bangkok
+HKT,Phuket International Airport,Phuket,Thailand,"Phuket, Thailand",4,false,https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=1600&q=85,82,Asia/Bangkok
+KUL,Kuala Lumpur International Airport,Kuala Lumpur,Malaysia,"Selangor, Malaysia",4,false,https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1600&q=85,69,Asia/Kuala_Lumpur
+HKG,Hong Kong International Airport,Hong Kong,Hong Kong,Hong Kong,4,false,https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1600&q=85,28,Asia/Hong_Kong
+HND,Tokyo Haneda Airport,Tokyo,Japan,"Tokyo, Japan",4,false,https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1600&q=85,35,Asia/Tokyo
+NRT,Narita International Airport,Tokyo,Japan,"Chiba, Japan",4,false,https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?auto=format&fit=crop&w=1600&q=85,141,Asia/Tokyo
+ICN,Incheon International Airport,Seoul,South Korea,"Incheon, South Korea",4,false,https://images.unsplash.com/photo-1538485399081-7191377e8241?auto=format&fit=crop&w=1600&q=85,23,Asia/Seoul
+SYD,Sydney Kingsford Smith Airport,Sydney,Australia,"New South Wales, Australia",4,false,https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1600&q=85,21,Australia/Sydney
+MEL,Melbourne Airport,Melbourne,Australia,"Victoria, Australia",4,false,https://images.unsplash.com/photo-1514395462725-fb4566210144?auto=format&fit=crop&w=1600&q=85,434,Australia/Melbourne
+JFK,John F. Kennedy International Airport,New York,United States,"New York, USA",4,true,https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1600&q=85,13,America/New_York
+EWR,Newark Liberty International Airport,Newark / New York,United States,"New Jersey, USA",4,false,https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=1600&q=85,18,America/New_York
+LAX,Los Angeles International Airport,Los Angeles,United States,"California, USA",4,false,https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=1600&q=85,128,America/Los_Angeles
+SFO,San Francisco International Airport,San Francisco,United States,"California, USA",4,false,https://images.unsplash.com/photo-1506146332389-18140dc7b2fb?auto=format&fit=crop&w=1600&q=85,13,America/Los_Angeles
+ORD,O Hare International Airport,Chicago,United States,"Illinois, USA",4,false,https://images.unsplash.com/photo-1494522855154-9297ac14b55f?auto=format&fit=crop&w=1600&q=85,672,America/Chicago
+MIA,Miami International Airport,Miami,United States,"Florida, USA",4,false,https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1600&q=85,8,America/New_York
+YYZ,Toronto Pearson International Airport,Toronto,Canada,"Ontario, Canada",4,false,https://images.unsplash.com/photo-1507992781348-310259076fa0?auto=format&fit=crop&w=1600&q=85,569,America/Toronto
+ZRH,Zurich Airport,Zurich,Switzerland,"Zurich, Switzerland",4,false,https://images.unsplash.com/photo-1515488764276-beab7607c1e6?auto=format&fit=crop&w=1600&q=85,1416,Europe/Zurich
+IST,Istanbul Airport,Istanbul,Turkey,"Istanbul, Turkey",4,false,https://images.unsplash.com/photo-1527838832700-5059252407fa?auto=format&fit=crop&w=1600&q=85,325,Europe/Istanbul
+RUH,King Khalid International Airport,Riyadh,Saudi Arabia,"Riyadh, Saudi Arabia",4,false,https://images.unsplash.com/photo-1586724237569-f3d0c1dee8c6?auto=format&fit=crop&w=1600&q=85,2049,Asia/Riyadh
+JED,King Abdulaziz International Airport,Jeddah,Saudi Arabia,"Makkah, Saudi Arabia",4,false,https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1600&q=85,48,Asia/Riyadh
+MAD,Adolfo Suárez Madrid–Barajas Airport,Madrid,Spain,"Community of Madrid, Spain",4,false,https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1600&q=85,2001,Europe/Madrid
+BCN,Josep Tarradellas Barcelona-El Prat Airport,Barcelona,Spain,"Catalonia, Spain",4,false,https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=1600&q=85,14,Europe/Madrid
+FCO,Leonardo da Vinci–Fiumicino Airport,Rome,Italy,"Lazio, Italy",4,false,https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1600&q=85,15,Europe/Rome
