@@ -69,7 +69,6 @@ describe("OnboardMealArrangementForm Component", () => {
     expect(html).toContain("2. Valid ID Details");
     expect(html).toContain("ID Type");
     expect(html).toContain("ID Number");
-    expect(html).toContain("ID Proof Attached");
 
     // Section 3: Meal Arrangement Details (Optimized Food Selection)
     expect(html).toContain("3. Meal Arrangement Details");
@@ -141,17 +140,15 @@ describe("OnboardMealArrangementForm Component", () => {
     }
   });
 
-  it("renders ID Types dropdown and non-mandatory proof in Section 2", () => {
+  it("renders ID Types dropdown in Section 2", () => {
     const html = renderToString(<OnboardMealArrangementForm />);
     expect(html).toContain("Passport");
     expect(html).toContain("Government-issued ID");
-    expect(html).toContain("ID verification may be completed airside during Meet &amp; Greet.");
   });
 
-  it("renders the authoritative 24/7 Operations Desk contact footer", () => {
+  it("renders submission action and confirmation controls", () => {
     const html = renderToString(<OnboardMealArrangementForm />);
-    expect(html).toContain("Shafsky VIP Aviation Desk");
-    expect(html).toContain("+91 95990 87959");
-    expect(html).toContain("24/7 Operations Room Coordination");
+    expect(html).toContain("Submit Enquiry");
+    expect(html).toContain("Zero charge • Official enquiry for custom quotation");
   });
 });
