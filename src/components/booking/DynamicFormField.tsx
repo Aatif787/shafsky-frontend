@@ -3,6 +3,7 @@ import { type FieldConfig } from "@/data/bookingConfigurations";
 import { AIRPORTS } from "@/data/airports";
 import { Plus, Minus } from "lucide-react";
 import { FlightTimePicker } from "./shared/FlightTimePicker";
+import { sanitizeName, preventDigitsKeyDown } from "@/lib/inputValidation";
 
 interface DynamicFormFieldProps {
   field: FieldConfig;
@@ -16,6 +17,11 @@ export function DynamicFormField({ field, value, onChange, error }: DynamicFormF
 
   // 1. TEXT INPUT
   if (type === "text") {
+    const isNameField =
+      id.toLowerCase().includes("name") ||
+      label.toLowerCase().includes("name") ||
+      (placeholder ? placeholder.toLowerCase().includes("name") : false);
+
     return (
       <div>
         <label htmlFor={id} className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-1.5 font-bold">
@@ -25,7 +31,8 @@ export function DynamicFormField({ field, value, onChange, error }: DynamicFormF
           id={id}
           type="text"
           value={value || ""}
-          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={isNameField ? preventDigitsKeyDown : undefined}
+          onChange={(e) => onChange(isNameField ? sanitizeName(e.target.value) : e.target.value)}
           placeholder={placeholder}
           className={`w-full px-4 py-3.5 rounded-2xl bg-white border text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-all ${
             error ? "border-red-400 focus:border-red-500" : "border-slate-200 focus:border-[#7c3aed]"

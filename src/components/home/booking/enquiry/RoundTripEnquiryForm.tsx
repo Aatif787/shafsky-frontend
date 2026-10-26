@@ -21,6 +21,12 @@ import { formatAirportOption } from "@/lib/api/airportApi";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import { EnquirySuccessCard } from "./EnquirySuccessCard";
 import { mono } from "../../theme";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 const FIELD_CONTAINER = "flex flex-col gap-1.5";
 const LABEL = "h-4 text-[10.5px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5";
@@ -95,8 +101,8 @@ export const RoundTripEnquiryForm: React.FC<RoundTripEnquiryFormProps> = ({
       toast.error("Please provide a valid email address.");
       return;
     }
-    if (!phone.trim() || phone.replace(/\D/g, "").length < 7) {
-      toast.error("Please provide a valid phone number.");
+    if (!phone.trim() || phone.replace(/\D/g, "").length < 7 || /[a-zA-Z]/.test(phone)) {
+      toast.error("Please provide a valid phone number (digits only).");
       return;
     }
 
@@ -341,7 +347,8 @@ export const RoundTripEnquiryForm: React.FC<RoundTripEnquiryFormProps> = ({
               type="text"
               required
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onKeyDown={preventDigitsKeyDown}
+              onChange={(e) => setName(sanitizeName(e.target.value))}
               placeholder="Enter full name"
               className={INPUT}
             />
@@ -373,7 +380,8 @@ export const RoundTripEnquiryForm: React.FC<RoundTripEnquiryFormProps> = ({
               type="tel"
               required
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onKeyDown={preventLettersKeyDown}
+              onChange={(e) => setPhone(sanitizePhone(e.target.value))}
               placeholder="Enter phone number"
               className={INPUT}
             />

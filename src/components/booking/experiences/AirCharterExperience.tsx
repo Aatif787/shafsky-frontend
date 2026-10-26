@@ -16,6 +16,12 @@ import {
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
 import { charterApi, CharterRequestPayload } from "@/lib/api/charterApi";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 export type AirCharterSubService =
   | "Domestic and International Charter"
@@ -167,8 +173,8 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
       alert("Please enter a valid passenger name using letters only.");
       return;
     }
-    if (!phone.trim()) {
-      alert("Please provide your contact phone number.");
+    if (!phone.trim() || /[a-zA-Z]/.test(phone)) {
+      alert("Please provide a valid contact phone number (digits only, no letters).");
       return;
     }
     if (!email.trim() || !email.includes("@")) {
@@ -575,7 +581,8 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
                   type="text"
                   placeholder="Full name"
                   value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
+                  onKeyDown={preventDigitsKeyDown}
+                  onChange={(e) => setCustomerName(sanitizeName(e.target.value))}
                   className={INPUT_CLASSES}
                   required
                 />
@@ -588,7 +595,8 @@ export function AirCharterExperience({ initialSubService }: AirCharterExperience
                     type="tel"
                     placeholder="Mobile number"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onKeyDown={preventLettersKeyDown}
+                    onChange={(e) => setPhone(sanitizePhone(e.target.value))}
                     className={INPUT_CLASSES}
                     required
                   />

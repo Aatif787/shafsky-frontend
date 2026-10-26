@@ -19,6 +19,12 @@ import { toast } from "sonner";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import { display } from "@/components/home/theme";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 export interface OnboardMealArrangementFormProps {
   onSuccess?: (bookingRef: string) => void;
@@ -156,8 +162,8 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
       return;
     }
     const cleanPhone = phone.replace(/\D/g, "");
-    if (!phone.trim() || cleanPhone.length < 7) {
-      toast.error("Please enter a valid phone or WhatsApp number with country code.");
+    if (!phone.trim() || cleanPhone.length < 7 || /[a-zA-Z]/.test(phone)) {
+      toast.error("Please enter a valid phone or WhatsApp number (digits only, no letters).");
       return;
     }
 
@@ -441,7 +447,8 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                       type="text"
                       placeholder="Passenger full name"
                       value={passengerName}
-                      onChange={(e) => setPassengerName(e.target.value)}
+                      onKeyDown={preventDigitsKeyDown}
+                      onChange={(e) => setPassengerName(sanitizeName(e.target.value))}
                       required
                       className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15 transition font-medium"
                     />
@@ -530,7 +537,8 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                       type="tel"
                       placeholder="Phone or WhatsApp number"
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onKeyDown={preventLettersKeyDown}
+                      onChange={(e) => setPhone(sanitizePhone(e.target.value))}
                       required
                       className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15 transition font-mono"
                     />

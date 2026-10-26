@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { createBooking } from "@/lib/bookings.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { validatePhoneNoLetters } from "@/lib/inputValidation";
 
 // Shared Presentation Components
 import { BookingProgressHeader } from "@/components/booking/shared/BookingProgressHeader";
@@ -171,8 +172,8 @@ export default function BookingView({ searchParams }: BookingViewProps) {
       toast.error("Please enter a valid passenger name using letters only.");
       return;
     }
-    if (!passengerPhone.trim() || !passengerEmail.trim()) {
-      toast.error("Please fill in Phone Number and Email.");
+    if (!passengerPhone.trim() || !validatePhoneNoLetters(passengerPhone) || !passengerEmail.trim()) {
+      toast.error("Please fill in a valid Phone Number (digits only, no letters) and Email.");
       return;
     }
     setBusy(true);

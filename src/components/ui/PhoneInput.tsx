@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { CountryCode } from "libphonenumber-js/min";
+import { sanitizePhone, preventLettersKeyDown } from "@/lib/inputValidation";
 
 /**
  * Country data for the phone picker.
@@ -328,9 +329,11 @@ export function PhoneInput({
         disabled={disabled}
         value={national}
         onChange={(e) => {
-          setNational(e.target.value);
-          void emit(country, e.target.value);
+          const clean = sanitizePhone(e.target.value);
+          setNational(clean);
+          void emit(country, clean);
         }}
+        onKeyDown={preventLettersKeyDown}
         placeholder={placeholder}
         style={{
           fontSize: "clamp(12px, 1.1vw, 13.5px)",

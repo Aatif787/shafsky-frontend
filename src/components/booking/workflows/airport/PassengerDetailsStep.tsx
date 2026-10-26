@@ -17,6 +17,12 @@ import { PriceBreakdown } from "../../utils/serviceAirportResolver";
 import { FlightItineraryStrip } from "./FlightItineraryStrip";
 import { ManualFlightEntryForm } from "../../shared/ManualFlightEntryForm";
 import { FlightData } from "@/services/flight/FlightTypes";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 interface PassengerDetailsStepProps {
   state: AirportWorkflowState;
@@ -107,9 +113,13 @@ export function PassengerDetailsStep({
       errs.email = "Please enter a valid email address (e.g. name@domain.com).";
     }
 
-    const phoneVal = indianMobileDigits(state.phone);
-    if (!phoneVal) {
-      errs.phone = "Enter a 10-digit Indian mobile number (e.g. 9876543210).";
+    if (/[a-zA-Z]/.test(state.phone)) {
+      errs.phone = "Phone number cannot contain letters.";
+    } else {
+      const phoneVal = indianMobileDigits(state.phone);
+      if (!phoneVal) {
+        errs.phone = "Enter a 10-digit Indian mobile number (e.g. 9876543210).";
+      }
     }
 
     if (state.guestCount < 1) {
@@ -335,8 +345,10 @@ export function PassengerDetailsStep({
                   type="text"
                   required
                   value={state.fullName}
+                  onKeyDown={preventDigitsKeyDown}
                   onChange={(e) => {
-                    onChange({ fullName: e.target.value });
+                    const clean = sanitizeName(e.target.value);
+                    onChange({ fullName: clean });
                     if (localErrors.full_name) setLocalErrors((p) => ({ ...p, full_name: "" }));
                   }}
                   placeholder="Name as per government ID"
@@ -406,8 +418,10 @@ export function PassengerDetailsStep({
                     type="tel"
                     required
                     value={state.phone}
+                    onKeyDown={preventLettersKeyDown}
                     onChange={(e) => {
-                      onChange({ phone: e.target.value });
+                      const clean = sanitizePhone(e.target.value);
+                      onChange({ phone: clean });
                       if (localErrors.phone) setLocalErrors((p) => ({ ...p, phone: "" }));
                     }}
                     placeholder="Phone"

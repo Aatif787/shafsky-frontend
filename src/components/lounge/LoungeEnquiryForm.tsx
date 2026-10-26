@@ -30,6 +30,12 @@ import {
 import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
 import { formatAirportOption } from "@/lib/api/airportApi";
 import { enquiryApi, type ServiceEnquiryPayload } from "@/lib/api/enquiryApi";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 export interface LoungeEnquiryFormProps {
   initialAirport?: string;
@@ -843,8 +849,10 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
               <input
                 type="text"
                 value={fullName}
+                onKeyDown={preventDigitsKeyDown}
                 onChange={(e) => {
-                  setFullName(e.target.value);
+                  const val = sanitizeName(e.target.value);
+                  setFullName(val);
                   if (errors.fullName) setErrors((prev) => ({ ...prev, fullName: "" }));
                 }}
                 placeholder="Enter full name"
@@ -871,8 +879,10 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
               <input
                 type="tel"
                 value={mobileNumber}
+                onKeyDown={preventLettersKeyDown}
                 onChange={(e) => {
-                  setMobileNumber(e.target.value);
+                  const val = sanitizePhone(e.target.value);
+                  setMobileNumber(val);
                   if (errors.mobileNumber) setErrors((prev) => ({ ...prev, mobileNumber: "" }));
                 }}
                 placeholder="Enter mobile number"
@@ -927,7 +937,8 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
               <input
                 type="tel"
                 value={whatsappNumber}
-                onChange={(e) => setWhatsappNumber(e.target.value)}
+                onKeyDown={preventLettersKeyDown}
+                onChange={(e) => setWhatsappNumber(sanitizePhone(e.target.value))}
                 placeholder="Enter whatsapp number"
                 className="h-11 w-full rounded-xl border border-slate-200 pl-10 pr-3.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 bg-white outline-none transition-all duration-200 hover:border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15"
               />

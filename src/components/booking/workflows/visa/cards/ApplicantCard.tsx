@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
 import type { IndividualApplicant } from "../VisaWorkflow";
 import { CountrySelector } from "../shared/CountrySelector";
+import { sanitizeName, preventDigitsKeyDown } from "@/lib/inputValidation";
 
 interface ApplicantCardProps {
   applicant: IndividualApplicant;
@@ -40,7 +41,8 @@ export function ApplicantCard({
           <input
             type="text"
             value={applicant.firstName}
-            onChange={(e) => onUpdate(applicant.id, { firstName: e.target.value })}
+            onKeyDown={preventDigitsKeyDown}
+            onChange={(e) => onUpdate(applicant.id, { firstName: sanitizeName(e.target.value) })}
             placeholder="Enter traveller first name"
             className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500"
           />
@@ -51,7 +53,8 @@ export function ApplicantCard({
           <input
             type="text"
             value={applicant.lastName}
-            onChange={(e) => onUpdate(applicant.id, { lastName: e.target.value })}
+            onKeyDown={preventDigitsKeyDown}
+            onChange={(e) => onUpdate(applicant.id, { lastName: sanitizeName(e.target.value) })}
             placeholder="Enter traveller last name"
             className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500"
           />

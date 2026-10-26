@@ -1,4 +1,11 @@
 
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
+
 interface ContactSectionProps {
   contactName: string;
   setContactName: (val: string) => void;
@@ -29,7 +36,8 @@ export function ContactSection({
         <input
           type="text"
           value={contactName}
-          onChange={(e) => setContactName(e.target.value)}
+          onKeyDown={preventDigitsKeyDown}
+          onChange={(e) => setContactName(sanitizeName(e.target.value))}
           placeholder={namePlaceholder}
           style={{ 
             height: "clamp(44px, 4.5vw, 52px)",
@@ -48,7 +56,8 @@ export function ContactSection({
         <input
           type="tel"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onKeyDown={preventLettersKeyDown}
+          onChange={(e) => setPhone(sanitizePhone(e.target.value))}
           placeholder="Mobile number"
           style={{ 
             height: "clamp(44px, 4.5vw, 52px)",

@@ -25,6 +25,12 @@ import { formatAirportOption } from "@/lib/api/airportApi";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import { EnquirySuccessCard } from "./EnquirySuccessCard";
 import { mono, display } from "../../theme";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 const FIELD_CONTAINER = "flex flex-col gap-1";
 const LABEL =
@@ -123,6 +129,8 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
     const cleanPhone = phone.replace(/\D/g, "");
     if (!phone.trim() || cleanPhone.length < 7) {
       errs.phone = "Valid phone required (7+ digits).";
+    } else if (/[a-zA-Z]/.test(phone)) {
+      errs.phone = "Phone number cannot contain letters.";
     }
 
     setCustomerErrors(errs);
@@ -379,8 +387,10 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
             <input
               type="text"
               value={firstName}
+              onKeyDown={preventDigitsKeyDown}
               onChange={(e) => {
-                setFirstName(e.target.value);
+                const val = sanitizeName(e.target.value);
+                setFirstName(val);
                 if (customerErrors.firstName) setCustomerErrors((p) => ({ ...p, firstName: undefined }));
               }}
               placeholder="First name"
@@ -400,8 +410,10 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
             <input
               type="text"
               value={lastName}
+              onKeyDown={preventDigitsKeyDown}
               onChange={(e) => {
-                setLastName(e.target.value);
+                const val = sanitizeName(e.target.value);
+                setLastName(val);
                 if (customerErrors.lastName) setCustomerErrors((p) => ({ ...p, lastName: undefined }));
               }}
               placeholder="Last name"
@@ -444,8 +456,10 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
             <input
               type="tel"
               value={phone}
+              onKeyDown={preventLettersKeyDown}
               onChange={(e) => {
-                setPhone(e.target.value);
+                const val = sanitizePhone(e.target.value);
+                setPhone(val);
                 if (customerErrors.phone) setCustomerErrors((p) => ({ ...p, phone: undefined }));
               }}
               placeholder="Phone number"

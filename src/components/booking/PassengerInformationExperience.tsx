@@ -17,6 +17,12 @@ import {
   ChevronUp
 } from "lucide-react";
 import { FloatingInput, FloatingTextArea } from "@/components/ui/interactions";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 
 export const SPECIAL_ASSISTANCE_OPTIONS = [
@@ -223,7 +229,8 @@ export function PassengerInformationExperience({
                   id="lead_guest_name"
                   label="Lead Guest Full Name (as on Passport / Photo ID) *"
                   value={leadPassengerName}
-                  onChange={(e) => setLeadPassengerName(e.target.value)}
+                  onKeyDown={preventDigitsKeyDown}
+                  onChange={(e) => setLeadPassengerName(sanitizeName(e.target.value))}
                   success={isNameValid}
                   required
                 />
@@ -469,7 +476,8 @@ export function PassengerInformationExperience({
                     <input
                       type="tel"
                       value={passengerPhone}
-                      onChange={(e) => setPassengerPhone(e.target.value)}
+                      onKeyDown={preventLettersKeyDown}
+                      onChange={(e) => setPassengerPhone(sanitizePhone(e.target.value))}
                       placeholder="Mobile number"
                       style={{
                         height: "clamp(44px, 4.5vw, 52px)",

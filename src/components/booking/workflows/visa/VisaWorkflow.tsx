@@ -5,6 +5,7 @@ import { BookingCancelModal } from "@/components/booking/shared/BookingCancelMod
 import { ContactSection } from "@/components/booking/shared/ContactSection";
 import { createBooking } from "@/lib/bookings.functions";
 import { toast } from "sonner";
+import { validateNameNoDigits, validatePhoneNoLetters } from "@/lib/inputValidation";
 import { evaluateVisaRequest, type TravelPurpose, type VisaEvaluationResult } from "@/lib/visa/visaIntelligence";
 
 // Import Modular Step Components
@@ -308,7 +309,17 @@ export function VisaWorkflow({ initialDestination = "", onCancel }: VisaWorkflow
                 </button>
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(6)}
+                  onClick={() => {
+                    if (!validateNameNoDigits(contactName)) {
+                      toast.error("Contact name must not contain numbers.");
+                      return;
+                    }
+                    if (!validatePhoneNoLetters(contactPhone)) {
+                      toast.error("Contact phone must not contain letters.");
+                      return;
+                    }
+                    setCurrentStep(6);
+                  }}
                   disabled={!contactName || !contactEmail || !contactPhone}
                   className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm transition-all flex items-center gap-2 shadow-md shadow-amber-500/20 disabled:opacity-40"
                 >

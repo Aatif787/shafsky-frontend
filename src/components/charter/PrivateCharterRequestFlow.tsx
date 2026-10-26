@@ -1,6 +1,14 @@
 import { CountryCodeSelect } from "@/components/ui/PhoneInput";
 import { useState, useEffect } from "react";
 import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+  validateNameNoDigits,
+  validatePhoneNoLetters,
+} from "@/lib/inputValidation";
+import {
   Plane,
   Clock,
   CheckCircle2,
@@ -282,12 +290,12 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
   };
 
   const validateStep5 = (): boolean => {
-    if (!customerName.trim()) {
-      toast.error("Please enter your full name.");
+    if (!customerName.trim() || !validateNameNoDigits(customerName)) {
+      toast.error("Please enter a valid full name without numbers.");
       return false;
     }
-    if (!phone.trim() || phone.replace(/\D/g, "").length < 7) {
-      toast.error("Please enter a valid phone number (at least 7 digits).");
+    if (!phone.trim() || !validatePhoneNoLetters(phone) || phone.replace(/\D/g, "").length < 7) {
+      toast.error("Please enter a valid phone number (digits only, at least 7 digits).");
       return false;
     }
     if (!email.trim() || !email.includes("@") || !email.includes(".")) {
@@ -861,7 +869,8 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
               <input
                 type="text"
                 value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
+                onKeyDown={preventDigitsKeyDown}
+                onChange={(e) => setCustomerName(sanitizeName(e.target.value))}
                 placeholder="Full name"
                 className="w-full bg-white border border-[#DCD5C9] rounded-xl px-4 py-2.5 text-sm text-[#1A1715] placeholder-[#A8A29E] focus:border-[#84CC16] focus:outline-none"
               />
@@ -893,7 +902,8 @@ export function PrivateCharterRequestFlow({ onClose, initialOrigin = "", initial
                 <input
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onKeyDown={preventLettersKeyDown}
+                  onChange={(e) => setPhone(sanitizePhone(e.target.value))}
                   placeholder="Mobile number"
                   className="flex-1 bg-white border border-[#DCD5C9] rounded-xl px-4 py-2.5 text-sm text-[#1A1715] placeholder-[#A8A29E] focus:border-[#84CC16] focus:outline-none"
                 />
