@@ -19,6 +19,14 @@ import { display } from "@/components/home/theme";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+  validateNameNoDigits,
+  validatePhoneNoLetters,
+} from "@/lib/inputValidation";
 
 export const Route = createFileRoute("/contact")({
   head: () =>
@@ -53,6 +61,14 @@ function ContactPage() {
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!validateNameNoDigits(form.name)) {
+      toast.error("Name should not contain numbers");
+      return;
+    }
+    if (!validatePhoneNoLetters(form.phone)) {
+      toast.error("Phone number should not contain letters");
+      return;
+    }
     setBusy(true);
     try {
       await submit({ data: form });
@@ -275,7 +291,8 @@ function ContactPage() {
                       type="text"
                       required
                       value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      onKeyDown={preventDigitsKeyDown}
+                      onChange={(e) => setForm({ ...form, name: sanitizeName(e.target.value) })}
                       placeholder="Your name"
                       className="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
                     />
@@ -291,7 +308,8 @@ function ContactPage() {
                         type="tel"
                         required
                         value={form.phone}
-                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        onKeyDown={preventLettersKeyDown}
+                        onChange={(e) => setForm({ ...form, phone: sanitizePhone(e.target.value) })}
                         placeholder="Phone"
                         className="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:outline-none"
                       />

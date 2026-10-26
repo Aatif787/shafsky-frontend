@@ -16,6 +16,12 @@ import {
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 export type LuxuryHotelsSubService =
   | "7 Star Hotels"
@@ -135,8 +141,12 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
 
   const handleSubmitFinal = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!guestName.trim() || !guestPhone.trim()) {
-      alert("Please provide your name and contact phone number.");
+    if (!guestName.trim() || !/^[A-Za-z\s]+$/.test(guestName.trim())) {
+      alert("Please enter a valid passenger name using letters only.");
+      return;
+    }
+    if (!guestPhone.trim() || /[a-zA-Z]/.test(guestPhone)) {
+      alert("Please provide a valid contact phone number (digits only, no letters).");
       return;
     }
     if (!guestEmail.trim() || !guestEmail.includes("@")) {
@@ -466,7 +476,8 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
                   type="text"
                   placeholder="Full name"
                   value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
+                  onKeyDown={preventDigitsKeyDown}
+                  onChange={(e) => setGuestName(sanitizeName(e.target.value))}
                   className={INPUT_CLASSES}
                   required
                 />
@@ -479,7 +490,8 @@ export function LuxuryHotelsExperience({ initialSubService }: LuxuryHotelsExperi
                     type="tel"
                     placeholder="Mobile number"
                     value={guestPhone}
-                    onChange={(e) => setGuestPhone(e.target.value)}
+                    onKeyDown={preventLettersKeyDown}
+                    onChange={(e) => setGuestPhone(sanitizePhone(e.target.value))}
                     className={INPUT_CLASSES}
                     required
                   />

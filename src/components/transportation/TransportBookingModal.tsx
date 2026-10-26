@@ -23,6 +23,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 import { TRANSPORT_OPTIONS } from "@/data/transportation/options";
 import type {
   TransportationVehicleItem,
@@ -170,8 +176,8 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
       toast.error("Please enter a valid email address.");
       return;
     }
-    if (!phone.trim() || phone.replace(/\D/g, "").length < 7) {
-      toast.error("Please enter a valid mobile number with country code.");
+    if (!phone.trim() || phone.replace(/\D/g, "").length < 7 || /[a-zA-Z]/.test(phone)) {
+      toast.error("Please enter a valid mobile number (digits only, no letters).");
       return;
     }
     if (serviceRegion === "international" && !passportNumber.trim()) {
@@ -540,7 +546,8 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
                         type="text"
                         placeholder="Full name"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onKeyDown={preventDigitsKeyDown}
+                        onChange={(e) => setName(sanitizeName(e.target.value))}
                         className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 transition"
                         required
                       />
@@ -580,7 +587,8 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
                         type="tel"
                         placeholder="Mobile number"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onKeyDown={preventLettersKeyDown}
+                        onChange={(e) => setPhone(sanitizePhone(e.target.value))}
                         className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 transition font-mono"
                         required
                       />

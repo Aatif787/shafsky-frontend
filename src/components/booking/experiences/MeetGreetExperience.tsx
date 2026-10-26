@@ -16,6 +16,12 @@ import {
   CounterField,
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 export type MeetGreetSubService =
   | "Domestic Departure"
@@ -198,8 +204,12 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
       alert("Please select your travel date.");
       return;
     }
-    if (!guestName.trim() || !guestPhone.trim()) {
-      alert("Please provide your name and contact phone number.");
+    if (!guestName.trim() || !/^[A-Za-z\s]+$/.test(guestName.trim())) {
+      alert("Please enter a valid passenger name using letters only.");
+      return;
+    }
+    if (!guestPhone.trim() || /[a-zA-Z]/.test(guestPhone)) {
+      alert("Please provide a valid contact phone number (digits only, no letters).");
       return;
     }
 
@@ -452,7 +462,8 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
                     type="text"
                     placeholder="Full name"
                     value={guestName}
-                    onChange={(e) => setGuestName(e.target.value)}
+                    onKeyDown={preventDigitsKeyDown}
+                    onChange={(e) => setGuestName(sanitizeName(e.target.value))}
                     className={INPUT_CLASSES}
                     required
                   />
@@ -463,7 +474,8 @@ export function MeetGreetExperience({ initialSubService }: MeetGreetExperiencePr
                     type="tel"
                     placeholder="Mobile number"
                     value={guestPhone}
-                    onChange={(e) => setGuestPhone(e.target.value)}
+                    onKeyDown={preventLettersKeyDown}
+                    onChange={(e) => setGuestPhone(sanitizePhone(e.target.value))}
                     className={INPUT_CLASSES}
                     required
                   />

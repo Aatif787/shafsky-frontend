@@ -23,6 +23,14 @@ import { display } from "@/components/home/theme";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
 import { formatAirportOption } from "@/lib/api/airportApi";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+  validateNameNoDigits,
+  validatePhoneNoLetters,
+} from "@/lib/inputValidation";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 import toursTravelImg from "@/assets/others/tours-travel.jpg";
@@ -487,8 +495,12 @@ function DedicatedSpecialServicesPage() {
 
   const handleSubmitRequest = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!clientName.trim() || !phone.trim()) {
-      alert("Please provide your name and contact phone number.");
+    if (!clientName.trim() || !validateNameNoDigits(clientName)) {
+      alert("Please provide your name without numbers.");
+      return;
+    }
+    if (!phone.trim() || !validatePhoneNoLetters(phone)) {
+      alert("Please provide your contact phone number without letters.");
       return;
     }
     if (!email.trim() || !email.includes("@")) {
@@ -922,7 +934,8 @@ function DedicatedSpecialServicesPage() {
                       <input
                         type="text"
                         value={clientName}
-                        onChange={(e) => setClientName(e.target.value)}
+                        onKeyDown={preventDigitsKeyDown}
+                        onChange={(e) => setClientName(sanitizeName(e.target.value))}
                         required
                         className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
                       />
@@ -935,7 +948,8 @@ function DedicatedSpecialServicesPage() {
                       <input
                         type="tel"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onKeyDown={preventLettersKeyDown}
+                        onChange={(e) => setPhone(sanitizePhone(e.target.value))}
                         required
                         className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
                       />

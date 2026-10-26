@@ -14,6 +14,12 @@ import {
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 import { TRANSPORT_OPTIONS } from "@/data/transportation/options";
 import type { TransportationVehicleItem } from "@/data/transportation/types";
@@ -157,8 +163,8 @@ export function TransportExperience({
       alert("Please enter a valid passenger name using letters only.");
       return;
     }
-    if (!guestPhone.trim()) {
-      alert("Please provide your contact phone number.");
+    if (!guestPhone.trim() || /[a-zA-Z]/.test(guestPhone)) {
+      alert("Please provide a valid contact phone number (digits only, no letters).");
       return;
     }
     if (!guestEmail.trim() || !guestEmail.includes("@")) {
@@ -543,7 +549,8 @@ export function TransportExperience({
                   type="text"
                   placeholder="Full name"
                   value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
+                  onKeyDown={preventDigitsKeyDown}
+                  onChange={(e) => setGuestName(sanitizeName(e.target.value))}
                   className={INPUT_CLASSES}
                   required
                 />
@@ -556,7 +563,8 @@ export function TransportExperience({
                     type="tel"
                     placeholder="Mobile number"
                     value={guestPhone}
-                    onChange={(e) => setGuestPhone(e.target.value)}
+                    onKeyDown={preventLettersKeyDown}
+                    onChange={(e) => setGuestPhone(sanitizePhone(e.target.value))}
                     className={INPUT_CLASSES}
                     required
                   />

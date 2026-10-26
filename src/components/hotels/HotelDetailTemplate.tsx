@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import { sanitizeName, preventDigitsKeyDown } from "@/lib/inputValidation";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 import {
   HotelInfo,
@@ -780,7 +781,8 @@ export function HotelDetailTemplate({
                     required
                     placeholder="Full name"
                     value={guestName}
-                    onChange={(e) => setGuestName(e.target.value)}
+                    onKeyDown={preventDigitsKeyDown}
+                    onChange={(e) => setGuestName(sanitizeName(e.target.value))}
                     className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1d63b8] focus:border-transparent"
                   />
                 </div>

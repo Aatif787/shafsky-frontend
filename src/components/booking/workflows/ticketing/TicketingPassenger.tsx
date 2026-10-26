@@ -2,6 +2,12 @@ import { useState, useEffect } from "react";
 import { ArrowRight, User, ChevronDown, ChevronUp, Check, AlertCircle, Info, ShieldAlert, Globe } from "lucide-react";
 import { toast } from "sonner";
 import { TicketingPassengerData, TicketingJourneyData, IndividualPassenger } from "../../hooks/useTicketingWorkflow";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 interface TicketingPassengerProps {
   data: TicketingPassengerData;
@@ -312,8 +318,9 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
             <input
               type="text"
               value={data.fullName}
+              onKeyDown={preventDigitsKeyDown}
               onChange={(e) => {
-                const name = e.target.value;
+                const name = sanitizeName(e.target.value);
                 onChange({ fullName: name });
                 if (passengers.length > 0) {
                   const parts = name.split(" ");
@@ -341,7 +348,8 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
             <input
               type="tel"
               value={data.phone}
-              onChange={(e) => onChange({ phone: e.target.value })}
+              onKeyDown={preventLettersKeyDown}
+              onChange={(e) => onChange({ phone: sanitizePhone(e.target.value) })}
               placeholder="Mobile number"
               style={{ 
                 height: "clamp(44px, 4.5vw, 52px)",
@@ -459,9 +467,10 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                       <input
                         type="text"
                         value={p.firstName}
+                        onKeyDown={preventDigitsKeyDown}
                         onChange={(e) =>
                           updateIndividualPassenger(p.id, {
-                            firstName: e.target.value,
+                            firstName: sanitizeName(e.target.value),
                           })
                         }
                         placeholder="Given Name"
@@ -476,9 +485,10 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                       <input
                         type="text"
                         value={p.lastName}
+                        onKeyDown={preventDigitsKeyDown}
                         onChange={(e) =>
                           updateIndividualPassenger(p.id, {
-                            lastName: e.target.value,
+                            lastName: sanitizeName(e.target.value),
                           })
                         }
                         placeholder="Surname"

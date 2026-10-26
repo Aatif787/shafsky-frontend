@@ -17,6 +17,14 @@ import { charterApi, CharterRequestPayload } from "@/lib/api/charterApi";
 import jetTarmac from "@/assets/homepage/home2.jpeg";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 import { Footer } from "@/components/home/sections/Footer";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+  validateNameNoDigits,
+  validatePhoneNoLetters,
+} from "@/lib/inputValidation";
 
 export const Route = createFileRoute("/solutions/aviation")({
   head: () =>
@@ -441,8 +449,12 @@ function DedicatedAirCharterPage() {
 
   const handleSubmitRequest = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!clientName.trim() || !phone.trim()) {
-      alert("Please provide your name and contact phone number.");
+    if (!clientName.trim() || !validateNameNoDigits(clientName)) {
+      alert("Please provide a valid name without numbers.");
+      return;
+    }
+    if (!phone.trim() || !validatePhoneNoLetters(phone)) {
+      alert("Please provide a valid contact phone number without letters.");
       return;
     }
     if (!email.trim() || !email.includes("@")) {
@@ -1121,7 +1133,8 @@ function DedicatedAirCharterPage() {
                       <input
                         type="text"
                         value={clientName}
-                        onChange={(e) => setClientName(e.target.value)}
+                        onKeyDown={preventDigitsKeyDown}
+                        onChange={(e) => setClientName(sanitizeName(e.target.value))}
                         placeholder="Full name"
                         required
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500"
@@ -1135,7 +1148,8 @@ function DedicatedAirCharterPage() {
                       <input
                         type="tel"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onKeyDown={preventLettersKeyDown}
+                        onChange={(e) => setPhone(sanitizePhone(e.target.value))}
                         placeholder="Mobile number"
                         required
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 focus:ring-1 focus:ring-lime-500"

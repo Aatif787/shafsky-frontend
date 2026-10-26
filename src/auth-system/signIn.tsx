@@ -15,6 +15,11 @@ import {
   ShieldCheck,
   Fingerprint,
 } from "lucide-react";
+import {
+  sanitizeName,
+  preventDigitsKeyDown,
+  validateNameNoDigits,
+} from "@/lib/inputValidation";
 
 export function SignInPage() {
   const {
@@ -166,6 +171,10 @@ export function SignInPage() {
     } else if (mode === "signup") {
       if (!fullName.trim() || !email.trim() || !password.trim()) {
         setErrorMsg("Please fill in all fields.");
+        return;
+      }
+      if (!validateNameNoDigits(fullName)) {
+        setErrorMsg("Full name should not contain numbers.");
         return;
       }
       if (password !== confirmPassword) {
@@ -588,7 +597,8 @@ export function SignInPage() {
                   type="text"
                   required
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onKeyDown={preventDigitsKeyDown}
+                  onChange={(e) => setFullName(sanitizeName(e.target.value))}
                   placeholder="Enter your full name"
                   className="w-full h-11 pl-11 pr-4 rounded-xl border-none text-xs font-semibold outline-none transition-all duration-300 hover:scale-[1.01] hover:shadow-md text-[#0d2a36] placeholder:text-[#b0b8be]"
                   style={{

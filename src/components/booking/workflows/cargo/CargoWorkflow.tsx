@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createBooking } from "@/lib/bookings.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { validateNameNoDigits, validatePhoneNoLetters } from "@/lib/inputValidation";
 
 // Reused Presentation Architecture
 import { BookingProgressHeader } from "@/components/booking/shared/BookingProgressHeader";
@@ -126,6 +127,14 @@ export function CargoWorkflow({ searchParams }: CargoWorkflowProps) {
   const handleSubmitCargoRequest = async () => {
     if (!contactName || !phone || !email) {
       toast.error("Please fill in Contact Name, Phone, and Email Address.");
+      return;
+    }
+    if (!validateNameNoDigits(contactName)) {
+      toast.error("Contact name must not contain numbers.");
+      return;
+    }
+    if (!validatePhoneNoLetters(phone)) {
+      toast.error("Contact phone must not contain letters.");
       return;
     }
 

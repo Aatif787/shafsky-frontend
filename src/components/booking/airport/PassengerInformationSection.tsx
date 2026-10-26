@@ -2,6 +2,7 @@ import React from "react";
 import { Minus, Plus, Copy, ChevronUp, ChevronDown, Check, Building2 } from "lucide-react";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { PassengerDetail } from "./types";
+import { sanitizeName, preventDigitsKeyDown } from "@/lib/inputValidation";
 
 export interface PassengerInformationSectionProps {
   passengers: PassengerDetail[];
@@ -122,7 +123,8 @@ export const PassengerInformationSection: React.FC<PassengerInformationSectionPr
                   type="text"
                   required
                   value={p.fullName}
-                  onChange={(e) => updatePassenger(idx, "fullName", e.target.value)}
+                  onKeyDown={preventDigitsKeyDown}
+                  onChange={(e) => updatePassenger(idx, "fullName", sanitizeName(e.target.value))}
                   placeholder="Name as per government ID"
                   style={{
                     height: "clamp(42px, 4.2vw, 46px)",

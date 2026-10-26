@@ -16,6 +16,12 @@ import { createBooking } from "@/lib/bookings.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ASSETS } from "@/lib/assets";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 const desktop169HotelPlaneImg = ASSETS.hotelPlane;
 
@@ -51,6 +57,14 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
     e.preventDefault();
     if (!guest.fullName || !guest.phone || !guest.email) {
       toast.error("Please fill in your Contact Name, Phone, and Email.");
+      return;
+    }
+    if (/[0-9]/.test(guest.fullName)) {
+      toast.error("Contact Name cannot contain numbers.");
+      return;
+    }
+    if (/[a-zA-Z]/.test(guest.phone)) {
+      toast.error("Phone number cannot contain letters.");
       return;
     }
     if (!stay.destination) {
@@ -404,7 +418,8 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
                     type="text"
                     required
                     value={guest.fullName}
-                    onChange={(e) => updateGuest({ fullName: e.target.value })}
+                    onKeyDown={preventDigitsKeyDown}
+                    onChange={(e) => updateGuest({ fullName: sanitizeName(e.target.value) })}
                     placeholder="Full name"
                     className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
                   />
@@ -432,7 +447,8 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
                     type="tel"
                     required
                     value={guest.phone}
-                    onChange={(e) => updateGuest({ phone: e.target.value })}
+                    onKeyDown={preventLettersKeyDown}
+                    onChange={(e) => updateGuest({ phone: sanitizePhone(e.target.value) })}
                     placeholder="Mobile number"
                     className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
                   />

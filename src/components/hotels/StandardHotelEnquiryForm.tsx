@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { Calendar, User, Phone, Mail, Send, Loader2, CheckCircle2, MessageSquare, Copy, Check } from "lucide-react";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import { PhoneInput } from "@/components/ui/PhoneInput";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 
 /**
  * Standard hotel enquiry form (enquiry-only — no booking, no payment, no pricing).
@@ -61,12 +67,12 @@ export function StandardHotelEnquiryForm({
     const phone = guestPhone.trim();
     const email = guestEmail.trim();
 
-    if (!name) {
-      setError("Please enter your full name.");
+    if (!name || !/^[A-Za-z\s]+$/.test(name)) {
+      setError("Please enter a valid passenger name using letters only.");
       return;
     }
-    if (!phone) {
-      setError("Please enter your phone / WhatsApp number.");
+    if (!phone || /[a-zA-Z]/.test(phone)) {
+      setError("Please enter a valid phone number (digits only, no letters).");
       return;
     }
     if (!email) {
@@ -270,7 +276,8 @@ export function StandardHotelEnquiryForm({
             type="text"
             required
             value={guestName}
-            onChange={(e) => setGuestName(e.target.value)}
+            onKeyDown={preventDigitsKeyDown}
+            onChange={(e) => setGuestName(sanitizeName(e.target.value))}
             placeholder="Full name"
             className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1d63b8] focus:border-transparent"
           />

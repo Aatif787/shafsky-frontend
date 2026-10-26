@@ -16,6 +16,12 @@ import {
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import {
+  sanitizeName,
+  sanitizePhone,
+  preventDigitsKeyDown,
+  preventLettersKeyDown,
+} from "@/lib/inputValidation";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import toursTravelImg from "@/assets/others/tours-travel.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
@@ -116,8 +122,12 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
 
   const handleSubmitFinal = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!guestName.trim() || !guestPhone.trim()) {
-      alert("Please provide your name and contact phone number.");
+    if (!guestName.trim() || !/^[A-Za-z\s]+$/.test(guestName.trim())) {
+      alert("Please enter a valid passenger name using letters only.");
+      return;
+    }
+    if (!guestPhone.trim() || /[a-zA-Z]/.test(guestPhone)) {
+      alert("Please provide a valid contact phone number (digits only, no letters).");
       return;
     }
     if (!guestEmail.trim() || !guestEmail.includes("@")) {
@@ -532,7 +542,8 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                   type="text"
                   placeholder="Full name"
                   value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
+                  onKeyDown={preventDigitsKeyDown}
+                  onChange={(e) => setGuestName(sanitizeName(e.target.value))}
                   className={INPUT_CLASSES}
                   required
                 />
@@ -545,7 +556,8 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                     type="tel"
                     placeholder="Mobile number"
                     value={guestPhone}
-                    onChange={(e) => setGuestPhone(e.target.value)}
+                    onKeyDown={preventLettersKeyDown}
+                    onChange={(e) => setGuestPhone(sanitizePhone(e.target.value))}
                     className={INPUT_CLASSES}
                     required
                   />
