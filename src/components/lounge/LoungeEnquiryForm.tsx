@@ -260,7 +260,7 @@ function computeFrontendCutoff(params: {
       noticeHours,
       gracePeriodHours,
       minRequiredHours,
-      message: `Within 1-hour grace period (${leadTimeHours.toFixed(1)}h notice). Subject to lounge availability.`,
+      message: `${category} lounge enquiries require at least ${noticeHours} hours' advance notice.`,
     };
   }
 
@@ -271,7 +271,7 @@ function computeFrontendCutoff(params: {
     noticeHours,
     gracePeriodHours,
     minRequiredHours,
-    message: `Selected time is outside the allowed enquiry window. ${category} lounge enquiries require at least ${noticeHours} hours' notice (minimum ${minRequiredHours} hours with grace period). Current lead time is ${Math.max(0, leadTimeHours).toFixed(1)} hours.`,
+    message: `Selected time is outside the allowed enquiry window. ${category} lounge enquiries require at least ${noticeHours} hours' advance notice. Current lead time is ${Math.max(0, leadTimeHours).toFixed(1)} hours.`,
   };
 }
 
@@ -794,7 +794,7 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
               className="leading-snug"
               dangerouslySetInnerHTML={{
                 __html:
-                  "Domestic lounge enquiries require at least 12 hours' notice. A 1-hour grace period may apply, subject to availability.",
+                  "Domestic lounge enquiries require at least 12 hours' advance notice.",
               }}
             />
           </div>
@@ -807,7 +807,7 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
               className="leading-snug"
               dangerouslySetInnerHTML={{
                 __html:
-                  "International lounge enquiries require at least 24 hours' notice. A 1-hour grace period may apply, subject to availability.",
+                  "International lounge enquiries require at least 24 hours' advance notice.",
               }}
             />
           </div>
@@ -1218,24 +1218,10 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
               </div>
             )}
 
-            {/* 2. Within 1-Hour Grace Period (Inline Notice) */}
-            {activeEligibility.eligible && activeEligibility.isGracePeriod && (
-              <div
-                id="lounge-cutoff-grace-notice"
-                className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5 animate-in fade-in duration-200"
-              >
-                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                <div className="space-y-0.5">
-                  <p className="font-semibold text-amber-950">1-Hour Grace Period Window</p>
-                  <p className="text-amber-800 leading-relaxed">
-                    This enquiry is within the 1-hour grace period ({activeEligibility.leadTimeHours.toFixed(1)}h before service in {currentAirportTimezone}). Submission is accepted, but access is strictly subject to lounge operational availability.
-                  </p>
-                </div>
-              </div>
-            )}
+            {/* 2. Grace period eligible — show standard confirmation (grace period text removed from UI) */}
 
             {/* 3. Standard Eligibility Met (Inline Confirmation) */}
-            {activeEligibility.eligible && !activeEligibility.isGracePeriod && (
+            {activeEligibility.eligible && (
               <div
                 id="lounge-cutoff-eligible-notice"
                 className="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 text-xs text-emerald-800 flex items-center justify-between animate-in fade-in duration-200"
