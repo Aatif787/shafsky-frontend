@@ -27,6 +27,9 @@ import {
   type LoungeEligibilityResult,
   type AirportOptionItem,
 } from "@/lib/api/loungeApi";
+import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
+import { formatAirportOption } from "@/lib/api/airportApi";
+import { enquiryApi, type ServiceEnquiryPayload } from "@/lib/api/enquiryApi";
 
 export interface LoungeEnquiryFormProps {
   initialAirport?: string;
@@ -297,8 +300,6 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
 
   // Service Details (Ordered Second per architectural requirement)
   const [airport, setAirport] = useState(initialAirport || "");
-  const [customAirport, setCustomAirport] = useState("");
-  const [isOtherAirport, setIsOtherAirport] = useState(false);
   const [loungeType, setLoungeType] = useState("");
   const [travelDate, setTravelDate] = useState(initialDate || "");
   const [preferredTime, setPreferredTime] = useState("");
@@ -350,7 +351,7 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
   }, []);
 
   // Airport timezone
-  const selectedAirportStr = isOtherAirport ? customAirport : airport;
+  const selectedAirportStr = airport;
   const currentAirportTimezone = useMemo(() => {
     return resolveTimezoneForAirport(selectedAirportStr, serverAirports);
   }, [selectedAirportStr, serverAirports]);
@@ -488,7 +489,7 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
     }
 
     // 2. Service details validation (Ordered Second)
-    const finalAirport = (isOtherAirport ? customAirport : airport).trim();
+    const finalAirport = airport.trim();
     if (!finalAirport) {
       newErrors.airport = "Please select or specify an airport";
     }
@@ -535,7 +536,7 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
       return;
     }
 
-    const finalAirport = (isOtherAirport ? customAirport : airport).trim();
+    const finalAirport = airport.trim();
     const paxNumber = parseInt(passengerCount.replace(/\D/g, ""), 10) || 1;
 
     setSubmitting(true);
@@ -620,8 +621,6 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
     setEmailAddress("");
     setWhatsappNumber("");
     setAirport("");
-    setCustomAirport("");
-    setIsOtherAirport(false);
     setLoungeType("");
     setTravelDate("");
     setPreferredTime("");
@@ -956,78 +955,33 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          {/* Airport */}
+          {/* Airport - Intelligent Autocomplete matching Meet & Greet booking panel */}
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-medium text-slate-700 flex items-center gap-1">
               <span>Airport</span>
               <span className="text-emerald-600 font-bold">*</span>
             </label>
-            {!isOtherAirport ? (
-              <div className="relative">
-                <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                <select
-                  value={airport}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val === "__OTHER__") {
-                      setIsOtherAirport(true);
-                      setAirport("");
-                    } else {
-                      setAirport(val);
-                      if (errors.airport) setErrors((prev) => ({ ...prev, airport: "" }));
-                    }
-                  }}
-                  className={`h-11 w-full rounded-xl border pl-10 pr-9 text-xs font-medium text-slate-900 bg-white outline-none appearance-none transition-all duration-200 cursor-pointer ${
-                    errors.airport
-                      ? "border-rose-400 ring-2 ring-rose-200/50"
-                      : "border-slate-200 hover:border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15"
-                  }`}
-                >
-                  <option value="" disabled>Select airport</option>
-                  {(serverAirports.length > 0
-                    ? serverAirports.map((ap) => `${ap.name} (${ap.code}) — ${ap.city}`)
-                    : DEFAULT_AIRPORTS
-                  ).map((ap) => (
-                    <option key={ap} value={ap}>
-                      {ap}
-                    </option>
-                  ))}
-                  <option value="__OTHER__">+ Specify Other Airport...</option>
-                </select>
-                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                  <input
-                    type="text"
-                    value={customAirport}
-                    onChange={(e) => {
-                      setCustomAirport(e.target.value);
-                      if (errors.airport) setErrors((prev) => ({ ...prev, airport: "" }));
-                    }}
-                    placeholder="Enter airport code or city name"
-                    autoFocus
-                    className={`h-11 w-full rounded-xl border pl-10 pr-3.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 bg-white outline-none transition-all duration-200 ${
-                      errors.airport
-                        ? "border-rose-400 ring-2 ring-rose-200/50"
-                        : "border-slate-200 hover:border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15"
-                    }`}
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsOtherAirport(false);
-                    setCustomAirport("");
-                  }}
-                  className="h-11 px-3 text-[11px] font-mono text-slate-500 hover:text-slate-800 border border-slate-200 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
-                >
-                  List
-                </button>
-              </div>
-            )}
+            <div className="relative">
+              <IntelligentAirportAutocomplete
+                value={airport}
+                mode="global"
+                showIcon={true}
+                placeholder="Search airport (city, name, or 3-letter IATA code)"
+                inputClassName={`h-11 w-full rounded-xl border pl-9 pr-3.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 bg-white outline-none transition-all duration-200 ${
+                  errors.airport
+                    ? "border-rose-400 ring-2 ring-rose-200/50"
+                    : "border-slate-200 hover:border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15"
+                }`}
+                onSelect={(ap) => {
+                  setAirport(formatAirportOption(ap));
+                  if (errors.airport) setErrors((prev) => ({ ...prev, airport: "" }));
+                }}
+                onChangeText={(text) => {
+                  setAirport(text);
+                  if (errors.airport) setErrors((prev) => ({ ...prev, airport: "" }));
+                }}
+              />
+            </div>
             {errors.airport && (
               <span className="text-[11px] text-rose-500 font-medium">{errors.airport}</span>
             )}

@@ -70,7 +70,7 @@ export const LOUNGE_IMAGES: LoungeImageItem[] = [
 ];
 
 /**
- * 1. HERO CAROUSEL: Left-hand column of the hero section on the Lounge page
+ * 1. HERO CAROUSEL: Upper section showcase banner (Clean imagery, NO text on images)
  */
 export const LoungeHeroCarousel: React.FC<{
   onOpenLightbox?: (index: number) => void;
@@ -98,18 +98,16 @@ export const LoungeHeroCarousel: React.FC<{
     return () => clearInterval(timer);
   }, [isPaused, handleNext]);
 
-  const activeItem = LOUNGE_IMAGES[currentIndex];
-
   return (
     <div
-      className={`relative w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-[0_4px_24px_rgba(15,23,42,0.06)] bg-slate-900 flex flex-col justify-between group ${className}`}
+      className={`relative w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-[0_4px_24px_rgba(15,23,42,0.06)] bg-slate-950 flex flex-col justify-between group ${className}`}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       role="region"
-      aria-label="Lounge Images Carousel"
+      aria-label="Lounge Images Showcase"
     >
-      {/* Background Image with crossfade effect */}
-      <div className="relative w-full min-h-[300px] sm:min-h-[420px] lg:min-h-[580px] flex-1 overflow-hidden">
+      {/* Responsive Aspect Ratio Image Container (100% responsive across mobile, tablet, desktop) */}
+      <div className="relative w-full aspect-[16/10] sm:aspect-[21/9] lg:aspect-[2.5/1] min-h-[220px] sm:min-h-[290px] md:min-h-[360px] overflow-hidden">
         {LOUNGE_IMAGES.map((item, index) => (
           <div
             key={item.id}
@@ -125,43 +123,31 @@ export const LoungeHeroCarousel: React.FC<{
               className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-102"
               loading={index === 0 ? "eager" : "lazy"}
             />
-            {/* Dark gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/35 to-slate-950/20 pointer-events-none" />
+            {/* Note: STRICTLY NO text overlays and NO heavy dark masks on top of the image */}
           </div>
         ))}
 
-        {/* Top Floating Badges */}
-        <div className="absolute top-3.5 sm:top-5 left-3.5 sm:left-5 right-3.5 sm:right-5 z-20 flex items-center justify-between gap-2 pointer-events-none">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-white/15 text-white text-[11px] font-medium shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span>VIP Lounge Access</span>
+        {/* Top-Right Fullscreen Expand Action (Pure Icon Button, Zero Text) */}
+        {onOpenLightbox && (
+          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-20">
+            <button
+              type="button"
+              onClick={() => onOpenLightbox(currentIndex)}
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-950/60 hover:bg-slate-950/85 backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 hover:scale-105 active:scale-95 shadow-md"
+              title="View Fullscreen Photo"
+              aria-label="Expand image"
+            >
+              <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </button>
           </div>
+        )}
 
-          <div className="inline-flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono font-bold tracking-wider text-emerald-300 border border-white/10">
-              0{currentIndex + 1} / 0{total}
-            </span>
-
-            {onOpenLightbox && (
-              <button
-                type="button"
-                onClick={() => onOpenLightbox(currentIndex)}
-                className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/85 backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer pointer-events-auto border border-white/15 hover:scale-105 active:scale-95"
-                title="View Fullscreen Photo"
-                aria-label="Expand image"
-              >
-                <Maximize2 className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Navigation Arrows (Mobile touch-friendly) */}
-        <div className="absolute inset-y-0 left-2 sm:left-3 right-2 sm:right-3 z-20 flex items-center justify-between pointer-events-none">
+        {/* Navigation Arrows (Touch & Click friendly, Pure Icons, Zero Text) */}
+        <div className="absolute inset-y-0 left-2.5 sm:left-4 right-2.5 sm:right-4 z-20 flex items-center justify-between pointer-events-none">
           <button
             type="button"
             onClick={handlePrev}
-            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-950/65 hover:bg-slate-950/90 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-200 pointer-events-auto cursor-pointer shadow-md hover:scale-105 active:scale-95"
+            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-950/55 hover:bg-slate-950/85 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-200 pointer-events-auto cursor-pointer shadow-md hover:scale-105 active:scale-95 opacity-80 sm:opacity-0 group-hover:opacity-100 focus:opacity-100"
             aria-label="Previous photo"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -169,48 +155,27 @@ export const LoungeHeroCarousel: React.FC<{
           <button
             type="button"
             onClick={handleNext}
-            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-950/65 hover:bg-slate-950/90 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-200 pointer-events-auto cursor-pointer shadow-md hover:scale-105 active:scale-95"
+            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-950/55 hover:bg-slate-950/85 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-200 pointer-events-auto cursor-pointer shadow-md hover:scale-105 active:scale-95 opacity-80 sm:opacity-0 group-hover:opacity-100 focus:opacity-100"
             aria-label="Next photo"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Bottom Overlay Title & Subtitle */}
-        <div className="absolute bottom-16 sm:bottom-20 left-4 sm:left-6 right-4 sm:right-6 z-20 text-white pointer-events-none space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/25 border border-emerald-400/30 text-[10px] font-mono uppercase tracking-wider text-emerald-300">
-            {activeItem.icon}
-            <span>{activeItem.tag}</span>
-          </div>
-          <h3 className="text-lg sm:text-2xl font-bold tracking-tight text-white drop-shadow-md">
-            {activeItem.title}
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-200 line-clamp-2 max-w-lg drop-shadow">
-            {activeItem.subtitle}
-          </p>
-        </div>
-
-        {/* Bottom Thumbnail Navigation Strip */}
-        <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-6 right-3 sm:right-6 z-20 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {LOUNGE_IMAGES.map((img, idx) => (
+        {/* Bottom Dot Indicators (Minimalist, Zero Text On Image) */}
+        <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/15 pointer-events-auto">
+          {LOUNGE_IMAGES.map((_, idx) => (
             <button
-              key={img.id}
+              key={idx}
               type="button"
               onClick={() => setCurrentIndex(idx)}
-              className={`relative h-11 sm:h-13 w-16 sm:w-20 rounded-lg overflow-hidden border-2 transition-all duration-200 shrink-0 cursor-pointer shadow-xs ${
+              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                 idx === currentIndex
-                  ? "border-emerald-400 ring-2 ring-emerald-500/40 scale-105 opacity-100"
-                  : "border-white/30 opacity-60 hover:opacity-90 hover:border-white/60"
+                  ? "w-6 bg-emerald-400 shadow-xs"
+                  : "w-2 bg-white/55 hover:bg-white/85"
               }`}
-              aria-label={`View photo ${idx + 1}`}
-            >
-              <img
-                src={img.src}
-                alt={img.title}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </button>
+              aria-label={`Go to slide ${idx + 1}`}
+            />
           ))}
         </div>
       </div>
@@ -219,7 +184,7 @@ export const LoungeHeroCarousel: React.FC<{
 };
 
 /**
- * 2. GALLERY GRID: Mobile-first 4-image showcase below the enquiry form
+ * 2. GALLERY GRID: Mobile-first 4-image showcase below the enquiry form (Clean images, NO text on photos)
  */
 export const LoungeGalleryGrid: React.FC<{
   onOpenLightbox?: (index: number) => void;
@@ -253,7 +218,7 @@ export const LoungeGalleryGrid: React.FC<{
             onClick={() => onOpenLightbox && onOpenLightbox(index)}
             className="group rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 bg-white shadow-[0_4px_20px_rgba(15,23,42,0.04)] hover:shadow-[0_8px_30px_rgba(15,23,42,0.1)] transition-all duration-300 flex flex-col cursor-pointer hover:-translate-y-1"
           >
-            {/* Image Container */}
+            {/* Pure Clean Image Container (No Text Overlaid On Image) */}
             <div className="relative aspect-[16/10] sm:aspect-[4/3] w-full overflow-hidden bg-slate-100">
               <img
                 src={item.src}
@@ -261,15 +226,8 @@ export const LoungeGalleryGrid: React.FC<{
                 className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-106"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-              {/* Tag Badge */}
-              <div className="absolute top-3 left-3 z-10 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-[10px] font-mono text-emerald-300 border border-white/10 font-semibold shadow-xs">
-                {item.icon}
-                <span>{item.tag}</span>
-              </div>
-
-              {/* View Overlay Button */}
+              {/* View Overlay Button (Icon Only, Zero Text) */}
               <div className="absolute bottom-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <span className="w-8 h-8 rounded-full bg-white/90 text-slate-900 flex items-center justify-center shadow-md">
                   <Maximize2 className="w-3.5 h-3.5" />
@@ -277,13 +235,19 @@ export const LoungeGalleryGrid: React.FC<{
               </div>
             </div>
 
-            {/* Content Details */}
+            {/* Content Details (Cleanly Rendered Below the Image) */}
             <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-2">
               <div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700">
-                  {item.category}
-                </span>
-                <h3 className="text-base font-bold text-slate-900 tracking-tight group-hover:text-emerald-700 transition-colors mt-0.5">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700">
+                    {item.category}
+                  </span>
+                  <span className="text-slate-300">•</span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
+                    {item.tag}
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-slate-900 tracking-tight group-hover:text-emerald-700 transition-colors">
                   {item.title}
                 </h3>
                 <p className="text-xs text-slate-500 line-clamp-3 mt-1.5 leading-relaxed">

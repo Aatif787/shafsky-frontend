@@ -40,15 +40,15 @@ export function LoungePage() {
         id="main-content"
         className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24"
       >
-        {/* Hero Section: Mobile-first stacked on small screens, 2-column side-by-side on desktop */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
-          {/* Prominent Lounge Showcase Carousel (Left Column on Desktop, Top on Mobile) */}
-          <div className="flex flex-col justify-center">
+        {/* Upper section image showcase (NOT on the side), followed by Enquiry Form (100% responsive for all devices) */}
+        <div className="w-full max-w-4xl mx-auto space-y-6 sm:space-y-8">
+          {/* Upper Section Showcase (Clean images, NO text on images, 100% responsive) */}
+          <div className="w-full">
             <LoungeHeroCarousel onOpenLightbox={(idx) => setLightboxIndex(idx)} />
           </div>
 
-          {/* Enquiry Form Card (Right Column on Desktop, Bottom on Mobile) */}
-          <div className="rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-8 lg:p-10 shadow-[0_4px_24px_rgba(15,23,42,0.06)] flex flex-col justify-center">
+          {/* Enquiry Form Card */}
+          <div className="w-full rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-8 lg:p-10 shadow-[0_4px_24px_rgba(15,23,42,0.06)]">
             <LoungeEnquiryForm />
           </div>
         </div>
