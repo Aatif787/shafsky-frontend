@@ -350,6 +350,13 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
     };
   }, []);
 
+  // Sync initialAirport prop if changed or passed by parent
+  useEffect(() => {
+    if (initialAirport && (!airport || airport !== initialAirport)) {
+      setAirport(initialAirport);
+    }
+  }, [initialAirport]);
+
   // Airport timezone
   const selectedAirportStr = airport;
   const currentAirportTimezone = useMemo(() => {
@@ -789,39 +796,28 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
         {loungeCategory === "Domestic" && (
           <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs text-slate-700 flex items-start gap-2 animate-in fade-in duration-200">
             <Clock className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-            <span
-              className="leading-snug"
-              dangerouslySetInnerHTML={{
-                __html:
-                  "Domestic lounge enquiries require at least 12 hours' advance notice.",
-              }}
-            />
+            <span className="leading-snug">
+              Domestic lounge enquiries require at least 12 hours' advance notice.
+            </span>
           </div>
         )}
 
         {loungeCategory === "International" && (
           <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs text-slate-700 flex items-start gap-2 animate-in fade-in duration-200">
             <Clock className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-            <span
-              className="leading-snug"
-              dangerouslySetInnerHTML={{
-                __html:
-                  "International lounge enquiries require at least 24 hours' advance notice.",
-              }}
-            />
+            <span className="leading-snug">
+              International lounge enquiries require at least 24 hours' advance notice.
+            </span>
           </div>
         )}
 
         {!loungeCategory && (
           <div className="p-2.5 rounded-xl bg-amber-50/90 border border-amber-200 text-xs text-amber-800 flex items-start gap-2 animate-in fade-in duration-200">
             <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-            <span
-              className="leading-snug"
-              dangerouslySetInnerHTML={{
-                __html:
-                  "Please select <strong class='font-semibold text-amber-950'>Domestic</strong> or <strong class='font-semibold text-amber-950'>International</strong> to proceed with your lounge enquiry.",
-              }}
-            />
+            <span className="leading-snug">
+              Please select <strong className="font-semibold text-amber-950">Domestic</strong> or{" "}
+              <strong className="font-semibold text-amber-950">International</strong> to proceed with your lounge enquiry.
+            </span>
           </div>
         )}
       </div>

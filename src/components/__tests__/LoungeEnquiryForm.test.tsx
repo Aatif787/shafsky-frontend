@@ -83,14 +83,14 @@ describe("LoungeEnquiryForm Component", () => {
 
   it("shows exact specified compact cutoff notices when category is selected", () => {
     // 1. Domestic
-    const domesticHtml = renderToString(<LoungeEnquiryForm initialCategory="Domestic" />);
+    const domesticHtml = renderToString(<LoungeEnquiryForm initialCategory="Domestic" />).replace(/&#x27;/g, "'");
     expect(domesticHtml).toContain(
       "Domestic lounge enquiries require at least 12 hours' advance notice."
     );
     expect(domesticHtml).toContain("Domestic Departure Lounge");
 
     // 2. International
-    const intlHtml = renderToString(<LoungeEnquiryForm initialCategory="International" />);
+    const intlHtml = renderToString(<LoungeEnquiryForm initialCategory="International" />).replace(/&#x27;/g, "'");
     expect(intlHtml).toContain(
       "International lounge enquiries require at least 24 hours' advance notice."
     );

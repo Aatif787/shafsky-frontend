@@ -121,12 +121,19 @@ export function IntelligentAirportAutocomplete({
   useEffect(() => {
     const raw = value || "";
     const code = extractIata(raw) || (/^[A-Z]{3}$/i.test(raw.trim()) ? raw.trim().toUpperCase() : "");
-    if (mode === "supported" && code && !raw.includes("—")) {
-      airportApi.listSupported().then((res) => {
-        const match = ((res as any).data || []).find((a: SelectedAirportDetails) => a.code === code);
-        setInputValue(match ? formatAirportOption(match) : raw);
-      });
-      return;
+    if (code && !raw.includes("—")) {
+      const hub = GLOBAL_HUBS_FALLBACK.find((a) => a.code === code);
+      if (hub) {
+        setInputValue(formatAirportOption(hub));
+        return;
+      }
+      if (mode === "supported") {
+        airportApi.listSupported().then((res) => {
+          const match = ((res as any).data || []).find((a: SelectedAirportDetails) => a.code === code);
+          setInputValue(match ? formatAirportOption(match) : raw);
+        });
+        return;
+      }
     }
     setInputValue(raw);
   }, [value, mode]);
@@ -254,6 +261,13 @@ export function IntelligentAirportAutocomplete({
           type="text"
           value={inputValue}
           onChange={handleInputChange}
+          onClick={() => {
+            if (!isOpen) {
+              setIsOpen(true);
+              updateMenuPos();
+              runSearch(inputValue);
+            }
+          }}
           onFocus={() => {
             setIsOpen(true);
             updateMenuPos();
