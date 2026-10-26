@@ -521,8 +521,8 @@ export function BookingPanel() {
 
           {activeMode === "lounge" ? (
             <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-slate-200/90 shadow-2xs space-y-6">
-              {/* Upper Section: Lounge Showcase Carousel (Clean images, NO text on images, 100% responsive) */}
-              <div className="w-full overflow-hidden rounded-2xl border border-slate-200/80 shadow-xs">
+              {/* Upper Section: Lounge Showcase Carousel (Clean images, NO text on images, 100% responsive for mobile, 90% on desktop) */}
+              <div className="w-full">
                 <LoungeHeroCarousel />
               </div>
 

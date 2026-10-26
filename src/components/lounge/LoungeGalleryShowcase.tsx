@@ -4,7 +4,6 @@ import {
   ChevronRight,
   Maximize2,
   X,
-  Sparkles,
   Armchair,
   Coffee,
   Wifi,
@@ -100,14 +99,14 @@ export const LoungeHeroCarousel: React.FC<{
 
   return (
     <div
-      className={`relative w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-[0_4px_24px_rgba(15,23,42,0.06)] bg-slate-950 flex flex-col justify-between group ${className}`}
+      className={`relative w-full sm:w-[90%] mx-auto rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-[0_4px_24px_rgba(15,23,42,0.06)] bg-slate-950 flex flex-col justify-between group ${className}`}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       role="region"
       aria-label="Lounge Images Showcase"
     >
-      {/* Responsive Aspect Ratio Image Container (100% responsive across mobile, tablet, desktop) */}
-      <div className="relative w-full aspect-[16/10] sm:aspect-[21/9] lg:aspect-[2.5/1] min-h-[220px] sm:min-h-[290px] md:min-h-[360px] overflow-hidden">
+      {/* Responsive Aspect Ratio Image Container (100% responsive across mobile, tablet, desktop - keeps natural ratio without cropping) */}
+      <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
         {LOUNGE_IMAGES.map((item, index) => (
           <div
             key={item.id}
@@ -120,7 +119,7 @@ export const LoungeHeroCarousel: React.FC<{
             <img
               src={item.src}
               alt={item.title}
-              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-102"
+              className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-102"
               loading={index === 0 ? "eager" : "lazy"}
             />
             {/* Note: STRICTLY NO text overlays and NO heavy dark masks on top of the image */}
@@ -191,25 +190,7 @@ export const LoungeGalleryGrid: React.FC<{
   className?: string;
 }> = ({ onOpenLightbox, className = "" }) => {
   return (
-    <section className={`w-full py-12 sm:py-16 ${className}`} aria-labelledby="lounge-gallery-heading">
-      {/* Section Header */}
-      <div className="max-w-3xl mb-8 sm:mb-12">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200/90 mb-3">
-          <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Curated Sanctuary</span>
-        </div>
-        <h2
-          id="lounge-gallery-heading"
-          className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-950 tracking-tight"
-        >
-          Explore Premier Airport Lounge Spaces
-        </h2>
-        <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-          Step into serene comfort before departure or during transit. Every partner lounge is
-          equipped with state-of-the-art relaxation, business connectivity, and fine dining amenities.
-        </p>
-      </div>
-
+    <section className={`w-full py-8 sm:py-12 ${className}`} aria-label="Airport Lounge Showcase Spaces">
       {/* 100% Mobile-first Grid: 1 col on mobile, 2 col on tablet, 4 col on desktop */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
         {LOUNGE_IMAGES.map((item, index) => (
