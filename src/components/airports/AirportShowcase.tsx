@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
@@ -7,34 +7,11 @@ import {
   ArrowRight,
   Crown,
 } from "lucide-react";
-import { getStaticAirportsFromCsv, fetchAirportsCsv, type CsvAirportItem } from "@/lib/airportsCsv";
+import { AIRPORTS } from "@/data/airports";
 import { getCityPrimaryImage } from "@/lib/airport-assets";
 
 export function AirportShowcase() {
-  const [csvAirports, setCsvAirports] = useState<CsvAirportItem[]>(() => getStaticAirportsFromCsv());
-
-  useEffect(() => {
-    fetchAirportsCsv().then((data) => {
-      if (data && data.length > 0) {
-        setCsvAirports(data);
-      }
-    });
-  }, []);
-
-  const allAirports = useMemo(() => {
-    const featured = csvAirports.filter((a) => a.featured);
-    const source = featured.length >= 6 ? featured : csvAirports.slice(0, 10);
-    return source.map((a) => ({
-      code: a.code,
-      city: a.city,
-      country: a.country,
-      countryCode: a.countryCode || (a.country === "India" ? "IN" : a.code.slice(0, 2)),
-      airport: { name: a.name },
-      cover: a.cover || "",
-      mobCover: a.cover || "",
-    }));
-  }, [csvAirports]);
-
+  const allAirports = AIRPORTS;
   const total = allAirports.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -66,7 +43,7 @@ export function AirportShowcase() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12 sm:mb-16">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-[#7c3aed] text-[10px] font-mono font-bold uppercase tracking-widest mb-3">
           <Crown className="w-3.5 h-3.5" />
-          <span>Curated Global Concierge Hubs ({total} Hubs)</span>
+          <span>Curated Concierge Hubs ({total} Hubs)</span>
         </div>
 
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-slate-900 font-bold tracking-tight">

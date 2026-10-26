@@ -14,7 +14,9 @@ import {
   ChevronRight,
   ChevronLeft
 } from "lucide-react";
-import { getStaticAirportsFromCsv, fetchAirportsCsv, type CsvAirportItem } from "@/lib/airportsCsv";
+import { airportApi, type AirportInfo } from "@/lib/api/airportApi";
+import { AIRPORTS } from "@/data/airports";
+import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
 import { getAirportPrimaryImage } from "@/lib/airport-assets";
 import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
@@ -25,8 +27,8 @@ export const Route = createFileRoute("/airports")({
     pageHead({
       title: "Airport Meet & Greet Coverage Across India | Shafsky Aviation",
       description: ICICI_REVIEW_MODE
-        ? "Book VIP Meet & Greet, airside escort, and VIP lounge access across Indian and international airports."
-        : "Book VIP Meet & Greet, airside escort, lounge access, and luxury transfers across global airports.",
+        ? "Book VIP Meet & Greet, airside escort, and VIP lounge access at 20+ Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Goa, and Jaipur."
+        : "Book VIP Meet & Greet, airside escort, lounge access, and luxury transfers at 20+ Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Goa, and Jaipur.",
       path: "/airports",
       keywords: [
         "airport meet and greet India",
@@ -44,6 +46,32 @@ export const Route = createFileRoute("/airports")({
   component: AirportsIndexPage,
 });
 
+export interface AirportListingItem {
+  code: string;
+  name: string;
+  city: string;
+  country: string;
+  stateCountry: string;
+  servicesCount: number;
+  featured: boolean;
+  cover?: string;
+}
+
+// Canonical database-backed airports initialized from Shafsky's 20 operating hubs
+const INITIAL_DATABASE_AIRPORTS: AirportListingItem[] = AIRPORTS.map((a) => {
+  const reg = AIRPORT_REGISTRY[a.code];
+  return {
+    code: a.code,
+    name: a.airport?.name || reg?.name || `${a.city} Airport`,
+    city: a.city,
+    country: a.country,
+    stateCountry: `${a.city}, ${a.country}`,
+    servicesCount: reg?.availableServiceIds?.length || 4,
+    featured: reg?.featured ?? ["DEL", "BOM", "HYD", "BLR", "AMD", "MAA"].includes(a.code),
+    cover: getAirportPrimaryImage(a.code) || a.cover,
+  };
+});
+
 const ALPHABET = ["All", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")];
 
 function AirportsIndexPage() {
@@ -57,8 +85,8 @@ function AirportsIndexPage() {
 }
 
 function AirportsListingView() {
-  // Loaded dynamically from airports.csv (with instant bundled fallback)
-  const [airportsData, setAirportsData] = useState<CsvAirportItem[]>(() => getStaticAirportsFromCsv());
+  // Database is the single source of truth for the 20 configured airports
+  const [airportsData, setAirportsData] = useState<AirportListingItem[]>(INITIAL_DATABASE_AIRPORTS);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("All Countries");
   const [featuredOnly, setFeaturedOnly] = useState(false);
@@ -69,16 +97,30 @@ function AirportsListingView() {
   // Featured Arc Carousel Index
   const [featuredIndex, setFeaturedIndex] = useState(0);
 
-  // Dynamic refresh from runtime /data/airports.csv if updated on server
+  // Live database fetch from supported airports API
   useEffect(() => {
-    fetchAirportsCsv().then((data) => {
-      if (data && data.length > 0) {
-        setAirportsData(data);
+    airportApi.listSupported().then((res) => {
+      if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const liveItems: AirportListingItem[] = res.data.map((item: AirportInfo) => {
+          const reg = AIRPORT_REGISTRY[item.code];
+          const localA = AIRPORTS.find((a) => a.code === item.code);
+          return {
+            code: item.code,
+            name: item.name || reg?.name || localA?.airport?.name || `${item.city} Airport`,
+            city: item.city || reg?.city || localA?.city || item.code,
+            country: item.country || reg?.country || localA?.country || "India",
+            stateCountry: `${item.city || reg?.city || localA?.city || item.code}, ${item.country || reg?.country || "India"}`,
+            servicesCount: reg?.availableServiceIds?.length || 4,
+            featured: reg?.featured ?? ["DEL", "BOM", "HYD", "BLR", "AMD", "MAA"].includes(item.code),
+            cover: getAirportPrimaryImage(item.code) || reg?.coverImage || localA?.cover,
+          };
+        });
+        setAirportsData(liveItems);
       }
     });
   }, []);
 
-  // Filtered dataset from airports.csv
+  // Filtered dataset from database airports
   const filteredAirports = useMemo(() => {
     return airportsData
       .filter((item) => {
@@ -120,7 +162,7 @@ function AirportsListingView() {
       });
   }, [airportsData, searchQuery, featuredOnly, selectedCountry, selectedLetter, sortOption]);
 
-  // Featured list of airports from airports.csv
+  // Featured list of airports from database airports
   const featuredList = useMemo(() => {
     const list = airportsData.filter((a) => a.featured);
     return list.length > 0 ? list : airportsData.slice(0, 12);
@@ -146,7 +188,7 @@ function AirportsListingView() {
             <span>✈</span>
             <span className="font-semibold uppercase tracking-wider text-[11px] font-mono">AIRPORT NETWORK</span>
             <span className="inline-block w-1 h-1 rounded-full bg-lime-500" />
-            <span className="text-[10px] text-lime-700 font-mono">{airportsData.length} Global Hubs</span>
+            <span className="text-[10px] text-lime-700 font-mono">{airportsData.length} Network Hubs</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading text-slate-900 font-bold tracking-tight">
