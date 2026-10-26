@@ -213,15 +213,21 @@ export function useFlightVerification({
             },
             departure: {
               scheduledTime: anchoredDepSched,
-              terminal: flightObj?.departure?.terminal || null,
-              gate: flightObj?.departure?.gate || null,
+              actualTime: flightObj?.departure?.actual || flightObj?.actual_departure || null,
+              estimatedTime: flightObj?.departure?.estimated || null,
+              terminal: flightObj?.departure?.terminal || flightObj?.departure_terminal || null,
+              gate: flightObj?.departure?.gate || flightObj?.departure_gate || null,
               timezone: flightObj?.departure?.timezone || null,
+              checkinCounter: flightObj?.departure?.checkin_counter || null,
             },
             arrival: {
               scheduledTime: anchoredArrSched,
-              terminal: flightObj?.arrival?.terminal || null,
-              gate: flightObj?.arrival?.gate || null,
+              actualTime: flightObj?.arrival?.actual || flightObj?.actual_arrival || null,
+              estimatedTime: flightObj?.arrival?.estimated || null,
+              terminal: flightObj?.arrival?.terminal || flightObj?.arrival_terminal || null,
+              gate: flightObj?.arrival?.gate || flightObj?.arrival_gate || null,
               timezone: flightObj?.arrival?.timezone || null,
+              baggageBelt: flightObj?.arrival?.baggage_belt || null,
             },
           };
 
@@ -432,15 +438,21 @@ export function useFlightVerification({
             },
             departure: {
               scheduledTime: anchoredDepSched,
-              terminal: flightObj?.departure?.terminal || null,
-              gate: flightObj?.departure?.gate || null,
+              actualTime: flightObj?.departure?.actual || flightObj?.actual_departure || null,
+              estimatedTime: flightObj?.departure?.estimated || null,
+              terminal: flightObj?.departure?.terminal || flightObj?.departure_terminal || null,
+              gate: flightObj?.departure?.gate || flightObj?.departure_gate || null,
               timezone: flightObj?.departure?.timezone || null,
+              checkinCounter: flightObj?.departure?.checkin_counter || null,
             },
             arrival: {
               scheduledTime: anchoredArrSched,
-              terminal: flightObj?.arrival?.terminal || null,
-              gate: flightObj?.arrival?.gate || null,
+              actualTime: flightObj?.arrival?.actual || flightObj?.actual_arrival || null,
+              estimatedTime: flightObj?.arrival?.estimated || null,
+              terminal: flightObj?.arrival?.terminal || flightObj?.arrival_terminal || null,
+              gate: flightObj?.arrival?.gate || flightObj?.arrival_gate || null,
               timezone: flightObj?.arrival?.timezone || null,
+              baggageBelt: flightObj?.arrival?.baggage_belt || null,
             },
           };
 

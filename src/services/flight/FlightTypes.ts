@@ -14,9 +14,13 @@ export interface FlightAirport {
 
 export interface FlightSchedule {
   scheduledTime?: string | null; // ISO or local HH:MM format
+  actualTime?: string | null;
+  estimatedTime?: string | null;
   terminal?: string | null; // Terminal details (if known)
   gate?: string | null;
   timezone?: string | null;
+  baggageBelt?: string | null;
+  checkinCounter?: string | null;
 }
 
 export interface FlightData {

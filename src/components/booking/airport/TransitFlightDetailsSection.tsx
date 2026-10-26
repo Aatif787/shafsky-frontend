@@ -592,6 +592,23 @@ export const TransitFlightDetailsSection: React.FC<TransitFlightDetailsSectionPr
                         {verifiedFlight.departure.scheduledTime.slice(11, 16)}
                       </span>
                     )}
+                    {verifiedFlight.departure.actualTime && (
+                      <span className="text-[9.5px] text-emerald-700 block font-mono font-semibold">
+                        Act: {verifiedFlight.departure.actualTime.slice(11, 16)}
+                      </span>
+                    )}
+                    <div className="flex flex-wrap items-center gap-1 mt-0.5">
+                      {verifiedFlight.departure.terminal && (
+                        <span className="text-[9px] font-mono font-bold bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">
+                          T{verifiedFlight.departure.terminal.replace(/^[Tt]/, "")}
+                        </span>
+                      )}
+                      {verifiedFlight.departure.gate && (
+                        <span className="text-[9px] font-mono font-bold bg-amber-50 text-amber-900 border border-amber-200 px-1.5 py-0.5 rounded">
+                          Gate {verifiedFlight.departure.gate.replace(/^[Gg]ate\s*/, "")}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex-1 flex flex-col items-center px-2">
                     <span className="text-[9px] font-mono text-slate-400">Arrives at Transit Hub</span>
@@ -605,11 +622,23 @@ export const TransitFlightDetailsSection: React.FC<TransitFlightDetailsSectionPr
                         {verifiedFlight.arrival.scheduledTime.slice(11, 16)}
                       </span>
                     )}
-                    {verifiedFlight.arrival.terminal && (
-                      <span className="inline-block mt-0.5 text-[9px] font-mono font-bold bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">
-                        T{verifiedFlight.arrival.terminal.replace(/^[Tt]/, "")}
+                    {verifiedFlight.arrival.actualTime && (
+                      <span className="text-[9.5px] text-emerald-700 block font-mono font-semibold">
+                        Act: {verifiedFlight.arrival.actualTime.slice(11, 16)}
                       </span>
                     )}
+                    <div className="flex flex-wrap items-center justify-end gap-1 mt-0.5">
+                      {verifiedFlight.arrival.terminal && (
+                        <span className="text-[9px] font-mono font-bold bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">
+                          T{verifiedFlight.arrival.terminal.replace(/^[Tt]/, "")}
+                        </span>
+                      )}
+                      {verifiedFlight.arrival.gate && (
+                        <span className="text-[9px] font-mono font-bold bg-amber-50 text-amber-900 border border-amber-200 px-1.5 py-0.5 rounded">
+                          Gate {verifiedFlight.arrival.gate.replace(/^[Gg]ate\s*/, "")}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

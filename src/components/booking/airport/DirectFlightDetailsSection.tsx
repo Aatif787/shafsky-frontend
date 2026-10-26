@@ -507,11 +507,23 @@ export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProp
                         {verifiedFlight.departure.scheduledTime.slice(11, 16) || verifiedFlight.departure.scheduledTime}
                       </span>
                     )}
-                    {verifiedFlight.departure.terminal && (
-                      <span className="inline-block mt-1 text-[9.5px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
-                        T{verifiedFlight.departure.terminal.replace(/^[Tt]/, "")}
+                    {verifiedFlight.departure.actualTime && (
+                      <span className="text-[9.5px] text-emerald-700 block font-mono font-semibold">
+                        Act: {verifiedFlight.departure.actualTime.slice(11, 16)}
                       </span>
                     )}
+                    <div className="flex flex-wrap items-center gap-1 mt-1">
+                      {verifiedFlight.departure.terminal && (
+                        <span className="text-[9.5px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                          T{verifiedFlight.departure.terminal.replace(/^[Tt]/, "")}
+                        </span>
+                      )}
+                      {verifiedFlight.departure.gate && (
+                        <span className="text-[9.5px] font-mono font-bold bg-amber-50 text-amber-900 border border-amber-200 px-1.5 py-0.5 rounded">
+                          Gate {verifiedFlight.departure.gate.replace(/^[Gg]ate\s*/, "")}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Flight Path Graphic with Center Plane Icon */}
@@ -546,11 +558,23 @@ export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProp
                         {verifiedFlight.arrival.scheduledTime.slice(11, 16) || verifiedFlight.arrival.scheduledTime}
                       </span>
                     )}
-                    {verifiedFlight.arrival.terminal && (
-                      <span className="inline-block mt-1 text-[9.5px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
-                        T{verifiedFlight.arrival.terminal.replace(/^[Tt]/, "")}
+                    {verifiedFlight.arrival.actualTime && (
+                      <span className="text-[9.5px] text-emerald-700 block font-mono font-semibold">
+                        Act: {verifiedFlight.arrival.actualTime.slice(11, 16)}
                       </span>
                     )}
+                    <div className="flex flex-wrap items-center justify-end gap-1 mt-1">
+                      {verifiedFlight.arrival.terminal && (
+                        <span className="text-[9.5px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                          T{verifiedFlight.arrival.terminal.replace(/^[Tt]/, "")}
+                        </span>
+                      )}
+                      {verifiedFlight.arrival.gate && (
+                        <span className="text-[9.5px] font-mono font-bold bg-amber-50 text-amber-900 border border-amber-200 px-1.5 py-0.5 rounded">
+                          Gate {verifiedFlight.arrival.gate.replace(/^[Gg]ate\s*/, "")}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
