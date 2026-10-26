@@ -6,6 +6,7 @@ import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegi
 import { formatFlightLookupError } from "../../hooks/useAirportWorkflow";
 import {
   sanitizeFlightInput,
+  isValidFlightNumber,
   buildAnchoredServiceClock,
   getAirportDisplayName,
   buildRouteMismatchWarning,
@@ -114,8 +115,12 @@ export function useFlightVerification({
   // Handle Automatic Flight Verification with Airport Mismatch & Cutoff Detection
   const handleVerifyFlight = async () => {
     const cleaned = sanitizeFlightInput(flightNumber);
-    if (!cleaned || cleaned.length < 3) {
-      toast.error("Please enter a valid flight number (e.g. AI101, 6E202, EK504).");
+    if (!cleaned || !isValidFlightNumber(cleaned)) {
+      const msg = "Please enter a valid flight number (e.g. AI101, 6E202, EK504).";
+      toast.error(msg);
+      setFlightFetchError(msg);
+      setIsFlightVerified(false);
+      setVerifiedFlight(null);
       return;
     }
 
@@ -345,8 +350,12 @@ export function useFlightVerification({
   // Handle Automatic Connecting Flight Verification for Transit (Leg 2: Transit Hub -> Destination)
   const handleVerifyFlight2 = async () => {
     const cleaned = sanitizeFlightInput(flightNumber2);
-    if (!cleaned || cleaned.length < 3) {
-      toast.error("Please enter a valid connecting flight number (e.g. EK504, 6E224).");
+    if (!cleaned || !isValidFlightNumber(cleaned)) {
+      const msg = "Please enter a valid connecting flight number (e.g. EK504, 6E224).";
+      toast.error(msg);
+      setFlightFetchError2(msg);
+      setIsFlightVerified2(false);
+      setVerifiedFlight2(null);
       return;
     }
 

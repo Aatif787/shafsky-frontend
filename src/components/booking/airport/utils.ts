@@ -251,6 +251,18 @@ export function buildAnchoredServiceClock(
   return `${finalDate}T${formattedTime}`;
 }
 
+export const FLIGHT_NUMBER_REGEX = /^(?:[A-Z]{2}|[A-Z]\d|\d[A-Z]|[A-Z]{3})\d{1,4}[A-Z]?$/i;
+
+/**
+ * Validates whether the given string conforms to standard commercial airline flight formats
+ * (2-3 char IATA/ICAO code followed by 1-4 digits, e.g. AI101, 6E202, EK504).
+ */
+export const isValidFlightNumber = (input: string): boolean => {
+  if (!input) return false;
+  const clean = input.trim().replace(/[\s\-_]+/g, "");
+  return FLIGHT_NUMBER_REGEX.test(clean);
+};
+
 /**
  * Normalize flight input with fuzzy & ICAO handling
  */
