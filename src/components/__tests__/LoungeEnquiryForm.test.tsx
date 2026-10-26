@@ -25,8 +25,8 @@ vi.mock("@/lib/api/loungeApi", () => ({
         preferred_times: ["Morning (06:00 – 12:00)"],
         server_time: "2026-10-25T00:00:00Z",
         cutoff_rules: {
-          Domestic: { notice_hours: 12, grace_period_hours: 1, notice_text: "Domestic lounge enquiries require at least 12 hours' notice. A 1-hour grace period may apply, subject to availability." },
-          International: { notice_hours: 24, grace_period_hours: 1, notice_text: "International lounge enquiries require at least 24 hours' notice. A 1-hour grace period may apply, subject to availability." },
+          Domestic: { notice_hours: 12, grace_period_hours: 1, notice_text: "Domestic lounge enquiries require at least 12 hours' advance notice." },
+          International: { notice_hours: 24, grace_period_hours: 1, notice_text: "International lounge enquiries require at least 24 hours' advance notice." },
         },
       },
     }),
@@ -83,16 +83,16 @@ describe("LoungeEnquiryForm Component", () => {
 
   it("shows exact specified compact cutoff notices when category is selected", () => {
     // 1. Domestic
-    const domesticHtml = renderToString(<LoungeEnquiryForm initialCategory="Domestic" />);
+    const domesticHtml = renderToString(<LoungeEnquiryForm initialCategory="Domestic" />).replace(/&#x27;/g, "'");
     expect(domesticHtml).toContain(
-      "Domestic lounge enquiries require at least 12 hours' notice. A 1-hour grace period may apply, subject to availability."
+      "Domestic lounge enquiries require at least 12 hours' advance notice."
     );
     expect(domesticHtml).toContain("Domestic Departure Lounge");
 
     // 2. International
-    const intlHtml = renderToString(<LoungeEnquiryForm initialCategory="International" />);
+    const intlHtml = renderToString(<LoungeEnquiryForm initialCategory="International" />).replace(/&#x27;/g, "'");
     expect(intlHtml).toContain(
-      "International lounge enquiries require at least 24 hours' notice. A 1-hour grace period may apply, subject to availability."
+      "International lounge enquiries require at least 24 hours' advance notice."
     );
     expect(intlHtml).toContain("International Departure Lounge");
   });

@@ -27,6 +27,9 @@ import {
   type LoungeEligibilityResult,
   type AirportOptionItem,
 } from "@/lib/api/loungeApi";
+import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
+import { formatAirportOption } from "@/lib/api/airportApi";
+import { enquiryApi, type ServiceEnquiryPayload } from "@/lib/api/enquiryApi";
 
 export interface LoungeEnquiryFormProps {
   initialAirport?: string;
@@ -260,7 +263,7 @@ function computeFrontendCutoff(params: {
       noticeHours,
       gracePeriodHours,
       minRequiredHours,
-      message: `Within 1-hour grace period (${leadTimeHours.toFixed(1)}h notice). Subject to lounge availability.`,
+      message: `${category} lounge enquiries require at least ${noticeHours} hours' advance notice.`,
     };
   }
 
@@ -271,7 +274,7 @@ function computeFrontendCutoff(params: {
     noticeHours,
     gracePeriodHours,
     minRequiredHours,
-    message: `Selected time is outside the allowed enquiry window. ${category} lounge enquiries require at least ${noticeHours} hours' notice (minimum ${minRequiredHours} hours with grace period). Current lead time is ${Math.max(0, leadTimeHours).toFixed(1)} hours.`,
+    message: `Selected time is outside the allowed enquiry window. ${category} lounge enquiries require at least ${noticeHours} hours' advance notice. Current lead time is ${Math.max(0, leadTimeHours).toFixed(1)} hours.`,
   };
 }
 
@@ -297,8 +300,6 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
 
   // Service Details (Ordered Second per architectural requirement)
   const [airport, setAirport] = useState(initialAirport || "");
-  const [customAirport, setCustomAirport] = useState("");
-  const [isOtherAirport, setIsOtherAirport] = useState(false);
   const [loungeType, setLoungeType] = useState("");
   const [travelDate, setTravelDate] = useState(initialDate || "");
   const [preferredTime, setPreferredTime] = useState("");
@@ -349,8 +350,15 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
     };
   }, []);
 
+  // Sync initialAirport prop if changed or passed by parent
+  useEffect(() => {
+    if (initialAirport && (!airport || airport !== initialAirport)) {
+      setAirport(initialAirport);
+    }
+  }, [initialAirport]);
+
   // Airport timezone
-  const selectedAirportStr = isOtherAirport ? customAirport : airport;
+  const selectedAirportStr = airport;
   const currentAirportTimezone = useMemo(() => {
     return resolveTimezoneForAirport(selectedAirportStr, serverAirports);
   }, [selectedAirportStr, serverAirports]);
@@ -488,7 +496,7 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
     }
 
     // 2. Service details validation (Ordered Second)
-    const finalAirport = (isOtherAirport ? customAirport : airport).trim();
+    const finalAirport = airport.trim();
     if (!finalAirport) {
       newErrors.airport = "Please select or specify an airport";
     }
@@ -535,7 +543,7 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
       return;
     }
 
-    const finalAirport = (isOtherAirport ? customAirport : airport).trim();
+    const finalAirport = airport.trim();
     const paxNumber = parseInt(passengerCount.replace(/\D/g, ""), 10) || 1;
 
     setSubmitting(true);
@@ -620,8 +628,6 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
     setEmailAddress("");
     setWhatsappNumber("");
     setAirport("");
-    setCustomAirport("");
-    setIsOtherAirport(false);
     setLoungeType("");
     setTravelDate("");
     setPreferredTime("");
@@ -790,39 +796,28 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
         {loungeCategory === "Domestic" && (
           <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs text-slate-700 flex items-start gap-2 animate-in fade-in duration-200">
             <Clock className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-            <span
-              className="leading-snug"
-              dangerouslySetInnerHTML={{
-                __html:
-                  "Domestic lounge enquiries require at least 12 hours' notice. A 1-hour grace period may apply, subject to availability.",
-              }}
-            />
+            <span className="leading-snug">
+              Domestic lounge enquiries require at least 12 hours' advance notice.
+            </span>
           </div>
         )}
 
         {loungeCategory === "International" && (
           <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs text-slate-700 flex items-start gap-2 animate-in fade-in duration-200">
             <Clock className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-            <span
-              className="leading-snug"
-              dangerouslySetInnerHTML={{
-                __html:
-                  "International lounge enquiries require at least 24 hours' notice. A 1-hour grace period may apply, subject to availability.",
-              }}
-            />
+            <span className="leading-snug">
+              International lounge enquiries require at least 24 hours' advance notice.
+            </span>
           </div>
         )}
 
         {!loungeCategory && (
           <div className="p-2.5 rounded-xl bg-amber-50/90 border border-amber-200 text-xs text-amber-800 flex items-start gap-2 animate-in fade-in duration-200">
             <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-            <span
-              className="leading-snug"
-              dangerouslySetInnerHTML={{
-                __html:
-                  "Please select <strong class='font-semibold text-amber-950'>Domestic</strong> or <strong class='font-semibold text-amber-950'>International</strong> to proceed with your lounge enquiry.",
-              }}
-            />
+            <span className="leading-snug">
+              Please select <strong className="font-semibold text-amber-950">Domestic</strong> or{" "}
+              <strong className="font-semibold text-amber-950">International</strong> to proceed with your lounge enquiry.
+            </span>
           </div>
         )}
       </div>
@@ -956,78 +951,33 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          {/* Airport */}
+          {/* Airport - Intelligent Autocomplete matching Meet & Greet booking panel */}
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-medium text-slate-700 flex items-center gap-1">
               <span>Airport</span>
               <span className="text-emerald-600 font-bold">*</span>
             </label>
-            {!isOtherAirport ? (
-              <div className="relative">
-                <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                <select
-                  value={airport}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val === "__OTHER__") {
-                      setIsOtherAirport(true);
-                      setAirport("");
-                    } else {
-                      setAirport(val);
-                      if (errors.airport) setErrors((prev) => ({ ...prev, airport: "" }));
-                    }
-                  }}
-                  className={`h-11 w-full rounded-xl border pl-10 pr-9 text-xs font-medium text-slate-900 bg-white outline-none appearance-none transition-all duration-200 cursor-pointer ${
-                    errors.airport
-                      ? "border-rose-400 ring-2 ring-rose-200/50"
-                      : "border-slate-200 hover:border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15"
-                  }`}
-                >
-                  <option value="" disabled>Select airport</option>
-                  {(serverAirports.length > 0
-                    ? serverAirports.map((ap) => `${ap.name} (${ap.code}) — ${ap.city}`)
-                    : DEFAULT_AIRPORTS
-                  ).map((ap) => (
-                    <option key={ap} value={ap}>
-                      {ap}
-                    </option>
-                  ))}
-                  <option value="__OTHER__">+ Specify Other Airport...</option>
-                </select>
-                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                  <input
-                    type="text"
-                    value={customAirport}
-                    onChange={(e) => {
-                      setCustomAirport(e.target.value);
-                      if (errors.airport) setErrors((prev) => ({ ...prev, airport: "" }));
-                    }}
-                    placeholder="Enter airport code or city name"
-                    autoFocus
-                    className={`h-11 w-full rounded-xl border pl-10 pr-3.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 bg-white outline-none transition-all duration-200 ${
-                      errors.airport
-                        ? "border-rose-400 ring-2 ring-rose-200/50"
-                        : "border-slate-200 hover:border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15"
-                    }`}
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsOtherAirport(false);
-                    setCustomAirport("");
-                  }}
-                  className="h-11 px-3 text-[11px] font-mono text-slate-500 hover:text-slate-800 border border-slate-200 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
-                >
-                  List
-                </button>
-              </div>
-            )}
+            <div className="relative">
+              <IntelligentAirportAutocomplete
+                value={airport}
+                mode="global"
+                showIcon={true}
+                placeholder="Search airport (city, name, or 3-letter IATA code)"
+                inputClassName={`h-11 w-full rounded-xl border pl-9 pr-3.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 bg-white outline-none transition-all duration-200 ${
+                  errors.airport
+                    ? "border-rose-400 ring-2 ring-rose-200/50"
+                    : "border-slate-200 hover:border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15"
+                }`}
+                onSelect={(ap) => {
+                  setAirport(formatAirportOption(ap));
+                  if (errors.airport) setErrors((prev) => ({ ...prev, airport: "" }));
+                }}
+                onChangeText={(text) => {
+                  setAirport(text);
+                  if (errors.airport) setErrors((prev) => ({ ...prev, airport: "" }));
+                }}
+              />
+            </div>
             {errors.airport && (
               <span className="text-[11px] text-rose-500 font-medium">{errors.airport}</span>
             )}
@@ -1218,24 +1168,10 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
               </div>
             )}
 
-            {/* 2. Within 1-Hour Grace Period (Inline Notice) */}
-            {activeEligibility.eligible && activeEligibility.isGracePeriod && (
-              <div
-                id="lounge-cutoff-grace-notice"
-                className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5 animate-in fade-in duration-200"
-              >
-                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                <div className="space-y-0.5">
-                  <p className="font-semibold text-amber-950">1-Hour Grace Period Window</p>
-                  <p className="text-amber-800 leading-relaxed">
-                    This enquiry is within the 1-hour grace period ({activeEligibility.leadTimeHours.toFixed(1)}h before service in {currentAirportTimezone}). Submission is accepted, but access is strictly subject to lounge operational availability.
-                  </p>
-                </div>
-              </div>
-            )}
+            {/* 2. Grace period eligible — show standard confirmation (grace period text removed from UI) */}
 
             {/* 3. Standard Eligibility Met (Inline Confirmation) */}
-            {activeEligibility.eligible && !activeEligibility.isGracePeriod && (
+            {activeEligibility.eligible && (
               <div
                 id="lounge-cutoff-eligible-notice"
                 className="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 text-xs text-emerald-800 flex items-center justify-between animate-in fade-in duration-200"

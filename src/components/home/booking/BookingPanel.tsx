@@ -29,6 +29,7 @@ import { mono, display } from "../theme";
 import { DoublePlaneIcon } from "./DoublePlaneIcon";
 import { OtherServicesEnquiryFlow, type OtherServiceType } from "./enquiry/OtherServicesEnquiryFlow";
 import { LoungeEnquiryForm } from "@/components/lounge/LoungeEnquiryForm";
+import { LoungeHeroCarousel } from "@/components/lounge/LoungeGalleryShowcase";
 
 const FIELD =
   "flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300/80 bg-white/70 backdrop-blur-md px-4 text-xs font-semibold text-slate-900 outline-none transition-all duration-300 hover:border-lime-500 hover:bg-white focus:border-lime-500 focus:bg-white focus:ring-4 focus:ring-lime-500/15 shadow-xs";
@@ -519,7 +520,12 @@ export function BookingPanel() {
           </div>
 
           {activeMode === "lounge" ? (
-            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-slate-200/90 shadow-2xs">
+            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-slate-200/90 shadow-2xs space-y-6">
+              {/* Upper Section: Lounge Showcase Carousel (Clean images, NO text on images, 100% responsive) */}
+              <div className="w-full overflow-hidden rounded-2xl border border-slate-200/80 shadow-xs">
+                <LoungeHeroCarousel />
+              </div>
+
               <LoungeEnquiryForm
                 initialAirport={originLabel || originCode}
                 initialDate={departDate}
