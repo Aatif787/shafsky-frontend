@@ -39,7 +39,11 @@ describe("LoungeGalleryShowcase Component", () => {
   it("renders the 100% mobile-first gallery grid with all 4 lounge spaces", () => {
     const html = renderToString(<LoungeGalleryGrid />);
 
-    expect(html).toContain("Explore Premier Airport Lounge Spaces");
+    // STRICT REQUIREMENT: Header banner text removed as requested
+    expect(html).not.toContain("Explore Premier Airport Lounge Spaces");
+    expect(html).not.toContain("Curated Sanctuary");
+    expect(html).not.toContain("Step into serene comfort before departure or during transit");
+
     expect(html).toContain("Executive First Class Lounge");
     expect(html).toContain("Private Rest &amp; Wellness Pods");
     expect(html).toContain("Executive Business Sanctuaries");
