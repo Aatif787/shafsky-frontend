@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { MessageSquare, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { CONTACT_DETAILS } from "@/lib/constants";
 
 export function WhatsAppWidget() {
   const [showNotification, setShowNotification] = useState(false);
@@ -23,7 +24,7 @@ export function WhatsAppWidget() {
     return () => clearTimeout(hideTimer);
   }, [showNotification]);
 
-  const waUrl = "https://wa.me/917428300207?text=Hi";
+  const waUrl = CONTACT_DETAILS.WHATSAPP_BOOKING_LINK;
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-3 font-sans">
@@ -54,7 +55,7 @@ export function WhatsAppWidget() {
                   <span className="font-semibold text-emerald-300 truncate">24/7 WhatsApp Booking</span>
                   <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                 </div>
-                <div className="font-mono text-[11px] text-white/70 font-semibold">+91 74283 00207</div>
+                <div className="font-mono text-[11px] text-white/70 font-semibold">{CONTACT_DETAILS.WHATSAPP_BOOKING}</div>
               </div>
             </div>
             <div className="text-white/80 text-xs leading-snug">
@@ -78,7 +79,8 @@ export function WhatsAppWidget() {
         href={waUrl}
         target="_blank"
         rel="noopener noreferrer"
-        title="24/7 WhatsApp Booking (+91 74283 00207)"
+        title={`24/7 WhatsApp Booking (${CONTACT_DETAILS.WHATSAPP_BOOKING})`}
+        aria-label={`24/7 WhatsApp Booking (${CONTACT_DETAILS.WHATSAPP_BOOKING})`}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setShowNotification(false)}

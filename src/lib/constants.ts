@@ -25,8 +25,8 @@ export const NOTIFICATION = {
 
 export const CONTACT_DETAILS = {
   WHATSAPP: "+91 95990 87959",
-  WHATSAPP_BOOKING: "+91 74283 00207",
-  WHATSAPP_BOOKING_LINK: "https://wa.me/917428300207?text=Hi",
+  WHATSAPP_BOOKING: "+91 95990 87959",
+  WHATSAPP_BOOKING_LINK: "https://wa.me/919599087959?text=Hi",
   EMAIL: "concierge@shafskyaviation.com",
   OFFICE: "New Delhi, India",
   WHATSAPP_LINK: "https://wa.me/919599087959",
