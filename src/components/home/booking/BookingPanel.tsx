@@ -42,8 +42,21 @@ const LABEL = "h-4 text-[10.5px] font-mono font-bold uppercase tracking-wider te
 
 export type BookingServiceMode = "airport" | "other" | "lounge";
 
-export function BookingPanel() {
+export interface BookingPanelProps {
+  showSideAnimation?: boolean;
+}
+
+export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
   const navigate = useNavigate();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
   const [activeMode, setActiveMode] = useState<BookingServiceMode>("airport");
   const [originCode, setOriginCode] = useState<string>("");
   const [destCode, setDestCode] = useState<string>("");
@@ -368,7 +381,7 @@ export function BookingPanel() {
   const totalPax = adults + childrenCount + infants;
 
   return (
-    <section id="book" className="relative mt-6 sm:mt-10 mb-16 sm:mb-24 md:mb-28 px-4 sm:px-8 md:px-14">
+    <section id="book" className="relative mt-6 sm:mt-8 md:mt-10 mb-16 sm:mb-24 md:mb-28 px-4 sm:px-8 md:px-14">
       {/* Ambient Apple Vision Pro Aurora Orbs */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1200px] h-[600px] -z-10 pointer-events-none overflow-hidden blur-[80px] sm:blur-[110px] opacity-85">
         <div className="apple-aurora-glow absolute -top-12 left-1/4 w-[420px] h-[360px] rounded-full bg-gradient-to-tr from-lime-400/40 via-emerald-400/30 to-teal-300/25" />
@@ -376,13 +389,40 @@ export function BookingPanel() {
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[380px] h-[300px] rounded-full bg-gradient-to-r from-amber-300/20 via-lime-300/20 to-emerald-300/15" />
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 35, scale: 0.97 }}
-        whileInView={{ opacity: 1, y: 0, scale: 1 }}
-        viewport={{ once: false, amount: 0.15 }}
-        transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-        className="apple-specular-card relative mx-auto max-w-[960px] rounded-[2rem] z-20 overflow-hidden"
-      >
+      <div className="relative mx-auto max-w-[960px]">
+        {/* Upper-left Corner Reference Travel Animation */}
+        {showSideAnimation && (
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute top-1 left-2 sm:top-2 sm:left-4 md:top-3 md:left-6 lg:top-3 lg:left-8 w-24 sm:w-36 md:w-44 lg:w-48 z-30 pointer-events-none select-none"
+          >
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              poster="/videos/travel-animation-poster.webp"
+              className="w-full h-auto object-contain select-none pointer-events-none"
+              aria-label="Shafsky Aviation travel concierge animation"
+            >
+              <source src="/videos/travel-animation.webm" type="video/webm" />
+              <source src="/videos/travel-animation.mp4" type="video/mp4" />
+            </video>
+          </motion.div>
+        )}
+
+        <motion.div
+          initial={{ opacity: 0, y: 35, scale: 0.97 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: false, amount: 0.15 }}
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="apple-specular-card relative mx-auto w-full rounded-[2rem] z-20 overflow-hidden"
+        >
         {/* Specular Top Reflection Highlight */}
         <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-95 z-30 pointer-events-none" />
 
@@ -884,6 +924,7 @@ export function BookingPanel() {
           )}
         </div>
       </motion.div>
-    </section>
+    </div>
+  </section>
   );
 }

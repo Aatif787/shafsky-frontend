@@ -63,7 +63,7 @@ export function Hero({ visible = true }: { visible?: boolean }) {
       <Navigation visible={visible} />
       <main id="main-content">
       <HeroSection visible={visible} />
-      <BookingPanel />
+      <BookingPanel showSideAnimation />
 
       {/* 1. Quick Proof & Key Performance Stats Bar */}
       <Deferred height={200}>
