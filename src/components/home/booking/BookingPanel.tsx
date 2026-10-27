@@ -381,7 +381,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
   const totalPax = adults + childrenCount + infants;
 
   return (
-    <section id="book" className="relative mt-8 sm:mt-12 md:mt-16 mb-16 sm:mb-24 md:mb-28 px-4 sm:px-8 md:px-14">
+    <section id="book" className="relative mt-6 sm:mt-8 md:mt-10 mb-16 sm:mb-24 md:mb-28 px-4 sm:px-8 md:px-14">
       {/* Ambient Apple Vision Pro Aurora Orbs */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1200px] h-[600px] -z-10 pointer-events-none overflow-hidden blur-[80px] sm:blur-[110px] opacity-85">
         <div className="apple-aurora-glow absolute -top-12 left-1/4 w-[420px] h-[360px] rounded-full bg-gradient-to-tr from-lime-400/40 via-emerald-400/30 to-teal-300/25" />
@@ -397,7 +397,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute -top-14 left-2 sm:-top-18 sm:-left-4 md:-top-22 md:-left-8 lg:-top-26 lg:-left-12 w-36 sm:w-48 md:w-56 lg:w-64 z-30 pointer-events-none select-none"
+            className="absolute -top-6 left-1 sm:-top-8 sm:-left-3 md:-top-10 md:-left-6 lg:-top-12 lg:-left-8 w-36 sm:w-44 md:w-52 lg:w-60 z-30 pointer-events-none select-none"
           >
             <video
               ref={videoRef}
