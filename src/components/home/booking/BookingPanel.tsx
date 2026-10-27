@@ -33,12 +33,12 @@ import { LoungeHeroCarousel } from "@/components/lounge/LoungeGalleryShowcase";
 import { CONTACT_DETAILS } from "@/lib/constants";
 
 const FIELD =
-  "flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300/80 bg-white/70 backdrop-blur-md px-4 text-xs font-semibold text-slate-900 outline-none transition-all duration-300 hover:border-lime-500 hover:bg-white focus:border-lime-500 focus:bg-white focus:ring-4 focus:ring-lime-500/15 shadow-xs";
+  "flex h-12 w-full items-center justify-between rounded-2xl border border-white/65 bg-white/45 backdrop-blur-xl px-4 text-xs font-semibold text-slate-900 outline-none transition-all duration-300 hover:border-lime-400/90 hover:bg-white/65 focus:border-lime-500 focus:bg-white/80 focus:ring-4 focus:ring-lime-400/20 shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_4px_14px_rgba(15,23,42,0.03)]";
 const DATE_BTN =
-  "relative flex h-12 w-full items-center rounded-2xl border border-slate-300/80 bg-white/70 backdrop-blur-md pl-10 pr-4 text-left text-xs font-semibold text-slate-900 outline-none transition-all duration-300 hover:border-lime-500 hover:bg-white focus:border-lime-500 focus:bg-white focus:ring-4 focus:ring-lime-500/15 shadow-xs cursor-pointer";
+  "relative flex h-12 w-full items-center rounded-2xl border border-white/65 bg-white/45 backdrop-blur-xl pl-10 pr-4 text-left text-xs font-semibold text-slate-900 outline-none transition-all duration-300 hover:border-lime-400/90 hover:bg-white/65 focus:border-lime-500 focus:bg-white/80 focus:ring-4 focus:ring-lime-400/20 shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_4px_14px_rgba(15,23,42,0.03)] cursor-pointer";
 const AIRPORT_INPUT =
-  "h-12 w-full rounded-2xl border border-slate-300/80 bg-white/70 backdrop-blur-md pl-10 pr-4 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none transition-all duration-300 hover:border-lime-500 hover:bg-white focus:border-lime-500 focus:bg-white focus:ring-4 focus:ring-lime-500/15 shadow-xs";
-const LABEL = "h-4 text-[10.5px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5";
+  "h-12 w-full rounded-2xl border border-white/65 bg-white/45 backdrop-blur-xl pl-10 pr-4 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none transition-all duration-300 hover:border-lime-400/90 hover:bg-white/65 focus:border-lime-500 focus:bg-white/80 focus:ring-4 focus:ring-lime-400/20 shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_4px_14px_rgba(15,23,42,0.03)]";
+const LABEL = "h-4 text-[10.5px] font-mono font-bold uppercase tracking-wider text-slate-700/90 flex items-center gap-1.5";
 
 export type BookingServiceMode = "airport" | "other" | "lounge";
 
@@ -370,9 +370,10 @@ export function BookingPanel() {
   return (
     <section id="book" className="relative mt-6 sm:mt-10 mb-16 sm:mb-24 md:mb-28 px-4 sm:px-8 md:px-14">
       {/* Ambient Apple Vision Pro Aurora Orbs */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1100px] h-[520px] -z-10 pointer-events-none overflow-hidden blur-[90px] sm:blur-[120px] opacity-75">
-        <div className="apple-aurora-glow absolute -top-10 left-1/4 w-[360px] h-[300px] rounded-full bg-gradient-to-tr from-lime-400/35 to-emerald-300/25" />
-        <div className="apple-aurora-glow-secondary absolute -bottom-10 right-1/4 w-[380px] h-[320px] rounded-full bg-gradient-to-bl from-sky-400/25 via-indigo-300/20 to-transparent" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1200px] h-[600px] -z-10 pointer-events-none overflow-hidden blur-[80px] sm:blur-[110px] opacity-85">
+        <div className="apple-aurora-glow absolute -top-12 left-1/4 w-[420px] h-[360px] rounded-full bg-gradient-to-tr from-lime-400/40 via-emerald-400/30 to-teal-300/25" />
+        <div className="apple-aurora-glow-secondary absolute -bottom-10 right-1/4 w-[440px] h-[380px] rounded-full bg-gradient-to-bl from-sky-400/35 via-indigo-400/25 to-purple-400/20" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[380px] h-[300px] rounded-full bg-gradient-to-r from-amber-300/20 via-lime-300/20 to-emerald-300/15" />
       </div>
 
       <motion.div
@@ -383,10 +384,10 @@ export function BookingPanel() {
         className="apple-specular-card relative mx-auto max-w-[960px] rounded-[2rem] z-20 overflow-hidden"
       >
         {/* Specular Top Reflection Highlight */}
-        <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white to-transparent opacity-90 z-30 pointer-events-none" />
+        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-95 z-30 pointer-events-none" />
 
         {/* Header Title */}
-        <div className="px-6 pt-6 pb-4 md:px-10 md:pt-8 md:pb-5 bg-white/50 text-center border-b border-slate-200/80 backdrop-blur-md">
+        <div className="px-6 pt-6 pb-4 md:px-10 md:pt-8 md:pb-5 bg-white/30 text-center border-b border-white/50 backdrop-blur-xl">
           <motion.h2
             key={activeMode}
             initial={{ opacity: 0, y: -6, filter: "blur(4px)" }}
@@ -407,7 +408,7 @@ export function BookingPanel() {
               href={CONTACT_DETAILS.WHATSAPP_BOOKING_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/90 text-emerald-900 text-[11px] sm:text-xs font-mono font-bold tracking-tight transition-all shadow-2xs hover:shadow-xs group cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/50 text-emerald-950 text-[11px] sm:text-xs font-mono font-bold tracking-tight transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.7),0_2px_8px_rgba(16,185,129,0.1)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_4px_14px_rgba(16,185,129,0.18)] backdrop-blur-md group cursor-pointer"
             >
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
               <span>24/7 WhatsApp Booking</span>
@@ -418,9 +419,9 @@ export function BookingPanel() {
 
         <div className="p-6 md:p-8 space-y-6">
           {/* Top Control Bar: Domestic/International (Upper) + Direction & Service Controls */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/80">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-white/50">
             {/* Domestic / International Toggle (Upper on Mobile) */}
-            <div className="flex items-center p-1 rounded-2xl bg-slate-100/70 backdrop-blur-md border border-slate-200/80 self-start sm:self-auto w-full sm:w-auto shadow-inner">
+            <div className="flex items-center p-1 rounded-2xl bg-white/40 backdrop-blur-xl border border-white/60 self-start sm:self-auto w-full sm:w-auto shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_2px_8px_rgba(0,0,0,0.03)]">
               {(["domestic", "international"] as const).map((kind) => {
                 const active = travelType === kind;
                 const isLockedOut = Boolean(routeDeterminedCategory && kind !== routeDeterminedCategory);
@@ -437,10 +438,10 @@ export function BookingPanel() {
                     }}
                     className={`relative z-10 flex-1 sm:flex-initial h-9 sm:px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 rounded-xl ${
                       active && activeMode === "airport"
-                        ? "text-white bg-slate-950 shadow-sm cursor-default"
+                        ? "text-white bg-slate-950/90 shadow-[0_4px_12px_rgba(15,23,42,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] backdrop-blur-md cursor-default"
                         : isLockedOut
-                          ? "text-slate-400 opacity-60 cursor-not-allowed hover:bg-slate-100/30"
-                          : "text-slate-600 hover:text-slate-950 hover:bg-white/70 cursor-pointer"
+                          ? "text-slate-400 opacity-60 cursor-not-allowed hover:bg-white/20"
+                          : "text-slate-700 hover:text-slate-950 hover:bg-white/50 cursor-pointer"
                     }`}
                     style={mono}
                   >
@@ -451,7 +452,7 @@ export function BookingPanel() {
             </div>
 
             {/* Service Selection: Departure, Transit, Arrival + Other Services */}
-            <div className="grid grid-cols-2 gap-1 sm:flex sm:gap-1 items-center p-1 rounded-2xl bg-slate-100/70 backdrop-blur-md border border-slate-200/80 overflow-x-auto no-scrollbar shadow-inner">
+            <div className="grid grid-cols-2 gap-1 sm:flex sm:gap-1 items-center p-1 rounded-2xl bg-white/40 backdrop-blur-xl border border-white/60 overflow-x-auto no-scrollbar shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_2px_8px_rgba(0,0,0,0.03)]">
               {serviceOptions.map(([k, label, Icon]) => {
                 const active = activeMode === "airport" && selectedServices.includes(k);
                 return (
@@ -471,12 +472,12 @@ export function BookingPanel() {
                     }}
                     className={`relative z-10 flex sm:flex-initial h-9 max-sm:min-w-0 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                       active
-                        ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-sm"
-                        : "text-slate-600 hover:text-slate-950 hover:bg-white/70"
+                        ? "text-slate-950 bg-gradient-to-r from-lime-400/95 via-lime-300/95 to-lime-400/95 font-bold shadow-[0_4px_14px_rgba(132,204,22,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.9)] border border-lime-300/80"
+                        : "text-slate-700 hover:text-slate-950 hover:bg-white/50"
                     }`}
                     style={mono}
                   >
-                    <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-white md:text-slate-950" : "text-slate-500"}`} />
+                    <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-slate-950" : "text-slate-500"}`} />
                     <span className="truncate">{label}</span>
                   </motion.button>
                 );
@@ -491,12 +492,12 @@ export function BookingPanel() {
                 onClick={() => setActiveMode("lounge")}
                 className={`relative z-10 flex sm:flex-initial h-9 max-sm:min-w-0 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                   activeMode === "lounge"
-                    ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-sm"
-                    : "text-slate-600 hover:text-slate-950 hover:bg-white/70"
+                    ? "text-slate-950 bg-gradient-to-r from-lime-400/95 via-lime-300/95 to-lime-400/95 font-bold shadow-[0_4px_14px_rgba(132,204,22,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.9)] border border-lime-300/80"
+                    : "text-slate-700 hover:text-slate-950 hover:bg-white/50"
                 }`}
                 style={mono}
               >
-                <Armchair className={`h-3.5 w-3.5 shrink-0 ${activeMode === "lounge" ? "text-white md:text-slate-950" : "text-emerald-700"}`} />
+                <Armchair className={`h-3.5 w-3.5 shrink-0 ${activeMode === "lounge" ? "text-slate-950" : "text-emerald-700"}`} />
                 <span className="truncate">Lounge</span>
               </motion.button>
 
@@ -509,19 +510,19 @@ export function BookingPanel() {
                 onClick={() => setActiveMode("other")}
                 className={`relative z-10 flex sm:flex-initial h-9 max-sm:min-w-0 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                   activeMode === "other"
-                    ? "text-white max-md:bg-[#6e22db] md:text-slate-950 md:bg-[#84cc16] font-bold shadow-sm"
-                    : "text-slate-600 hover:text-slate-950 hover:bg-white/70"
+                    ? "text-slate-950 bg-gradient-to-r from-lime-400/95 via-lime-300/95 to-lime-400/95 font-bold shadow-[0_4px_14px_rgba(132,204,22,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.9)] border border-lime-300/80"
+                    : "text-slate-700 hover:text-slate-950 hover:bg-white/50"
                 }`}
                 style={mono}
               >
-                <Sparkles className={`h-3.5 w-3.5 shrink-0 ${activeMode === "other" ? "text-white md:text-slate-950" : "text-lime-600"}`} />
+                <Sparkles className={`h-3.5 w-3.5 shrink-0 ${activeMode === "other" ? "text-slate-950" : "text-lime-600"}`} />
                 <span className="truncate">Other Services</span>
               </motion.button>
             </div>
           </div>
 
           {activeMode === "lounge" ? (
-            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-slate-200/90 shadow-2xs space-y-6">
+            <div className="bg-white/45 backdrop-blur-2xl rounded-2xl p-4 sm:p-6 border border-white/60 shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_12px_32px_rgba(15,23,42,0.05)] space-y-6">
               {/* Upper Section: Lounge Showcase Carousel (Clean images, NO text on images, 100% responsive for mobile, 90% on desktop) */}
               <div className="w-full">
                 <LoungeHeroCarousel />
@@ -642,7 +643,7 @@ export function BookingPanel() {
                     </span>
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.12),0_0_30px_rgba(132,204,22,0.15)] rounded-3xl" align="start">
+                <PopoverContent className="w-auto p-0 bg-white/80 backdrop-blur-3xl border border-white/80 shadow-[0_24px_60px_rgba(15,23,42,0.18),inset_0_1.5px_2px_rgba(255,255,255,0.95)] rounded-3xl" align="start">
                   <CalendarPicker
                     mode="single"
                     selected={dateValue}
@@ -674,7 +675,7 @@ export function BookingPanel() {
                       </span>
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-white/95 backdrop-blur-2xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.12),0_0_30px_rgba(132,204,22,0.15)] rounded-3xl" align="start">
+                  <PopoverContent className="w-auto p-0 bg-white/80 backdrop-blur-3xl border border-white/80 shadow-[0_24px_60px_rgba(15,23,42,0.18),inset_0_1.5px_2px_rgba(255,255,255,0.95)] rounded-3xl" align="start">
                     <CalendarPicker
                       mode="single"
                       selected={dateValue2}
@@ -720,7 +721,7 @@ export function BookingPanel() {
                   </button>
                 </PopoverTrigger>
 
-                <PopoverContent className="w-80 p-5 bg-white/95 backdrop-blur-2xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.12),0_0_30px_rgba(132,204,22,0.15)] rounded-3xl">
+                <PopoverContent className="w-80 p-5 bg-white/80 backdrop-blur-3xl border border-white/80 shadow-[0_24px_60px_rgba(15,23,42,0.18),inset_0_1.5px_2px_rgba(255,255,255,0.95)] rounded-3xl">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                       <span className="text-xs font-bold uppercase tracking-wider text-slate-900" style={mono}>
@@ -853,12 +854,12 @@ export function BookingPanel() {
           </motion.div>
 
           {/* Bottom Bar: Central Super CTA & 24/7 WhatsApp Booking */}
-          <div className="pt-5 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="pt-5 border-t border-white/50 flex flex-col sm:flex-row items-center justify-between gap-4">
             <a
               href={CONTACT_DETAILS.WHATSAPP_BOOKING_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-xs font-mono font-bold tracking-wider transition-all shadow-2xs hover:shadow-xs active:scale-98 cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-950 border border-emerald-400/50 text-xs font-mono font-bold tracking-wider transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.7),0_4px_12px_rgba(16,185,129,0.12)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_6px_16px_rgba(16,185,129,0.2)] active:scale-98 cursor-pointer backdrop-blur-xl"
             >
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
               <span>24/7 WhatsApp Booking</span>
@@ -870,7 +871,7 @@ export function BookingPanel() {
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 420, damping: 24 }}
               onClick={handleContinueToPackages}
-              className="group/btn relative overflow-hidden w-full sm:w-auto min-w-[220px] inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r max-sm:from-[#6e22db] max-sm:via-[#7c3aed] max-sm:to-[#6e22db] max-sm:text-white max-sm:shadow-[0_10px_30px_rgba(110,34,219,0.35)] sm:from-[#84cc16] sm:via-[#9ee838] sm:to-[#84cc16] sm:text-slate-950 sm:shadow-[0_10px_30px_rgba(132,204,22,0.45),inset_0_1px_2px_rgba(255,255,255,0.75)] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-shadow duration-300 hover:shadow-[0_16px_45px_rgba(132,204,22,0.55)] cursor-pointer"
+              className="group/btn relative overflow-hidden w-full sm:w-auto min-w-[220px] inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r max-sm:from-[#6e22db] max-sm:via-[#7c3aed] max-sm:to-[#6e22db] max-sm:text-white max-sm:shadow-[0_10px_30px_rgba(110,34,219,0.35)] sm:from-[#84cc16] sm:via-[#9ee838] sm:to-[#84cc16] sm:text-slate-950 sm:shadow-[0_12px_32px_rgba(132,204,22,0.45),inset_0_1.5px_2px_rgba(255,255,255,0.85)] border border-lime-300/80 px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:shadow-[0_16px_45px_rgba(132,204,22,0.55)] cursor-pointer backdrop-blur-md"
               style={mono}
             >
               <div className="absolute inset-0 w-[200%] -translate-x-[150%] bg-gradient-to-r from-transparent via-white/60 to-transparent group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
