@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
 import { ICICI_REVIEW_MODE } from "../../../lib/config/reviewMode";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
+import { CONTACT_DETAILS } from "@/lib/constants";
 
 export function Footer() {
   const { getContacts } = useWebsiteContacts();
@@ -201,12 +202,12 @@ export function Footer() {
                 <div>
                   <span className="font-bold">24/7 WhatsApp Booking: </span>
                   <a
-                    href="https://wa.me/917428300207?text=Hi"
+                    href={CONTACT_DETAILS.WHATSAPP_BOOKING_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-[#cca028] transition-colors font-medium font-sans text-emerald-400"
                   >
-                    +91 74283 00207
+                    {CONTACT_DETAILS.WHATSAPP_BOOKING}
                   </a>
                 </div>
 

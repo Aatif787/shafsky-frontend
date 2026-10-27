@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ArrowRight, MessageSquare } from "lucide-react";
+import { CONTACT_DETAILS } from "@/lib/constants";
 
 interface StickyMobileBookingBarProps {
   title?: string;
@@ -50,7 +51,7 @@ export function StickyMobileBookingBar({
     }
   };
 
-  const waLink = "https://wa.me/917428300207?text=Hi";
+  const waLink = CONTACT_DETAILS.WHATSAPP_BOOKING_LINK;
 
   return (
     <aside
@@ -77,9 +78,9 @@ export function StickyMobileBookingBar({
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
-            title="24/7 WhatsApp Booking (+91 74283 00207)"
+            title={`24/7 WhatsApp Booking (${CONTACT_DETAILS.WHATSAPP_BOOKING})`}
             className="flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition shadow-2xs active:scale-95"
-            aria-label="24/7 WhatsApp Booking (+91 74283 00207)"
+            aria-label={`24/7 WhatsApp Booking (${CONTACT_DETAILS.WHATSAPP_BOOKING})`}
           >
             <MessageSquare size={18} />
           </a>

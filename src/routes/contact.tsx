@@ -19,6 +19,7 @@ import { display } from "@/components/home/theme";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
+import { CONTACT_DETAILS } from "@/lib/constants";
 import {
   sanitizeName,
   sanitizePhone,
@@ -107,10 +108,10 @@ function ContactPage() {
       : []),
     {
       title: "24/7 WhatsApp Booking",
-      value: "+91 74283 00207",
+      value: CONTACT_DETAILS.WHATSAPP_BOOKING,
       desc: "Instant 24/7 booking for flights, meet & greet & lounges",
       actionText: "Book on WhatsApp",
-      actionHref: "https://wa.me/917428300207?text=Hi",
+      actionHref: CONTACT_DETAILS.WHATSAPP_BOOKING_LINK,
       icon: MessageSquare,
       highlight: true,
     },

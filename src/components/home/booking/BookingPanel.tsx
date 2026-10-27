@@ -30,6 +30,7 @@ import { DoublePlaneIcon } from "./DoublePlaneIcon";
 import { OtherServicesEnquiryFlow, type OtherServiceType } from "./enquiry/OtherServicesEnquiryFlow";
 import { LoungeEnquiryForm } from "@/components/lounge/LoungeEnquiryForm";
 import { LoungeHeroCarousel } from "@/components/lounge/LoungeGalleryShowcase";
+import { CONTACT_DETAILS } from "@/lib/constants";
 
 const FIELD =
   "flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300/80 bg-white/70 backdrop-blur-md px-4 text-xs font-semibold text-slate-900 outline-none transition-all duration-300 hover:border-lime-500 hover:bg-white focus:border-lime-500 focus:bg-white focus:ring-4 focus:ring-lime-500/15 shadow-xs";
@@ -403,7 +404,7 @@ export function BookingPanel() {
 
           <div className="mt-2.5 flex items-center justify-center">
             <a
-              href="https://wa.me/917428300207?text=Hi"
+              href={CONTACT_DETAILS.WHATSAPP_BOOKING_LINK}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/90 text-emerald-900 text-[11px] sm:text-xs font-mono font-bold tracking-tight transition-all shadow-2xs hover:shadow-xs group cursor-pointer"
@@ -854,7 +855,7 @@ export function BookingPanel() {
           {/* Bottom Bar: Central Super CTA & 24/7 WhatsApp Booking */}
           <div className="pt-5 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
             <a
-              href="https://wa.me/917428300207?text=Hi"
+              href={CONTACT_DETAILS.WHATSAPP_BOOKING_LINK}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-xs font-mono font-bold tracking-wider transition-all shadow-2xs hover:shadow-xs active:scale-98 cursor-pointer"

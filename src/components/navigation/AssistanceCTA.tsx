@@ -3,6 +3,7 @@ import { PhoneCall, Sparkles, ArrowRight, ShieldCheck, Headphones, MessageSquare
 import { Magnetic, FadeInView } from "@/components/ui/interactions";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
+import { CONTACT_DETAILS } from "@/lib/constants";
 
 interface AssistanceCTAProps {
   heading?: string;
@@ -84,13 +85,13 @@ export function AssistanceCTA({
 
             <Magnetic strength={0.2}>
               <a
-                href="https://wa.me/917428300207?text=Hi"
+                href={CONTACT_DETAILS.WHATSAPP_BOOKING_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-mono text-xs font-semibold uppercase tracking-widest hover:border-emerald-400 hover:bg-emerald-100 transition-all duration-300 w-full"
               >
                 <MessageSquare className="w-4 h-4 text-emerald-600" />
-                <span>24/7 WhatsApp: +91 74283 00207</span>
+                <span>24/7 WhatsApp: {CONTACT_DETAILS.WHATSAPP_BOOKING}</span>
               </a>
             </Magnetic>
 

@@ -716,7 +716,7 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
 
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
-            href={`https://wa.me/917428300207?text=${waText}`}
+            href={`https://wa.me/919599087959?text=${waText}`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold transition-all shadow-sm cursor-pointer"
