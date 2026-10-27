@@ -141,6 +141,10 @@ export default {
       secureHeaders.set("X-XSS-Protection", "1; mode=block");
       secureHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
       secureHeaders.set(
+        "Permissions-Policy",
+        'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.razorpay.com" "https://api.razorpay.com"), accelerometer=(self "https://checkout.razorpay.com" "https://api.razorpay.com"), gyroscope=(self "https://checkout.razorpay.com" "https://api.razorpay.com")',
+      );
+      secureHeaders.set(
         "Content-Security-Policy",
         "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; worker-src 'self' blob: data:; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; connect-src 'self' https: http://localhost:* http://127.0.0.1:* wss: ws:; font-src 'self' https: data:;",
       );

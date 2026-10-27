@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
       host: "127.0.0.1",
       headers: {
         "Permissions-Policy":
-          'accelerometer=(self "https://checkout.razorpay.com" "https://api.razorpay.com"), gyroscope=(self "https://checkout.razorpay.com" "https://api.razorpay.com"), camera=(), microphone=(), geolocation=()',
+          'accelerometer=(self "https://checkout.razorpay.com" "https://api.razorpay.com"), gyroscope=(self "https://checkout.razorpay.com" "https://api.razorpay.com"), payment=(self "https://checkout.razorpay.com" "https://api.razorpay.com"), camera=(), microphone=(), geolocation=()',
       },
       proxy: {
         "/api": {
