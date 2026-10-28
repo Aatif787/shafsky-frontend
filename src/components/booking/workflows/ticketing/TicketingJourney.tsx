@@ -9,6 +9,8 @@ interface TicketingJourneyProps {
 }
 
 export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyProps) {
+  const today = new Date().toISOString().split("T")[0];
+
   const handleContinue = () => {
     if (!data.fromAirport || !data.toAirport) {
       toast.error("Please enter departure and arrival airports.");
@@ -132,6 +134,7 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
                 </label>
                 <input
                   type="date"
+                  min={today}
                   value={leg.departDate}
                   onChange={(e) => {
                     const legs = [...(data.multiCityLegs || [])];
@@ -189,6 +192,7 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
             </div>
             <input
               type="date"
+              min={today}
               value={data.departDate}
               onChange={(e) => onChange({ departDate: e.target.value })}
               className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-mono font-bold"
@@ -202,6 +206,7 @@ export function TicketingJourney({ data, onChange, onNext }: TicketingJourneyPro
               </label>
               <input
                 type="date"
+                min={data.departDate || today}
                 value={data.returnDate}
                 onChange={(e) => onChange({ returnDate: e.target.value })}
                 className="w-full px-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 shadow-xs font-mono font-bold"

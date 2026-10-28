@@ -46,6 +46,13 @@ export function DynamicFormField({ field, value, onChange, error }: DynamicFormF
 
   // 2. DATE PICKER
   if (type === "date") {
+    const today = new Date().toISOString().split("T")[0];
+    const isBirth =
+      id.toLowerCase().includes("birth") ||
+      id.toLowerCase().includes("dob") ||
+      label.toLowerCase().includes("birth") ||
+      label.toLowerCase().includes("dob");
+
     return (
       <div>
         <label htmlFor={id} className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-1.5 font-bold">
@@ -54,6 +61,8 @@ export function DynamicFormField({ field, value, onChange, error }: DynamicFormF
         <input
           id={id}
           type="date"
+          min={isBirth ? undefined : today}
+          max={isBirth ? today : undefined}
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           className={`w-full px-4 py-3.5 rounded-2xl bg-white border text-sm text-slate-900 focus:outline-none transition-all font-mono ${

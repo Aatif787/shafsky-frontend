@@ -856,6 +856,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
                       </label>
                       <input
                         type="date"
+                        min={new Date().toISOString().split("T")[0]}
                         value={state.serviceDate}
                         onChange={(e) => updateState({ serviceDate: e.target.value })}
                         className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-600 shadow-xs font-mono font-bold"

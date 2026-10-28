@@ -638,6 +638,7 @@ function CustomersManagerView() {
                           </label>
                           <input
                             type="date"
+                            min={new Date().toISOString().split("T")[0]}
                             value={passportExp}
                             onChange={(e) => setPassportExp(e.target.value)}
                             className="w-full bg-[#0c121b] border border-white/10 px-3 py-2 text-xs text-white outline-none"

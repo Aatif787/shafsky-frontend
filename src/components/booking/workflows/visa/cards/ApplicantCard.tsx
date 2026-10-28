@@ -64,6 +64,7 @@ export function ApplicantCard({
           <label className="block text-[11px] font-semibold uppercase text-slate-700 mb-1">Date of Birth</label>
           <input
             type="date"
+            max={new Date().toISOString().split("T")[0]}
             value={applicant.dob}
             onChange={(e) => onUpdate(applicant.id, { dob: e.target.value })}
             placeholder="Select date of birth"
@@ -96,6 +97,7 @@ export function ApplicantCard({
           <label className="block text-[11px] font-semibold uppercase text-slate-700 mb-1">Passport Expiry Date</label>
           <input
             type="date"
+            min={new Date().toISOString().split("T")[0]}
             value={applicant.passportExpiry}
             onChange={(e) => onUpdate(applicant.id, { passportExpiry: e.target.value })}
             placeholder="Select passport expiry date"

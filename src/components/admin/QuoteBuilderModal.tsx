@@ -592,6 +592,7 @@ export function QuoteBuilderModal({
                     </label>
                     <input
                       type="date"
+                      min={new Date().toISOString().split("T")[0]}
                       value={validUntil}
                       onChange={(e) => setValidUntil(e.target.value)}
                       className="w-full bg-black/40 border border-white/20 text-white font-mono text-xs rounded px-3 py-1.5 focus:outline-none focus:border-[#5ed3ff]"

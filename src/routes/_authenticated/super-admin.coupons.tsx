@@ -170,6 +170,7 @@ function CouponsPage() {
               </label>
               <input
                 type="datetime-local"
+                min={new Date().toISOString().slice(0, 16)}
                 value={form.expires_at}
                 onChange={(e) => setForm({ ...form, expires_at: e.target.value })}
                 className="w-full h-9 px-3 bg-white/[0.03] border border-white/[0.08] rounded-md text-xs text-white/80 outline-none focus:border-[#a78bfa]/30"
