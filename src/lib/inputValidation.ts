@@ -58,8 +58,32 @@ export function preventLettersKeyDown(e: React.KeyboardEvent<HTMLInputElement | 
 
 /**
  * Validates that a name does not contain digits and is not empty.
+ * Returns true if valid, false if invalid.
  */
-export function validateNameNoDigits(
+export function validateNameNoDigits(name: string): boolean {
+  const trimmed = (name || "").trim();
+  if (!trimmed) {
+    return false;
+  }
+  return !/[0-9]/.test(trimmed);
+}
+
+/**
+ * Validates that a phone number does not contain letters and has valid phone characters.
+ * Returns true if valid, false if invalid.
+ */
+export function validatePhoneNoLetters(phone: string): boolean {
+  const trimmed = (phone || "").trim();
+  if (!trimmed) {
+    return false;
+  }
+  return !/[a-zA-Z]/.test(trimmed);
+}
+
+/**
+ * Returns validation error message for a name, or null if valid.
+ */
+export function getNameValidationError(
   name: string,
   fieldLabel = "Name"
 ): string | null {
@@ -74,9 +98,9 @@ export function validateNameNoDigits(
 }
 
 /**
- * Validates that a phone number does not contain letters and has valid phone characters.
+ * Returns validation error message for a phone number, or null if valid.
  */
-export function validatePhoneNoLetters(
+export function getPhoneValidationError(
   phone: string,
   fieldLabel = "Phone number"
 ): string | null {

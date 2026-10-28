@@ -6,6 +6,8 @@ import {
   preventLettersKeyDown,
   validateNameNoDigits,
   validatePhoneNoLetters,
+  getNameValidationError,
+  getPhoneValidationError,
 } from "../inputValidation";
 
 describe("inputValidation Utilities", () => {
@@ -103,32 +105,46 @@ describe("inputValidation Utilities", () => {
 
   describe("validateNameNoDigits", () => {
     it("accepts valid names without digits", () => {
-      expect(validateNameNoDigits("Aariz Farooqui")).toBeNull();
-      expect(validateNameNoDigits("Mary-Jane O'Connor")).toBeNull();
+      expect(validateNameNoDigits("Aariz Farooqui")).toBe(true);
+      expect(validateNameNoDigits("Mary-Jane O'Connor")).toBe(true);
     });
 
     it("rejects names with digits", () => {
-      expect(validateNameNoDigits("Aariz2")).toBe("Please enter a valid passenger name using letters only.");
-      expect(validateNameNoDigits("12345")).toBe("Please enter a valid passenger name using letters only.");
+      expect(validateNameNoDigits("Aariz2")).toBe(false);
+      expect(validateNameNoDigits("12345")).toBe(false);
     });
 
     it("rejects empty names", () => {
-      expect(validateNameNoDigits("")).toBe("Please enter Name.");
+      expect(validateNameNoDigits("")).toBe(false);
     });
   });
 
   describe("validatePhoneNoLetters", () => {
     it("accepts valid phones without letters", () => {
-      expect(validatePhoneNoLetters("+91 98765 43210")).toBeNull();
-      expect(validatePhoneNoLetters("+1(555)019-2834")).toBeNull();
+      expect(validatePhoneNoLetters("+91 98765 43210")).toBe(true);
+      expect(validatePhoneNoLetters("+1(555)019-2834")).toBe(true);
     });
 
     it("rejects phones containing letters", () => {
-      expect(validatePhoneNoLetters("+91 987abc43210")).toBe("Phone number must not contain letters. Please use digits only.");
+      expect(validatePhoneNoLetters("+91 987abc43210")).toBe(false);
     });
 
     it("rejects empty phones", () => {
-      expect(validatePhoneNoLetters("")).toBe("Please enter Phone number.");
+      expect(validatePhoneNoLetters("")).toBe(false);
+    });
+  });
+
+  describe("getNameValidationError & getPhoneValidationError", () => {
+    it("returns null for valid names and error string for invalid", () => {
+      expect(getNameValidationError("Aariz Farooqui")).toBeNull();
+      expect(getNameValidationError("Aariz2")).toBe("Please enter a valid passenger name using letters only.");
+      expect(getNameValidationError("")).toBe("Please enter Name.");
+    });
+
+    it("returns null for valid phones and error string for invalid", () => {
+      expect(getPhoneValidationError("+91 98765 43210")).toBeNull();
+      expect(getPhoneValidationError("+91 987abc43210")).toBe("Phone number must not contain letters. Please use digits only.");
+      expect(getPhoneValidationError("")).toBe("Please enter Phone number.");
     });
   });
 });
