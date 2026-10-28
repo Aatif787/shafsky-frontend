@@ -259,6 +259,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
                   <input
                     type="date"
                     required
+                    min={new Date().toISOString().split("T")[0]}
                     value={stay.checkIn}
                     onChange={(e) => updateStay({ checkIn: e.target.value })}
                     className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none"
@@ -275,6 +276,7 @@ export function HotelWorkflow({ searchParams }: HotelWorkflowProps) {
                   <input
                     type="date"
                     required
+                    min={stay.checkIn || new Date().toISOString().split("T")[0]}
                     value={stay.checkOut}
                     onChange={(e) => updateStay({ checkOut: e.target.value })}
                     className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all outline-none"

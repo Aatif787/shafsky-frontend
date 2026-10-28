@@ -47,6 +47,7 @@ export function TimelineStep({
           <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="date"
+            min={new Date().toISOString().split("T")[0]}
             value={preferredShippingDate}
             onChange={(e) => setPreferredShippingDate(e.target.value)}
             className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-amber-500 shadow-xs font-sans font-medium cursor-pointer"

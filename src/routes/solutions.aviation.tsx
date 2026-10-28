@@ -873,6 +873,7 @@ function DedicatedAirCharterPage() {
                         <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                         <input
                           type="date"
+                          min={new Date().toISOString().split("T")[0]}
                           value={departDate}
                           onChange={(e) => setDepartDate(e.target.value)}
                           required
@@ -908,6 +909,7 @@ function DedicatedAirCharterPage() {
                           <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                           <input
                             type="date"
+                            min={departDate || new Date().toISOString().split("T")[0]}
                             value={returnDate}
                             onChange={(e) => setReturnDate(e.target.value)}
                             required

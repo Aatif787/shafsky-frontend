@@ -493,6 +493,8 @@ function DedicatedSpecialServicesPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
 
+  const today = new Date().toISOString().split("T")[0];
+
   const handleSubmitRequest = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!clientName.trim() || !validateNameNoDigits(clientName)) {
@@ -992,6 +994,7 @@ function DedicatedSpecialServicesPage() {
                         </label>
                         <input
                           type="date"
+                          min={today}
                           value={spaDate}
                           onChange={(e) => setSpaDate(e.target.value)}
                           required
@@ -1051,6 +1054,7 @@ function DedicatedSpecialServicesPage() {
                         </label>
                         <input
                           type="date"
+                          min={today}
                           value={tourDates}
                           onChange={(e) => setTourDates(e.target.value)}
                           required
@@ -1110,6 +1114,7 @@ function DedicatedSpecialServicesPage() {
                         </label>
                         <input
                           type="date"
+                          min={today}
                           value={psoDates}
                           onChange={(e) => setPsoDates(e.target.value)}
                           required
@@ -1204,6 +1209,7 @@ function DedicatedSpecialServicesPage() {
                         </label>
                         <input
                           type="date"
+                          min={today}
                           value={airAmbDate}
                           onChange={(e) => setAirAmbDate(e.target.value)}
                           required
@@ -1261,6 +1267,7 @@ function DedicatedSpecialServicesPage() {
                         </label>
                         <input
                           type="date"
+                          min={today}
                           value={trainAmbDate}
                           onChange={(e) => setTrainAmbDate(e.target.value)}
                           required
@@ -1318,6 +1325,7 @@ function DedicatedSpecialServicesPage() {
                         </label>
                         <input
                           type="date"
+                          min={today}
                           value={humDate}
                           onChange={(e) => setHumDate(e.target.value)}
                           required
@@ -1382,6 +1390,7 @@ function DedicatedSpecialServicesPage() {
                         </label>
                         <input
                           type="date"
+                          min={today}
                           value={visaDate}
                           onChange={(e) => setVisaDate(e.target.value)}
                           required
@@ -1467,6 +1476,7 @@ function DedicatedSpecialServicesPage() {
                         </label>
                         <input
                           type="date"
+                          min={today}
                           value={cargoDate}
                           onChange={(e) => setCargoDate(e.target.value)}
                           required
@@ -1520,6 +1530,7 @@ function DedicatedSpecialServicesPage() {
                         </label>
                         <input
                           type="date"
+                          min={today}
                           value={ticketDate}
                           onChange={(e) => setTicketDate(e.target.value)}
                           required

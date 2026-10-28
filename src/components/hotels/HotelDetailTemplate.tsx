@@ -829,6 +829,7 @@ export function HotelDetailTemplate({
                     <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                     <input
                       type="date"
+                      min={new Date().toISOString().split("T")[0]}
                       value={checkInDate}
                       onChange={(e) => setCheckInDate(e.target.value)}
                       className="w-full pl-10 pr-2 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1d63b8]"
@@ -843,6 +844,7 @@ export function HotelDetailTemplate({
                     <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                     <input
                       type="date"
+                      min={checkInDate || new Date().toISOString().split("T")[0]}
                       value={checkOutDate}
                       onChange={(e) => setCheckOutDate(e.target.value)}
                       className="w-full pl-10 pr-2 py-2.5 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1d63b8]"

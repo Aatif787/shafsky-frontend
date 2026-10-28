@@ -273,6 +273,7 @@ export function ManualFlightEntryForm({
               <Calendar className="absolute left-3 top-3 h-3.5 w-3.5 text-slate-400" />
               <input
                 type="date"
+                min={new Date().toISOString().split("T")[0]}
                 value={details.depDate}
                 onChange={(e) => handleChange("depDate", e.target.value)}
                 className="w-full rounded-xl border border-gray-300 bg-white/80 pl-9 pr-3.5 py-2 text-xs font-semibold text-slate-900 focus:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
@@ -320,6 +321,7 @@ export function ManualFlightEntryForm({
             </label>
             <input
               type="date"
+              min={details.depDate || new Date().toISOString().split("T")[0]}
               value={details.arrDate}
               onChange={(e) => handleChange("arrDate", e.target.value)}
               className="w-full rounded-xl border border-gray-300 bg-white/80 px-3.5 py-2 text-xs font-semibold text-slate-900 focus:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500/20"

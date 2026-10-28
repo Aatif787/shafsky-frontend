@@ -247,6 +247,7 @@ export function TravelPlanningStep({
                 <Calendar className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
                 <input
                   type="date"
+                  min={new Date().toISOString().split("T")[0]}
                   value={departDate}
                   onChange={(e) => setDepartDate(e.target.value)}
                   placeholder="Select your intended travel date"

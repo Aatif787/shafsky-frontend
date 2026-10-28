@@ -288,6 +288,7 @@ export default function BookingsTab({ ctx }: { ctx: any }) {
                             <input
                               type="date"
                               required
+                              min={new Date().toISOString().split("T")[0]}
                               value={rescheduleDate}
                               onChange={(e) => setRescheduleDate(e.target.value)}
                               className="w-full h-9 px-3 rounded-lg border border-black/10 bg-white text-xs outline-none"

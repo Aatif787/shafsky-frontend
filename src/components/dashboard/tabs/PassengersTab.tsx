@@ -133,6 +133,7 @@ export default function PassengersTab({ ctx }: { ctx: any }) {
                           </label>
                           <input
                             type="date"
+                            min={new Date().toISOString().split("T")[0]}
                             value={psExp}
                             onChange={(e) => setPsExp(e.target.value)}
                             className="w-full h-10 px-3 rounded-lg border border-black/10 bg-transparent text-xs font-semibold outline-none"

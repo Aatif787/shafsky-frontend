@@ -522,6 +522,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                       </label>
                       <input
                         type="date"
+                        max={new Date().toISOString().split("T")[0]}
                         value={p.dateOfBirth}
                         onChange={(e) =>
                           updateIndividualPassenger(p.id, {
@@ -601,6 +602,7 @@ export function TicketingPassenger({ data, journeyData, onChange, onBack, onNext
                           </label>
                           <input
                             type="date"
+                            min={new Date().toISOString().split("T")[0]}
                             value={p.passportExpiry || ""}
                             onChange={(e) =>
                               updateIndividualPassenger(p.id, {

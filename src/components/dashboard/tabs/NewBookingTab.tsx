@@ -87,6 +87,7 @@ export default function NewBookingTab({ ctx }: { ctx: any }) {
                         <input
                           type="date"
                           required
+                          min={new Date().toISOString().split("T")[0]}
                           value={bkDate}
                           onChange={(e) => setBkDate(e.target.value)}
                           className="w-full h-11 px-4 rounded-xl border border-black/10 bg-transparent text-xs font-semibold outline-none transition focus:border-[#0d5a6e]"

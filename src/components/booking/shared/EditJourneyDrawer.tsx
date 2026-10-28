@@ -157,6 +157,7 @@ export function EditJourneyDrawer({
                     </label>
                     <input
                       type="date"
+                      min={new Date().toISOString().split("T")[0]}
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
                       className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-slate-900"
