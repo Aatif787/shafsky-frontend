@@ -4,7 +4,7 @@ import { renderToString } from "react-dom/server";
 import fs from "node:fs";
 import path from "node:path";
 import { PRESTIGIOUS_PROJECTS } from "@/data/prestigiousProjects";
-import { PrestigiousProjectsPage } from "@/routes/prestigious-projects";
+import { PrestigiousProjectsPage } from "@/components/views/PrestigiousProjectsView";
 import { Footer } from "@/components/home/sections/Footer";
 
 // Mock router primitives

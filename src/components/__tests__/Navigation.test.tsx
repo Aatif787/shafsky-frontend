@@ -113,5 +113,22 @@ describe("Navigation navbar (Direct Individual Links)", () => {
     const html = renderToString(React.createElement(Navigation, { visible: true }));
     expect(html).toContain('aria-label="Toggle menu"');
   });
+
+  it("includes responsive controls for Book Now, Sign In, and WhatsApp", () => {
+    const html = renderToString(React.createElement(Navigation, { visible: true }));
+    // Book Now button has visible text and href
+    expect(html).toContain("Book Now");
+    expect(html).toContain('href="/#book"');
+
+    // Sign In button has visible text and link
+    expect(html).toContain("Sign In");
+    expect(html).toContain('href="/login"');
+
+    // Mobile quick WhatsApp button exists
+    expect(html).toContain("md:hidden");
+
+    // Desktop text pill WhatsApp button exists
+    expect(html).toContain("hidden md:inline-flex");
+  });
 });
 

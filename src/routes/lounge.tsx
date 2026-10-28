@@ -27,7 +27,7 @@ export const Route = createFileRoute("/lounge")({
   component: LoungePage,
 });
 
-export function LoungePage() {
+function LoungePage() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   return (

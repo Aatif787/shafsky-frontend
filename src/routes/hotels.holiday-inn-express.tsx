@@ -1280,5 +1280,3 @@ function HolidayInnExpressDetailPage() {
     </div>
   );
 }
-
-export default HolidayInnExpressDetailPage;

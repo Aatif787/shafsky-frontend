@@ -5,7 +5,7 @@ import {
   SUPPORT_DEPARTMENTS,
   SupportDepartment,
 } from "../navigation/supportData";
-import { SupportPage } from "@/routes/support";
+import { SupportPage } from "@/components/views/SupportPageView";
 
 // Mock router primitives
 vi.mock("@tanstack/react-router", () => ({
