@@ -118,6 +118,22 @@ export default defineConfig(({ mode }) => {
     } as any),
     nitro({
       preset: process.env.NITRO_PRESET || "node-server",
+      // Permanent redirects for legacy WordPress URLs reported as 404 in Google Search Console.
+      // Only redirect URLs with a clear, equivalent destination in the current frontend.
+      routeRules: {
+        "/new-delhi-airport-meet-and-greet-service/": { redirect: { to: "/airports/DEL", statusCode: 301 } },
+        "/new-delhi-airport-meet-and-greet-service": { redirect: { to: "/airports/DEL", statusCode: 301 } },
+        "/product/new-delhi-airport-domestic-departure-services/": { redirect: { to: "/airports/DEL", statusCode: 301 } },
+        "/product/mumbai-airport-international-arrival-services/": { redirect: { to: "/airports/BOM", statusCode: 301 } },
+        "/delhi/": { redirect: { to: "/airports/DEL", statusCode: 301 } },
+        "/delhi": { redirect: { to: "/airports/DEL", statusCode: 301 } },
+        "/mumbai/": { redirect: { to: "/airports/BOM", statusCode: 301 } },
+        "/mumbai": { redirect: { to: "/airports/BOM", statusCode: 301 } },
+        "/jaipur/": { redirect: { to: "/airports/JAI", statusCode: 301 } },
+        "/jaipur": { redirect: { to: "/airports/JAI", statusCode: 301 } },
+        "/castle-blue-hotel-new-delhi/": { redirect: { to: "/hotels/castle-blue", statusCode: 301 } },
+        "/de-pavilion-hotel-new-delhi/": { redirect: { to: "/hotels/de-pavilion", statusCode: 301 } },
+      },
     }),
     viteReact(),
   ],
