@@ -27,6 +27,7 @@ import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { format, parseISO, isValid } from "date-fns";
 import { mono, display } from "../theme";
 import { DoublePlaneIcon } from "./DoublePlaneIcon";
+import { TravelFlightAnimation } from "./TravelFlightAnimation";
 import { OtherServicesEnquiryFlow, type OtherServiceType } from "./enquiry/OtherServicesEnquiryFlow";
 import { LoungeEnquiryForm } from "@/components/lounge/LoungeEnquiryForm";
 import { LoungeHeroCarousel } from "@/components/lounge/LoungeGalleryShowcase";
@@ -399,20 +400,23 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
             className="absolute top-1 left-2 sm:top-2 sm:left-4 md:top-3 md:left-6 lg:top-3 lg:left-8 w-24 sm:w-36 md:w-44 lg:w-48 z-30 pointer-events-none select-none"
           >
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              poster="/videos/travel-animation-poster.webp"
-              className="w-full h-auto object-contain select-none pointer-events-none"
-              aria-label="Shafsky Aviation travel concierge animation"
-            >
-              <source src="/videos/travel-animation.webm" type="video/webm" />
-              <source src="/videos/travel-animation.mp4" type="video/mp4" />
-            </video>
+            <div className="relative w-full h-auto">
+              <video
+                ref={videoRef}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                poster="/videos/travel-animation-poster.webp"
+                className="w-full h-auto object-contain select-none pointer-events-none block"
+                aria-label="Shafsky Aviation travel concierge animation"
+              >
+                <source src="/videos/travel-animation.webm" type="video/webm" />
+                <source src="/videos/travel-animation.mp4" type="video/mp4" />
+              </video>
+              <TravelFlightAnimation />
+            </div>
           </motion.div>
         )}
 
