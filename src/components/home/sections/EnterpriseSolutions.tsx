@@ -123,7 +123,7 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
       { label: "On-board Meal Arrangements", subParam: "onboard_meals", tagline: "Gourmet in-flight catering & dietary curation for group meet & greet" },
       { label: "Spa & Wellness", subParam: "spa-wellness", tagline: "Luxury couple spas, hydrotherapy & rejuvenating retreats" },
       { label: "PSO (Security & VIP Shopping)", subParam: "pso", tagline: "Personal security officers & luxury boutique escort" },
-      { label: "Air Ambulance (Airborne ICU)", subParam: "air_ambulance", tagline: "24/7 dedicated airborne ICU jets & bed-to-bed medevac" },
+      { label: "Air Ambulance", subParam: "air_ambulance", tagline: "24/7 dedicated airborne ICU jets & bed-to-bed medevac" },
       { label: "Train Ambulance", subParam: "train_ambulance", tagline: "Long-distance rail patient transfer with ICU team & oxygen" },
       { label: "HUM (Human Remains Transport)", subParam: "hum", tagline: "Mortal remains repatriation across domestic & global sectors" },
       { label: "Cargo & AVI Pet Booking", subParam: "cargo_avi_pet", tagline: "IATA live animal transport & climate-controlled air freight" },

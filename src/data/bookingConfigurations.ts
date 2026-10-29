@@ -416,7 +416,7 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
           { id: "destAirport", label: "Destination Hospital & City", type: "text", placeholder: "Destination hospital and city", required: true, gridCols: 2 },
           { id: "flightDate", label: "Required Transfer Date", type: "date", required: true, gridCols: 2 },
           { id: "medevacType", label: "Evacuation Transport Mode", type: "select", options: [
-              { label: "Dedicated Air Ambulance (Airborne ICU Jet)", value: "air_icu" },
+              { label: "Dedicated Air Ambulance", value: "air_icu" },
               { label: "Train ICU Medical Ambulance", value: "train_icu" },
               { label: "Human Remains (HUM) Repatriation", value: "hum" },
             ], required: true, gridCols: 2 },

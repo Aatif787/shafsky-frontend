@@ -204,6 +204,7 @@ export const UNMAPPED_LEGACY_PATTERNS = [
   "/author",
   "/category",
   "/tag",
+  "/jobs",
 ] as const;
 
 export const CANONICAL_HOST = "shafskyaviation.com";
@@ -399,8 +400,14 @@ export function resolveServerRedirect(
       }
     } else if (rawPath.length > 1 && rawPath.endsWith("/")) {
       // 3. Trailing slash normalization for public paths (e.g. /contact/ -> /contact)
-      const stripped = rawPath.replace(/\/+$/, "");
-      targetPath = stripped || "/";
+      // Do not redirect unmapped legacy patterns (e.g. /jobs/*, /wp-admin/*)
+      const isUnmapped = UNMAPPED_LEGACY_PATTERNS.some(
+        (prefix) => rawPath === prefix || rawPath.startsWith(`${prefix}/`)
+      );
+      if (!isUnmapped) {
+        const stripped = rawPath.replace(/\/+$/, "");
+        targetPath = stripped || "/";
+      }
     }
   }
 
