@@ -79,9 +79,6 @@ export function Footer() {
               transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
               className="md:col-span-5 space-y-4"
             >
-              <span className="text-[#cca028] text-xs uppercase tracking-widest font-semibold block">
-                WHO WE ARE
-              </span>
               <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                 About Shafsky Aviation Services
               </h3>
@@ -254,3 +251,4 @@ export function Footer() {
 }
 
 export default Footer;
+

@@ -25,9 +25,6 @@ function AboutUsPage() {
         }}
       >
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <span className="inline-block text-[#cca028] font-bold tracking-widest text-xs uppercase mb-3">
-            WHO WE ARE
-          </span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-serif tracking-tight">
             About Shafsky Aviation Services
           </h1>

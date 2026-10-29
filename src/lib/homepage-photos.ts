@@ -15,6 +15,7 @@ import meetImg from "@/assets/homepage/widescreen/meet.jpeg";
 import transitImg from "@/assets/homepage/widescreen/transit.jpeg";
 import vvipImg from "@/assets/homepage/widescreen/vvip.jpeg";
 import wheelImg from "@/assets/homepage/widescreen/wheel.jpeg";
+import airTicketingImg from "@/assets/others/air-ticketing.jpg";
 
 export const HOMEPAGE_PHOTOS = {
   // Hero Editorial Visual (Widescreen 16:9)
@@ -159,5 +160,15 @@ export const HOMEPAGE_PHOTOS = {
     subject: "Destination Wedding & Bespoke VIP Milestone Concierge",
     orientation: "landscape" as const,
   },
-};
 
+  // VIP Air Ticketing & Commercial Airline Concierge (Widescreen 16:9)
+  airTicketing: {
+    src: airTicketingImg,
+    width: 1920,
+    height: 1080,
+    aspectRatio: "16 / 9",
+    alt: "Shafsky Aviation VIP Air Ticketing concierge handing flight tickets to executive traveler at airport lounge desk",
+    subject: "24/7 Domestic & International Air Ticketing Concierge",
+    orientation: "landscape" as const,
+  },
+};

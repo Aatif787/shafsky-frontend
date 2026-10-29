@@ -16,6 +16,7 @@ import {
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import {
   sanitizeName,
   sanitizePhone,
@@ -552,14 +553,12 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <FieldLabel required>Phone / WhatsApp Number</FieldLabel>
-                  <input
-                    type="tel"
-                    placeholder="Mobile number"
-                    value={guestPhone}
-                    onKeyDown={preventLettersKeyDown}
-                    onChange={(e) => setGuestPhone(sanitizePhone(e.target.value))}
-                    className={INPUT_CLASSES}
+                  <PhoneInput
                     required
+                    value={guestPhone}
+                    onChange={setGuestPhone}
+                    placeholder="Mobile number"
+                    className="border-slate-300 focus:border-[#1d63b8] focus:ring-[#1d63b8]/20"
                   />
                 </div>
                 <div>

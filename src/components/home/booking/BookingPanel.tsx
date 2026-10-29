@@ -43,6 +43,36 @@ const LABEL = "h-4 text-[10.5px] font-mono font-bold uppercase tracking-wider te
 
 export type BookingServiceMode = "airport" | "other" | "lounge";
 
+function SelectionCircle({
+  active,
+  variant = "lime",
+}: {
+  active: boolean;
+  variant?: "dark" | "lime";
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`relative inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full transition-all duration-200 ${
+        active
+          ? variant === "dark"
+            ? "border-[1.5px] border-lime-400 bg-lime-400"
+            : "border-[1.5px] border-slate-950 bg-slate-950"
+          : "border-[1.5px] border-slate-400/80 bg-transparent"
+      }`}
+    >
+      {active && (
+        <span
+          className={`h-1.5 w-1.5 rounded-full ${
+            variant === "dark" ? "bg-slate-950" : "bg-lime-300"
+          }`}
+        />
+      )}
+    </span>
+  );
+}
+
+
 export interface BookingPanelProps {
   showSideAnimation?: boolean;
 }
@@ -465,7 +495,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
           {/* Top Control Bar: Domestic/International (Upper) + Direction & Service Controls */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-white/50">
             {/* Domestic / International Toggle (Upper on Mobile) */}
-            <div className="flex items-center p-1 rounded-2xl bg-white/40 backdrop-blur-xl border border-white/60 self-start sm:self-auto w-full sm:w-auto shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_2px_8px_rgba(0,0,0,0.03)]">
+            <div className="flex flex-col items-stretch gap-1 p-1 rounded-2xl bg-white/40 backdrop-blur-xl border border-white/60 w-full sm:w-44 shrink-0 shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_2px_8px_rgba(0,0,0,0.03)]">
               {(["domestic", "international"] as const).map((kind) => {
                 const active = travelType === kind;
                 const isLockedOut = Boolean(routeDeterminedCategory && kind !== routeDeterminedCategory);
@@ -480,7 +510,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
                       if (activeMode !== "airport") setActiveMode("airport");
                       handleCategoryToggle(kind);
                     }}
-                    className={`relative z-10 flex-1 sm:flex-initial h-9 sm:px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 rounded-xl ${
+                    className={`relative z-10 w-full h-9 px-3 sm:px-4 flex items-center justify-start gap-2 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 rounded-xl ${
                       active && activeMode === "airport"
                         ? "text-white bg-slate-950/90 shadow-[0_4px_12px_rgba(15,23,42,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] backdrop-blur-md cursor-default"
                         : isLockedOut
@@ -489,6 +519,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
                     }`}
                     style={mono}
                   >
+                    <SelectionCircle active={active && activeMode === "airport"} variant="dark" />
                     <span>{kind}</span>
                   </motion.button>
                 );
@@ -496,7 +527,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
             </div>
 
             {/* Service Selection: Departure, Transit, Arrival + Other Services */}
-            <div className="grid grid-cols-2 gap-1 sm:flex sm:gap-1 items-center p-1 rounded-2xl bg-white/40 backdrop-blur-xl border border-white/60 overflow-x-auto no-scrollbar shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_2px_8px_rgba(0,0,0,0.03)]">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-1 p-1 rounded-2xl bg-white/40 backdrop-blur-xl border border-white/60 shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_2px_8px_rgba(0,0,0,0.03)]">
               {serviceOptions.map(([k, label, Icon]) => {
                 const active = activeMode === "airport" && selectedServices.includes(k);
                 return (
@@ -514,15 +545,16 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
                         toggleService(k);
                       }
                     }}
-                    className={`relative z-10 flex sm:flex-initial h-9 max-sm:min-w-0 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                    className={`relative z-10 flex sm:flex-initial min-h-9 h-9 min-w-0 sm:shrink-0 whitespace-nowrap px-2.5 sm:px-3.5 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                       active
                         ? "text-slate-950 bg-gradient-to-r from-lime-400/95 via-lime-300/95 to-lime-400/95 font-bold shadow-[0_4px_14px_rgba(132,204,22,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.9)] border border-lime-300/80"
                         : "text-slate-700 hover:text-slate-950 hover:bg-white/50"
                     }`}
                     style={mono}
                   >
+                    <SelectionCircle active={active} variant="lime" />
                     <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-slate-950" : "text-slate-500"}`} />
-                    <span className="truncate">{label}</span>
+                    <span className="whitespace-nowrap">{label}</span>
                   </motion.button>
                 );
               })}
@@ -534,15 +566,16 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
                 whileTap={{ scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 450, damping: 28 }}
                 onClick={() => setActiveMode("lounge")}
-                className={`relative z-10 flex sm:flex-initial h-9 max-sm:min-w-0 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                className={`relative z-10 flex sm:flex-initial min-h-9 h-9 min-w-0 sm:shrink-0 whitespace-nowrap px-2.5 sm:px-3.5 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                   activeMode === "lounge"
                     ? "text-slate-950 bg-gradient-to-r from-lime-400/95 via-lime-300/95 to-lime-400/95 font-bold shadow-[0_4px_14px_rgba(132,204,22,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.9)] border border-lime-300/80"
                     : "text-slate-700 hover:text-slate-950 hover:bg-white/50"
                 }`}
                 style={mono}
               >
+                <SelectionCircle active={activeMode === "lounge"} variant="lime" />
                 <Armchair className={`h-3.5 w-3.5 shrink-0 ${activeMode === "lounge" ? "text-slate-950" : "text-emerald-700"}`} />
-                <span className="truncate">Lounge</span>
+                <span className="whitespace-nowrap">Lounge</span>
               </motion.button>
 
               {/* Other Services Option alongside Departure, Transit, Arrival */}
@@ -552,15 +585,16 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
                 whileTap={{ scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 450, damping: 28 }}
                 onClick={() => setActiveMode("other")}
-                className={`relative z-10 flex sm:flex-initial h-9 max-sm:min-w-0 sm:px-4 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                className={`relative z-10 flex sm:flex-initial min-h-9 h-9 min-w-0 sm:shrink-0 whitespace-nowrap px-2.5 sm:px-3.5 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
                   activeMode === "other"
                     ? "text-slate-950 bg-gradient-to-r from-lime-400/95 via-lime-300/95 to-lime-400/95 font-bold shadow-[0_4px_14px_rgba(132,204,22,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.9)] border border-lime-300/80"
                     : "text-slate-700 hover:text-slate-950 hover:bg-white/50"
                 }`}
                 style={mono}
               >
+                <SelectionCircle active={activeMode === "other"} variant="lime" />
                 <Sparkles className={`h-3.5 w-3.5 shrink-0 ${activeMode === "other" ? "text-slate-950" : "text-lime-600"}`} />
-                <span className="truncate">Other Services</span>
+                <span className="whitespace-nowrap">Other Services</span>
               </motion.button>
             </div>
           </div>

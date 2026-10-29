@@ -188,7 +188,7 @@ function AirportsListingView() {
             <span>✈</span>
             <span className="font-semibold uppercase tracking-wider text-[11px] font-mono">AIRPORT NETWORK</span>
             <span className="inline-block w-1 h-1 rounded-full bg-lime-500" />
-            <span className="text-[10px] text-lime-700 font-mono">{airportsData.length} Network Hubs</span>
+            <span className="text-[10px] text-lime-700 font-mono">{airportsData.length}+ Network Hubs</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading text-slate-900 font-bold tracking-tight">
@@ -260,102 +260,6 @@ function AirportsListingView() {
                 <option value="Z - A">⇅ Z - A</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-            </div>
-          </div>
-        </div>
-
-        {/* 3. FEATURED AIRPORTS CURVED ARC SECTION */}
-        <div className="relative bg-gradient-to-b from-white/70 to-white/95 rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-sm space-y-6">
-          <div className="text-center space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-900">
-              <Star className="w-4 h-4 text-purple-600 fill-purple-600" />
-              <span>Featured Airports</span>
-            </div>
-            <p className="text-xs text-slate-500 font-medium">Top airports with premium services</p>
-          </div>
-
-          {/* CURVED ARC STAGE */}
-          <div className="relative max-w-5xl mx-auto py-2 px-2 sm:px-6">
-            {/* SVG Curved Line */}
-            <svg
-              className="absolute left-0 right-0 top-12 w-full h-16 pointer-events-none hidden sm:block"
-              viewBox="0 0 800 60"
-              fill="none"
-            >
-              <path
-                d="M 60 42 Q 400 6 740 42"
-                stroke="#84cc16"
-                strokeWidth="2"
-                strokeDasharray="4 4"
-                className="opacity-70"
-              />
-            </svg>
-
-            {/* Navigation Buttons Aligned to Center Axis */}
-            <button
-              onClick={() => setFeaturedIndex((prev) => (prev > 0 ? prev - 1 : featuredList.length - 1))}
-              aria-label="Previous featured airport"
-              className="absolute -left-2 sm:left-0 top-10 sm:top-12 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center shadow-md hover:border-[#7c3aed] hover:text-[#7c3aed] hover:scale-105 active:scale-95 transition cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setFeaturedIndex((prev) => (prev < featuredList.length - 1 ? prev + 1 : 0))}
-              aria-label="Next featured airport"
-              className="absolute -right-2 sm:right-0 top-10 sm:top-12 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center shadow-md hover:border-[#7c3aed] hover:text-[#7c3aed] hover:scale-105 active:scale-95 transition cursor-pointer"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-
-            {/* 6 Circular Nodes Single Row Grid */}
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 relative z-10 px-4 sm:px-8">
-              {visibleFeatured.map((item, idx) => {
-                const img = getAirportPrimaryImage(item.code) || item.cover;
-
-                // Curve Y offset matching the arc
-                const yOffset = idx === 0 || idx === 5 ? "sm:translate-y-4" : idx === 1 || idx === 4 ? "sm:translate-y-1" : "sm:translate-y-0";
-
-                return (
-                  <Link
-                    key={`${item.code}-${idx}`}
-                    to="/airports/$code"
-                    params={{ code: item.code }}
-                    className={`flex flex-col items-center text-center group cursor-pointer w-full transition-transform duration-300 ${yOffset}`}
-                  >
-                    {/* Circle Image Thumbnail with Code Badge */}
-                    <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-white shadow-md group-hover:border-[#7c3aed] group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 shrink-0 bg-slate-100">
-                      <img width={1600} height={900} loading="lazy" decoding="async" src={img} alt={item.city} className="w-full h-full object-cover" />
-                      <span className="absolute top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-[#7c3aed] text-white text-[9px] font-mono font-bold shadow-xs">
-                        {item.code}
-                      </span>
-                    </div>
-
-                    {/* Node Text Below with Strict Pixel-Perfect Height Baselines */}
-                    <div className="mt-3 flex flex-col items-center justify-between w-full min-h-[92px]">
-                      {/* City Name Container */}
-                      <div className="h-9 flex items-center justify-center px-1">
-                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 leading-tight group-hover:text-[#7c3aed] transition-colors line-clamp-2">
-                          {item.city}
-                        </h4>
-                      </div>
-
-                      {/* Country Name Container */}
-                      <div className="h-7 flex items-center justify-center px-1">
-                        <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight line-clamp-2">
-                          {item.country}
-                        </p>
-                      </div>
-
-                      {/* Services Count Badge */}
-                      <div className="h-5 flex items-center justify-center">
-                        <p className="text-[10px] font-bold text-emerald-600 tracking-wide">
-                          {item.servicesCount} Services
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
             </div>
           </div>
         </div>
