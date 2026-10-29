@@ -31,7 +31,8 @@ import { TravelFlightAnimation } from "./TravelFlightAnimation";
 import { OtherServicesEnquiryFlow, type OtherServiceType } from "./enquiry/OtherServicesEnquiryFlow";
 import { LoungeEnquiryForm } from "@/components/lounge/LoungeEnquiryForm";
 import { LoungeHeroCarousel } from "@/components/lounge/LoungeGalleryShowcase";
-import { CONTACT_DETAILS } from "@/lib/constants";
+// Dedicated WhatsApp booking link specifically for the Booking Panel (+91 7428300207)
+const BOOKING_PANEL_WHATSAPP_LINK = "https://wa.me/917428300207?text=Hi";
 
 const FIELD =
   "flex h-12 w-full items-center justify-between rounded-2xl border border-white/65 bg-white/45 backdrop-blur-xl px-4 text-xs font-semibold text-slate-900 outline-none transition-all duration-300 hover:border-lime-400/90 hover:bg-white/65 focus:border-lime-500 focus:bg-white/80 focus:ring-4 focus:ring-lime-400/20 shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_4px_14px_rgba(15,23,42,0.03)]";
@@ -479,7 +480,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
 
           <div className="mt-2.5 flex items-center justify-center">
             <a
-              href={CONTACT_DETAILS.WHATSAPP_BOOKING_LINK}
+              href={BOOKING_PANEL_WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/50 text-emerald-950 text-[11px] sm:text-xs font-mono font-bold tracking-tight transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.7),0_2px_8px_rgba(16,185,129,0.1)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_4px_14px_rgba(16,185,129,0.18)] backdrop-blur-md group cursor-pointer"
@@ -934,7 +935,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
           {/* Bottom Bar: Central Super CTA & 24/7 WhatsApp Booking */}
           <div className="pt-5 border-t border-white/50 flex flex-col sm:flex-row items-center justify-between gap-4">
             <a
-              href={CONTACT_DETAILS.WHATSAPP_BOOKING_LINK}
+              href={BOOKING_PANEL_WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-950 border border-emerald-400/50 text-xs font-mono font-bold tracking-wider transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.7),0_4px_12px_rgba(16,185,129,0.12)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_6px_16px_rgba(16,185,129,0.2)] active:scale-98 cursor-pointer backdrop-blur-xl"
