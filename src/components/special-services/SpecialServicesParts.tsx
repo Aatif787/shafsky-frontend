@@ -108,7 +108,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
   },
   {
     id: "On-board Meal Arrangements for Group Meet & Greet Bookings",
-    label: "On-board Meal Arrangements for Group Meet & Greet Bookings",
+    label: "On-board Meal Arrangements",
     shortLabel: "On-board Meals",
     badge: "GOURMET IN-FLIGHT DINING & GROUP MEET & GREET CATERING",
     tagline:
@@ -162,7 +162,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
   },
   {
     id: "Air Ambulance (Airborne ICU Jet)",
-    label: "Air Ambulance (Airborne ICU Jet)",
+    label: "Air Ambulance",
     shortLabel: "Air Ambulance",
     badge: "24/7 AIRBORNE ICU & BED-TO-BED MEDICAL EVACUATION",
     tagline:

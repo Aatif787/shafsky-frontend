@@ -300,7 +300,7 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
         id: "step_service_select",
         name: "Service Category",
         title: "Select Medical Evacuation Mode",
-        subtitle: "Airborne ICU Jet, Train ICU, or HUM Repatriation",
+        subtitle: "Air Ambulance, Train ICU, or HUM Repatriation",
         stepType: "service_select",
         fields: [],
       },
@@ -315,7 +315,7 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
           { id: "destAirport", label: "Destination Hospital & City", type: "text", placeholder: "e.g. Cleveland Clinic, Abu Dhabi", required: true, gridCols: 2 },
           { id: "flightDate", label: "Required Transport Date", type: "date", required: true, gridCols: 2 },
           { id: "medevacType", label: "Transport Mode", type: "select", options: [
-              { label: "Dedicated Air Ambulance (Airborne ICU Jet)", value: "air_icu" },
+              { label: "Dedicated Air Ambulance", value: "air_icu" },
               { label: "Train ICU Ambulance Escort", value: "train_icu" },
               { label: "Human Remains (HUM)", value: "hum" },
             ], required: true, gridCols: 2 },
