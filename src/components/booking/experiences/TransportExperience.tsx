@@ -13,6 +13,7 @@ import {
 } from "../shared/SharedUi";
 import { BookingSuccessModal } from "../shared/BookingSuccessModal";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 import {
   sanitizeName,
@@ -559,14 +560,13 @@ export function TransportExperience({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <FieldLabel required>Phone / WhatsApp Number</FieldLabel>
-                  <input
-                    type="tel"
-                    placeholder="Mobile number"
-                    value={guestPhone}
-                    onKeyDown={preventLettersKeyDown}
-                    onChange={(e) => setGuestPhone(sanitizePhone(e.target.value))}
-                    className={INPUT_CLASSES}
+                  <PhoneInput
                     required
+                    value={guestPhone}
+                    onChange={setGuestPhone}
+                    placeholder="Mobile number"
+                    className={`${INPUT_CLASSES} rounded-l-none`}
+                    wrapperClassName="w-full"
                   />
                 </div>
                 <div>

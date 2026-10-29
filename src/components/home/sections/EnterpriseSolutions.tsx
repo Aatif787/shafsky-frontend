@@ -11,7 +11,7 @@ import planeImg from "@/assets/others/plane.png";
 import meetGreetImg from "@/assets/others/meetgreet.jpeg";
 import servicesImg from "@/assets/others/services.png";
 import specialserImg from "@/assets/others/specialser.png";
-
+import airTicketingImg from "@/assets/others/air-ticketing.jpg";
 
 interface SubServiceOption {
   label: string;
@@ -97,24 +97,37 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     ],
   },
   {
+    id: "air-ticketing",
+    serviceParam: "ticketing",
+    title: "Air Ticketing Services",
+    photo: airTicketingImg,
+    alt: "Shafsky Domestic and International Air Ticketing Concierge Desk",
+    badge: "Airline Ticketing",
+    description: "Instant domestic and international flight bookings across 500+ global airlines, flexible corporate fares, and 24/7 ticketing desk support.",
+    subServices: [
+      { label: "Air Ticketing (Domestic & Intl)", subParam: "ticketing", tagline: "Instant commercial flight bookings across 500+ global airlines" },
+    ],
+  },
+  {
     id: "special-services",
     serviceParam: "special",
     title: "Special Services",
     photo: specialserImg,
     alt: "Shafsky Special Services with Taj Mahal Agra",
     badge: "Special Services",
-    description: "On-board meal arrangements, 24/7 medevac air & train ambulance, HUM repatriation, fast-track visa assist, cargo & AVI pet logistics, couple spas, and PSO close protection.",
+    description: "Air ticketing, curated tours & travel, fast-track visa assistance, on-board meal arrangements, luxury spa & wellness, PSO close protection, 24/7 medevac air & train ambulance, HUM repatriation, and cargo & AVI pet logistics.",
     subServices: [
+      { label: "Air Ticketing (Domestic & Intl)", subParam: "ticketing", tagline: "Instant commercial flight bookings across 500+ global airlines" },
+      { label: "Tours & Travel (Couples)", subParam: "tours-travel", tagline: "Curated romantic itineraries & private luxury tours" },
+      { label: "Visa Assistance Services", subParam: "visa", tagline: "Fast-track Schengen, UK, US, UAE & global visa clearance" },
       { label: "On-board Meal Arrangements", subParam: "onboard_meals", tagline: "Gourmet in-flight catering & dietary curation for group meet & greet" },
-      { label: "Air Ambulance (Airborne ICU)", subParam: "Air Ambulance", tagline: "24/7 dedicated airborne ICU jets & bed-to-bed medevac" },
-      { label: "Train Ambulance (ICU Escort)", subParam: "Train Ambulance", tagline: "Long-distance rail patient transfer with ICU team & oxygen" },
-      { label: "HUM (Human Remains Transport)", subParam: "HUM Repatriation", tagline: "Dignified mortal remains repatriation across domestic & global sectors" },
-      { label: "Visa Assistance Services", subParam: "Visa Assistance", tagline: "Fast-track Schengen, UK, US, UAE & global visa clearance" },
-      { label: "Cargo & AVI Pet Booking", subParam: "Cargo & AVI Pet", tagline: "IATA live animal transport & climate-controlled air freight" },
-      { label: "Air Ticketing (Domestic & Intl)", subParam: "Air Ticketing", tagline: "Instant commercial flight bookings across 500+ global airlines" },
-      { label: "Spa & Wellness", subParam: "Spa & Wellness", tagline: "Luxury couple spas, hydrotherapy & rejuvenating retreats" },
-      { label: "Tours & Travel (Couples)", subParam: "Tours & Travel", tagline: "Curated romantic itineraries & private luxury tours" },
-      { label: "PSO (Security & VIP Shopping)", subParam: "PSO Security", tagline: "Personal security officers & luxury boutique escort" },
+      { label: "Spa & Wellness", subParam: "spa-wellness", tagline: "Luxury couple spas, hydrotherapy & rejuvenating retreats" },
+      { label: "PSO (Security & VIP Shopping)", subParam: "pso", tagline: "Personal security officers & luxury boutique escort" },
+      { label: "Air Ambulance (Airborne ICU)", subParam: "air_ambulance", tagline: "24/7 dedicated airborne ICU jets & bed-to-bed medevac" },
+      { label: "Train Ambulance", subParam: "train_ambulance", tagline: "Long-distance rail patient transfer with ICU team & oxygen" },
+      { label: "HUM (Human Remains Transport)", subParam: "hum", tagline: "Mortal remains repatriation across domestic & global sectors" },
+      { label: "Cargo & AVI Pet Booking", subParam: "cargo_avi_pet", tagline: "IATA live animal transport & climate-controlled air freight" },
+      { label: "Infant Care Services", subParam: "infant-care", tagline: "Dedicated airport transit, pram escort & baby care assistance" },
     ],
   },
 ];
@@ -277,18 +290,13 @@ export function EnterpriseSolutions() {
           </div>
         ) : (
           <>
-            {/* DESKTOP 5-CARD HORIZONTAL ALIGNMENT SHOWCASE (100% UNTOUCHED FOR DESKTOP) */}
-            <div className="hidden lg:grid lg:grid-cols-5 gap-8 items-start justify-items-center max-w-7xl mx-auto">
+            {/* DESKTOP 6-CARD HORIZONTAL ALIGNMENT SHOWCASE */}
+            <div className="hidden lg:grid lg:grid-cols-6 gap-6 items-start justify-items-center max-w-7xl mx-auto">
               {OFFICIAL_SERVICES.map((srv, idx) => {
-                // Moving effect from sides, corners, and bottom:
-                // Card 0: from far left side
-                // Card 1: from top-left corner
-                // Card 2: from bottom
-                // Card 3: from top-right corner
-                // Card 4: from far right side
                 const serviceOffsets = [
                   { x: -75, y: 0 },
                   { x: -40, y: -35 },
+                  { x: 0, y: 50 },
                   { x: 0, y: 50 },
                   { x: 40, y: -35 },
                   { x: 75, y: 0 },
@@ -305,47 +313,46 @@ export function EnterpriseSolutions() {
                     whileHover={{ y: -6, scale: 1.02 }}
                     whileTap={{ scale: 0.96 }}
                     className="flex flex-col items-center text-center w-full group cursor-pointer"
-                  onClick={() => {
-                    if (srv.id === "meet-greet-lounge") {
-                      navigate({ to: "/solutions/concierge" });
-                    } else if (srv.id === "air-charter") {
-                      navigate({ to: "/solutions/aviation" });
-                    } else if (srv.id === "luxury-hotels") {
-                      navigate({ to: "/solutions/hotels" });
-                    } else if (srv.id === "transport-service") {
-                      navigate({ to: "/solutions/transport" });
-                    } else if (srv.id === "special-services") {
-                      navigate({ to: "/solutions/special-services" });
-                    } else {
-                      setSelectedService(srv);
-                    }
-                  }}
-                >
-                  {/* Circular Authentic Photo */}
-                  <div className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-slate-100 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.12)] group-hover:border-lime-500 group-hover:shadow-[0_15px_30px_-5px_rgba(132,204,22,0.35)] group-hover:scale-105 transition-all duration-500 bg-white mb-4">
-                    <img width={1600} height={900} src={srv.photo}
-                      alt={srv.alt}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.08)] pointer-events-none group-hover:shadow-[inset_0_0_15px_rgba(132,204,22,0.2)] transition-shadow duration-300" />
-                  </div>
-
-                  {/* Service Pillar Heading */}
-                  <h3
-                    className="text-sm sm:text-base md:text-lg font-bold text-slate-900 tracking-tight group-hover:text-lime-700 transition-colors duration-300 max-w-[210px] leading-snug"
-                    style={display}
+                    onClick={() => {
+                      if (srv.id === "meet-greet-lounge") {
+                        navigate({ to: "/solutions/concierge" });
+                      } else if (srv.id === "air-charter") {
+                        navigate({ to: "/solutions/aviation" });
+                      } else if (srv.id === "luxury-hotels") {
+                        navigate({ to: "/solutions/hotels" });
+                      } else if (srv.id === "transport-service") {
+                        navigate({ to: "/solutions/transport" });
+                      } else if (srv.id === "air-ticketing") {
+                        navigate({ to: "/solutions/special-services", search: { sub: "ticketing" } as any });
+                      } else {
+                        setSelectedService(srv);
+                      }
+                    }}
                   >
-                    {srv.title}
-                  </h3>
-                </motion.div>
+                    {/* Circular Authentic Photo */}
+                    <div className="relative w-36 h-36 sm:w-40 sm:h-40 xl:w-44 xl:h-44 rounded-full overflow-hidden border-4 border-slate-100 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.12)] group-hover:border-lime-500 group-hover:shadow-[0_15px_30px_-5px_rgba(132,204,22,0.35)] group-hover:scale-105 transition-all duration-500 bg-white mb-4">
+                      <img width={1600} height={900} src={srv.photo}
+                        alt={srv.alt}
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.08)] pointer-events-none group-hover:shadow-[inset_0_0_15px_rgba(132,204,22,0.2)] transition-shadow duration-300" />
+                    </div>
+
+                    {/* Service Pillar Heading */}
+                    <h3
+                      className="text-sm sm:text-base font-bold text-slate-900 tracking-tight group-hover:text-lime-700 transition-colors duration-300 max-w-[190px] leading-snug"
+                      style={display}
+                    >
+                      {srv.title}
+                    </h3>
+                  </motion.div>
                 );
               })}
             </div>
 
-            {/* MOBILE & TABLET: 3-2 PORTAL LAYOUT (lg:hidden) */}
+            {/* MOBILE & TABLET: 3-3 PORTAL LAYOUT (lg:hidden) */}
             <div className="lg:hidden relative w-full max-w-sm sm:max-w-md mx-auto py-10 px-2 sm:px-4 select-none flex flex-col items-center">
-              
               {/* Layout Renderer */}
               {(() => {
                 const renderPortal = (srv: ServiceCategory, delay: number) => (
@@ -362,7 +369,7 @@ export function EnterpriseSolutions() {
                       else if (srv.id === "air-charter") navigate({ to: "/solutions/aviation" });
                       else if (srv.id === "luxury-hotels") navigate({ to: "/solutions/hotels" });
                       else if (srv.id === "transport-service") navigate({ to: "/solutions/transport" });
-                      else if (srv.id === "special-services") navigate({ to: "/solutions/special-services" });
+                      else if (srv.id === "air-ticketing") navigate({ to: "/solutions/special-services", search: { sub: "ticketing" } as any });
                       else setSelectedService(srv);
                     }}
                     className="group relative rounded-full overflow-hidden cursor-pointer shadow-[0_10px_25px_-5px_rgba(0,0,0,0.15)] ring-2 ring-[#d4af37]/40 ring-offset-4 ring-offset-white transition-all duration-500 bg-slate-900 flex-shrink-0 w-[5.5rem] h-[5.5rem] sm:w-24 sm:h-24 z-10"
@@ -406,10 +413,11 @@ export function EnterpriseSolutions() {
                       {renderPortal(OFFICIAL_SERVICES[2], 0.3)}
                     </div>
 
-                    {/* ROW 2: Bottom Two */}
+                    {/* ROW 2: Bottom Three */}
                     <div className="flex justify-center gap-4 sm:gap-6 w-full relative">
                       {renderPortal(OFFICIAL_SERVICES[3], 0.4)}
                       {renderPortal(OFFICIAL_SERVICES[4], 0.5)}
+                      {renderPortal(OFFICIAL_SERVICES[5], 0.6)}
                     </div>
                   </div>
                 );
@@ -544,18 +552,27 @@ export function EnterpriseSolutions() {
                     style={mono}
                   >
                     Choose Option to Begin:
-                  </div>                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[42vh] overflow-y-auto pr-1">
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[42vh] overflow-y-auto pr-1">
                     {selectedService.subServices.map((sub, sidx) => (
                       <Link
                         key={sidx}
-                        to={selectedService.id === "special-services" ? "/solutions/special-services" : "/book"}
+                        to={
+                          sub.subParam === "infant-care"
+                            ? "/solutions/infant-care"
+                            : selectedService.id === "special-services" || selectedService.id === "air-ticketing"
+                              ? "/solutions/special-services"
+                              : "/book"
+                        }
                         search={
-                          selectedService.id === "special-services"
-                            ? { sub: sub.subParam }
-                            : {
-                                service: selectedService.serviceParam,
-                                sub: sub.subParam,
-                              }
+                          sub.subParam === "infant-care"
+                            ? undefined
+                            : selectedService.id === "special-services" || selectedService.id === "air-ticketing"
+                              ? { sub: sub.subParam }
+                              : {
+                                  service: selectedService.serviceParam,
+                                  sub: sub.subParam,
+                                }
                         }
                         onClick={() => setSelectedService(null)}
                         className="group flex flex-col justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-[#d4af37] hover:bg-amber-50/40 transition-all duration-200 shadow-xs cursor-pointer"
@@ -593,10 +610,10 @@ export function EnterpriseSolutions() {
 
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                   <Link
-                    to={selectedService.id === "special-services" ? "/solutions/special-services" : "/book"}
+                    to={selectedService.id === "special-services" || selectedService.id === "air-ticketing" ? "/solutions/special-services" : "/book"}
                     search={
-                      selectedService.id === "special-services"
-                        ? undefined
+                      selectedService.id === "special-services" || selectedService.id === "air-ticketing"
+                        ? { sub: "ticketing" }
                         : { service: selectedService.serviceParam }
                     }
                     onClick={() => setSelectedService(null)}

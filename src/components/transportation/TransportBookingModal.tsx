@@ -23,6 +23,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import {
   sanitizeName,
   sanitizePhone,
@@ -180,10 +181,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
       toast.error("Please enter a valid mobile number (digits only, no letters).");
       return;
     }
-    if (serviceRegion === "international" && !passportNumber.trim()) {
-      toast.error("Please enter the lead passenger's passport number.");
-      return;
-    }
+    // Legal government ID is optional for international requests
     if (serviceRegion === "domestic" && !selectedVehicleId) {
       toast.error("Please select a vehicle model.");
       return;
@@ -220,7 +218,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
       notesArray.push(`Vehicle: ${vehicleName} (Count: ${vehicles})`);
       notesArray.push(`Passengers: ${passengers}`);
       if (serviceRegion === "international" && passportNumber.trim()) {
-        notesArray.push(`Passport: ${passportNumber.trim().toUpperCase()}`);
+        notesArray.push(`Legal Government ID: ${passportNumber.trim().toUpperCase()}`);
       }
 
       const res = await enquiryApi.submit({
@@ -236,7 +234,11 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
         details: {
           service_region: serviceRegion,
           passport_number:
-            serviceRegion === "international"
+            serviceRegion === "international" && passportNumber.trim()
+              ? passportNumber.trim().toUpperCase()
+              : undefined,
+          government_id_number:
+            serviceRegion === "international" && passportNumber.trim()
               ? passportNumber.trim().toUpperCase()
               : undefined,
           vehicle_id:
@@ -302,7 +304,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
         `• Vehicle: ${vehicleDisplay} (${vehicles} unit${vehicles > 1 ? "s" : ""})\n` +
         `• Passengers: ${passengers} Pax\n` +
         (serviceRegion === "international" && passportNumber
-          ? `• Passport: ${passportNumber.trim().toUpperCase()}\n`
+          ? `• Legal Government ID: ${passportNumber.trim().toUpperCase()}\n`
           : "") +
         `• Travel Date: ${date}\n` +
         `• Pickup: ${pickup}\n` +
@@ -437,7 +439,7 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
                   {serviceRegion === "international" && passportNumber && (
                     <div className="col-span-2 sm:col-span-1">
                       <span className="text-slate-500 block text-[10px] font-mono uppercase tracking-wider">
-                        Passport Number
+                        Legal Government ID
                       </span>
                       <span className="font-semibold text-slate-900 font-mono">
                         {passportNumber.trim().toUpperCase()}
@@ -578,21 +580,14 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
                     <label className="block text-[11px] font-mono font-semibold uppercase text-slate-700 mb-1">
                       Mobile Number <span className="text-rose-500">*</span>
                     </label>
-                    <div className="relative">
-                      <Phone
-                        size={14}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                      />
-                      <input
-                        type="tel"
-                        placeholder="Mobile number"
-                        value={phone}
-                        onKeyDown={preventLettersKeyDown}
-                        onChange={(e) => setPhone(sanitizePhone(e.target.value))}
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 transition font-mono"
-                        required
-                      />
-                    </div>
+                    <PhoneInput
+                      required
+                      value={phone}
+                      onChange={setPhone}
+                      placeholder="Mobile number"
+                      className="w-full px-3 py-2.5 rounded-r-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 transition font-mono"
+                      wrapperClassName="w-full [&>button]:border-slate-200"
+                    />
                   </div>
                 </div>
 
@@ -653,7 +648,10 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
                         <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                           <FileText size={14} className="text-lime-600" />
                           <span>
-                            Passport Number <span className="text-rose-500">*</span>
+                            Legal Government ID Number{" "}
+                            <span className="text-slate-400 font-normal text-[10px] lowercase">
+                              (optional)
+                            </span>
                           </span>
                         </label>
                         <span className="text-[10.5px] text-slate-500 font-mono block">
@@ -664,10 +662,9 @@ export const TransportBookingModal: React.FC<TransportBookingModalProps> = ({
                       <div className="relative">
                         <input
                           type="text"
-                          placeholder="Enter passport number (e.g. A12345678)"
+                          placeholder="Enter government ID or passport (optional)"
                           value={passportNumber}
                           onChange={(e) => setPassportNumber(e.target.value.toUpperCase())}
-                          required={serviceRegion === "international"}
                           className="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 font-mono uppercase transition"
                         />
                       </div>

@@ -4,7 +4,7 @@ import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import { EditorialPhoto } from "./EditorialPhoto";
 import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 
-// All 13 authentic Shafsky Aviation photos in deliberate order with GREET photo in the middle
+// Authentic Shafsky Aviation photos in deliberate order with GREET photo in the middle
 const ALL_HOMEPAGE_PHOTOS = [
   {
     id: "jet",
@@ -13,6 +13,10 @@ const ALL_HOMEPAGE_PHOTOS = [
   {
     id: "greet",
     photo: HOMEPAGE_PHOTOS.suswagatamHostess,
+  },
+  {
+    id: "ticketing",
+    photo: HOMEPAGE_PHOTOS.airTicketing,
   },
   {
     id: "charter",

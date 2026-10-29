@@ -507,51 +507,149 @@ function DedicatedLuxuryHotelsPage() {
           ))}
         </div>
       </section>
-
       {/* ─────────────────────────────────────────────────────────────
-          4. COMPANY CATALOG CONTENT & AUTHENTIC GALLERY (Seamless Editorial)
+          4. SERVICE INCLUSIONS & AUTHENTIC GALLERY
           ───────────────────────────────────────────────────────────── */}
-      <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+      <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-8 border-t border-slate-100">
+        <div className="mx-auto max-w-7xl">
           {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.4em] text-lime-700 font-bold font-mono bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200">
-              <span>HOTEL CATEGORIES & INCLUSIONS</span>
-            </div>
-            <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
-              Hospitality Inclusions.
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
+            <h2
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight"
+              style={display}
+            >
+              Service Inclusions
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-              Premium palace, executive suite, and transit hotel amenities.
-            </p>
           </div>
 
-          {/* 2-Column Balanced Editorial Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
-            {/* Left Column: Option Title & Exact Inclusions List */}
-            <div className="lg:col-span-6 flex flex-col justify-start">
-              <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-lime-700 font-mono font-bold mb-3">
-                <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
-                {activeOption.badge}
+          {/* 2-Column Perfectly Aligned & Balanced Editorial Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
+            {/* Left Column: Exact Reference Content */}
+            <div className="lg:col-span-6 flex flex-col justify-between space-y-5">
+              {/* Introduction Paragraph */}
+              <p className="text-sm sm:text-[15px] text-slate-800 leading-relaxed font-medium">
+                Shafsky Aviation provides seamless Hotel coordination and accommodation management across India. Our curated network includes 7-star, 5-star, and premium 3-star Hotels, ensuring comfort, convenience, and world-class hospitality for VIP guests, corporate clients, delegations, and international &amp; Domestic travellers.
+              </p>
+
+              {/* Two-Column Hotel Lists */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 pt-1">
+                {/* Luxury Hotels (5★ - 7★) */}
+                <div>
+                  <h3
+                    className="text-base sm:text-lg font-extrabold text-[#0a196f] underline decoration-[#0a196f] decoration-2 underline-offset-4 mb-3 tracking-tight"
+                    style={display}
+                  >
+                    Luxury Hotels (5★ - 7★)
+                  </h3>
+                  <ul className="space-y-2 text-xs sm:text-[13px] font-semibold text-slate-800 leading-snug">
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>Taj Palace</span>
+                    </li>
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>ITC Maurya</span>
+                    </li>
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>The Imperial</span>
+                    </li>
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>The Oberoi</span>
+                    </li>
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>The Lodhi</span>
+                    </li>
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>The Leela Palace</span>
+                    </li>
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>Taj Mahal Hotel</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* 3 ★ Hotels */}
+                <div>
+                  <h3
+                    className="text-base sm:text-lg font-extrabold text-[#0a196f] underline decoration-[#0a196f] decoration-2 underline-offset-4 mb-3 tracking-tight"
+                    style={display}
+                  >
+                    3 ★ Hotels
+                  </h3>
+                  <ul className="space-y-2 text-xs sm:text-[13px] font-semibold text-slate-800 leading-snug">
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>Hotel Classic Diplomat</span>
+                    </li>
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>De Pavilion Hotel</span>
+                    </li>
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>Airport Hotel</span>
+                    </li>
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>Hotel Castle Blue</span>
+                    </li>
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>Round D Clock Hotel</span>
+                    </li>
+                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>Ibis New Delhi Aerocity</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
 
-              <h3 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0a196f] tracking-tight mb-6" style={display}>
-                {activeOption.id}
-              </h3>
-
-              <div className="space-y-4">
-                {activeOption.inclusions.map((inc, i) => (
-                  <div key={i} className="flex items-start gap-3.5 text-sm sm:text-[15px] text-slate-900 leading-snug">
-                    <span className="text-slate-900 font-bold text-xl leading-none mt-0.5">•</span>
-                    <span className="font-semibold text-slate-900">{inc}</span>
-                  </div>
-                ))}
+              {/* How we manage? */}
+              <div className="pt-4 border-t border-slate-200/80">
+                <h3
+                  className="text-base sm:text-lg font-extrabold text-[#b38a2e] underline decoration-[#b38a2e] decoration-2 underline-offset-4 mb-3 tracking-tight"
+                  style={display}
+                >
+                  How we manage?
+                </h3>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs sm:text-[13px] font-semibold text-slate-800 leading-snug">
+                  <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <span className="text-[#b38a2e] font-bold">•</span>
+                    <span>Fast &amp; coordinated check in/check-out</span>
+                  </li>
+                  <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <span className="text-[#b38a2e] font-bold">•</span>
+                    <span>VIP &amp; corporate room arrangements</span>
+                  </li>
+                  <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <span className="text-[#b38a2e] font-bold">•</span>
+                    <span>Group stay &amp; delegation support</span>
+                  </li>
+                  <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <span className="text-[#b38a2e] font-bold">•</span>
+                    <span>Airport ↔ Hotel transfers</span>
+                  </li>
+                  <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <span className="text-[#b38a2e] font-bold">•</span>
+                    <span>Dedicated hotel liaison</span>
+                  </li>
+                  <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <span className="text-[#b38a2e] font-bold">•</span>
+                    <span>24×7 guest assistance</span>
+                  </li>
+                </ul>
               </div>
             </div>
 
-            {/* Right Column: Original Aspect Ratio Uncropped Gallery */}
-            <div className="lg:col-span-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Right Column: Original Aspect Ratio Uncropped Gallery (Retained) */}
+            <div className="lg:col-span-6 flex flex-col">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
                 {[
                   { src: hotelPageImg, alt: "Palace Heritage & Estates" },
                   { src: "/hotel/hotel1.png", alt: "Premier 5-Star City & Resort Properties" },
@@ -560,17 +658,17 @@ function DedicatedLuxuryHotelsPage() {
                 ].map((img, idx) => (
                   <div
                     key={idx}
-                    className="w-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white group hover:border-lime-400 transition-all"
+                    className="w-full h-full flex flex-col rounded-2xl overflow-hidden border border-slate-200/80 bg-white group hover:border-lime-400 transition-all shadow-2xs"
                   >
-                    <div className="w-full aspect-[4/3] bg-slate-50 overflow-hidden flex items-center justify-center">
+                    <div className="w-full aspect-[4/3] bg-slate-50 overflow-hidden flex items-center justify-center shrink-0">
                       <img width={1600} height={900} loading="lazy" decoding="async"
                         src={img.src}
                         alt={img.alt}
                         className="w-full h-full object-cover object-center select-none block group-hover:scale-102 transition-transform duration-500"
                       />
                     </div>
-                    <div className="p-3 bg-white border-t border-slate-100">
-                      <span className="text-[11px] font-mono font-bold text-slate-800 tracking-wide block">
+                    <div className="p-3 bg-white border-t border-slate-100 flex-1 flex items-center">
+                      <span className="text-[11px] font-mono font-bold text-slate-800 tracking-wide block leading-snug">
                         {img.alt}
                       </span>
                     </div>

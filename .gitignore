@@ -34,4 +34,5 @@ Thumbs.db
 # Editor & Local logs
 .vscode/
 *.err
-
+
+0.26.0

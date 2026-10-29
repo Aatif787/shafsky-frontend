@@ -17,6 +17,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import { EnquirySuccessCard } from "./EnquirySuccessCard";
 import { mono } from "../../theme";
 import {
@@ -342,14 +343,13 @@ export const TransportEnquiryForm: React.FC<TransportEnquiryFormProps> = ({
               <span>Phone Number</span>
               <span className="text-lime-600 font-bold">*</span>
             </label>
-            <input
-              type="tel"
+            <PhoneInput
               required
               value={phone}
-              onKeyDown={preventLettersKeyDown}
-              onChange={(e) => setPhone(sanitizePhone(e.target.value))}
-              placeholder="Enter phone number"
-              className={INPUT}
+              onChange={setPhone}
+              placeholder="Mobile number"
+              className="h-12 w-full rounded-r-2xl border border-slate-300 bg-transparent px-4 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-none"
+              wrapperClassName="w-full [&>button]:h-12 [&>button]:rounded-l-2xl"
             />
           </div>
         </div>

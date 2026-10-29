@@ -18,6 +18,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 import { enquiryApi } from "@/lib/api/enquiryApi";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import { display } from "@/components/home/theme";
 import {
   sanitizeName,
@@ -531,18 +532,13 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                   <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                     Phone / WhatsApp Number <span className="text-rose-500">*</span>
                   </label>
-                  <div className="relative">
-                    <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="tel"
-                      placeholder="Phone or WhatsApp number"
-                      value={phone}
-                      onKeyDown={preventLettersKeyDown}
-                      onChange={(e) => setPhone(sanitizePhone(e.target.value))}
-                      required
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15 transition font-mono"
-                    />
-                  </div>
+                  <PhoneInput
+                    required
+                    value={phone}
+                    onChange={setPhone}
+                    placeholder="Phone or WhatsApp number"
+                    className="border-slate-200 focus:border-[#0a196f] focus:ring-[#0a196f]/15 font-mono text-xs sm:text-sm"
+                  />
                 </div>
               </div>
             </div>

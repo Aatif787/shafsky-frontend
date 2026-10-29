@@ -52,8 +52,8 @@ describe("Navigation navbar (Direct Individual Links)", () => {
       href: "/solutions/aviation",
     });
     expect(NAV_ITEMS[6]).toEqual({
-      label: "Ticketing",
-      href: "/solutions/special-services?sub=ticketing",
+      label: "Other Services",
+      href: "/solutions/special-services",
     });
     expect(NAV_ITEMS[7]).toEqual({
       label: "Support",
@@ -66,7 +66,7 @@ describe("Navigation navbar (Direct Individual Links)", () => {
 
     // NO dropdown or mega-menu trigger
     expect(html).not.toContain('aria-haspopup="dialog"');
-    expect(html).not.toContain('aria-haspopup="true"');
+    // Note: Other Services has an accessible dropdown trigger
     expect(html).not.toContain(">Services</span>");
 
     // All services appear directly as links
@@ -84,8 +84,7 @@ describe("Navigation navbar (Direct Individual Links)", () => {
     expect(html).toContain('href="/solutions/aviation"');
     expect(html).toContain(">Private Charter</span>");
 
-    expect(html).toContain('href="/solutions/special-services?sub=ticketing"');
-    expect(html).toContain(">Ticketing</span>");
+    expect(html).toContain(">Other Services</span>");
 
     // Other nav items
     expect(html).toContain('href="/airports"');

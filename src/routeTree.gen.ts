@@ -45,6 +45,7 @@ import { Route as ServicesGuideRouteImport } from './routes/services.guide'
 import { Route as SolutionsAviationRouteImport } from './routes/solutions.aviation'
 import { Route as SolutionsConciergeRouteImport } from './routes/solutions.concierge'
 import { Route as SolutionsHotelsRouteImport } from './routes/solutions.hotels'
+import { Route as SolutionsInfantCareRouteImport } from './routes/solutions.infant-care'
 import { Route as SolutionsLoungeRouteImport } from './routes/solutions.lounge'
 import { Route as SolutionsSpecialServicesRouteImport } from './routes/solutions.special-services'
 import { Route as SolutionsTransportRouteImport } from './routes/solutions.transport'
@@ -263,6 +264,11 @@ const SolutionsConciergeRoute = SolutionsConciergeRouteImport.update({
 const SolutionsHotelsRoute = SolutionsHotelsRouteImport.update({
   id: '/solutions/hotels',
   path: '/solutions/hotels',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolutionsInfantCareRoute = SolutionsInfantCareRouteImport.update({
+  id: '/solutions/infant-care',
+  path: '/solutions/infant-care',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SolutionsLoungeRoute = SolutionsLoungeRouteImport.update({
@@ -533,6 +539,7 @@ export interface FileRoutesByFullPath {
   '/solutions/aviation': typeof SolutionsAviationRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
   '/solutions/hotels': typeof SolutionsHotelsRoute
+  '/solutions/infant-care': typeof SolutionsInfantCareRoute
   '/solutions/lounge': typeof SolutionsLoungeRoute
   '/solutions/special-services': typeof SolutionsSpecialServicesRoute
   '/solutions/transport': typeof SolutionsTransportRoute
@@ -608,6 +615,7 @@ export interface FileRoutesByTo {
   '/solutions/aviation': typeof SolutionsAviationRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
   '/solutions/hotels': typeof SolutionsHotelsRoute
+  '/solutions/infant-care': typeof SolutionsInfantCareRoute
   '/solutions/lounge': typeof SolutionsLoungeRoute
   '/solutions/special-services': typeof SolutionsSpecialServicesRoute
   '/solutions/transport': typeof SolutionsTransportRoute
@@ -687,6 +695,7 @@ export interface FileRoutesById {
   '/solutions/aviation': typeof SolutionsAviationRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
   '/solutions/hotels': typeof SolutionsHotelsRoute
+  '/solutions/infant-care': typeof SolutionsInfantCareRoute
   '/solutions/lounge': typeof SolutionsLoungeRoute
   '/solutions/special-services': typeof SolutionsSpecialServicesRoute
   '/solutions/transport': typeof SolutionsTransportRoute
@@ -766,6 +775,7 @@ export interface FileRouteTypes {
     | '/solutions/aviation'
     | '/solutions/concierge'
     | '/solutions/hotels'
+    | '/solutions/infant-care'
     | '/solutions/lounge'
     | '/solutions/special-services'
     | '/solutions/transport'
@@ -841,6 +851,7 @@ export interface FileRouteTypes {
     | '/solutions/aviation'
     | '/solutions/concierge'
     | '/solutions/hotels'
+    | '/solutions/infant-care'
     | '/solutions/lounge'
     | '/solutions/special-services'
     | '/solutions/transport'
@@ -919,6 +930,7 @@ export interface FileRouteTypes {
     | '/solutions/aviation'
     | '/solutions/concierge'
     | '/solutions/hotels'
+    | '/solutions/infant-care'
     | '/solutions/lounge'
     | '/solutions/special-services'
     | '/solutions/transport'
@@ -992,6 +1004,7 @@ export interface RootRouteChildren {
   SolutionsAviationRoute: typeof SolutionsAviationRoute
   SolutionsConciergeRoute: typeof SolutionsConciergeRoute
   SolutionsHotelsRoute: typeof SolutionsHotelsRoute
+  SolutionsInfantCareRoute: typeof SolutionsInfantCareRoute
   SolutionsLoungeRoute: typeof SolutionsLoungeRoute
   SolutionsSpecialServicesRoute: typeof SolutionsSpecialServicesRoute
   SolutionsTransportRoute: typeof SolutionsTransportRoute
@@ -1253,6 +1266,13 @@ declare module '@tanstack/react-router' {
       path: '/solutions/hotels'
       fullPath: '/solutions/hotels'
       preLoaderRoute: typeof SolutionsHotelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions/infant-care': {
+      id: '/solutions/infant-care'
+      path: '/solutions/infant-care'
+      fullPath: '/solutions/infant-care'
+      preLoaderRoute: typeof SolutionsInfantCareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/solutions/lounge': {
@@ -1718,6 +1738,7 @@ const rootRouteChildren: RootRouteChildren = {
   SolutionsAviationRoute: SolutionsAviationRoute,
   SolutionsConciergeRoute: SolutionsConciergeRoute,
   SolutionsHotelsRoute: SolutionsHotelsRoute,
+  SolutionsInfantCareRoute: SolutionsInfantCareRoute,
   SolutionsLoungeRoute: SolutionsLoungeRoute,
   SolutionsSpecialServicesRoute: SolutionsSpecialServicesRoute,
   SolutionsTransportRoute: SolutionsTransportRoute,

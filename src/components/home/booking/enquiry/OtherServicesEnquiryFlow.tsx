@@ -1,46 +1,25 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { format, isValid } from "date-fns";
 import {
-  ArrowRightLeft,
-  Ticket,
-  Car,
-  PlaneTakeoff,
-  PlaneLanding,
-  CalendarDays,
-  Users,
   Send,
   Loader2,
-  User,
-  Mail,
-  Phone,
   ArrowLeft,
-  Clock,
   Sparkles,
 } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarPicker } from "@/components/ui/calendar";
-import { IntelligentAirportAutocomplete } from "@/components/booking/shared/IntelligentAirportAutocomplete";
-import { formatAirportOption } from "@/lib/api/airportApi";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 import { EnquirySuccessCard } from "./EnquirySuccessCard";
-import { mono, display } from "../../theme";
+import { mono } from "../../theme";
 import {
-  sanitizeName,
-  sanitizePhone,
-  preventDigitsKeyDown,
-  preventLettersKeyDown,
-} from "@/lib/inputValidation";
+  type OtherServiceType,
+  type CustomerErrors,
+  SERVICE_OPTIONS,
+  OtherServicesCustomerSection,
+  OtherServicesTicketingSection,
+  OtherServicesTransportSection,
+  OtherServicesHotelSection,
+} from "./OtherServicesEnquiryParts";
 
-const FIELD_CONTAINER = "flex flex-col gap-1";
-const LABEL =
-  "text-[10px] sm:text-[10.5px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5";
-const INPUT =
-  "h-11 w-full rounded-xl border border-slate-300 bg-white/70 px-3.5 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-none";
-const DATE_BTN =
-  "relative flex h-11 w-full items-center rounded-xl border border-slate-300 bg-white/70 pl-9 pr-3 text-left text-xs font-semibold text-slate-900 outline-none transition-all duration-200 hover:border-lime-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 shadow-none cursor-pointer";
-
-export type OtherServiceType = "round-trip" | "ticketing" | "transport";
+export type { OtherServiceType };
 
 interface OtherServicesEnquiryFlowProps {
   initialService?: OtherServiceType;
@@ -52,44 +31,31 @@ interface OtherServicesEnquiryFlowProps {
 }
 
 export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> = ({
-  initialService = "round-trip",
+  initialService = "ticketing",
   initialOrigin = "",
   initialDestination = "",
   initialDate = "",
   initialPax = 1,
   onBackToAirport,
 }) => {
-  // Service Selection State (Defaults to initialService, preserved on switch)
-  const [selectedService, setSelectedService] = useState<OtherServiceType>(initialService);
+  // Service Selection State (Defaults to initialService: ticketing, transport, or hotel)
+  const [selectedService, setSelectedService] = useState<OtherServiceType>(
+    initialService === ("round-trip" as any) ? "ticketing" : initialService
+  );
 
   // Customer Details State
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [customerErrors, setCustomerErrors] = useState<{
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    phone?: string;
-  }>({});
-
-  // Round Trip State
-  const [rtOrigin, setRtOrigin] = useState(initialOrigin);
-  const [rtDestination, setRtDestination] = useState(initialDestination);
-  const [rtReturnOrigin, setRtReturnOrigin] = useState("");
-  const [rtReturnDestination, setRtReturnDestination] = useState("");
-  const [rtDepartureDate, setRtDepartureDate] = useState(initialDate);
-  const [rtReturnDate, setRtReturnDate] = useState("");
-  const [rtOutboundFlight, setRtOutboundFlight] = useState("");
-  const [rtReturnFlight, setRtReturnFlight] = useState("");
-  const [rtPax, setRtPax] = useState(Math.max(1, initialPax));
+  const [customerErrors, setCustomerErrors] = useState<CustomerErrors>({});
 
   // Ticketing State
   const [tktOrigin, setTktOrigin] = useState(initialOrigin);
   const [tktDestination, setTktDestination] = useState(initialDestination);
   const [tktDate, setTktDate] = useState(initialDate);
   const [tktPax, setTktPax] = useState(Math.max(1, initialPax));
+  const [tktCalendarOpen, setTktCalendarOpen] = useState(false);
 
   // Transport State
   const [trnPickup, setTrnPickup] = useState(initialOrigin ? `${initialOrigin} Airport` : "");
@@ -98,15 +64,19 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
   const [trnTime, setTrnTime] = useState("10:00");
   const [trnPax, setTrnPax] = useState(Math.max(1, initialPax));
   const [trnVehicle, setTrnVehicle] = useState("Executive Sedan");
+  const [trnCalendarOpen, setTrnCalendarOpen] = useState(false);
+
+  // Hotel State
+  const [hotelCityOrName, setHotelCityOrName] = useState(initialDestination || initialOrigin || "");
+  const [hotelCheckIn, setHotelCheckIn] = useState(initialDate);
+  const [hotelCheckOut, setHotelCheckOut] = useState("");
+  const [hotelGuests, setHotelGuests] = useState(Math.max(1, initialPax));
+  const [hotelRooms, setHotelRooms] = useState(1);
+  const [hotelCheckInCalendarOpen, setHotelCheckInCalendarOpen] = useState(false);
+  const [hotelCheckOutCalendarOpen, setHotelCheckOutCalendarOpen] = useState(false);
 
   // Common Additional Requirements
   const [notes, setNotes] = useState("");
-
-  // Popover Calendar States
-  const [rtDepCalendarOpen, setRtDepCalendarOpen] = useState(false);
-  const [rtRetCalendarOpen, setRtRetCalendarOpen] = useState(false);
-  const [tktCalendarOpen, setTktCalendarOpen] = useState(false);
-  const [trnCalendarOpen, setTrnCalendarOpen] = useState(false);
 
   // Submission State
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -114,7 +84,7 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
 
   // Customer Validation
   const validateCustomerDetails = (): boolean => {
-    const errs: typeof customerErrors = {};
+    const errs: CustomerErrors = {};
     const trimmedFirstName = firstName.trim();
     if (!trimmedFirstName || !/^[A-Za-z\s]+$/.test(trimmedFirstName)) {
       errs.firstName = "Please enter a valid passenger name using letters only.";
@@ -152,32 +122,7 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
     const fullName = `${firstName.trim()} ${lastName.trim()}`;
 
     // Service-specific validation
-    if (selectedService === "round-trip") {
-      if (!rtOrigin.trim()) {
-        toast.error("Please select departure airport.");
-        return;
-      }
-      if (!rtDestination.trim()) {
-        toast.error("Please select destination airport.");
-        return;
-      }
-      if (rtOrigin.trim().toUpperCase() === rtDestination.trim().toUpperCase()) {
-        toast.error("Departure and destination airports cannot be identical.");
-        return;
-      }
-      if (!rtDepartureDate) {
-        toast.error("Please select departure date.");
-        return;
-      }
-      if (!rtReturnDate) {
-        toast.error("Please select return date.");
-        return;
-      }
-      if (new Date(rtReturnDate) < new Date(rtDepartureDate)) {
-        toast.error("Return date cannot be earlier than departure date.");
-        return;
-      }
-    } else if (selectedService === "ticketing") {
+    if (selectedService === "ticketing") {
       if (!tktOrigin.trim()) {
         toast.error("Please select departure airport.");
         return;
@@ -204,52 +149,31 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
         return;
       }
       if (!trnDate) {
-        toast.error("Please select departure date.");
+        toast.error("Please select travel date.");
+        return;
+      }
+    } else if (selectedService === "hotel") {
+      if (!hotelCityOrName.trim()) {
+        toast.error("Please enter city, destination, or hotel name.");
+        return;
+      }
+      if (!hotelCheckIn) {
+        toast.error("Please select check-in date.");
+        return;
+      }
+      if (!hotelCheckOut) {
+        toast.error("Please select check-out date.");
+        return;
+      }
+      if (new Date(hotelCheckOut) < new Date(hotelCheckIn)) {
+        toast.error("Check-out date cannot be earlier than check-in date.");
         return;
       }
     }
 
     setIsSubmitting(true);
     try {
-      if (selectedService === "round-trip") {
-        const res = await enquiryApi.submit({
-          passengerName: fullName,
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          passengerEmail: email.trim().toLowerCase(),
-          passengerPhone: phone.trim(),
-          serviceCategory: "Round Trip",
-          serviceType: "Round Trip Flight Enquiry",
-          origin: rtOrigin.trim(),
-          destination: rtDestination.trim(),
-          serviceDate: rtDepartureDate,
-          notes: notes.trim() || undefined,
-          details: {
-            first_name: firstName.trim(),
-            last_name: lastName.trim(),
-            service: "Round Trip",
-            origin: rtOrigin.trim(),
-            destination: rtDestination.trim(),
-            departure_date: rtDepartureDate,
-            outbound_date: rtDepartureDate,
-            return_origin: (rtReturnOrigin || rtDestination).trim(),
-            return_destination: (rtReturnDestination || rtOrigin).trim(),
-            return_date: rtReturnDate,
-            outbound_flight: rtOutboundFlight.trim().toUpperCase() || undefined,
-            return_flight: rtReturnFlight.trim().toUpperCase() || undefined,
-            passenger_count: rtPax,
-            pax_count: rtPax,
-            notes: notes.trim() || undefined,
-          },
-        });
-
-        if (res.success && res.data) {
-          setSubmittedRef(res.data.bookingRef);
-          toast.success(`Round Trip enquiry registered! Reference: ${res.data.bookingRef}`);
-        } else {
-          toast.error(!res.success && res.error ? res.error : "Failed to submit enquiry. Please try again.");
-        }
-      } else if (selectedService === "ticketing") {
+      if (selectedService === "ticketing") {
         const res = await enquiryApi.submit({
           passengerName: fullName,
           firstName: firstName.trim(),
@@ -319,6 +243,43 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
         } else {
           toast.error(!res.success && res.error ? res.error : "Failed to submit enquiry. Please try again.");
         }
+      } else if (selectedService === "hotel") {
+        const res = await enquiryApi.submit({
+          passengerName: fullName,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          passengerEmail: email.trim().toLowerCase(),
+          passengerPhone: phone.trim(),
+          serviceCategory: "Hotel",
+          serviceType: "Hotel Booking Enquiry",
+          origin: hotelCityOrName.trim(),
+          destination: hotelCityOrName.trim(),
+          serviceDate: hotelCheckIn,
+          notes: notes.trim() || undefined,
+          details: {
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            service: "Hotel",
+            city: hotelCityOrName.trim(),
+            hotel_name: hotelCityOrName.trim(),
+            destination: hotelCityOrName.trim(),
+            check_in: hotelCheckIn,
+            check_out: hotelCheckOut,
+            service_date: hotelCheckIn,
+            guests_count: hotelGuests,
+            rooms_count: hotelRooms,
+            passenger_count: hotelGuests,
+            pax_count: hotelGuests,
+            notes: notes.trim() || undefined,
+          },
+        });
+
+        if (res.success && res.data) {
+          setSubmittedRef(res.data.bookingRef);
+          toast.success(`Hotel enquiry registered! Reference: ${res.data.bookingRef}`);
+        } else {
+          toast.error(!res.success && res.error ? res.error : "Failed to submit enquiry. Please try again.");
+        }
       }
     } catch (err: any) {
       console.error("[OtherServicesEnquiryFlow] Submit error:", err);
@@ -330,19 +291,17 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
 
   const handleResetFlow = () => {
     setSubmittedRef(null);
-    setRtReturnOrigin("");
-    setRtReturnDestination("");
-    setRtReturnDate("");
-    setRtOutboundFlight("");
-    setRtReturnFlight("");
+    setHotelCityOrName("");
+    setHotelCheckIn("");
+    setHotelCheckOut("");
     setNotes("");
   };
 
   if (submittedRef) {
-    const serviceTitles = {
-      "round-trip": "Round Trip Flight",
+    const serviceTitles: Record<OtherServiceType, string> = {
       ticketing: "Air Ticketing",
       transport: "Ground Transport",
+      hotel: "Hotel Booking",
     };
     return (
       <EnquirySuccessCard
@@ -354,126 +313,13 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
     );
   }
 
-  const SERVICE_OPTIONS: { id: OtherServiceType; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-    { id: "round-trip", label: "Round Trip", icon: ArrowRightLeft },
-    { id: "ticketing", label: "Ticketing", icon: Ticket },
-    { id: "transport", label: "Transport", icon: Car },
-  ];
-
   return (
     <form
       onSubmit={handleSubmit}
       className="space-y-4 sm:space-y-5 animate-in fade-in duration-200"
     >
-      {/* 1. CUSTOMER DETAILS */}
-      <div className="space-y-2.5">
-        <div className="flex items-center justify-between">
-          <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5" style={mono}>
-            <User className="w-3.5 h-3.5 text-lime-600" />
-            <span>Customer Details</span>
-          </label>
-          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">
-            Enquiry Request • ₹0
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
-          {/* First Name */}
-          <div className={FIELD_CONTAINER}>
-            <label className={LABEL}>
-              <span>First Name</span>
-              <span className="text-lime-600 font-bold">*</span>
-            </label>
-            <input
-              type="text"
-              value={firstName}
-              onKeyDown={preventDigitsKeyDown}
-              onChange={(e) => {
-                const val = sanitizeName(e.target.value);
-                setFirstName(val);
-                if (customerErrors.firstName) setCustomerErrors((p) => ({ ...p, firstName: undefined }));
-              }}
-              placeholder="First name"
-              className={`${INPUT} ${customerErrors.firstName ? "border-red-400 focus:border-red-500" : ""}`}
-            />
-            {customerErrors.firstName && (
-              <span className="text-[10.5px] text-red-500 font-medium">{customerErrors.firstName}</span>
-            )}
-          </div>
-
-          {/* Last Name */}
-          <div className={FIELD_CONTAINER}>
-            <label className={LABEL}>
-              <span>Last Name</span>
-              <span className="text-lime-600 font-bold">*</span>
-            </label>
-            <input
-              type="text"
-              value={lastName}
-              onKeyDown={preventDigitsKeyDown}
-              onChange={(e) => {
-                const val = sanitizeName(e.target.value);
-                setLastName(val);
-                if (customerErrors.lastName) setCustomerErrors((p) => ({ ...p, lastName: undefined }));
-              }}
-              placeholder="Last name"
-              className={`${INPUT} ${customerErrors.lastName ? "border-red-400 focus:border-red-500" : ""}`}
-            />
-            {customerErrors.lastName && (
-              <span className="text-[10.5px] text-red-500 font-medium">{customerErrors.lastName}</span>
-            )}
-          </div>
-
-          {/* Email Address */}
-          <div className={FIELD_CONTAINER}>
-            <label className={LABEL}>
-              <Mail className="w-3 h-3 text-slate-400" />
-              <span>Email Address</span>
-              <span className="text-lime-600 font-bold">*</span>
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (customerErrors.email) setCustomerErrors((p) => ({ ...p, email: undefined }));
-              }}
-              placeholder="Email address"
-              className={`${INPUT} ${customerErrors.email ? "border-red-400 focus:border-red-500" : ""}`}
-            />
-            {customerErrors.email && (
-              <span className="text-[10.5px] text-red-500 font-medium">{customerErrors.email}</span>
-            )}
-          </div>
-
-          {/* Phone Number */}
-          <div className={FIELD_CONTAINER}>
-            <label className={LABEL}>
-              <Phone className="w-3 h-3 text-slate-400" />
-              <span>Phone Number</span>
-              <span className="text-lime-600 font-bold">*</span>
-            </label>
-            <input
-              type="tel"
-              value={phone}
-              onKeyDown={preventLettersKeyDown}
-              onChange={(e) => {
-                const val = sanitizePhone(e.target.value);
-                setPhone(val);
-                if (customerErrors.phone) setCustomerErrors((p) => ({ ...p, phone: undefined }));
-              }}
-              placeholder="Phone number"
-              className={`${INPUT} ${customerErrors.phone ? "border-red-400 focus:border-red-500" : ""}`}
-            />
-            {customerErrors.phone && (
-              <span className="text-[10.5px] text-red-500 font-medium">{customerErrors.phone}</span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 2. SERVICE SELECTION */}
-      <div className="space-y-2 pt-1 border-t border-slate-200/80">
+      {/* 1. SERVICE SELECTION (FIRST) */}
+      <div className="space-y-2">
         <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5" style={mono}>
           <Sparkles className="w-3.5 h-3.5 text-lime-600" />
           <span>Select Service</span>
@@ -502,510 +348,84 @@ export const OtherServicesEnquiryFlow: React.FC<OtherServicesEnquiryFlowProps> =
         </div>
       </div>
 
+      {/* 2. CUSTOMER DETAILS */}
+      <div className="pt-1 border-t border-slate-200/80">
+        <OtherServicesCustomerSection
+          firstName={firstName}
+          setFirstName={setFirstName}
+          lastName={lastName}
+          setLastName={setLastName}
+          email={email}
+          setEmail={setEmail}
+          phone={phone}
+          setPhone={setPhone}
+          customerErrors={customerErrors}
+          setCustomerErrors={setCustomerErrors}
+        />
+      </div>
+
       {/* 3. DYNAMIC SERVICE-SPECIFIC FIELDS */}
       <div className="pt-1 border-t border-slate-200/80">
-        {/* OPTION 1: ROUND TRIP */}
-        {selectedService === "round-trip" && (
-          <div className="space-y-3">
-            {/* Outbound Route */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <PlaneTakeoff className="w-3 h-3 text-slate-500" />
-                  <span>From Airport</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <IntelligentAirportAutocomplete
-                  mode="global"
-                  value={rtOrigin}
-                  inputClassName={INPUT}
-                  placeholder="Select airport"
-                  showIcon={false}
-                  onSelect={(ap) => {
-                    const formatted = formatAirportOption(ap);
-                    setRtOrigin(formatted);
-                    if (!rtReturnDestination) setRtReturnDestination(formatted);
-                  }}
-                  onChangeText={(txt) => setRtOrigin(txt)}
-                />
-              </div>
-
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <PlaneLanding className="w-3 h-3 text-slate-500" />
-                  <span>To Airport</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <IntelligentAirportAutocomplete
-                  mode="global"
-                  value={rtDestination}
-                  inputClassName={INPUT}
-                  placeholder="Select airport"
-                  showIcon={false}
-                  onSelect={(ap) => {
-                    const formatted = formatAirportOption(ap);
-                    setRtDestination(formatted);
-                    if (!rtReturnOrigin) setRtReturnOrigin(formatted);
-                  }}
-                  onChangeText={(txt) => setRtDestination(txt)}
-                />
-              </div>
-            </div>
-
-            {/* Return Route */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <PlaneTakeoff className="w-3 h-3 text-slate-500" />
-                  <span>Return From</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <IntelligentAirportAutocomplete
-                  mode="global"
-                  value={rtReturnOrigin || rtDestination}
-                  inputClassName={INPUT}
-                  placeholder="Select airport"
-                  showIcon={false}
-                  onSelect={(ap) => setRtReturnOrigin(formatAirportOption(ap))}
-                  onChangeText={(txt) => setRtReturnOrigin(txt)}
-                />
-              </div>
-
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <PlaneLanding className="w-3 h-3 text-slate-500" />
-                  <span>Return To</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <IntelligentAirportAutocomplete
-                  mode="global"
-                  value={rtReturnDestination || rtOrigin}
-                  inputClassName={INPUT}
-                  placeholder="Select airport"
-                  showIcon={false}
-                  onSelect={(ap) => setRtReturnDestination(formatAirportOption(ap))}
-                  onChangeText={(txt) => setRtReturnDestination(txt)}
-                />
-              </div>
-            </div>
-
-            {/* Travel Dates & Optional Flight Numbers */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
-              {/* Departure Date */}
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <CalendarDays className="w-3 h-3 text-slate-500" />
-                  <span>Departure Date</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <Popover open={rtDepCalendarOpen} onOpenChange={setRtDepCalendarOpen}>
-                  <PopoverTrigger asChild>
-                    <button type="button" className={DATE_BTN}>
-                      <CalendarDays className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
-                      <span className={rtDepartureDate ? "text-slate-900" : "text-slate-400"}>
-                        {rtDepartureDate && isValid(new Date(rtDepartureDate))
-                          ? format(new Date(rtDepartureDate), "EEE, dd MMM yyyy")
-                          : "Select date"}
-                      </span>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 z-50 rounded-2xl bg-white border border-slate-200 shadow-xl" align="start">
-                    <CalendarPicker
-                      mode="single"
-                      selected={rtDepartureDate && isValid(new Date(rtDepartureDate)) ? new Date(rtDepartureDate) : undefined}
-                      onSelect={(date) => {
-                        if (date) {
-                          setRtDepartureDate(format(date, "yyyy-MM-dd"));
-                          setRtDepCalendarOpen(false);
-                        }
-                      }}
-                      disabled={{ before: new Date() }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Return Date */}
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <CalendarDays className="w-3 h-3 text-slate-500" />
-                  <span>Return Date</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <Popover open={rtRetCalendarOpen} onOpenChange={setRtRetCalendarOpen}>
-                  <PopoverTrigger asChild>
-                    <button type="button" className={DATE_BTN}>
-                      <CalendarDays className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
-                      <span className={rtReturnDate ? "text-slate-900" : "text-slate-400"}>
-                        {rtReturnDate && isValid(new Date(rtReturnDate))
-                          ? format(new Date(rtReturnDate), "EEE, dd MMM yyyy")
-                          : "Select date"}
-                      </span>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 z-50 rounded-2xl bg-white border border-slate-200 shadow-xl" align="start">
-                    <CalendarPicker
-                      mode="single"
-                      selected={rtReturnDate && isValid(new Date(rtReturnDate)) ? new Date(rtReturnDate) : undefined}
-                      onSelect={(date) => {
-                        if (date) {
-                          setRtReturnDate(format(date, "yyyy-MM-dd"));
-                          setRtRetCalendarOpen(false);
-                        }
-                      }}
-                      disabled={{ before: rtDepartureDate && isValid(new Date(rtDepartureDate)) ? new Date(rtDepartureDate) : new Date() }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Outbound Flight Number */}
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <span>Flight Number</span>
-                  <span className="text-slate-400 font-normal">(Opt)</span>
-                </label>
-                <input
-                  type="text"
-                  value={rtOutboundFlight}
-                  onChange={(e) => setRtOutboundFlight(e.target.value.toUpperCase())}
-                  placeholder="Enter flight number"
-                  className={INPUT}
-                />
-              </div>
-
-              {/* Return Flight Number */}
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <span>Return Flight</span>
-                  <span className="text-slate-400 font-normal">(Opt)</span>
-                </label>
-                <input
-                  type="text"
-                  value={rtReturnFlight}
-                  onChange={(e) => setRtReturnFlight(e.target.value.toUpperCase())}
-                  placeholder="Enter flight number"
-                  className={INPUT}
-                />
-              </div>
-            </div>
-
-            {/* Passengers & Additional Requirements */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <Users className="w-3 h-3 text-slate-500" />
-                  <span>Passengers</span>
-                </label>
-                <div className="flex items-center h-11 rounded-xl border border-slate-300 bg-white/70 px-3 justify-between">
-                  <span className="text-xs font-semibold text-slate-900">{rtPax} Guest{rtPax > 1 ? "s" : ""}</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setRtPax((p) => Math.max(1, p - 1))}
-                      disabled={rtPax <= 1}
-                      className="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 disabled:opacity-40 font-bold text-sm cursor-pointer flex items-center justify-center"
-                    >
-                      -
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setRtPax((p) => Math.min(20, p + 1))}
-                      className="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 font-bold text-sm cursor-pointer flex items-center justify-center"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <span>Additional Requirements</span>
-                  <span className="text-slate-400 font-normal">(Opt)</span>
-                </label>
-                <input
-                  type="text"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Enter any additional requirements"
-                  className={INPUT}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* OPTION 2: TICKETING */}
+        {/* OPTION 1: TICKETING */}
         {selectedService === "ticketing" && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <PlaneTakeoff className="w-3 h-3 text-slate-500" />
-                  <span>From Airport</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <IntelligentAirportAutocomplete
-                  mode="global"
-                  value={tktOrigin}
-                  inputClassName={INPUT}
-                  placeholder="Search airport (e.g. DEL, BOM, DXB)"
-                  showIcon={false}
-                  onSelect={(ap) => setTktOrigin(formatAirportOption(ap))}
-                  onChangeText={(txt) => setTktOrigin(txt)}
-                />
-              </div>
-
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <PlaneLanding className="w-3 h-3 text-slate-500" />
-                  <span>To Airport</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <IntelligentAirportAutocomplete
-                  mode="global"
-                  value={tktDestination}
-                  inputClassName={INPUT}
-                  placeholder="Search airport (e.g. DEL, BOM, DXB)"
-                  showIcon={false}
-                  onSelect={(ap) => setTktDestination(formatAirportOption(ap))}
-                  onChangeText={(txt) => setTktDestination(txt)}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
-              {/* Travel Date */}
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <CalendarDays className="w-3 h-3 text-slate-500" />
-                  <span>Travel Date</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <Popover open={tktCalendarOpen} onOpenChange={setTktCalendarOpen}>
-                  <PopoverTrigger asChild>
-                    <button type="button" className={DATE_BTN}>
-                      <CalendarDays className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
-                      <span className={tktDate ? "text-slate-900" : "text-slate-400"}>
-                        {tktDate && isValid(new Date(tktDate))
-                          ? format(new Date(tktDate), "EEE, dd MMM yyyy")
-                          : "Select date"}
-                      </span>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 z-50 rounded-2xl bg-white border border-slate-200 shadow-xl" align="start">
-                    <CalendarPicker
-                      mode="single"
-                      selected={tktDate && isValid(new Date(tktDate)) ? new Date(tktDate) : undefined}
-                      onSelect={(date) => {
-                        if (date) {
-                          setTktDate(format(date, "yyyy-MM-dd"));
-                          setTktCalendarOpen(false);
-                        }
-                      }}
-                      disabled={{ before: new Date() }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Passengers */}
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <Users className="w-3 h-3 text-slate-500" />
-                  <span>Passengers</span>
-                </label>
-                <div className="flex items-center h-11 rounded-xl border border-slate-300 bg-white/70 px-3 justify-between">
-                  <span className="text-xs font-semibold text-slate-900">{tktPax} Guest{tktPax > 1 ? "s" : ""}</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setTktPax((p) => Math.max(1, p - 1))}
-                      disabled={tktPax <= 1}
-                      className="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 disabled:opacity-40 font-bold text-sm cursor-pointer flex items-center justify-center"
-                    >
-                      -
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTktPax((p) => Math.min(20, p + 1))}
-                      className="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 font-bold text-sm cursor-pointer flex items-center justify-center"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Additional Requirements */}
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <span>Additional Requirements</span>
-                  <span className="text-slate-400 font-normal">(Opt)</span>
-                </label>
-                <input
-                  type="text"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Enter any additional requirements"
-                  className={INPUT}
-                />
-              </div>
-            </div>
-          </div>
+          <OtherServicesTicketingSection
+            tktOrigin={tktOrigin}
+            setTktOrigin={setTktOrigin}
+            tktDestination={tktDestination}
+            setTktDestination={setTktDestination}
+            tktDate={tktDate}
+            setTktDate={setTktDate}
+            tktCalendarOpen={tktCalendarOpen}
+            setTktCalendarOpen={setTktCalendarOpen}
+            tktPax={tktPax}
+            setTktPax={setTktPax}
+            notes={notes}
+            setNotes={setNotes}
+          />
         )}
 
-        {/* OPTION 3: TRANSPORT */}
+        {/* OPTION 2: TRANSPORT */}
         {selectedService === "transport" && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <Car className="w-3 h-3 text-slate-500" />
-                  <span>Pickup Location</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={trnPickup}
-                  onChange={(e) => setTrnPickup(e.target.value)}
-                  placeholder="Enter pickup location"
-                  className={INPUT}
-                />
-              </div>
+          <OtherServicesTransportSection
+            trnPickup={trnPickup}
+            setTrnPickup={setTrnPickup}
+            trnDropoff={trnDropoff}
+            setTrnDropoff={setTrnDropoff}
+            trnDate={trnDate}
+            setTrnDate={setTrnDate}
+            trnCalendarOpen={trnCalendarOpen}
+            setTrnCalendarOpen={setTrnCalendarOpen}
+            trnTime={trnTime}
+            setTrnTime={setTrnTime}
+            trnPax={trnPax}
+            setTrnPax={setTrnPax}
+            trnVehicle={trnVehicle}
+            setTrnVehicle={setTrnVehicle}
+            notes={notes}
+            setNotes={setNotes}
+          />
+        )}
 
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <Car className="w-3 h-3 text-slate-500" />
-                  <span>Drop-off Destination</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={trnDropoff}
-                  onChange={(e) => setTrnDropoff(e.target.value)}
-                  placeholder="Enter drop-off destination"
-                  className={INPUT}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
-              {/* Date */}
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <CalendarDays className="w-3 h-3 text-slate-500" />
-                  <span>Date</span>
-                  <span className="text-lime-600 font-bold">*</span>
-                </label>
-                <Popover open={trnCalendarOpen} onOpenChange={setTrnCalendarOpen}>
-                  <PopoverTrigger asChild>
-                    <button type="button" className={DATE_BTN}>
-                      <CalendarDays className="absolute left-3 w-3.5 h-3.5 text-slate-400" />
-                      <span className={trnDate ? "text-slate-900" : "text-slate-400"}>
-                        {trnDate && isValid(new Date(trnDate))
-                          ? format(new Date(trnDate), "EEE, dd MMM yyyy")
-                          : "Select date"}
-                      </span>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 z-50 rounded-2xl bg-white border border-slate-200 shadow-xl" align="start">
-                    <CalendarPicker
-                      mode="single"
-                      selected={trnDate && isValid(new Date(trnDate)) ? new Date(trnDate) : undefined}
-                      onSelect={(date) => {
-                        if (date) {
-                          setTrnDate(format(date, "yyyy-MM-dd"));
-                          setTrnCalendarOpen(false);
-                        }
-                      }}
-                      disabled={{ before: new Date() }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Time */}
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <Clock className="w-3 h-3 text-slate-500" />
-                  <span>Time</span>
-                </label>
-                <input
-                  type="time"
-                  value={trnTime}
-                  onChange={(e) => setTrnTime(e.target.value)}
-                  className={INPUT}
-                />
-              </div>
-
-              {/* Passengers */}
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <Users className="w-3 h-3 text-slate-500" />
-                  <span>Passengers</span>
-                </label>
-                <div className="flex items-center h-11 rounded-xl border border-slate-300 bg-white/70 px-3 justify-between">
-                  <span className="text-xs font-semibold text-slate-900">{trnPax} Guest{trnPax > 1 ? "s" : ""}</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setTrnPax((p) => Math.max(1, p - 1))}
-                      disabled={trnPax <= 1}
-                      className="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 disabled:opacity-40 font-bold text-sm cursor-pointer flex items-center justify-center"
-                    >
-                      -
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTrnPax((p) => Math.min(10, p + 1))}
-                      className="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 font-bold text-sm cursor-pointer flex items-center justify-center"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Vehicle Preference */}
-              <div className={FIELD_CONTAINER}>
-                <label className={LABEL}>
-                  <span>Vehicle Preference</span>
-                  <span className="text-slate-400 font-normal">(Opt)</span>
-                </label>
-                <select
-                  value={trnVehicle}
-                  onChange={(e) => setTrnVehicle(e.target.value)}
-                  className={`${INPUT} cursor-pointer`}
-                >
-                  <option value="Executive Sedan">Executive Sedan</option>
-                  <option value="Luxury SUV">Luxury SUV</option>
-                  <option value="Executive MPV / Van">Executive MPV / Van</option>
-                  <option value="No Preference">No Preference</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Additional Requirements */}
-            <div className={FIELD_CONTAINER}>
-              <label className={LABEL}>
-                <span>Additional Requirements</span>
-                <span className="text-slate-400 font-normal">(Opt)</span>
-              </label>
-              <input
-                type="text"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Enter any additional requirements"
-                className={INPUT}
-              />
-            </div>
-          </div>
+        {/* OPTION 3: HOTEL */}
+        {selectedService === "hotel" && (
+          <OtherServicesHotelSection
+            hotelCityOrName={hotelCityOrName}
+            setHotelCityOrName={setHotelCityOrName}
+            hotelCheckIn={hotelCheckIn}
+            setHotelCheckIn={setHotelCheckIn}
+            hotelCheckOut={hotelCheckOut}
+            setHotelCheckOut={setHotelCheckOut}
+            hotelCheckInCalendarOpen={hotelCheckInCalendarOpen}
+            setHotelCheckInCalendarOpen={setHotelCheckInCalendarOpen}
+            hotelCheckOutCalendarOpen={hotelCheckOutCalendarOpen}
+            setHotelCheckOutCalendarOpen={setHotelCheckOutCalendarOpen}
+            hotelGuests={hotelGuests}
+            setHotelGuests={setHotelGuests}
+            hotelRooms={hotelRooms}
+            setHotelRooms={setHotelRooms}
+            notes={notes}
+            setNotes={setNotes}
+          />
         )}
       </div>
 

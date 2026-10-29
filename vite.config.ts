@@ -98,6 +98,7 @@ export default defineConfig(({ mode }) => {
             "/solutions/transport",
             "/solutions/hotels",
             "/solutions/special-services",
+            "/solutions/infant-care",
             "/hotels/holiday-inn-express",
             "/hotels/de-pavilion",
             "/hotels/classic-diplomat",

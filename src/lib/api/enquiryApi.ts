@@ -5,6 +5,7 @@ export type EnquiryCategory =
   | "Transport"
   | "Round Trip"
   | "Ticketing"
+  | "Hotel"
   | "Travel Support"
   | "Medical Assistance"
   | "Cargo & Logistics"

@@ -317,7 +317,7 @@ export const WORKFLOW_REGISTRY: Record<string, WorkflowConfig> = {
           { id: "medevacType", label: "Transport Mode", type: "select", options: [
               { label: "Dedicated Air Ambulance (Airborne ICU Jet)", value: "air_icu" },
               { label: "Train ICU Ambulance Escort", value: "train_icu" },
-              { label: "Dignified Human Remains (HUM)", value: "hum" },
+              { label: "Human Remains (HUM)", value: "hum" },
             ], required: true, gridCols: 2 },
           { id: "patientCondition", label: "Patient Medical Condition", type: "textarea", placeholder: "Ventilator support, oxygen flow needed...", required: true, gridCols: 1 },
         ],

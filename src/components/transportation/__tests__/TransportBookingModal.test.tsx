@@ -139,10 +139,10 @@ describe("TransportBookingModal SSR & Field Rendering Tests", () => {
     expect(html).toContain("Pickup Location");
     expect(html).toContain("Drop Location");
     // Passport number is rendered in international mode
-    expect(html).toContain("Passport Number");
+    expect(html).toContain("Legal Government ID Number");
   });
 
-  it("in domestic mode, omits passport number", () => {
+  it("in domestic mode, omits legal government ID number", () => {
     const html = renderToString(
       <QueryClientProvider client={queryClient}>
         <TransportBookingModal
@@ -153,6 +153,6 @@ describe("TransportBookingModal SSR & Field Rendering Tests", () => {
       </QueryClientProvider>
     );
 
-    expect(html).not.toContain("Passport Number");
+    expect(html).not.toContain("Legal Government ID Number");
   });
 });
