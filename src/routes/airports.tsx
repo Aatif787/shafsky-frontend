@@ -3,7 +3,6 @@ import { useState, useMemo, useEffect } from "react";
 import {
   Search,
   ChevronDown,
-  Star,
   MapPin,
   Map,
   Phone,
@@ -88,10 +87,7 @@ function AirportsListingView() {
   // Database is the single source of truth for the 20 configured airports
   const [airportsData, setAirportsData] = useState<AirportListingItem[]>(INITIAL_DATABASE_AIRPORTS);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState("All Countries");
-  const [featuredOnly, setFeaturedOnly] = useState(false);
   const [selectedLetter, setSelectedLetter] = useState("All");
-  const [sortOption, setSortOption] = useState("A - Z");
   const [displayCount, setDisplayCount] = useState(24);
 
   // Featured Arc Carousel Index
@@ -136,15 +132,6 @@ function AirportsListingView() {
           if (!matchesQuery) return false;
         }
 
-        // Featured toggle
-        if (featuredOnly && !item.featured) return false;
-
-        // Country filter
-        if (selectedCountry !== "All Countries") {
-          if (selectedCountry === "India" && item.country !== "India") return false;
-          if (selectedCountry === "International" && item.country === "India") return false;
-        }
-
         // Alphabet filter
         if (selectedLetter !== "All") {
           const cityFirst = (item.city || "").trim().toUpperCase()[0];
@@ -154,13 +141,8 @@ function AirportsListingView() {
 
         return true;
       })
-      .sort((a, b) => {
-        if (sortOption === "Z - A") {
-          return b.city.localeCompare(a.city);
-        }
-        return a.city.localeCompare(b.city);
-      });
-  }, [airportsData, searchQuery, featuredOnly, selectedCountry, selectedLetter, sortOption]);
+      .sort((a, b) => a.city.localeCompare(b.city));
+  }, [airportsData, searchQuery, selectedLetter]);
 
   // Featured list of airports from database airports
   const featuredList = useMemo(() => {
@@ -200,10 +182,10 @@ function AirportsListingView() {
           </p>
         </div>
 
-        {/* 2. SEARCH & FILTER CONTROLS BAR (PILL BUTTONS) */}
-        <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 sm:p-4 rounded-3xl sm:rounded-full border border-slate-200 shadow-sm">
+        {/* 2. SEARCH BAR */}
+        <div className="bg-white p-2 sm:p-2.5 rounded-full border border-slate-200 shadow-sm">
           {/* Search Pill Input */}
-          <div className="relative flex-1 min-w-[240px] sm:min-w-[300px]">
+          <div className="relative w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
@@ -212,55 +194,6 @@ function AirportsListingView() {
               placeholder="Search airport by name, city or code..."
               className="w-full pl-10 pr-4 py-2.5 rounded-full bg-slate-50 text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none border border-transparent focus:border-[#7c3aed]/30 focus:bg-white transition-all"
             />
-          </div>
-
-          {/* Filter Dropdowns */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Country Select */}
-            <div className="relative">
-              <select
-                value={selectedCountry}
-                onChange={(e) => setSelectedCountry(e.target.value)}
-                className="appearance-none pl-9 pr-8 py-2 rounded-full bg-white border border-slate-200 text-xs font-medium text-slate-700 hover:border-slate-300 outline-none cursor-pointer"
-              >
-                <option value="All Countries">🌐 All Countries</option>
-                <option value="India">🇮🇳 India</option>
-                <option value="International">🌐 International</option>
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-            </div>
-
-
-
-            {/* Featured Only Toggle Switch */}
-            <label className="flex items-center gap-2 px-3 py-2 rounded-full bg-white border border-slate-200 text-xs font-medium text-slate-700 cursor-pointer hover:border-slate-300">
-              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              <span>Featured Only</span>
-              <button
-                type="button"
-                onClick={() => setFeaturedOnly(!featuredOnly)}
-                className={`w-9 h-5 rounded-full transition-colors relative flex items-center px-0.5 ${featuredOnly ? "bg-[#7c3aed]" : "bg-slate-300"
-                  }`}
-              >
-                <div
-                  className={`w-4 h-4 rounded-full bg-white transition-transform ${featuredOnly ? "translate-x-4" : "translate-x-0"
-                    }`}
-                />
-              </button>
-            </label>
-
-            {/* Sort Dropdown */}
-            <div className="relative">
-              <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-                className="appearance-none pl-8 pr-8 py-2 rounded-full bg-white border border-slate-200 text-xs font-medium text-slate-700 hover:border-slate-300 outline-none cursor-pointer"
-              >
-                <option value="A - Z">⇅ A - Z</option>
-                <option value="Z - A">⇅ Z - A</option>
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-            </div>
           </div>
         </div>
 
