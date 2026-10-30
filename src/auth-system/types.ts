@@ -29,6 +29,9 @@ export interface AuthContextType {
     password: string,
   ) => Promise<{ error: Error | null; verificationRequired?: boolean }>;
   verifySignInCode: (code: string) => Promise<{ error: Error | null }>;
+  sendSignInCode: (
+    email: string,
+  ) => Promise<{ error: Error | null; verificationRequired?: boolean }>;
   signInWithGoogle: () => Promise<{ error: Error | null; role?: Role }>;
   completeGoogleReturn: () => Promise<{ error: Error | null; role?: Role }>;
   signUp: (

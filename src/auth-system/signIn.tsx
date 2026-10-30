@@ -30,6 +30,7 @@ export function SignInPage() {
     profile,
     loading,
     signInWithPassword,
+    sendSignInCode,
     verifySignInCode,
     signInWithGoogle,
     signUp,
@@ -139,6 +140,32 @@ export function SignInPage() {
     }
   };
 
+  const continueWithEmailCode = async () => {
+    if (submitting) return;
+    if (!email.trim()) {
+      setErrorMsg("Enter your email address first.");
+      return;
+    }
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    setSubmitting(true);
+    try {
+      const { error } = await sendSignInCode(email.trim());
+      if (error) {
+        translateError(error);
+      } else {
+        setAwaitingEmailCode(true);
+        setSuccessMsg("We emailed you a sign-in code. Enter it below.");
+      }
+    } catch (err) {
+      translateError(
+        err instanceof Error ? err : new Error("Could not send the sign-in code"),
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const changeMode = (newMode: SignInMode) => {
     setMode(newMode);
     setErrorMsg(null);
@@ -225,6 +252,7 @@ export function SignInPage() {
           translateError(error);
         } else if (verificationRequired) {
           setAwaitingEmailCode(true);
+          setSuccessMsg("We emailed you a sign-in code. Enter it below.");
         }
       } else if (mode === "signup" && awaitingEmailCode) {
         const { error } = await verifySignUpCode(verificationCode.trim());
@@ -666,7 +694,26 @@ export function SignInPage() {
           )}
 
           {mode === "signin" && !awaitingEmailCode && (
-            <div className="text-right">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={continueWithEmailCode}
+                disabled={submitting}
+                className="text-[10px] font-bold uppercase tracking-[0.15em] transition-all duration-300 cursor-pointer px-3 py-1.5 rounded-lg disabled:opacity-50"
+                style={{
+                  color: "#0d5a6e",
+                  background: "transparent",
+                  fontFamily: "'Inter', system-ui, sans-serif",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "rgba(13,90,110,0.06)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "transparent";
+                }}
+              >
+                Email me a sign-in code
+              </button>
               <button
                 type="button"
                 onClick={() => changeMode("forgot")}
