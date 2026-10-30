@@ -6,6 +6,7 @@ import { getAirportRegistryEntry } from "@/data/airportRegistry";
 import { PageJourneyWrapper } from "@/components/site/PageJourneyWrapper";
 import { DestinationHero } from "@/components/airports/DestinationHero";
 import { DestinationBody } from "@/components/airports/DestinationBody";
+import { AirportGuide } from "@/components/airports/AirportGuide";
 import { StickyMobileBookingBar } from "@/components/ui/StickyMobileBookingBar";
 import {
   pageHead,
@@ -133,6 +134,9 @@ function DestinationPage() {
 
       {/* 2. DYNAMIC AIRPORT BODY */}
       <DestinationBody a={a} bookingSearch={search} />
+
+      {/* 2b. LONG-FORM SEO GUIDE (renders only for airports with guide data) */}
+      <AirportGuide code={a.code} />
 
       {/* 3. STICKY MOBILE QUICK-BOOKING BAR */}
       <StickyMobileBookingBar

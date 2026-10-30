@@ -60,6 +60,33 @@ export const Route = createFileRoute("/book")({
           { name: "Home", path: "/" },
           { name: "Book Meet & Greet", path: "/book" },
         ]),
+        {
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          name: "How to book airport Meet & Greet with Shafsky Aviation",
+          description:
+            "Reserve VIP airport Meet & Greet, fast-track and lounge access online in under two minutes.",
+          step: [
+            {
+              "@type": "HowToStep",
+              position: 1,
+              name: "Choose airports and flight date",
+              text: "Select your origin and destination airports, travel date, passengers and luggage.",
+            },
+            {
+              "@type": "HowToStep",
+              position: 2,
+              name: "Pick your service package",
+              text: "Choose Meet & Greet, lounge, fast-track or transfer package for your airport.",
+            },
+            {
+              "@type": "HowToStep",
+              position: 3,
+              name: "Confirm and pay securely",
+              text: "Enter passenger details and complete secure payment to receive instant booking confirmation.",
+            },
+          ],
+        },
       ],
     }),
   component: BookRoutePage,

@@ -36,6 +36,11 @@ export const STATIC_PAGES: SitemapEntry[] = [
   { path: "/hotels/classic-diplomat", changefreq: "monthly", priority: "0.5" },
   { path: "/hotels/de-pavilion", changefreq: "monthly", priority: "0.5" },
   { path: "/hotels/holiday-inn-express", changefreq: "monthly", priority: "0.5" },
+  { path: "/blog", changefreq: "weekly", priority: "0.8" },
+  { path: "/blog/delhi-airport-meet-and-greet-guide", changefreq: "monthly", priority: "0.7" },
+  { path: "/blog/what-is-airport-meet-and-greet-india", changefreq: "monthly", priority: "0.7" },
+  { path: "/blog/igi-airport-fast-track-immigration", changefreq: "monthly", priority: "0.7" },
+  { path: "/blog/delhi-airport-lounge-access-guide", changefreq: "monthly", priority: "0.7" },
 ];
 
 const NON_REVIEW_PREFIXES = [
