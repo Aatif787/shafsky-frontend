@@ -6,8 +6,8 @@ import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 export const SEO = {
   siteName: BUSINESS.NAME,
   defaultTitle: ICICI_REVIEW_MODE
-    ? "Airport Meet & Greet & VIP Lounge Services in India | Shafsky Aviation"
-    : "Airport Meet & Greet, VIP Concierge & Private Charter in India | Shafsky Aviation",
+    ? "Airport Meet & Greet & VIP Lounge Services India | Shafsky Aviation"
+    : "Airport Meet & Greet & VIP Concierge India | Shafsky Aviation",
   defaultDescription: ICICI_REVIEW_MODE
     ? "Book airport Meet & Greet, VIP airside escort, dedicated buggy, fast-track clearance, and executive lounge access with Shafsky Aviation Services across 20+ Indian airports."
     : "Book airport Meet & Greet, VIP airside escort, lounge access, luxury transfers, and private charter with Shafsky Aviation Services across 20+ Indian airports.",
@@ -212,6 +212,33 @@ export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
       name: item.name,
       item: absoluteUrl(item.path),
     })),
+  };
+}
+
+export function articleJsonLd(article: {
+  title: string;
+  description: string;
+  path: string;
+  publishedDate: string;
+  image?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.description,
+    image: absoluteUrl(article.image || SEO.ogImagePath),
+    datePublished: article.publishedDate,
+    author: {
+      "@type": "Organization",
+      name: BUSINESS.NAME,
+      url: BUSINESS.BASE_URL,
+    },
+    publisher: { "@id": `${BUSINESS.BASE_URL}/#organization` },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": absoluteUrl(article.path),
+    },
   };
 }
 

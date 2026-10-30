@@ -86,6 +86,8 @@ export const PENDING_VERIFICATION_LEGACY_REDIRECTS: Record<string, string> = {
  * equivalent careers page; they should remain genuine 404s until one exists.
  */
 export const SEARCH_CONSOLE_404_REDIRECTS: Record<string, string> = {
+  "/about-shafsky-aviation/": "/about-us",
+  "/ahmedabad/": "/airports/AMD",
   "/ahmedabad-airport-meet-and-assist-services-by-shafsky-aviation": "/airports/AMD",
   "/castle-blue-hotel-new-delhi/": "/hotels/castle-blue",
   "/chandigarh-airport/": "/airports/IXC",
@@ -93,11 +95,15 @@ export const SEARCH_CONSOLE_404_REDIRECTS: Record<string, string> = {
   "/de-pavilion-hotel-new-delhi/": "/hotels/de-pavilion",
   "/guwahati/": "/airports/GAU",
   "/home/": "/",
+  "/hyderabad/": "/airports/HYD",
   "/jaipur/": "/airports/JAI",
   "/lucknow/": "/airports/LKO",
   "/mangaluru/": "/airports/IXE",
   "/mumbai/": "/airports/BOM",
   "/new-delhi-airport-meet-and-greet-service/": "/airports/DEL",
+  "/our-services/": "/",
+  "/product/guwahati-airport-international-departure-services/": "/airports/GAU",
+  "/thiruvananthapuram/": "/airports/TRV",
   "/new-delhi/": "/airports/DEL",
   "/product-category/arrival/": "/services/guide",
   "/product-category/arrival/page/2/": "/services/guide",
@@ -387,6 +393,21 @@ export function resolveServerRedirect(
   // 1. Check explicit verified legacy redirect mappings
   if (rawPath in VERIFIED_LEGACY_REDIRECTS) {
     targetPath = VERIFIED_LEGACY_REDIRECTS[rawPath];
+  } else if (rawPath === "/product" || rawPath.startsWith("/product/")) {
+    // 1b. Legacy WooCommerce product URLs not explicitly mapped: redirect to the
+    // closest live category (concierge) instead of 404, preserving link equity
+    // from old indexed product links (GSC: 125 legacy 404s, Oct 2026).
+    targetPath = "/solutions/concierge";
+  } else if (
+    rawPath === "/shop" ||
+    rawPath.startsWith("/shop/") ||
+    rawPath === "/product-category" ||
+    rawPath.startsWith("/product-category/") ||
+    rawPath === "/product-tag" ||
+    rawPath.startsWith("/product-tag/")
+  ) {
+    // 1c. Legacy WooCommerce catalog/taxonomy URLs -> booking page.
+    targetPath = "/book";
   } else {
     // 2. Check airport routes: /airports/:code or /airports/:code/
     const airportMatch = rawPath.match(/^\/airports\/([^/]+)\/?$/i);
