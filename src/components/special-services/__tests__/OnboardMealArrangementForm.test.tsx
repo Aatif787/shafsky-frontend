@@ -99,11 +99,12 @@ describe("OnboardMealArrangementForm Component", () => {
     expect(html).not.toContain("+91 98765 43210");
   });
 
-  it("renders only Vegetarian / Non-Vegetarian and the meal count", () => {
+  it("renders only Veg / Non-Veg and the meal count", () => {
     const html = renderToString(<OnboardMealArrangementForm />);
 
-    expect(html).toContain("Vegetarian");
-    expect(html).toContain("Non-Vegetarian");
+    expect(html).toContain("Veg");
+    expect(html).toContain("Non-Veg");
+    expect(html).not.toContain("Vegetarian");
     expect(html).toContain("Number of Meals");
 
     // Removed sections and options must not render.

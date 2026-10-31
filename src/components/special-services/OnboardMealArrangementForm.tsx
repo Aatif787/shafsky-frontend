@@ -32,7 +32,7 @@ export interface OnboardMealArrangementFormProps {
   className?: string;
 }
 
-const MEAL_PREFERENCES = ["Vegetarian", "Non-Vegetarian"] as const;
+const MEAL_PREFERENCES = ["Veg", "Non-Veg"] as const;
 
 export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProps> = ({
   onSuccess,
@@ -60,7 +60,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
   const [idNumber, setIdNumber] = useState("");
 
   // Section 3: Meal Arrangement Details (Veg / Non-Veg + count only)
-  const [selectedMealPreferences, setSelectedMealPreferences] = useState<string[]>(["Vegetarian"]);
+  const [selectedMealPreferences, setSelectedMealPreferences] = useState<string[]>(["Veg"]);
   const [mealCount, setMealCount] = useState<number>(4);
 
   // Section 4: Declaration
@@ -77,7 +77,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
     mealPreferences: string[];
   } | null>(null);
 
-  // Single-select meal preference: Vegetarian or Non-Vegetarian.
+  // Single-select meal preference: Veg or Non-Veg.
   const handleSelectMealPreference = (pref: string) => {
     setSelectedMealPreferences([pref]);
   };
@@ -129,7 +129,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
     // Prepare Notes & Details
     const finalPreferences = selectedMealPreferences.length
       ? selectedMealPreferences
-      : ["Vegetarian"];
+      : ["Veg"];
 
     const notesSummary = [
       `[ON-BOARD MEAL ARRANGEMENT ENQUIRY]`,
