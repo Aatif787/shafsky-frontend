@@ -427,7 +427,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-1 left-2 sm:top-2 sm:left-4 md:top-3 md:left-6 lg:top-3 lg:left-8 w-24 sm:w-36 md:w-44 lg:w-48 z-30 pointer-events-none select-none"
+            className="absolute top-1 left-2 sm:top-2 sm:left-4 md:top-3 md:left-6 lg:top-3 lg:left-8 w-24 sm:w-36 md:w-44 lg:w-48 z-10 pointer-events-none select-none"
           >
             <div className="relative w-full h-auto">
               <video
