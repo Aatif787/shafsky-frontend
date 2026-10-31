@@ -284,13 +284,7 @@ function MeetGreetDedicatedPage() {
       <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <div
-              className="inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.4em] text-lime-700 font-bold font-mono bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200"
-              style={mono}
-            >
-              <span>SERVICES & PACKAGES</span>
-            </div>
-            <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
               Service Inclusions & Workflow.
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
