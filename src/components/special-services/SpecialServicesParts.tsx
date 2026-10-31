@@ -16,7 +16,6 @@ import { display } from "@/components/home/theme";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import specialserImg from "@/assets/others/specialser.png";
-import airTicketingImg from "@/assets/others/air-ticketing.jpg";
 import infantCareImg from "@/assets/others/infant-care.jpg";
 import trainAmbulanceImg from "@/assets/others/train-ambulance.jpg";
 import petCargoImg from "@/assets/others/pet-cargo.jpg";
@@ -59,7 +58,6 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "DOMESTIC & INTERNATIONAL AIRLINE TICKETING",
     tagline:
       "Instant domestic and international airline bookings across 500+ commercial carriers, flexible corporate fares, and VIP seat assignments.",
-    photo: airTicketingImg,
     icon: Ticket,
     inclusions: [
       "Instant Domestic & International Flight Ticketing across 500+ Global Airlines",

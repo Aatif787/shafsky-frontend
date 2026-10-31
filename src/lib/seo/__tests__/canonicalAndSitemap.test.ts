@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { pageHead } from "@/lib/seo";
-import { Route as sitemapRoute } from "@/routes/sitemap[.]xml";
-import { Route as robotsRoute } from "@/routes/robots[.]txt";
+import { Route as sitemapRoute } from "@/routes/sitemap.xml";
+import { Route as robotsRoute } from "@/routes/robots.txt";
 
 describe("SEO Canonical, Sitemap, and Robots.txt Verification", () => {
   describe("pageHead Canonical Tags", () => {
