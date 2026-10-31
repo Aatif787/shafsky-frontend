@@ -115,14 +115,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
       "Bespoke in-flight catering, customized dietary curation, and synchronized airside meal delivery for group and VIP Meet & Greet journeys.",
     photo: onboardMealsImg,
     icon: UtensilsCrossed,
-    inclusions: [
-      "Bespoke Gourmet In-Flight Meal Service for Group & VIP Meet & Greet Flights",
-      "Specialized Dietary Curation: Jain, Halal, Vegan, Gluten-Free, Veg & Non-Veg",
-      "Strict In-Flight Allergy Management & Direct Airline Catering Manifesting",
-      "Airside Gate-to-Cabin Meal Coordination Synchronized with Passenger Boarding",
-      "Executive Beverage Selection, Fresh Bakery & Premium Multi-Course Menus",
-      "24/7 Dedicated In-Flight Catering Concierge & Urgent Sector Coordination",
-    ],
+    inclusions: [],
   },
   {
     id: "Spa & Wellness",
