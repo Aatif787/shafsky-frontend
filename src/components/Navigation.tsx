@@ -359,7 +359,6 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                   style={{
                     imageRendering: "auto",
                     WebkitFontSmoothing: "antialiased",
-                    filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.06)) contrast(1.05) saturate(1.08)",
                     transform: "translateZ(0)",
                   }}
                   loading="eager"
