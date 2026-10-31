@@ -42,21 +42,15 @@ export type { TransportOptionId, TransportOptionDef };
 
 const TRANSPORT_HERO_SLIDES = [
   {
-    src: "/images/transport/tarmac-chauffeur.webp",
-    alt: "Shafsky Airside Tarmac Mercedes-Benz S-Class Chauffeur Transfer",
-    badge: "1/3 • Tarmac Chauffeur Transfer",
-    label: "Tarmac Transfer",
-  },
-  {
     src: "/images/transport/fleet-skyline.webp",
     alt: "Shafsky Chauffeured Executive Sedans and Passenger Vans",
-    badge: "2/3 • Chauffeured Executive Fleet",
+    badge: "1/2 • Chauffeured Executive Fleet",
     label: "Executive Fleet",
   },
   {
     src: "/images/transport/curbside-chauffeur.webp",
     alt: "Shafsky Curbside Executive Chauffeur Reception & City Transfer",
-    badge: "3/3 • Curbside Arrival",
+    badge: "2/2 • Curbside Arrival",
     label: "Curbside Arrival",
   },
 ];
@@ -80,7 +74,7 @@ function DedicatedTransportServicePage() {
     } else if (optId === "MUV / Large Vehicles") {
       setHeroSlideIndex(1);
     } else if (optId === "Economy / Standard") {
-      setHeroSlideIndex(2);
+      setHeroSlideIndex(0);
     }
 
     // Automatically select first valid canonical vehicle of the new category
@@ -162,7 +156,10 @@ function DedicatedTransportServicePage() {
           {/* Uncropped Responsive Hero Image Slider */}
           <div className="space-y-3">
             <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center min-h-[260px] sm:min-h-[400px]">
-              <img width={1600} height={900} src={TRANSPORT_HERO_SLIDES[heroSlideIndex]?.src || TRANSPORT_HERO_SLIDES[0].src}
+              <img
+                width={1600}
+                height={900}
+                src={TRANSPORT_HERO_SLIDES[heroSlideIndex]?.src || TRANSPORT_HERO_SLIDES[0].src}
                 alt={TRANSPORT_HERO_SLIDES[heroSlideIndex]?.alt || "Shafsky Luxury Transport Fleet"}
                 className="w-full h-auto object-contain object-center select-none block transition-opacity duration-300"
                 loading="eager"
@@ -195,8 +192,9 @@ function DedicatedTransportServicePage() {
                 {TRANSPORT_HERO_SLIDES[heroSlideIndex]?.badge}
               </div>
             </div>
-
           </div>
+
+
         </div>
       </section>
 
@@ -285,10 +283,6 @@ function DedicatedTransportServicePage() {
             <div className="lg:col-span-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  {
-                    src: "/images/transport/tarmac-chauffeur.webp",
-                    alt: "Tarmac Sedan Arrival Reception",
-                  },
                   {
                     src: "/images/transport/fleet-skyline.webp",
                     alt: "Chauffeured Executive Fleet & Sedans",

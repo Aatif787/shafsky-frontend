@@ -5,7 +5,6 @@ import { Footer } from "@/components/home/sections/Footer";
 import { LoungeEnquiryForm } from "@/components/lounge/LoungeEnquiryForm";
 import {
   LoungeHeroCarousel,
-  LoungeGalleryGrid,
   LoungePhotoLightbox,
 } from "@/components/lounge/LoungeGalleryShowcase";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
@@ -52,9 +51,6 @@ function LoungePage() {
             <LoungeEnquiryForm />
           </div>
         </div>
-
-        {/* 100% Mobile-first Visual Gallery Showcase Section */}
-        <LoungeGalleryGrid onOpenLightbox={(idx) => setLightboxIndex(idx)} />
       </main>
 
       {/* Fullscreen Photo Lightbox Modal */}

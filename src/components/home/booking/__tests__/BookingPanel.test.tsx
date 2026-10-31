@@ -61,10 +61,12 @@ describe("BookingPanel Regression & Navigation Tests", () => {
     expect(mockCheck).toHaveBeenCalledWith(payload);
   });
 
-  it("verifies 24/7 WhatsApp booking links point to dedicated booking number 7428300207 and not 9599087959", () => {
+  it("does not render 24/7 WhatsApp booking links inside the booking panel", () => {
     const html = renderToString(React.createElement(BookingPanel));
-    expect(html).toContain("https://wa.me/917428300207?text=Hi");
+    expect(html).not.toContain("24/7 WhatsApp Booking");
+    expect(html).not.toContain("https://wa.me/917428300207?text=Hi");
     expect(html).not.toContain("https://wa.me/919599087959");
+    expect(html).toContain("Book Now");
   });
 
   it("renders Other Services alongside Departure, Transit, and Arrival with no separate Airport Services button", () => {

@@ -23,6 +23,7 @@ import {
   FileCheck,
   PawPrint,
   Baby,
+  Package,
 } from "lucide-react";
 import { mono } from "@/components/home/theme";
 import { motion, AnimatePresence } from "framer-motion";
@@ -100,13 +101,19 @@ export interface OtherServiceDropdownItem {
 
 export const OTHER_SERVICES_ITEMS: OtherServiceDropdownItem[] = [
   {
+    label: "Cargo",
+    sub: "cargo",
+    href: "/solutions/cargo",
+    icon: Package,
+  },
+  {
     label: "Air Ticketing",
     sub: "ticketing",
     href: "/solutions/special-services?sub=ticketing",
     icon: Ticket,
   },
   {
-    label: "Tours & Travel",
+    label: "Travel & Tour",
     sub: "tours-travel",
     href: "/solutions/special-services?sub=tours-travel",
     icon: HeartHandshake,
@@ -154,7 +161,7 @@ export const OTHER_SERVICES_ITEMS: OtherServiceDropdownItem[] = [
     icon: HeartHandshake,
   },
   {
-    label: "Cargo & Avi Pet",
+    label: "AVI & Animal Pet",
     sub: "cargo_avi_pet",
     href: "/solutions/special-services?sub=cargo_avi_pet",
     icon: PawPrint,
@@ -180,6 +187,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Meet & Greet", href: "/solutions/concierge" },
   { label: "Lounge", href: "/lounge" },
   { label: "Airports", href: "/airports" },
+  { label: "Cargo", href: "/solutions/cargo" },
   { label: "Transport", href: "/solutions/transport" },
   { label: "Hotel", href: "/solutions/hotels" },
   { label: "Private Charter", href: "/solutions/aviation" },
@@ -201,6 +209,8 @@ export const getItemIcon = (label: string) => {
       return Hotel;
     case "Private Charter":
       return Plane;
+    case "Cargo":
+      return Package;
     case "Ticketing":
       return Ticket;
     case "Other Services":
@@ -222,6 +232,12 @@ export const checkSpecialServiceActive = (
   search: Record<string, unknown>,
   serviceSub: string
 ) => {
+  if (serviceSub === "cargo") {
+    return pathname === "/solutions/cargo";
+  }
+  if (serviceSub === "infant-care") {
+    return pathname === "/solutions/infant-care";
+  }
   if (pathname !== "/solutions/special-services") return false;
   const rawSub = typeof search.sub === "string" ? search.sub.toLowerCase() : "";
   if (!rawSub) return false;
@@ -374,8 +390,16 @@ export const NavigationMobileDrawer: React.FC<NavigationMobileDrawerProps> = ({
                                   return (
                                     <Link
                                       key={service.label}
-                                      to="/solutions/special-services"
-                                      search={{ sub: service.sub } as any}
+                                      to={
+                                        service.href.startsWith("/solutions/special-services")
+                                          ? "/solutions/special-services"
+                                          : (service.href.split("?")[0] as any)
+                                      }
+                                      search={
+                                        service.href.includes("?")
+                                          ? ({ sub: service.sub } as any)
+                                          : undefined
+                                      }
                                       onClick={() => {
                                         setMobileOtherServicesOpen(false);
                                         setMobileOpen(false);

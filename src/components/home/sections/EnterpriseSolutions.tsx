@@ -11,7 +11,6 @@ import planeImg from "@/assets/others/plane.png";
 import meetGreetImg from "@/assets/others/meetgreet.jpeg";
 import servicesImg from "@/assets/others/services.png";
 import specialserImg from "@/assets/others/specialser.png";
-import airTicketingImg from "@/assets/others/air-ticketing.jpg";
 
 interface SubServiceOption {
   label: string;
@@ -97,28 +96,17 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     ],
   },
   {
-    id: "air-ticketing",
-    serviceParam: "ticketing",
-    title: "Air Ticketing Services",
-    photo: airTicketingImg,
-    alt: "Shafsky Domestic and International Air Ticketing Concierge Desk",
-    badge: "Airline Ticketing",
-    description: "Instant domestic and international flight bookings across 500+ global airlines, flexible corporate fares, and 24/7 ticketing desk support.",
-    subServices: [
-      { label: "Air Ticketing (Domestic & Intl)", subParam: "ticketing", tagline: "Instant commercial flight bookings across 500+ global airlines" },
-    ],
-  },
-  {
     id: "special-services",
     serviceParam: "special",
     title: "Special Services",
     photo: specialserImg,
     alt: "Shafsky Special Services with Taj Mahal Agra",
     badge: "Special Services",
-    description: "Air ticketing, curated tours & travel, fast-track visa assistance, on-board meal arrangements, luxury spa & wellness, PSO close protection, 24/7 medevac air & train ambulance, HUM repatriation, and cargo & AVI pet logistics.",
+    description: "Dedicated air cargo logistics, commercial air ticketing, curated travel & tour, fast-track visa assistance, on-board meal arrangements, luxury spa & wellness, PSO close protection, 24/7 medevac air & train ambulance, HUM repatriation, and AVI & live animal pet logistics.",
     subServices: [
+      { label: "Cargo Logistics & Freight", subParam: "cargo", tagline: "Express air cargo, heavy freight charter & customs clearance" },
       { label: "Air Ticketing (Domestic & Intl)", subParam: "ticketing", tagline: "Instant commercial flight bookings across 500+ global airlines" },
-      { label: "Tours & Travel (Couples)", subParam: "tours-travel", tagline: "Curated romantic itineraries & private luxury tours" },
+      { label: "Travel & Tour", subParam: "tours-travel", tagline: "Curated travel itineraries & private luxury tours" },
       { label: "Visa Assistance Services", subParam: "visa", tagline: "Fast-track Schengen, UK, US, UAE & global visa clearance" },
       { label: "On-board Meal Arrangements", subParam: "onboard_meals", tagline: "Gourmet in-flight catering & dietary curation for group meet & greet" },
       { label: "Spa & Wellness", subParam: "spa-wellness", tagline: "Luxury couple spas, hydrotherapy & rejuvenating retreats" },
@@ -126,7 +114,7 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
       { label: "Air Ambulance", subParam: "air_ambulance", tagline: "24/7 dedicated airborne ICU jets & bed-to-bed medevac" },
       { label: "Train Ambulance", subParam: "train_ambulance", tagline: "Long-distance rail patient transfer with ICU team & oxygen" },
       { label: "HUM (Human Remains Transport)", subParam: "hum", tagline: "Mortal remains repatriation across domestic & global sectors" },
-      { label: "Cargo & AVI Pet Booking", subParam: "cargo_avi_pet", tagline: "IATA live animal transport & climate-controlled air freight" },
+      { label: "AVI & Animal Pet Booking", subParam: "cargo_avi_pet", tagline: "IATA live animal transport & climate-controlled pet transfer" },
       { label: "Infant Care Services", subParam: "infant-care", tagline: "Dedicated airport transit, pram escort & baby care assistance" },
     ],
   },
@@ -290,26 +278,16 @@ export function EnterpriseSolutions() {
           </div>
         ) : (
           <>
-            {/* DESKTOP 6-CARD HORIZONTAL ALIGNMENT SHOWCASE */}
-            <div className="hidden lg:grid lg:grid-cols-6 gap-6 items-start justify-items-center max-w-7xl mx-auto">
+            {/* DESKTOP 5-SERVICE HORIZONTAL ALIGNMENT SHOWCASE (PERFECTLY CENTERED) */}
+            <div className="hidden lg:grid lg:grid-cols-5 gap-6 xl:gap-8 items-start justify-items-center max-w-6xl xl:max-w-7xl mx-auto">
               {OFFICIAL_SERVICES.map((srv, idx) => {
-                const serviceOffsets = [
-                  { x: -75, y: 0 },
-                  { x: -40, y: -35 },
-                  { x: 0, y: 50 },
-                  { x: 0, y: 50 },
-                  { x: 40, y: -35 },
-                  { x: 75, y: 0 },
-                ];
-                const offset = serviceOffsets[idx] || { x: 0, y: 30 };
-
                 return (
                   <motion.div
                     key={srv.id}
-                    initial={{ opacity: 0, x: offset.x, y: offset.y, scale: 0.92 }}
-                    whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+                    initial={{ opacity: 0, y: 24, scale: 0.95 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
                     viewport={{ once: false, amount: 0.2 }}
-                    transition={{ duration: 0.7, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.6, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
                     whileHover={{ y: -6, scale: 1.02 }}
                     whileTap={{ scale: 0.96 }}
                     className="flex flex-col items-center text-center w-full group cursor-pointer"
@@ -322,8 +300,6 @@ export function EnterpriseSolutions() {
                         navigate({ to: "/solutions/hotels" });
                       } else if (srv.id === "transport-service") {
                         navigate({ to: "/solutions/transport" });
-                      } else if (srv.id === "air-ticketing") {
-                        navigate({ to: "/solutions/special-services", search: { sub: "ticketing" } as any });
                       } else {
                         setSelectedService(srv);
                       }
@@ -341,7 +317,7 @@ export function EnterpriseSolutions() {
 
                     {/* Service Pillar Heading */}
                     <h3
-                      className="text-sm sm:text-base font-bold text-slate-900 tracking-tight group-hover:text-lime-700 transition-colors duration-300 max-w-[190px] leading-snug"
+                      className="text-sm sm:text-base font-bold text-slate-900 tracking-tight group-hover:text-lime-700 transition-colors duration-300 max-w-[200px] leading-snug text-balance min-h-[44px] flex items-start justify-center"
                       style={display}
                     >
                       {srv.title}
@@ -369,7 +345,6 @@ export function EnterpriseSolutions() {
                       else if (srv.id === "air-charter") navigate({ to: "/solutions/aviation" });
                       else if (srv.id === "luxury-hotels") navigate({ to: "/solutions/hotels" });
                       else if (srv.id === "transport-service") navigate({ to: "/solutions/transport" });
-                      else if (srv.id === "air-ticketing") navigate({ to: "/solutions/special-services", search: { sub: "ticketing" } as any });
                       else setSelectedService(srv);
                     }}
                     className="group relative rounded-full overflow-hidden cursor-pointer shadow-[0_10px_25px_-5px_rgba(0,0,0,0.15)] ring-2 ring-[#d4af37]/40 ring-offset-4 ring-offset-white transition-all duration-500 bg-slate-900 flex-shrink-0 w-[5.5rem] h-[5.5rem] sm:w-24 sm:h-24 z-10"
@@ -417,7 +392,6 @@ export function EnterpriseSolutions() {
                     <div className="flex justify-center gap-4 sm:gap-6 w-full relative">
                       {renderPortal(OFFICIAL_SERVICES[3], 0.4)}
                       {renderPortal(OFFICIAL_SERVICES[4], 0.5)}
-                      {renderPortal(OFFICIAL_SERVICES[5], 0.6)}
                     </div>
                   </div>
                 );
@@ -558,14 +532,16 @@ export function EnterpriseSolutions() {
                       <Link
                         key={sidx}
                         to={
-                          sub.subParam === "infant-care"
-                            ? "/solutions/infant-care"
-                            : selectedService.id === "special-services" || selectedService.id === "air-ticketing"
-                              ? "/solutions/special-services"
-                              : "/book"
+                          sub.subParam === "cargo"
+                            ? "/solutions/cargo"
+                            : sub.subParam === "infant-care"
+                              ? "/solutions/infant-care"
+                              : selectedService.id === "special-services" || selectedService.id === "air-ticketing"
+                                ? "/solutions/special-services"
+                                : "/book"
                         }
                         search={
-                          sub.subParam === "infant-care"
+                          sub.subParam === "cargo" || sub.subParam === "infant-care"
                             ? undefined
                             : selectedService.id === "special-services" || selectedService.id === "air-ticketing"
                               ? { sub: sub.subParam }

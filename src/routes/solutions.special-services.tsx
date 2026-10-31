@@ -45,7 +45,7 @@ export const Route = createFileRoute("/solutions/special-services")({
     pageHead({
       title: "VIP Special Services, Air Ticketing, Tours, Visa & Medevac | Shafsky",
       description:
-        "Commercial air ticketing, curated tours and travel, fast-track visa assistance, on-board meals, luxury spa and wellness, PSO close protection, 24/7 air and train ambulance, HUM repatriation, and cargo pet logistics.",
+        "Commercial air ticketing, curated travel and tour, fast-track visa assistance, on-board meals, luxury spa and wellness, PSO close protection, 24/7 air and train ambulance, HUM repatriation, and AVI live animal pet logistics.",
       path: "/solutions/special-services",
       jsonLd: [
         breadcrumbJsonLd([
@@ -67,10 +67,16 @@ function DedicatedSpecialServicesPage() {
 
   // Synchronize selected service whenever URL search parameter changes
   useEffect(() => {
+    const searchObj = (location.search || {}) as Record<string, unknown>;
+    const rawSub = typeof searchObj.sub === "string" ? searchObj.sub.toLowerCase() : "";
+    if (rawSub === "cargo") {
+      navigate({ to: "/solutions/cargo", replace: true });
+      return;
+    }
     const resolved = resolveSpecialServiceFromSearch(location.search);
     setSelectedOptionId(resolved);
     setSubmittedRef(null);
-  }, [location.search]);
+  }, [location.search, navigate]);
 
   const activeOption =
     SPECIAL_SERVICES_OPTIONS.find((o) => o.id === selectedOptionId) ||
@@ -86,7 +92,7 @@ function DedicatedSpecialServicesPage() {
   const [spaGuests, setSpaGuests] = useState(2);
   const [spaNotes, setSpaNotes] = useState("");
 
-  // 2. Tours & Travel (Destination, Dates/Month, Guests, Optional Wishes)
+  // 2. Travel & Tour (Destination, Dates/Month, Guests, Optional Wishes)
   const [tourDestination, setTourDestination] = useState("");
   const [tourDates, setTourDates] = useState("");
   const [tourGuests, setTourGuests] = useState(2);
@@ -190,7 +196,7 @@ function DedicatedSpecialServicesPage() {
       };
       notes = `${spaGuests} Guests — ${spaNotes || "No specific request"}`;
       serviceType = "Spa & Wellness";
-    } else if (selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
+    } else if (selectedOptionId === "Travel & Tour" || selectedOptionId === "Travel & Tour (Honeymoon/Couples)" || selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
       origin = tourDestination;
       destination = tourDestination;
       serviceDate = tourDates || undefined;
@@ -281,8 +287,8 @@ function DedicatedSpecialServicesPage() {
         cargo_pet_details: cargoDetails,
         date: cargoDate,
       };
-      notes = `Cargo/Pet Details: ${cargoDetails} from ${cargoOrigin} to ${cargoDest}`;
-      serviceType = "Cargo Assistance";
+      notes = `AVI & Pet Details: ${cargoDetails} from ${cargoOrigin} to ${cargoDest}`;
+      serviceType = "AVI Pet Transport";
     } else if (selectedOptionId === "Air Ticketing Services") {
       origin = ticketOrigin;
       destination = ticketDest;
@@ -335,7 +341,7 @@ function DedicatedSpecialServicesPage() {
     let details = "";
     if (selectedOptionId === "Spa & Wellness") {
       details = `Location: ${spaLocation}%0ADate: ${spaDate}%0AGuests: ${spaGuests}%0APreferences: ${spaNotes || "None"}`;
-    } else if (selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
+    } else if (selectedOptionId === "Travel & Tour" || selectedOptionId === "Travel & Tour (Honeymoon/Couples)" || selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
       details = `Destination: ${tourDestination}%0ATravel Dates: ${tourDates}%0AGuests: ${tourGuests}%0ANotes: ${tourNotes || "None"}`;
     } else if (selectedOptionId === "PSO (Personal Security Officer / VIP Shopping)") {
       details = `Location: ${psoLocation}%0ADates: ${psoDates}%0AScope: ${psoScope}%0ANotes: ${psoNotes || "None"}`;
@@ -348,13 +354,21 @@ function DedicatedSpecialServicesPage() {
     } else if (selectedOptionId === "Visa Assistance Services") {
       details = `Country: ${visaCountry}%0ACategory: ${visaCategory}%0ATravel Date: ${visaDate}%0AApplicants: ${visaApplicants}%0APassport: ${visaPassport.trim().toUpperCase()}`;
     } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
-      details = `From: ${cargoOrigin}%0ATo: ${cargoDest}%0ACargo/Pet: ${cargoDetails}%0ADate: ${cargoDate}`;
+      details = `From: ${cargoOrigin}%0ATo: ${cargoDest}%0APet Details: ${cargoDetails}%0ADate: ${cargoDate}`;
     } else if (selectedOptionId === "Air Ticketing Services") {
       details = `Sector: ${ticketOrigin} to ${ticketDest}%0ADate: ${ticketDate}%0ACabin Class: ${ticketClass}%0APassengers: ${ticketPax}%0ANotes: ${ticketNotes || "None"}`;
     }
 
     const text = `Hello Shafsky VIP Concierge Desk,%0A%0AI would like to inquire about:%0A*Service:* ${selectedOptionId}%0A${details}%0A%0A*Name:* ${clientName}%0A*Phone:* ${phone}%0A*Email:* ${email || "N/A"}`;
-    const targetPhone = selectedOptionId === "Air Ticketing Services" ? "919599087957" : "919599087959";
+    const targetPhone =
+      selectedOptionId === "Air Ticketing Services" ||
+      selectedOptionId === "Air Ambulance (Airborne ICU Jet)"
+        ? "919599087957"
+        : selectedOptionId === "Train Ambulance" ||
+            selectedOptionId === "Train Ambulance (Train ICU Escort)" ||
+            selectedOptionId === "Infant Care Services"
+          ? "919599225778"
+          : "919599087959";
     return `https://wa.me/${targetPhone}?text=${text}`;
   };
 
@@ -540,8 +554,8 @@ function DedicatedSpecialServicesPage() {
                       </div>
                     )}
 
-                    {/* 2. Tours & Travel Minimal Enquiry */}
-                    {selectedOptionId === "Tours & Travel (Honeymoon/Couples)" && (
+                    {/* 2. Travel & Tour Minimal Enquiry */}
+                    {(selectedOptionId === "Travel & Tour" || selectedOptionId === "Travel & Tour (Honeymoon/Couples)" || selectedOptionId === "Tours & Travel (Honeymoon/Couples)") && (
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>

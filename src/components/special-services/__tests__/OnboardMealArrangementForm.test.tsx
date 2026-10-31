@@ -70,12 +70,12 @@ describe("OnboardMealArrangementForm Component", () => {
     expect(html).toContain("ID Type");
     expect(html).toContain("ID Number");
 
-    // Section 3: Meal Arrangement Details (Optimized Food Selection)
+    // Section 3: simplified to Veg / Non-Veg + number of meals
     expect(html).toContain("3. Meal Arrangement Details");
-    expect(html).toContain("A. Meal Type");
-    expect(html).toContain("B. Meal Preference");
-    expect(html).toContain("C. Number of Meals and Allergies");
-    expect(html).toContain("D. Additional Instructions");
+    expect(html).toContain("Meal Preference");
+    expect(html).toContain("Number of Meals");
+    expect(html).toContain("Select one or both");
+    expect(html).toContain('role="checkbox"');
 
     // Section 4: Declaration
     expect(html).toContain("4. Declaration");
@@ -101,43 +101,30 @@ describe("OnboardMealArrangementForm Component", () => {
     expect(html).not.toContain("+91 98765 43210");
   });
 
-  it("renders all required Meal Types in Section 3A as interactive chips", () => {
+  it("renders only Veg / Non-Veg and the meal count", () => {
     const html = renderToString(<OnboardMealArrangementForm />);
-    const expectedTypes = [
-      "Breakfast",
-      "Lunch",
-      "Dinner",
-      "Snacks",
-      "Beverages",
-      "Special Meal",
-    ];
-    for (const t of expectedTypes) {
-      expect(html).toContain(t);
-    }
-  });
 
-  it("renders all required Meal Preferences in Section 3B as interactive chips", () => {
-    const html = renderToString(<OnboardMealArrangementForm />);
-    const expectedPreferences = [
-      "Vegetarian",
-      "Non-Vegetarian",
-      "Jain",
-      "Vegan",
-      "Halal",
-      "Gluten-Free",
-      "Other",
-    ];
-    for (const p of expectedPreferences) {
-      expect(html).toContain(p);
-    }
-  });
+    expect(html).toContain("Veg");
+    expect(html).toContain("Non-Veg");
+    expect(html).not.toContain("Vegetarian");
+    expect(html).toContain("Number of Meals");
 
-  it("renders all Allergies and Special Requirements in Section 3C", () => {
-    const html = renderToString(<OnboardMealArrangementForm />);
-    const expectedAllergies = ["None", "Dairy", "Gluten", "Seafood", "Other"];
-    for (const a of expectedAllergies) {
-      expect(html).toContain(a);
-    }
+    // Removed sections and options must not render.
+    expect(html).not.toContain("A. Meal Type");
+    expect(html).not.toContain("B. Meal Preference");
+    expect(html).not.toContain("C. Number of Meals and Allergies");
+    expect(html).not.toContain("D. Additional Instructions");
+    expect(html).not.toContain("Allergies");
+    expect(html).not.toContain("Breakfast");
+    expect(html).not.toContain("Lunch");
+    expect(html).not.toContain("Dinner");
+    expect(html).not.toContain("Snacks");
+    expect(html).not.toContain("Beverages");
+    expect(html).not.toContain("Special Meal");
+    expect(html).not.toContain("Jain");
+    expect(html).not.toContain("Vegan");
+    expect(html).not.toContain("Halal");
+    expect(html).not.toContain("Gluten-Free");
   });
 
   it("renders ID Types dropdown in Section 2", () => {

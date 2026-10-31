@@ -63,17 +63,34 @@ export function SmartWhatsAppChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNotificationBadge, setShowNotificationBadge] = useState(true);
 
-  // Chat State: 5 Canonical Support Departments
+  // Chat State: 3 Canonical Support Departments
   const [selectedDepartment, setSelectedDepartment] = useState<SupportDepartment | null>(null);
   const [showDirectoryOverlay, setShowDirectoryOverlay] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom of chat
+  // Scroll management:
+  // - On initial open, start at the TOP so Department 01 (Meet & Greet and Lounge) is immediately visible!
+  // - Only scroll to bottom when a department is selected to reveal the connection action card.
   useEffect(() => {
-    if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (!isOpen) return;
+
+    if (selectedDepartment) {
+      const timer = setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+      return () => clearTimeout(timer);
+    } else {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = 0;
+      }
+      const raf = requestAnimationFrame(() => {
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop = 0;
+        }
+      });
+      return () => cancelAnimationFrame(raf);
     }
   }, [isOpen, selectedDepartment, showDirectoryOverlay]);
 
@@ -99,14 +116,23 @@ export function SmartWhatsAppChatbot() {
   const handleStartAgain = () => {
     setSelectedDepartment(null);
     setShowDirectoryOverlay(false);
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = 0;
+    }
   };
 
   const handleBack = () => {
     if (showDirectoryOverlay) {
       setShowDirectoryOverlay(false);
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = 0;
+      }
       return;
     }
     setSelectedDepartment(null);
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = 0;
+    }
   };
 
   const handleQuickRoute = (route: QuickServiceRoute) => {
@@ -200,7 +226,11 @@ export function SmartWhatsAppChatbot() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 16 }}
             transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed bottom-24 right-4 sm:right-6 md:right-8 z-[9999] w-[calc(100vw-32px)] sm:w-[420px] max-h-[85vh] sm:max-h-[640px] flex flex-col rounded-3xl bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.35)] border border-slate-200/90 overflow-hidden font-sans"
+            data-lenis-prevent="true"
+            data-lenis-prevent-wheel="true"
+            data-lenis-prevent-touch="true"
+            onWheel={(e) => e.stopPropagation()}
+            className="fixed bottom-24 right-4 sm:right-6 md:right-8 z-[9999] w-[calc(100vw-32px)] sm:w-[420px] max-h-[85vh] sm:max-h-[640px] flex flex-col rounded-3xl bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.35)] border border-slate-200/90 overflow-hidden font-sans overscroll-contain"
           >
             {/* Header: Deep Navy Blue + Subtle Gold Accent */}
             <div className="relative bg-slate-950 text-white p-4 sm:p-5 border-b border-[#d4af37]/35 flex items-center justify-between shrink-0">
@@ -277,7 +307,11 @@ export function SmartWhatsAppChatbot() {
             {/* Chat Body Container */}
             <div
               ref={chatContainerRef}
-              className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50/70 text-slate-900 text-xs sm:text-sm"
+              data-lenis-prevent="true"
+              data-lenis-prevent-wheel="true"
+              data-lenis-prevent-touch="true"
+              onWheel={(e) => e.stopPropagation()}
+              className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50/70 text-slate-900 text-xs sm:text-sm overscroll-contain"
             >
               {/* FULL DIRECTORY OVERLAY */}
               {showDirectoryOverlay ? (
@@ -286,7 +320,7 @@ export function SmartWhatsAppChatbot() {
                     <span>SHAFSKY AVIATION SUPPORT DIRECTORY</span>
                   </div>
 
-                  <div className="space-y-2.5 pt-1 max-h-[320px] overflow-y-auto pr-1">
+                  <div data-lenis-prevent="true" data-lenis-prevent-wheel="true" onWheel={(e) => e.stopPropagation()} className="space-y-2.5 pt-1 max-h-[320px] overflow-y-auto pr-1 overscroll-contain">
                     {SUPPORT_DEPARTMENTS.map((dept) => (
                       <div
                         key={dept.id}
@@ -364,7 +398,7 @@ export function SmartWhatsAppChatbot() {
                   </div>
 
                   {/* ───────────────────────────────────────────────────────
-                   * 5 CANONICAL DEPARTMENT SELECTION (Matching Support Cards)
+                   * 3 CANONICAL DEPARTMENT SELECTION (Matching Support Cards)
                    * ─────────────────────────────────────────────────────── */}
                   {!selectedDepartment && (
                     <div className="pl-9 space-y-3">
@@ -388,7 +422,7 @@ export function SmartWhatsAppChatbot() {
                         </div>
                       </div>
 
-                      {/* The 5 Canonical Department Cards */}
+                      {/* The 3 Canonical Department Cards */}
                       <div className="space-y-2 pt-1">
                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 block" style={mono}>
                           Select an Official Department:

@@ -15,10 +15,6 @@ const ALL_HOMEPAGE_PHOTOS = [
     photo: HOMEPAGE_PHOTOS.suswagatamHostess,
   },
   {
-    id: "ticketing",
-    photo: HOMEPAGE_PHOTOS.airTicketing,
-  },
-  {
     id: "charter",
     photo: HOMEPAGE_PHOTOS.privateCharter,
   },

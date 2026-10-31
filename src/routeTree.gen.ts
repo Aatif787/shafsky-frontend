@@ -25,8 +25,6 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as LoungeRouteImport } from './routes/lounge'
 import { Route as PrestigiousProjectsRouteImport } from './routes/prestigious-projects'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
-import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as TermsAndConditionsRouteImport } from './routes/terms-and-conditions'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -35,14 +33,19 @@ import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authentic
 import { Route as AirportsCodeRouteImport } from './routes/airports.$code'
 import { Route as ApiProcessQueueRouteImport } from './routes/api.process-queue'
 import { Route as AuthSsoCallbackRouteImport } from './routes/auth.sso-callback'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as BookPaymentResultRouteImport } from './routes/book.payment-result'
 import { Route as HotelsAirportHotelRouteImport } from './routes/hotels.airport-hotel'
 import { Route as HotelsCastleBlueRouteImport } from './routes/hotels.castle-blue'
 import { Route as HotelsClassicDiplomatRouteImport } from './routes/hotels.classic-diplomat'
 import { Route as HotelsDePavilionRouteImport } from './routes/hotels.de-pavilion'
 import { Route as HotelsHolidayInnExpressRouteImport } from './routes/hotels.holiday-inn-express'
+import { Route as RobotsTxtRouteImport } from './routes/robots.txt'
 import { Route as ServicesGuideRouteImport } from './routes/services.guide'
+import { Route as SitemapXmlRouteImport } from './routes/sitemap.xml'
 import { Route as SolutionsAviationRouteImport } from './routes/solutions.aviation'
+import { Route as SolutionsCargoRouteImport } from './routes/solutions.cargo'
 import { Route as SolutionsConciergeRouteImport } from './routes/solutions.concierge'
 import { Route as SolutionsHotelsRouteImport } from './routes/solutions.hotels'
 import { Route as SolutionsInfantCareRouteImport } from './routes/solutions.infant-care'
@@ -166,16 +169,6 @@ const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
-  id: '/robots.txt',
-  path: '/robots.txt',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
@@ -216,6 +209,16 @@ const AuthSsoCallbackRoute = AuthSsoCallbackRouteImport.update({
   path: '/sso-callback',
   getParentRoute: () => AuthRoute,
 } as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookPaymentResultRoute = BookPaymentResultRouteImport.update({
   id: '/payment-result',
   path: '/payment-result',
@@ -246,14 +249,29 @@ const HotelsHolidayInnExpressRoute = HotelsHolidayInnExpressRouteImport.update({
   path: '/hotels/holiday-inn-express',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RobotsTxtRoute = RobotsTxtRouteImport.update({
+  id: '/robots/txt',
+  path: '/robots/txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesGuideRoute = ServicesGuideRouteImport.update({
   id: '/services/guide',
   path: '/services/guide',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapXmlRoute = SitemapXmlRouteImport.update({
+  id: '/sitemap/xml',
+  path: '/sitemap/xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SolutionsAviationRoute = SolutionsAviationRouteImport.update({
   id: '/solutions/aviation',
   path: '/solutions/aviation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolutionsCargoRoute = SolutionsCargoRouteImport.update({
+  id: '/solutions/cargo',
+  path: '/solutions/cargo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SolutionsConciergeRoute = SolutionsConciergeRouteImport.update({
@@ -519,8 +537,6 @@ export interface FileRoutesByFullPath {
   '/lounge': typeof LoungeRoute
   '/prestigious-projects': typeof PrestigiousProjectsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/support': typeof SupportRoute
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -529,14 +545,18 @@ export interface FileRoutesByFullPath {
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
   '/auth/sso-callback': typeof AuthSsoCallbackRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/book/payment-result': typeof BookPaymentResultRoute
   '/hotels/airport-hotel': typeof HotelsAirportHotelRoute
   '/hotels/castle-blue': typeof HotelsCastleBlueRoute
   '/hotels/classic-diplomat': typeof HotelsClassicDiplomatRoute
   '/hotels/de-pavilion': typeof HotelsDePavilionRoute
   '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
+  '/robots/txt': typeof RobotsTxtRoute
   '/services/guide': typeof ServicesGuideRoute
+  '/sitemap/xml': typeof SitemapXmlRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
+  '/solutions/cargo': typeof SolutionsCargoRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
   '/solutions/hotels': typeof SolutionsHotelsRoute
   '/solutions/infant-care': typeof SolutionsInfantCareRoute
@@ -544,6 +564,7 @@ export interface FileRoutesByFullPath {
   '/solutions/special-services': typeof SolutionsSpecialServicesRoute
   '/solutions/transport': typeof SolutionsTransportRoute
   '/verify/$id': typeof VerifyIdRoute
+  '/blog/': typeof BlogIndexRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/admin/bookings': typeof AuthenticatedAdminBookingsRouteWithChildren
@@ -597,22 +618,24 @@ export interface FileRoutesByTo {
   '/lounge': typeof LoungeRoute
   '/prestigious-projects': typeof PrestigiousProjectsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/support': typeof SupportRoute
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
   '/auth/sso-callback': typeof AuthSsoCallbackRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/book/payment-result': typeof BookPaymentResultRoute
   '/hotels/airport-hotel': typeof HotelsAirportHotelRoute
   '/hotels/castle-blue': typeof HotelsCastleBlueRoute
   '/hotels/classic-diplomat': typeof HotelsClassicDiplomatRoute
   '/hotels/de-pavilion': typeof HotelsDePavilionRoute
   '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
+  '/robots/txt': typeof RobotsTxtRoute
   '/services/guide': typeof ServicesGuideRoute
+  '/sitemap/xml': typeof SitemapXmlRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
+  '/solutions/cargo': typeof SolutionsCargoRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
   '/solutions/hotels': typeof SolutionsHotelsRoute
   '/solutions/infant-care': typeof SolutionsInfantCareRoute
@@ -620,6 +643,7 @@ export interface FileRoutesByTo {
   '/solutions/special-services': typeof SolutionsSpecialServicesRoute
   '/solutions/transport': typeof SolutionsTransportRoute
   '/verify/$id': typeof VerifyIdRoute
+  '/blog': typeof BlogIndexRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/admin/bookings': typeof AuthenticatedAdminBookingsRouteWithChildren
@@ -675,8 +699,6 @@ export interface FileRoutesById {
   '/lounge': typeof LoungeRoute
   '/prestigious-projects': typeof PrestigiousProjectsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/support': typeof SupportRoute
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -685,14 +707,18 @@ export interface FileRoutesById {
   '/airports/$code': typeof AirportsCodeRoute
   '/api/process-queue': typeof ApiProcessQueueRoute
   '/auth/sso-callback': typeof AuthSsoCallbackRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/book/payment-result': typeof BookPaymentResultRoute
   '/hotels/airport-hotel': typeof HotelsAirportHotelRoute
   '/hotels/castle-blue': typeof HotelsCastleBlueRoute
   '/hotels/classic-diplomat': typeof HotelsClassicDiplomatRoute
   '/hotels/de-pavilion': typeof HotelsDePavilionRoute
   '/hotels/holiday-inn-express': typeof HotelsHolidayInnExpressRoute
+  '/robots/txt': typeof RobotsTxtRoute
   '/services/guide': typeof ServicesGuideRoute
+  '/sitemap/xml': typeof SitemapXmlRoute
   '/solutions/aviation': typeof SolutionsAviationRoute
+  '/solutions/cargo': typeof SolutionsCargoRoute
   '/solutions/concierge': typeof SolutionsConciergeRoute
   '/solutions/hotels': typeof SolutionsHotelsRoute
   '/solutions/infant-care': typeof SolutionsInfantCareRoute
@@ -700,6 +726,7 @@ export interface FileRoutesById {
   '/solutions/special-services': typeof SolutionsSpecialServicesRoute
   '/solutions/transport': typeof SolutionsTransportRoute
   '/verify/$id': typeof VerifyIdRoute
+  '/blog/': typeof BlogIndexRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/_authenticated/admin/bookings': typeof AuthenticatedAdminBookingsRouteWithChildren
@@ -755,8 +782,6 @@ export interface FileRouteTypes {
     | '/lounge'
     | '/prestigious-projects'
     | '/privacy-policy'
-    | '/robots.txt'
-    | '/sitemap.xml'
     | '/support'
     | '/terms-and-conditions'
     | '/admin'
@@ -765,14 +790,18 @@ export interface FileRouteTypes {
     | '/airports/$code'
     | '/api/process-queue'
     | '/auth/sso-callback'
+    | '/blog/$slug'
     | '/book/payment-result'
     | '/hotels/airport-hotel'
     | '/hotels/castle-blue'
     | '/hotels/classic-diplomat'
     | '/hotels/de-pavilion'
     | '/hotels/holiday-inn-express'
+    | '/robots/txt'
     | '/services/guide'
+    | '/sitemap/xml'
     | '/solutions/aviation'
+    | '/solutions/cargo'
     | '/solutions/concierge'
     | '/solutions/hotels'
     | '/solutions/infant-care'
@@ -780,6 +809,7 @@ export interface FileRouteTypes {
     | '/solutions/special-services'
     | '/solutions/transport'
     | '/verify/$id'
+    | '/blog/'
     | '/admin/analytics'
     | '/admin/audit-logs'
     | '/admin/bookings'
@@ -833,22 +863,24 @@ export interface FileRouteTypes {
     | '/lounge'
     | '/prestigious-projects'
     | '/privacy-policy'
-    | '/robots.txt'
-    | '/sitemap.xml'
     | '/support'
     | '/terms-and-conditions'
     | '/dashboard'
     | '/airports/$code'
     | '/api/process-queue'
     | '/auth/sso-callback'
+    | '/blog/$slug'
     | '/book/payment-result'
     | '/hotels/airport-hotel'
     | '/hotels/castle-blue'
     | '/hotels/classic-diplomat'
     | '/hotels/de-pavilion'
     | '/hotels/holiday-inn-express'
+    | '/robots/txt'
     | '/services/guide'
+    | '/sitemap/xml'
     | '/solutions/aviation'
+    | '/solutions/cargo'
     | '/solutions/concierge'
     | '/solutions/hotels'
     | '/solutions/infant-care'
@@ -856,6 +888,7 @@ export interface FileRouteTypes {
     | '/solutions/special-services'
     | '/solutions/transport'
     | '/verify/$id'
+    | '/blog'
     | '/admin/analytics'
     | '/admin/audit-logs'
     | '/admin/bookings'
@@ -910,8 +943,6 @@ export interface FileRouteTypes {
     | '/lounge'
     | '/prestigious-projects'
     | '/privacy-policy'
-    | '/robots.txt'
-    | '/sitemap.xml'
     | '/support'
     | '/terms-and-conditions'
     | '/_authenticated/admin'
@@ -920,14 +951,18 @@ export interface FileRouteTypes {
     | '/airports/$code'
     | '/api/process-queue'
     | '/auth/sso-callback'
+    | '/blog/$slug'
     | '/book/payment-result'
     | '/hotels/airport-hotel'
     | '/hotels/castle-blue'
     | '/hotels/classic-diplomat'
     | '/hotels/de-pavilion'
     | '/hotels/holiday-inn-express'
+    | '/robots/txt'
     | '/services/guide'
+    | '/sitemap/xml'
     | '/solutions/aviation'
+    | '/solutions/cargo'
     | '/solutions/concierge'
     | '/solutions/hotels'
     | '/solutions/infant-care'
@@ -935,6 +970,7 @@ export interface FileRouteTypes {
     | '/solutions/special-services'
     | '/solutions/transport'
     | '/verify/$id'
+    | '/blog/'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/audit-logs'
     | '/_authenticated/admin/bookings'
@@ -990,18 +1026,20 @@ export interface RootRouteChildren {
   LoungeRoute: typeof LoungeRoute
   PrestigiousProjectsRoute: typeof PrestigiousProjectsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
-  RobotsDottxtRoute: typeof RobotsDottxtRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SupportRoute: typeof SupportRoute
   TermsAndConditionsRoute: typeof TermsAndConditionsRoute
   ApiProcessQueueRoute: typeof ApiProcessQueueRoute
+  BlogSlugRoute: typeof BlogSlugRoute
   HotelsAirportHotelRoute: typeof HotelsAirportHotelRoute
   HotelsCastleBlueRoute: typeof HotelsCastleBlueRoute
   HotelsClassicDiplomatRoute: typeof HotelsClassicDiplomatRoute
   HotelsDePavilionRoute: typeof HotelsDePavilionRoute
   HotelsHolidayInnExpressRoute: typeof HotelsHolidayInnExpressRoute
+  RobotsTxtRoute: typeof RobotsTxtRoute
   ServicesGuideRoute: typeof ServicesGuideRoute
+  SitemapXmlRoute: typeof SitemapXmlRoute
   SolutionsAviationRoute: typeof SolutionsAviationRoute
+  SolutionsCargoRoute: typeof SolutionsCargoRoute
   SolutionsConciergeRoute: typeof SolutionsConciergeRoute
   SolutionsHotelsRoute: typeof SolutionsHotelsRoute
   SolutionsInfantCareRoute: typeof SolutionsInfantCareRoute
@@ -1009,6 +1047,7 @@ export interface RootRouteChildren {
   SolutionsSpecialServicesRoute: typeof SolutionsSpecialServicesRoute
   SolutionsTransportRoute: typeof SolutionsTransportRoute
   VerifyIdRoute: typeof VerifyIdRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   ApiCharterRequestsRoute: typeof ApiCharterRequestsRoute
   ApiFlightValidateRoute: typeof ApiFlightValidateRoute
   ApiV1CharterRequestsRoute: typeof ApiV1CharterRequestsRoute
@@ -1128,20 +1167,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/robots.txt': {
-      id: '/robots.txt'
-      path: '/robots.txt'
-      fullPath: '/robots.txt'
-      preLoaderRoute: typeof RobotsDottxtRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/support': {
       id: '/support'
       path: '/support'
@@ -1198,6 +1223,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSsoCallbackRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/book/payment-result': {
       id: '/book/payment-result'
       path: '/payment-result'
@@ -1240,6 +1279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HotelsHolidayInnExpressRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/robots/txt': {
+      id: '/robots/txt'
+      path: '/robots/txt'
+      fullPath: '/robots/txt'
+      preLoaderRoute: typeof RobotsTxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services/guide': {
       id: '/services/guide'
       path: '/services/guide'
@@ -1247,11 +1293,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesGuideRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap/xml': {
+      id: '/sitemap/xml'
+      path: '/sitemap/xml'
+      fullPath: '/sitemap/xml'
+      preLoaderRoute: typeof SitemapXmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/solutions/aviation': {
       id: '/solutions/aviation'
       path: '/solutions/aviation'
       fullPath: '/solutions/aviation'
       preLoaderRoute: typeof SolutionsAviationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions/cargo': {
+      id: '/solutions/cargo'
+      path: '/solutions/cargo'
+      fullPath: '/solutions/cargo'
+      preLoaderRoute: typeof SolutionsCargoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/solutions/concierge': {
@@ -1724,18 +1784,20 @@ const rootRouteChildren: RootRouteChildren = {
   LoungeRoute: LoungeRoute,
   PrestigiousProjectsRoute: PrestigiousProjectsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
-  RobotsDottxtRoute: RobotsDottxtRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SupportRoute: SupportRoute,
   TermsAndConditionsRoute: TermsAndConditionsRoute,
   ApiProcessQueueRoute: ApiProcessQueueRoute,
+  BlogSlugRoute: BlogSlugRoute,
   HotelsAirportHotelRoute: HotelsAirportHotelRoute,
   HotelsCastleBlueRoute: HotelsCastleBlueRoute,
   HotelsClassicDiplomatRoute: HotelsClassicDiplomatRoute,
   HotelsDePavilionRoute: HotelsDePavilionRoute,
   HotelsHolidayInnExpressRoute: HotelsHolidayInnExpressRoute,
+  RobotsTxtRoute: RobotsTxtRoute,
   ServicesGuideRoute: ServicesGuideRoute,
+  SitemapXmlRoute: SitemapXmlRoute,
   SolutionsAviationRoute: SolutionsAviationRoute,
+  SolutionsCargoRoute: SolutionsCargoRoute,
   SolutionsConciergeRoute: SolutionsConciergeRoute,
   SolutionsHotelsRoute: SolutionsHotelsRoute,
   SolutionsInfantCareRoute: SolutionsInfantCareRoute,
@@ -1743,6 +1805,7 @@ const rootRouteChildren: RootRouteChildren = {
   SolutionsSpecialServicesRoute: SolutionsSpecialServicesRoute,
   SolutionsTransportRoute: SolutionsTransportRoute,
   VerifyIdRoute: VerifyIdRoute,
+  BlogIndexRoute: BlogIndexRoute,
   ApiCharterRequestsRoute: ApiCharterRequestsRoute,
   ApiFlightValidateRoute: ApiFlightValidateRoute,
   ApiV1CharterRequestsRoute: ApiV1CharterRequestsRoute,

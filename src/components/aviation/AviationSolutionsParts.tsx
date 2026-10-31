@@ -304,6 +304,16 @@ export function AviationHeroStage({
           </div>
         </div>
 
+        {/* Page Title: Private Charter */}
+        <div className="text-center max-w-3xl mx-auto mb-5 sm:mb-7">
+          <h1
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-tight"
+            style={display}
+          >
+            Private Charter
+          </h1>
+        </div>
+
         {/* Framed Media Container with Strict 16:9 Aspect Ratio (100% Full Ratio, ZERO CROP) */}
         <div
           className="relative w-full aspect-[16/9] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none cursor-grab active:cursor-grabbing touch-pan-y"

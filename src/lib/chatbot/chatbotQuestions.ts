@@ -24,23 +24,21 @@ export interface QuickServiceRoute {
 }
 
 /**
- * 5 Canonical Shafsky Aviation Support Departments
+ * 3 Canonical Shafsky Aviation Support Departments
  * Directly matching the official Support Directory cards.
  */
 export const CHATBOT_DEPARTMENTS: SupportDepartment[] = SUPPORT_DEPARTMENTS;
 
 /**
- * Quick Service Shortcuts mapped directly to the 5 Canonical Departments
+ * Quick Service Shortcuts mapped directly to the 3 Canonical Departments
  */
 export const QUICK_SERVICE_ROUTING: QuickServiceRoute[] = [
-  { id: "meet_greet", label: "Meet & Greet", departmentNumber: 3, iconName: "Crown" },
-  { id: "flight", label: "Air Ticketing", departmentNumber: 1, iconName: "Ticket" },
-  { id: "visa", label: "Visa Assistance", departmentNumber: 2, iconName: "FileCheck" },
-  { id: "hotel", label: "Hotels & Stays", departmentNumber: 2, iconName: "Hotel" },
-  { id: "transport", label: "Transportation", departmentNumber: 1, iconName: "Car" },
-  { id: "infant", label: "Infant Care", departmentNumber: 3, iconName: "Baby" },
-  { id: "escalation", label: "Escalation", departmentNumber: 4, iconName: "ShieldAlert" },
-  { id: "finance", label: "Finance & Accounts", departmentNumber: 5, iconName: "Ticket" },
+  { id: "meet_greet", label: "Meet & Greet", departmentNumber: 1, iconName: "Crown" },
+  { id: "flight", label: "Air Ticketing", departmentNumber: 2, iconName: "Ticket" },
+  { id: "transport", label: "Transportation", departmentNumber: 2, iconName: "Car" },
+  { id: "visa", label: "Visa Assistance", departmentNumber: 3, iconName: "FileCheck" },
+  { id: "hotel", label: "Hotels & Stays", departmentNumber: 3, iconName: "Hotel" },
+  { id: "infant", label: "Infant Care", departmentNumber: 1, iconName: "Baby" },
 ];
 
 /**
@@ -77,9 +75,9 @@ export const CHATBOT_MAIN_SERVICES: ChatbotServiceOption[] = [
   },
   {
     id: "holidays",
-    label: "Holidays / Tour & Travel",
+    label: "Holidays / Travel & Tour",
     departmentId: "holidays",
-    description: "Bespoke romantic tours, honeymoons & luxury holiday circuits.",
+    description: "Bespoke tours, luxury holidays & global travel circuits.",
     iconName: "HeartHandshake",
   },
   {
@@ -113,7 +111,7 @@ export const CHATBOT_MAIN_SERVICES: ChatbotServiceOption[] = [
   {
     id: "other_services",
     label: "Other Services",
-    departmentId: "escalations",
+    departmentId: "meet_greet",
     description: "Infant Care, Spa & Wellness, Medevac, Cargo & Pet Logistics.",
     iconName: "PlusCircle",
   },
@@ -159,7 +157,7 @@ export const CHATBOT_OTHER_SERVICES: ChatbotServiceOption[] = [
   {
     id: "air_ambulance",
     label: "Air Ambulance",
-    departmentId: "escalations",
+    departmentId: "meet_greet",
     description: "24/7 dedicated airborne ICU jets with aero-medical doctors.",
     iconName: "Plane",
     isOtherCategory: true,
@@ -167,7 +165,7 @@ export const CHATBOT_OTHER_SERVICES: ChatbotServiceOption[] = [
   {
     id: "train_ambulance",
     label: "Train Ambulance",
-    departmentId: "escalations",
+    departmentId: "meet_greet",
     description: "Long-distance rail patient transfer with ICU coupe & oxygen.",
     iconName: "Train",
     isOtherCategory: true,
@@ -175,7 +173,7 @@ export const CHATBOT_OTHER_SERVICES: ChatbotServiceOption[] = [
   {
     id: "hum_remains",
     label: "Human Remains Transfer (HUM)",
-    departmentId: "escalations",
+    departmentId: "meet_greet",
     description: "Compassionate, fully documented repatriation of mortal remains.",
     iconName: "HeartHandshake",
     isOtherCategory: true,
@@ -232,3 +230,4 @@ export function buildDepartmentDirectWhatsAppMessage(
 export function resolveServiceDepartment(service: ChatbotServiceOption): DepartmentContact {
   return DEPARTMENT_CONTACTS[service.departmentId] || DEPARTMENT_CONTACTS.meet_greet;
 }
+

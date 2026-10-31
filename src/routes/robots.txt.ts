@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { } from "@tanstack/react-start";
 import { BUSINESS } from "@/lib/constants";
 
-export const Route = createFileRoute("/robots.txt")({
+export const Route = createFileRoute("/robots/txt")({
   server: {
     handlers: {
       GET: async () => {
@@ -22,6 +22,9 @@ export const Route = createFileRoute("/robots.txt")({
           "Disallow: /flight-verification",
           "Disallow: /book/payment-result",
           "Disallow: /gallery",
+          "Disallow: /wp-admin/",
+          "Disallow: /*?add_to_wishlist=",
+          "Disallow: /*?add-to-cart=",
           "",
           "User-agent: GPTBot",
           "Allow: /",

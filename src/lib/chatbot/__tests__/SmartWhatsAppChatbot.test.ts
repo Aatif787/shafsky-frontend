@@ -21,7 +21,7 @@ describe("Smart WhatsApp Chatbot Service & Department Architecture", () => {
       "Lounge Services",
       "Flight Support / Air Ticketing",
       "Hotel Booking",
-      "Holidays / Tour & Travel",
+      "Holidays / Travel & Tour",
       "Visa Assistance",
       "Transportation",
       "Door-to-Door Assistance",
@@ -35,55 +35,50 @@ describe("Smart WhatsApp Chatbot Service & Department Architecture", () => {
   });
 
   it("configures all department contacts with normalized phone numbers and emails matching official support", () => {
-    // 1. Meet & Greet (Department 03: GRO & VIP Care)
+    // 1. Meet & Greet (Department 01: Meet & Greet and Lounge)
     expect(DEPARTMENT_CONTACTS.meet_greet.email).toBe("Gro.shafskyaviation@gmail.com");
     expect(DEPARTMENT_CONTACTS.meet_greet.phoneDisplay).toBe("+91-9599087959");
     expect(DEPARTMENT_CONTACTS.meet_greet.normalizedPhone).toBe("919599087959");
 
-    // 2. Flight Support (Department 01: Aviation & Logistics)
+    // 2. Flight Support (Department 02: Air Ticketing & Transport)
     expect(DEPARTMENT_CONTACTS.flight.email).toBe("shafskyaviation.social@gmail.com");
     expect(DEPARTMENT_CONTACTS.flight.phoneDisplay).toBe("+91-9599087957");
     expect(DEPARTMENT_CONTACTS.flight.normalizedPhone).toBe("919599087957");
 
-    // 3. Hotel Support (Department 02: Visa & General Desks)
+    // 3. Hotel Support (Department 03: Visa & General Desks)
     expect(DEPARTMENT_CONTACTS.hotel.email).toBe("commercialshafskyaviation@gmail.com");
     expect(DEPARTMENT_CONTACTS.hotel.phoneDisplay).toBe("+91 92175 22660");
     expect(DEPARTMENT_CONTACTS.hotel.normalizedPhone).toBe("919217522660");
 
-    // 4. Holidays (Department 02: Visa & General Desks)
+    // 4. Holidays (Department 03: Visa & General Desks)
     expect(DEPARTMENT_CONTACTS.holidays.email).toBe("commercialshafskyaviation@gmail.com");
     expect(DEPARTMENT_CONTACTS.holidays.phoneDisplay).toBe("+91 92175 22660");
     expect(DEPARTMENT_CONTACTS.holidays.normalizedPhone).toBe("919217522660");
 
-    // 5. Visa (Department 02: Visa & General Desks)
+    // 5. Visa (Department 03: Visa & General Desks)
     expect(DEPARTMENT_CONTACTS.visa.email).toBe("commercialshafskyaviation@gmail.com");
     expect(DEPARTMENT_CONTACTS.visa.phoneDisplay).toBe("+91 92175 22660");
     expect(DEPARTMENT_CONTACTS.visa.normalizedPhone).toBe("919217522660");
 
-    // 6. Transportation (Department 01: Aviation & Logistics)
+    // 6. Transportation (Department 02: Air Ticketing & Transport)
     expect(DEPARTMENT_CONTACTS.transport.email).toBe("shafskyaviation.social@gmail.com");
     expect(DEPARTMENT_CONTACTS.transport.phoneDisplay).toBe("+91-9599087957");
     expect(DEPARTMENT_CONTACTS.transport.normalizedPhone).toBe("919599087957");
 
-    // 7. Door-to-Door Assistance (Department 03: GRO & VIP Care)
+    // 7. Door-to-Door Assistance (Department 01: Meet & Greet and Lounge)
     expect(DEPARTMENT_CONTACTS.doortodoor.email).toBe("Gro.shafskyaviation@gmail.com");
     expect(DEPARTMENT_CONTACTS.doortodoor.phoneDisplay).toBe("+91-9599087959");
     expect(DEPARTMENT_CONTACTS.doortodoor.normalizedPhone).toBe("919599087959");
 
-    // 8. Event Support (Department 01: Aviation & Logistics)
+    // 8. Event Support (Department 02: Air Ticketing & Transport)
     expect(DEPARTMENT_CONTACTS.events.email).toBe("shafskyaviation.social@gmail.com");
     expect(DEPARTMENT_CONTACTS.events.phoneDisplay).toBe("+91-9599087957");
     expect(DEPARTMENT_CONTACTS.events.normalizedPhone).toBe("919599087957");
 
-    // 9. Escalations (Department 04: Management & HR Escalation)
-    expect(DEPARTMENT_CONTACTS.escalations.email).toBe("gm.shafskyaviation@gmail.com");
-    expect(DEPARTMENT_CONTACTS.escalations.phoneDisplay).toBe("+91 98188 50755");
-    expect(DEPARTMENT_CONTACTS.escalations.normalizedPhone).toBe("919818850755");
-
-    // 10. Finance (Department 05: Billing & Accounts)
-    expect(DEPARTMENT_CONTACTS.finance.email).toBe("financeshafskyaviation@gmail.com");
-    expect(DEPARTMENT_CONTACTS.finance.phoneDisplay).toBe("+91 88006 98554");
-    expect(DEPARTMENT_CONTACTS.finance.normalizedPhone).toBe("918800698554");
+    // Escalations & Finance are completely removed
+    expect(DEPARTMENT_CONTACTS.escalations).toBeUndefined();
+    expect(DEPARTMENT_CONTACTS.escalation).toBeUndefined();
+    expect(DEPARTMENT_CONTACTS.finance).toBeUndefined();
   });
 
   it("correctly normalizes phone numbers without +, spaces or brackets", () => {
@@ -131,7 +126,7 @@ describe("Smart WhatsApp Chatbot Service & Department Architecture", () => {
     expect(route("Lounge Services").phoneDisplay).toBe("+91-9599087959");
     expect(route("Flight Support / Air Ticketing").phoneDisplay).toBe("+91-9599087957");
     expect(route("Hotel Booking").phoneDisplay).toBe("+91 92175 22660");
-    expect(route("Holidays / Tour & Travel").phoneDisplay).toBe("+91 92175 22660");
+    expect(route("Holidays / Travel & Tour").phoneDisplay).toBe("+91 92175 22660");
     expect(route("Visa Assistance").phoneDisplay).toBe("+91 92175 22660");
     expect(route("Transportation").phoneDisplay).toBe("+91-9599087957");
     expect(route("Door-to-Door Assistance").phoneDisplay).toBe("+91-9599087959");
@@ -140,23 +135,21 @@ describe("Smart WhatsApp Chatbot Service & Department Architecture", () => {
 
   it("maps specialized services under Other Services to valid department contacts", () => {
     expect(route("Infant Care").name).toBe("Door to Door Assistance");
-    expect(route("Spa & Wellness").name).toBe("Tour, Travel & Holidays");
+    expect(route("Spa & Wellness").name).toBe("Travel, Tour & Holidays");
     expect(route("Pet Transfer (Cargo & Avi Pet)").name).toBe("Transportation & Luxury Fleet");
     expect(route("Cargo Services").name).toBe("Transportation & Luxury Fleet");
-    expect(route("Air Ambulance").name).toBe("Management & HR Escalation");
-    expect(route("Train Ambulance").name).toBe("Management & HR Escalation");
-    expect(route("Human Remains Transfer (HUM)").name).toBe("Management & HR Escalation");
+    expect(route("Air Ambulance").name).toBe("Meet & Greet Concierge");
+    expect(route("Train Ambulance").name).toBe("Meet & Greet Concierge");
+    expect(route("Human Remains Transfer (HUM)").name).toBe("Meet & Greet Concierge");
     expect(route("PSO & Security Services").name).toBe("Event Management & Logistics");
     expect(route("Onboard Meals").name).toBe("Air Ticketing & Flight Support");
   });
 
-  it("only uses the 5 official department numbers from the Support Directory", () => {
+  it("only uses the 3 official department numbers from the Support Directory", () => {
     const approved = [
-      "918800698554", // Finance & Accounts
-      "919217522660", // Visa & General Desks
-      "919599087957", // Aviation & Logistics
-      "919599087959", // Whole Guest Relationship Department
-      "919818850755", // Management & HR Escalation
+      "919217522660", // Visa Assistance, Air Ticketing, Hotels & General Inquiry
+      "919599087957", // Air Ticketing, Event Management, Transportation & Hotels
+      "919599087959", // Meet & Greet and Lounge
     ];
     const uniquePhones = Array.from(new Set(Object.values(DEPARTMENT_CONTACTS).map((d) => d.normalizedPhone))).sort();
     expect(uniquePhones).toEqual(approved);
@@ -165,4 +158,3 @@ describe("Smart WhatsApp Chatbot Service & Department Architecture", () => {
     });
   });
 });
-

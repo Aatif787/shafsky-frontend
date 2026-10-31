@@ -31,8 +31,6 @@ import { TravelFlightAnimation } from "./TravelFlightAnimation";
 import { OtherServicesEnquiryFlow, type OtherServiceType } from "./enquiry/OtherServicesEnquiryFlow";
 import { LoungeEnquiryForm } from "@/components/lounge/LoungeEnquiryForm";
 import { LoungeHeroCarousel } from "@/components/lounge/LoungeGalleryShowcase";
-// Dedicated WhatsApp booking link specifically for the Booking Panel (+91 7428300207)
-const BOOKING_PANEL_WHATSAPP_LINK = "https://wa.me/917428300207?text=Hi";
 
 const FIELD =
   "flex h-12 w-full items-center justify-between rounded-2xl border border-white/65 bg-white/45 backdrop-blur-xl px-4 text-xs font-semibold text-slate-900 outline-none transition-all duration-300 hover:border-lime-400/90 hover:bg-white/65 focus:border-lime-500 focus:bg-white/80 focus:ring-4 focus:ring-lime-400/20 shadow-[inset_0_1.5px_2px_rgba(255,255,255,0.85),0_4px_14px_rgba(15,23,42,0.03)]";
@@ -80,15 +78,6 @@ export interface BookingPanelProps {
 
 export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
   const navigate = useNavigate();
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.defaultMuted = true;
-      videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
-    }
-  }, []);
   const [activeMode, setActiveMode] = useState<BookingServiceMode>("airport");
   const [originCode, setOriginCode] = useState<string>("");
   const [destCode, setDestCode] = useState<string>("");
@@ -423,35 +412,33 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
 
       <div className="relative mx-auto max-w-[960px]">
         {/* Upper-left Corner Reference Travel Animation */}
-        {showSideAnimation && (
+
+                {showSideAnimation && (
           <motion.div
             initial={{ opacity: 0, y: 12, scale: 0.95 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-1 left-2 sm:top-2 sm:left-4 md:top-3 md:left-6 lg:top-3 lg:left-8 w-24 sm:w-36 md:w-44 lg:w-48 z-30 pointer-events-none select-none"
+            className="absolute -top-4 left-2 sm:-top-5 sm:left-4 md:-top-6 md:left-6 lg:-top-8 lg:left-8 w-24 sm:w-36 md:w-44 lg:w-48 z-30 pointer-events-none select-none"
           >
             <div className="relative w-full h-auto">
-              <video
-                ref={videoRef}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="auto"
-                poster="/videos/travel-animation-poster.webp"
-                className="w-full h-auto object-contain select-none pointer-events-none block"
-                aria-label="Shafsky Aviation travel concierge animation"
-              >
-                <source src="/videos/travel-animation.webm" type="video/webm" />
-                <source src="/videos/travel-animation.mp4" type="video/mp4" />
-              </video>
+              <picture>
+                <source srcSet="/videos/travel-animation.webp" type="image/webp" />
+                <img
+                  src="/videos/travel-animation.webp"
+                  alt="Shafsky Aviation travel concierge animation"
+                  width={1170}
+                  height={696}
+                  className="w-full h-auto object-contain select-none pointer-events-none block"
+                  loading="eager"
+                  decoding="async"
+                />
+              </picture>
               <TravelFlightAnimation />
             </div>
           </motion.div>
         )}
-
-        <motion.div
+<motion.div
           initial={{ opacity: 0, y: 35, scale: 0.97 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: false, amount: 0.15 }}
@@ -478,18 +465,6 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
               : "Other Services Enquiry"}
           </motion.h2>
 
-          <div className="mt-2.5 flex items-center justify-center">
-            <a
-              href={BOOKING_PANEL_WHATSAPP_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/50 text-emerald-950 text-[11px] sm:text-xs font-mono font-bold tracking-tight transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.7),0_2px_8px_rgba(16,185,129,0.1)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_4px_14px_rgba(16,185,129,0.18)] backdrop-blur-md group cursor-pointer"
-            >
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span>24/7 WhatsApp Booking</span>
-              <ArrowRight size={12} className="text-emerald-700 transition-transform group-hover:translate-x-0.5" />
-            </a>
-          </div>
         </div>
 
         <div className="p-6 md:p-8 space-y-6">
@@ -932,18 +907,8 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
             </div>
           </motion.div>
 
-          {/* Bottom Bar: Central Super CTA & 24/7 WhatsApp Booking */}
-          <div className="pt-5 border-t border-white/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <a
-              href={BOOKING_PANEL_WHATSAPP_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-950 border border-emerald-400/50 text-xs font-mono font-bold tracking-wider transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.7),0_4px_12px_rgba(16,185,129,0.12)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_6px_16px_rgba(16,185,129,0.2)] active:scale-98 cursor-pointer backdrop-blur-xl"
-            >
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span>24/7 WhatsApp Booking</span>
-            </a>
-
+          {/* Bottom Bar: Central Super CTA */}
+          <div className="pt-5 border-t border-white/50 flex flex-col sm:flex-row items-center justify-end gap-4">
             <motion.button
               type="button"
               whileHover={{ scale: 1.025, y: -2 }}

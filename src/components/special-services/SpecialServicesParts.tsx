@@ -16,17 +16,16 @@ import { display } from "@/components/home/theme";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import specialserImg from "@/assets/others/specialser.png";
-import airAmbulanceImg from "@/assets/others/air-ambulance.jpg";
-import airTicketingImg from "@/assets/others/air-ticketing.jpg";
 import infantCareImg from "@/assets/others/infant-care.jpg";
 import trainAmbulanceImg from "@/assets/others/train-ambulance.jpg";
 import petCargoImg from "@/assets/others/pet-cargo.jpg";
 import visaAssistanceImg from "@/assets/others/visa-assistance.jpg";
-import onboardMealsImg from "@/assets/others/onboard-meals.jpg";
 import humanRemainsImg from "@/assets/others/human-remains.jpg";
 
 export type SpecialServiceOptionId =
   | "Air Ticketing Services"
+  | "Travel & Tour"
+  | "Travel & Tour (Honeymoon/Couples)"
   | "Tours & Travel (Honeymoon/Couples)"
   | "Visa Assistance Services"
   | "On-board Meal Arrangements for Group Meet & Greet Bookings"
@@ -57,30 +56,21 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     label: "Air Ticketing Services",
     shortLabel: "Air Ticketing",
     badge: "DOMESTIC & INTERNATIONAL AIRLINE TICKETING",
-    tagline:
-      "Instant domestic and international airline bookings across 500+ commercial carriers, flexible corporate fares, and VIP seat assignments.",
-    photo: airTicketingImg,
+    tagline: "",
     icon: Ticket,
-    inclusions: [
-      "Instant Domestic & International Flight Ticketing across 500+ Global Airlines",
-      "Special Corporate & Marine/Offshore Fares, Extra Baggage & Flexible Re-booking",
-      "Premium Cabin Seat Reservation (Economy, Premium Economy, Business, First Class)",
-      "Special Airside Passenger Assistance: Wheelchair, Stretcher, Unaccompanied Minor",
-      "Instant PNR Generation, Web Check-in & Boarding Pass Issuance to WhatsApp",
-      "24/7 Dedicated Air Ticketing Operations Desk for Flight Changes & Urgent Cancellations",
-    ],
+    inclusions: [],
   },
   {
-    id: "Tours & Travel (Honeymoon/Couples)",
-    label: "Tours & Travel (Honeymoon/Couples)",
-    shortLabel: "Tours & Travel",
-    badge: "CURATED ROMANTIC GETAWAYS & HONEYMOONS",
+    id: "Travel & Tour",
+    label: "Travel & Tour",
+    shortLabel: "Travel & Tour",
+    badge: "CURATED LUXURY ITINERARIES & GLOBAL TOURS",
     tagline:
-      "Curated romantic itineraries, European honeymoons, private yacht charters, and luxury stays.",
+      "Curated travel itineraries, European tours, private yacht charters, and luxury stays.",
     photo: specialserImg,
     icon: HeartHandshake,
     inclusions: [
-      "Tailored Luxury Honeymoon Circuits & Private Romantic Escapes (Paris, Venice, Amalfi, Switzerland)",
+      "Tailored Luxury Travel Circuits & Private Escapes (Paris, Venice, Amalfi, Switzerland)",
       "Private Aircraft Charter & Chauffeured Luxury Ground Fleet Synchronization",
       "5-Star Heritage Palace & Signature Eiffel / Presidential Suite Reservations",
       "VIP Fast-Track Monument Access, Private Seine Dinner Cruises & Curated Moments",
@@ -113,16 +103,8 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "GOURMET IN-FLIGHT DINING & GROUP MEET & GREET CATERING",
     tagline:
       "Bespoke in-flight catering, customized dietary curation, and synchronized airside meal delivery for group and VIP Meet & Greet journeys.",
-    photo: onboardMealsImg,
     icon: UtensilsCrossed,
-    inclusions: [
-      "Bespoke Gourmet In-Flight Meal Service for Group & VIP Meet & Greet Flights",
-      "Specialized Dietary Curation: Jain, Halal, Vegan, Gluten-Free, Veg & Non-Veg",
-      "Strict In-Flight Allergy Management & Direct Airline Catering Manifesting",
-      "Airside Gate-to-Cabin Meal Coordination Synchronized with Passenger Boarding",
-      "Executive Beverage Selection, Fresh Bakery & Premium Multi-Course Menus",
-      "24/7 Dedicated In-Flight Catering Concierge & Urgent Sector Coordination",
-    ],
+    inclusions: [],
   },
   {
     id: "Spa & Wellness",
@@ -167,7 +149,6 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "24/7 AIRBORNE ICU & BED-TO-BED MEDICAL EVACUATION",
     tagline:
       "Dedicated ICU aircraft, certified aero-medical doctors, and seamless bed-to-bed hospital transfer across India and worldwide.",
-    photo: airAmbulanceImg,
     icon: Plane,
     inclusions: [
       "Dedicated Airborne ICU Jet (Learjet / Hawker / King Air) on 2-Hour Rapid Standby",
@@ -210,27 +191,20 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
       "Hospital NOC, Death Certificate Clearance, Embalming Certificate & Police Clearances",
       "Certified Embalming Procedure & International Zinc-Lined Coffin Hermetic Sealing",
       "Embassy / Consular Clearance, Quarantine / Health Officer Approvals & NOCs",
-      "Priority Air Cargo Space Allocation & Direct Airside Tarmac Dignified Receiving",
+      "Priority Aviation Allocation & Direct Airside Tarmac Dignified Receiving",
       "Complete Compassionate Guidance with Real-Time Family Progress Updates",
     ],
   },
   {
     id: "Cargo & AVI Pet Freight",
-    label: "Cargo & AVI Pet Freight",
-    shortLabel: "Cargo & AVI Pet",
-    badge: "AIR FREIGHT & IATA LIVE ANIMAL (AVI) LOGISTICS",
+    label: "AVI & Animal Pet Transport",
+    shortLabel: "AVI & Animal",
+    badge: "IATA LIVE ANIMAL (AVI) & PET LOGISTICS",
     tagline:
-      "Specialized aviation freight handling, IATA-compliant live animal & pet booking, and airside customs documentation clearance.",
+      "IATA-compliant live animal & domestic pet relocation, climate-controlled cabin & aircraft hold allocation, and airside veterinary clearance.",
     photo: petCargoImg,
     icon: PawPrint,
-    inclusions: [
-      "IATA Live Animal (AVI) Pet Transport with Climate-Controlled Cargo Hold Allocation",
-      "Pet Relocation Documentation, Veterinary Fit-to-Fly Verification & IATA Crates",
-      "High-Value Express Air Freight, Temperature-Sensitive Pharma & Valuables Escort",
-      "Customs Documentation Liaison, Air Waybill (AWB) Generation & Express Tarmac Clearance",
-      "Airside Supervised Loading with Real-Time Departure WhatsApp Photo Updates",
-      "24/7 Air Cargo Operations Desk Liaison across All Major Commercial Airline Carriers",
-    ],
+    inclusions: [],
   },
   {
     id: "Infant Care Services",
@@ -241,14 +215,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
       "Compassionate airport concierge assistance for parents travelling with infants, pram escort, and seamless airside coordination.",
     photo: infantCareImg,
     icon: Baby,
-    inclusions: [
-      "Dedicated Airside Concierge Officer Assisting from Curbside to Aerobridge",
-      "Stroller & Baby Pram Airside Handling and Gate-Check Coordination",
-      "Priority Terminal Navigation & Smooth Security Fast-Track Liaison",
-      "Arrival Gate Reception & Luggage Claim Assistance for Parents",
-      "Transit Gate-to-Gate Transfer Assistance with Infant Feeding Layover Support",
-      "24/7 Dedicated Family Concierge Desk Standby on WhatsApp",
-    ],
+    inclusions: [],
   },
 ];
 
@@ -263,8 +230,8 @@ export function resolveSpecialServiceFromSearch(search: unknown): SpecialService
   if (sub.includes("ticket") || sub.includes("flight")) {
     return "Air Ticketing Services";
   }
-  if (sub.includes("tour") || sub.includes("honeymoon")) {
-    return "Tours & Travel (Honeymoon/Couples)";
+  if (sub.includes("travel") || sub.includes("tour") || sub.includes("honeymoon")) {
+    return "Travel & Tour";
   }
   if (sub.includes("visa")) {
     return "Visa Assistance Services";
@@ -301,10 +268,18 @@ export function SpecialServiceHeroStage({
   onBack: () => void;
 }) {
   return (
-    <section className="relative w-full overflow-hidden bg-white border-b border-slate-200 py-6 sm:py-8 md:py-10">
+    <section
+      className={`relative w-full overflow-hidden bg-white border-b border-slate-200 ${
+        activeOption.photo ? "py-6 sm:py-8 md:py-10" : "py-4 sm:py-6"
+      }`}
+    >
       <div className="relative z-10 mx-auto w-full max-w-[1040px] xl:max-w-[1100px] 2xl:max-w-[1140px] px-4 sm:px-6 md:px-8">
         {/* Top Header Row: Back Button & Selected Service Status Badge */}
-        <div className="w-full mb-3.5 sm:mb-5 flex items-center justify-between gap-3">
+        <div
+          className={`w-full flex items-center justify-between gap-3 ${
+            activeOption.photo ? "mb-3.5 sm:mb-5" : ""
+          }`}
+        >
           <button
             onClick={onBack}
             className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/90 text-xs font-semibold shadow-xs hover:border-lime-500 transition-all cursor-pointer"
@@ -342,6 +317,9 @@ export function SpecialServiceDetailsSection({
 }: {
   activeOption: SpecialServiceOptionDef;
 }) {
+  if (activeOption.id === "Air Ticketing Services" || activeOption.id === "Cargo & AVI Pet Freight" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
+    return null;
+  }
   return (
     <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
@@ -754,7 +732,7 @@ export function SpecialServiceMedicalAndLogisticsFields({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Cargo / Pet Details *
+                Live Animal / Pet Details *
               </label>
               <input
                 type="text"

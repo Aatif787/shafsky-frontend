@@ -22,6 +22,7 @@ export const STATIC_PAGES: SitemapEntry[] = [
   { path: "/solutions/aviation", changefreq: "monthly", priority: "0.8" },
   { path: "/solutions/transport", changefreq: "monthly", priority: "0.7" },
   { path: "/solutions/hotels", changefreq: "monthly", priority: "0.7" },
+  { path: "/solutions/cargo", changefreq: "monthly", priority: "0.7" },
   { path: "/solutions/special-services", changefreq: "monthly", priority: "0.6" },
   { path: "/services/guide", changefreq: "monthly", priority: "0.7" },
   { path: "/about-us", changefreq: "monthly", priority: "0.7" },
@@ -36,18 +37,24 @@ export const STATIC_PAGES: SitemapEntry[] = [
   { path: "/hotels/classic-diplomat", changefreq: "monthly", priority: "0.5" },
   { path: "/hotels/de-pavilion", changefreq: "monthly", priority: "0.5" },
   { path: "/hotels/holiday-inn-express", changefreq: "monthly", priority: "0.5" },
+  { path: "/blog", changefreq: "weekly", priority: "0.8" },
+  { path: "/blog/delhi-airport-meet-and-greet-guide", changefreq: "monthly", priority: "0.7" },
+  { path: "/blog/what-is-airport-meet-and-greet-india", changefreq: "monthly", priority: "0.7" },
+  { path: "/blog/igi-airport-fast-track-immigration", changefreq: "monthly", priority: "0.7" },
+  { path: "/blog/delhi-airport-lounge-access-guide", changefreq: "monthly", priority: "0.7" },
 ];
 
 const NON_REVIEW_PREFIXES = [
   "/solutions/aviation",
   "/solutions/transport",
   "/solutions/hotels",
+  "/solutions/cargo",
   "/solutions/special-services",
   "/charter",
   "/hotels",
 ];
 
-export const Route = createFileRoute("/sitemap.xml")({
+export const Route = createFileRoute("/sitemap/xml")({
   server: {
     handlers: {
       GET: async () => {

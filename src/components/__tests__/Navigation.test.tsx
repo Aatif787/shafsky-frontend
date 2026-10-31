@@ -25,7 +25,7 @@ vi.mock("@/lib/branding/branding.context", () => ({
 
 describe("Navigation navbar (Direct Individual Links)", () => {
   it("defines NAV_ITEMS in the exact required order with correct routes", () => {
-    expect(NAV_ITEMS).toHaveLength(8);
+    expect(NAV_ITEMS).toHaveLength(9);
 
     expect(NAV_ITEMS[0]).toEqual({
       label: "Meet & Greet",
@@ -40,22 +40,26 @@ describe("Navigation navbar (Direct Individual Links)", () => {
       href: "/airports",
     });
     expect(NAV_ITEMS[3]).toEqual({
+      label: "Cargo",
+      href: "/solutions/cargo",
+    });
+    expect(NAV_ITEMS[4]).toEqual({
       label: "Transport",
       href: "/solutions/transport",
     });
-    expect(NAV_ITEMS[4]).toEqual({
+    expect(NAV_ITEMS[5]).toEqual({
       label: "Hotel",
       href: "/solutions/hotels",
     });
-    expect(NAV_ITEMS[5]).toEqual({
+    expect(NAV_ITEMS[6]).toEqual({
       label: "Private Charter",
       href: "/solutions/aviation",
     });
-    expect(NAV_ITEMS[6]).toEqual({
+    expect(NAV_ITEMS[7]).toEqual({
       label: "Other Services",
       href: "/solutions/special-services",
     });
-    expect(NAV_ITEMS[7]).toEqual({
+    expect(NAV_ITEMS[8]).toEqual({
       label: "Support",
       href: "/support",
     });
@@ -83,6 +87,9 @@ describe("Navigation navbar (Direct Individual Links)", () => {
 
     expect(html).toContain('href="/solutions/aviation"');
     expect(html).toContain(">Private Charter</span>");
+
+    expect(html).toContain('href="/solutions/cargo"');
+    expect(html).toContain(">Cargo</span>");
 
     expect(html).toContain(">Other Services</span>");
 
