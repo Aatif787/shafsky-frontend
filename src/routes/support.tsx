@@ -7,7 +7,7 @@ export const Route = createFileRoute("/support")({
     pageHead({
       title: "Support & Contact Directory | Shafsky Aviation Services",
       description:
-        "Connect directly with the right Shafsky Aviation team for reservations, travel assistance, guest relations, and escalations.",
+        "Connect directly with the right Shafsky Aviation team for reservations, travel assistance, and guest relations.",
       path: "/support",
       jsonLd: [
         breadcrumbJsonLd([

@@ -27,12 +27,12 @@ export function SupportPage() {
           </h1>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
             Connect directly with the right Shafsky Aviation team for reservations, travel
-            assistance, guest relations, and escalations.
+            assistance, and guest relations.
           </p>
         </div>
 
-        {/* Department Contact Directory (Clean 2-Column Editorial Grid for 4 Departments) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-7 items-stretch">
+        {/* Department Contact Directory (Responsive 3-Column Editorial Grid for 3 Departments) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 items-stretch">
           {SUPPORT_DEPARTMENTS.map((dept: SupportDepartment) => {
             return (
               <section

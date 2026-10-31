@@ -75,12 +75,9 @@ describe("Smart WhatsApp Chatbot Service & Department Architecture", () => {
     expect(DEPARTMENT_CONTACTS.events.phoneDisplay).toBe("+91-9599087957");
     expect(DEPARTMENT_CONTACTS.events.normalizedPhone).toBe("919599087957");
 
-    // 9. Escalations (Department 04: Management & HR Escalation)
-    expect(DEPARTMENT_CONTACTS.escalations.email).toBe("gm.shafskyaviation@gmail.com");
-    expect(DEPARTMENT_CONTACTS.escalations.phoneDisplay).toBe("+91 98188 50755");
-    expect(DEPARTMENT_CONTACTS.escalations.normalizedPhone).toBe("919818850755");
-
-    // Finance is removed completely
+    // Escalations & Finance are completely removed
+    expect(DEPARTMENT_CONTACTS.escalations).toBeUndefined();
+    expect(DEPARTMENT_CONTACTS.escalation).toBeUndefined();
     expect(DEPARTMENT_CONTACTS.finance).toBeUndefined();
   });
 
@@ -141,19 +138,18 @@ describe("Smart WhatsApp Chatbot Service & Department Architecture", () => {
     expect(route("Spa & Wellness").name).toBe("Travel, Tour & Holidays");
     expect(route("Pet Transfer (Cargo & Avi Pet)").name).toBe("Transportation & Luxury Fleet");
     expect(route("Cargo Services").name).toBe("Transportation & Luxury Fleet");
-    expect(route("Air Ambulance").name).toBe("Management & HR Escalation");
-    expect(route("Train Ambulance").name).toBe("Management & HR Escalation");
-    expect(route("Human Remains Transfer (HUM)").name).toBe("Management & HR Escalation");
+    expect(route("Air Ambulance").name).toBe("Meet & Greet Concierge");
+    expect(route("Train Ambulance").name).toBe("Meet & Greet Concierge");
+    expect(route("Human Remains Transfer (HUM)").name).toBe("Meet & Greet Concierge");
     expect(route("PSO & Security Services").name).toBe("Event Management & Logistics");
     expect(route("Onboard Meals").name).toBe("Air Ticketing & Flight Support");
   });
 
-  it("only uses the 4 official department numbers from the Support Directory", () => {
+  it("only uses the 3 official department numbers from the Support Directory", () => {
     const approved = [
-      "919217522660", // Visa & General Desks
-      "919599087957", // Aviation & Logistics
+      "919217522660", // Visa Assistance, Air Ticketing, Hotels & General Inquiry
+      "919599087957", // Air Ticketing, Event Management, Transportation & Hotels
       "919599087959", // Meet & Greet and Lounge
-      "919818850755", // Management & HR Escalation
     ];
     const uniquePhones = Array.from(new Set(Object.values(DEPARTMENT_CONTACTS).map((d) => d.normalizedPhone))).sort();
     expect(uniquePhones).toEqual(approved);

@@ -63,7 +63,7 @@ export function SmartWhatsAppChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNotificationBadge, setShowNotificationBadge] = useState(true);
 
-  // Chat State: 4 Canonical Support Departments
+  // Chat State: 3 Canonical Support Departments
   const [selectedDepartment, setSelectedDepartment] = useState<SupportDepartment | null>(null);
   const [showDirectoryOverlay, setShowDirectoryOverlay] = useState(false);
 
@@ -398,7 +398,7 @@ export function SmartWhatsAppChatbot() {
                   </div>
 
                   {/* ───────────────────────────────────────────────────────
-                   * 4 CANONICAL DEPARTMENT SELECTION (Matching Support Cards)
+                   * 3 CANONICAL DEPARTMENT SELECTION (Matching Support Cards)
                    * ─────────────────────────────────────────────────────── */}
                   {!selectedDepartment && (
                     <div className="pl-9 space-y-3">
@@ -422,7 +422,7 @@ export function SmartWhatsAppChatbot() {
                         </div>
                       </div>
 
-                      {/* The 4 Canonical Department Cards */}
+                      {/* The 3 Canonical Department Cards */}
                       <div className="space-y-2 pt-1">
                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 block" style={mono}>
                           Select an Official Department:

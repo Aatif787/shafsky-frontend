@@ -24,13 +24,13 @@ export interface QuickServiceRoute {
 }
 
 /**
- * 4 Canonical Shafsky Aviation Support Departments
+ * 3 Canonical Shafsky Aviation Support Departments
  * Directly matching the official Support Directory cards.
  */
 export const CHATBOT_DEPARTMENTS: SupportDepartment[] = SUPPORT_DEPARTMENTS;
 
 /**
- * Quick Service Shortcuts mapped directly to the 4 Canonical Departments
+ * Quick Service Shortcuts mapped directly to the 3 Canonical Departments
  */
 export const QUICK_SERVICE_ROUTING: QuickServiceRoute[] = [
   { id: "meet_greet", label: "Meet & Greet", departmentNumber: 1, iconName: "Crown" },
@@ -39,7 +39,6 @@ export const QUICK_SERVICE_ROUTING: QuickServiceRoute[] = [
   { id: "visa", label: "Visa Assistance", departmentNumber: 3, iconName: "FileCheck" },
   { id: "hotel", label: "Hotels & Stays", departmentNumber: 3, iconName: "Hotel" },
   { id: "infant", label: "Infant Care", departmentNumber: 1, iconName: "Baby" },
-  { id: "escalation", label: "Escalation", departmentNumber: 4, iconName: "ShieldAlert" },
 ];
 
 /**
@@ -112,7 +111,7 @@ export const CHATBOT_MAIN_SERVICES: ChatbotServiceOption[] = [
   {
     id: "other_services",
     label: "Other Services",
-    departmentId: "escalations",
+    departmentId: "meet_greet",
     description: "Infant Care, Spa & Wellness, Medevac, Cargo & Pet Logistics.",
     iconName: "PlusCircle",
   },
@@ -158,7 +157,7 @@ export const CHATBOT_OTHER_SERVICES: ChatbotServiceOption[] = [
   {
     id: "air_ambulance",
     label: "Air Ambulance",
-    departmentId: "escalations",
+    departmentId: "meet_greet",
     description: "24/7 dedicated airborne ICU jets with aero-medical doctors.",
     iconName: "Plane",
     isOtherCategory: true,
@@ -166,7 +165,7 @@ export const CHATBOT_OTHER_SERVICES: ChatbotServiceOption[] = [
   {
     id: "train_ambulance",
     label: "Train Ambulance",
-    departmentId: "escalations",
+    departmentId: "meet_greet",
     description: "Long-distance rail patient transfer with ICU coupe & oxygen.",
     iconName: "Train",
     isOtherCategory: true,
@@ -174,7 +173,7 @@ export const CHATBOT_OTHER_SERVICES: ChatbotServiceOption[] = [
   {
     id: "hum_remains",
     label: "Human Remains Transfer (HUM)",
-    departmentId: "escalations",
+    departmentId: "meet_greet",
     description: "Compassionate, fully documented repatriation of mortal remains.",
     iconName: "HeartHandshake",
     isOtherCategory: true,
