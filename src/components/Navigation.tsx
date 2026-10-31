@@ -474,8 +474,16 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
                                     ref={(el) => {
                                       serviceItemRefs.current[idx] = el;
                                     }}
-                                    to="/solutions/special-services"
-                                    search={{ sub: service.sub } as any}
+                                    to={
+                                      service.href.startsWith("/solutions/special-services")
+                                        ? "/solutions/special-services"
+                                        : (service.href.split("?")[0] as any)
+                                    }
+                                    search={
+                                      service.href.includes("?")
+                                        ? ({ sub: service.sub } as any)
+                                        : undefined
+                                    }
                                     role="menuitem"
                                     onClick={() => {
                                       clearCloseTimer();

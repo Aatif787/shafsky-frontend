@@ -67,10 +67,16 @@ function DedicatedSpecialServicesPage() {
 
   // Synchronize selected service whenever URL search parameter changes
   useEffect(() => {
+    const searchObj = (location.search || {}) as Record<string, unknown>;
+    const rawSub = typeof searchObj.sub === "string" ? searchObj.sub.toLowerCase() : "";
+    if (rawSub === "cargo") {
+      navigate({ to: "/solutions/cargo", replace: true });
+      return;
+    }
     const resolved = resolveSpecialServiceFromSearch(location.search);
     setSelectedOptionId(resolved);
     setSubmittedRef(null);
-  }, [location.search]);
+  }, [location.search, navigate]);
 
   const activeOption =
     SPECIAL_SERVICES_OPTIONS.find((o) => o.id === selectedOptionId) ||
@@ -281,7 +287,7 @@ function DedicatedSpecialServicesPage() {
         cargo_pet_details: cargoDetails,
         date: cargoDate,
       };
-      notes = `Cargo/Pet Details: ${cargoDetails} from ${cargoOrigin} to ${cargoDest}`;
+      notes = `AVI & Pet Details: ${cargoDetails} from ${cargoOrigin} to ${cargoDest}`;
       serviceType = "AVI Pet Transport";
     } else if (selectedOptionId === "Air Ticketing Services") {
       origin = ticketOrigin;
@@ -348,7 +354,7 @@ function DedicatedSpecialServicesPage() {
     } else if (selectedOptionId === "Visa Assistance Services") {
       details = `Country: ${visaCountry}%0ACategory: ${visaCategory}%0ATravel Date: ${visaDate}%0AApplicants: ${visaApplicants}%0APassport: ${visaPassport.trim().toUpperCase()}`;
     } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
-      details = `From: ${cargoOrigin}%0ATo: ${cargoDest}%0ACargo/Pet: ${cargoDetails}%0ADate: ${cargoDate}`;
+      details = `From: ${cargoOrigin}%0ATo: ${cargoDest}%0APet Details: ${cargoDetails}%0ADate: ${cargoDate}`;
     } else if (selectedOptionId === "Air Ticketing Services") {
       details = `Sector: ${ticketOrigin} to ${ticketDest}%0ADate: ${ticketDate}%0ACabin Class: ${ticketClass}%0APassengers: ${ticketPax}%0ANotes: ${ticketNotes || "None"}`;
     }

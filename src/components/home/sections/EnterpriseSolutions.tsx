@@ -102,8 +102,9 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     photo: specialserImg,
     alt: "Shafsky Special Services with Taj Mahal Agra",
     badge: "Special Services",
-    description: "Air ticketing, curated travel & tour, fast-track visa assistance, on-board meal arrangements, luxury spa & wellness, PSO close protection, 24/7 medevac air & train ambulance, HUM repatriation, and AVI & live animal pet logistics.",
+    description: "Dedicated air cargo logistics, commercial air ticketing, curated travel & tour, fast-track visa assistance, on-board meal arrangements, luxury spa & wellness, PSO close protection, 24/7 medevac air & train ambulance, HUM repatriation, and AVI & live animal pet logistics.",
     subServices: [
+      { label: "Cargo Logistics & Freight", subParam: "cargo", tagline: "Express air cargo, heavy freight charter & customs clearance" },
       { label: "Air Ticketing (Domestic & Intl)", subParam: "ticketing", tagline: "Instant commercial flight bookings across 500+ global airlines" },
       { label: "Travel & Tour", subParam: "tours-travel", tagline: "Curated travel itineraries & private luxury tours" },
       { label: "Visa Assistance Services", subParam: "visa", tagline: "Fast-track Schengen, UK, US, UAE & global visa clearance" },
@@ -541,14 +542,16 @@ export function EnterpriseSolutions() {
                       <Link
                         key={sidx}
                         to={
-                          sub.subParam === "infant-care"
-                            ? "/solutions/infant-care"
-                            : selectedService.id === "special-services" || selectedService.id === "air-ticketing"
-                              ? "/solutions/special-services"
-                              : "/book"
+                          sub.subParam === "cargo"
+                            ? "/solutions/cargo"
+                            : sub.subParam === "infant-care"
+                              ? "/solutions/infant-care"
+                              : selectedService.id === "special-services" || selectedService.id === "air-ticketing"
+                                ? "/solutions/special-services"
+                                : "/book"
                         }
                         search={
-                          sub.subParam === "infant-care"
+                          sub.subParam === "cargo" || sub.subParam === "infant-care"
                             ? undefined
                             : selectedService.id === "special-services" || selectedService.id === "air-ticketing"
                               ? { sub: sub.subParam }

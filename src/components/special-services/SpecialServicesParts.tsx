@@ -191,7 +191,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
       "Hospital NOC, Death Certificate Clearance, Embalming Certificate & Police Clearances",
       "Certified Embalming Procedure & International Zinc-Lined Coffin Hermetic Sealing",
       "Embassy / Consular Clearance, Quarantine / Health Officer Approvals & NOCs",
-      "Priority Air Cargo Space Allocation & Direct Airside Tarmac Dignified Receiving",
+      "Priority Aviation Allocation & Direct Airside Tarmac Dignified Receiving",
       "Complete Compassionate Guidance with Real-Time Family Progress Updates",
     ],
   },
@@ -201,17 +201,10 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     shortLabel: "AVI & Animal",
     badge: "IATA LIVE ANIMAL (AVI) & PET LOGISTICS",
     tagline:
-      "IATA-compliant live animal & pet relocation, climate-controlled cargo hold allocation, and airside veterinary clearance.",
+      "IATA-compliant live animal & domestic pet relocation, climate-controlled cabin & aircraft hold allocation, and airside veterinary clearance.",
     photo: petCargoImg,
     icon: PawPrint,
-    inclusions: [
-      "IATA Live Animal (AVI) Pet Transport with Climate-Controlled Cargo Hold Allocation",
-      "Pet Relocation Documentation, Veterinary Fit-to-Fly Verification & IATA Crates",
-      "Dedicated Airside Pet Escort & Temperature-Monitored Boarding",
-      "Customs Documentation Liaison, Pet Clearance & Express Tarmac Escort",
-      "Airside Supervised Loading with Real-Time Departure WhatsApp Photo Updates",
-      "24/7 Live Animal Operations Desk Liaison across All Major Commercial Airline Carriers",
-    ],
+    inclusions: [],
   },
   {
     id: "Infant Care Services",
@@ -331,7 +324,7 @@ export function SpecialServiceDetailsSection({
 }: {
   activeOption: SpecialServiceOptionDef;
 }) {
-  if (activeOption.id === "Air Ticketing Services" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
+  if (activeOption.id === "Air Ticketing Services" || activeOption.id === "Cargo & AVI Pet Freight" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
     return null;
   }
   return (
