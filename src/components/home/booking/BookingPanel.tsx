@@ -439,7 +439,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
                 playsInline
                 preload="auto"
                 poster="/videos/travel-animation-poster.webp"
-                className="w-full h-auto object-contain select-none pointer-events-none block"
+                className="w-full h-auto object-contain select-none pointer-events-none block mix-blend-multiply"
                 aria-label="Shafsky Aviation travel concierge animation"
               >
                 <source src="/videos/travel-animation.webm" type="video/webm" />

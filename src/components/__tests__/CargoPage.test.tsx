@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import React from "react";
 import { renderToString } from "react-dom/server";
-import { CargoPage } from "@/routes/solutions.cargo";
+import { CargoPage } from "@/components/cargo/CargoPage";
 import { enquiryApi } from "@/lib/api/enquiryApi";
 
 // Mock tanstack router with importOriginal
