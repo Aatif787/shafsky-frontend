@@ -77,9 +77,11 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
     mealPreferences: string[];
   } | null>(null);
 
-  // Single-select meal preference: Veg or Non-Veg.
-  const handleSelectMealPreference = (pref: string) => {
-    setSelectedMealPreferences([pref]);
+  // Both preferences are independently checkable (e.g. a mixed group).
+  const handleToggleMealPreference = (pref: string) => {
+    setSelectedMealPreferences((prev) =>
+      prev.includes(pref) ? prev.filter((item) => item !== pref) : [...prev, pref]
+    );
   };
 
   // Form Submit Handler
@@ -114,13 +116,19 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
       return;
     }
 
-    // 4. Validate Meal Count
+    // 4. Validate Meal Preference (at least one of Veg / Non-Veg)
+    if (selectedMealPreferences.length === 0) {
+      toast.error("Please select Veg, Non-Veg, or both.");
+      return;
+    }
+
+    // 5. Validate Meal Count
     if (!mealCount || mealCount < 1 || !Number.isInteger(Number(mealCount))) {
       toast.error("Please enter a valid positive whole number of meals.");
       return;
     }
 
-    // 5. Validate Declaration
+    // 6. Validate Declaration
     if (!declarationConfirmed) {
       toast.error("Please check the declaration box before submitting your enquiry.");
       return;
@@ -504,7 +512,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                     <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-900">
                       Meal Preference <span className="text-rose-500">*</span>
                     </span>
-                    <span className="text-[10px] text-slate-500 font-mono">Choose one</span>
+                    <span className="text-[10px] text-slate-500 font-mono">Select one or both</span>
                   </div>
 
                   <div className="flex flex-wrap gap-2.5 pt-3">
@@ -514,8 +522,9 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                         <button
                           type="button"
                           key={pref}
-                          onClick={() => handleSelectMealPreference(pref)}
-                          aria-pressed={isChecked}
+                          onClick={() => handleToggleMealPreference(pref)}
+                          role="checkbox"
+                          aria-checked={isChecked}
                           className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm transition-all duration-150 cursor-pointer border ${
                             isChecked
                               ? "bg-[#0a196f] text-white border-[#0a196f] shadow-sm font-semibold ring-2 ring-[#0a196f]/15"
@@ -523,7 +532,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                           }`}
                         >
                           <span
-                            className={`w-4 h-4 rounded-full flex items-center justify-center border text-[10px] transition ${
+                            className={`w-4 h-4 rounded flex items-center justify-center border text-[10px] transition ${
                               isChecked
                                 ? "bg-white/20 border-white/40 text-white"
                                 : "border-slate-300 bg-slate-50 text-transparent"

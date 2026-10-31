@@ -74,6 +74,8 @@ describe("OnboardMealArrangementForm Component", () => {
     expect(html).toContain("3. Meal Arrangement Details");
     expect(html).toContain("Meal Preference");
     expect(html).toContain("Number of Meals");
+    expect(html).toContain("Select one or both");
+    expect(html).toContain('role="checkbox"');
 
     // Section 4: Declaration
     expect(html).toContain("4. Declaration");
