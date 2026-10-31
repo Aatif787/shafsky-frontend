@@ -215,14 +215,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
       "Compassionate airport concierge assistance for parents travelling with infants, pram escort, and seamless airside coordination.",
     photo: infantCareImg,
     icon: Baby,
-    inclusions: [
-      "Dedicated Airside Concierge Officer Assisting from Curbside to Aerobridge",
-      "Stroller & Baby Pram Airside Handling and Gate-Check Coordination",
-      "Priority Terminal Navigation & Smooth Security Fast-Track Liaison",
-      "Arrival Gate Reception & Luggage Claim Assistance for Parents",
-      "Transit Gate-to-Gate Transfer Assistance with Infant Feeding Layover Support",
-      "24/7 Dedicated Family Concierge Desk Standby on WhatsApp",
-    ],
+    inclusions: [],
   },
 ];
 

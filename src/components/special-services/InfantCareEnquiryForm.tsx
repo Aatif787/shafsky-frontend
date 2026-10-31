@@ -189,7 +189,7 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
     const text = encodeURIComponent(
       `Hello Shafsky Concierge Desk,\n\nI would like to inquire about *Infant Care Services*:\n\n*Parent Name:* ${parentName.trim() || "Valued Guest"}\n*Airport:* ${airport.trim() || "Airport"}\n*Flight:* ${flightNumber.trim().toUpperCase() || "Flight"} on ${flightDate}\n*Infant Age:* ${infantAge.trim() || "Not specified"}\n*Assistance Required:* ${assistanceRequired}\n*Additional Requirements:* ${additionalRequirements.trim() || "None"}\n*WhatsApp:* ${whatsappNumber.trim()}`
     );
-    return `https://wa.me/919599087959?text=${text}`;
+    return `https://wa.me/919599225778?text=${text}`;
   };
 
   // ─────────────────────────────────────────────────────────────
