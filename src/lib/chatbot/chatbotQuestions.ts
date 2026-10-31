@@ -77,7 +77,7 @@ export const CHATBOT_MAIN_SERVICES: ChatbotServiceOption[] = [
   },
   {
     id: "holidays",
-    label: "Holidays / Tour & Travel",
+    label: "Holidays / Travel & Tour",
     departmentId: "holidays",
     description: "Bespoke romantic tours, honeymoons & luxury holiday circuits.",
     iconName: "HeartHandshake",

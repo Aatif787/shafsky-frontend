@@ -21,7 +21,7 @@ describe("Smart WhatsApp Chatbot Service & Department Architecture", () => {
       "Lounge Services",
       "Flight Support / Air Ticketing",
       "Hotel Booking",
-      "Holidays / Tour & Travel",
+      "Holidays / Travel & Tour",
       "Visa Assistance",
       "Transportation",
       "Door-to-Door Assistance",
@@ -131,7 +131,7 @@ describe("Smart WhatsApp Chatbot Service & Department Architecture", () => {
     expect(route("Lounge Services").phoneDisplay).toBe("+91-9599087959");
     expect(route("Flight Support / Air Ticketing").phoneDisplay).toBe("+91-9599087957");
     expect(route("Hotel Booking").phoneDisplay).toBe("+91 92175 22660");
-    expect(route("Holidays / Tour & Travel").phoneDisplay).toBe("+91 92175 22660");
+    expect(route("Holidays / Travel & Tour").phoneDisplay).toBe("+91 92175 22660");
     expect(route("Visa Assistance").phoneDisplay).toBe("+91 92175 22660");
     expect(route("Transportation").phoneDisplay).toBe("+91-9599087957");
     expect(route("Door-to-Door Assistance").phoneDisplay).toBe("+91-9599087959");
@@ -140,7 +140,7 @@ describe("Smart WhatsApp Chatbot Service & Department Architecture", () => {
 
   it("maps specialized services under Other Services to valid department contacts", () => {
     expect(route("Infant Care").name).toBe("Door to Door Assistance");
-    expect(route("Spa & Wellness").name).toBe("Tour, Travel & Holidays");
+    expect(route("Spa & Wellness").name).toBe("Travel, Tour & Holidays");
     expect(route("Pet Transfer (Cargo & Avi Pet)").name).toBe("Transportation & Luxury Fleet");
     expect(route("Cargo Services").name).toBe("Transportation & Luxury Fleet");
     expect(route("Air Ambulance").name).toBe("Management & HR Escalation");

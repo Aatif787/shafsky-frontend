@@ -11,6 +11,7 @@ import planeImg from "@/assets/others/plane.png";
 import meetGreetImg from "@/assets/others/meetgreet.jpeg";
 import servicesImg from "@/assets/others/services.png";
 import specialserImg from "@/assets/others/specialser.png";
+import airTicketingImg from "@/assets/others/air-ticketing.jpg";
 
 interface SubServiceOption {
   label: string;
@@ -96,16 +97,28 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     ],
   },
   {
+    id: "air-ticketing",
+    serviceParam: "ticketing",
+    title: "Air Ticketing Services",
+    photo: airTicketingImg,
+    alt: "Shafsky Domestic and International Air Ticketing Concierge Desk",
+    badge: "Airline Ticketing",
+    description: "Instant domestic and international flight bookings across 500+ global airlines, flexible corporate fares, and 24/7 ticketing desk support.",
+    subServices: [
+      { label: "Air Ticketing (Domestic & Intl)", subParam: "ticketing", tagline: "Instant commercial flight bookings across 500+ global airlines" },
+    ],
+  },
+  {
     id: "special-services",
     serviceParam: "special",
     title: "Special Services",
     photo: specialserImg,
     alt: "Shafsky Special Services with Taj Mahal Agra",
     badge: "Special Services",
-    description: "Air ticketing, curated tours & travel, fast-track visa assistance, on-board meal arrangements, luxury spa & wellness, PSO close protection, 24/7 medevac air & train ambulance, HUM repatriation, and cargo & AVI pet logistics.",
+    description: "Air ticketing, curated travel & tour, fast-track visa assistance, on-board meal arrangements, luxury spa & wellness, PSO close protection, 24/7 medevac air & train ambulance, HUM repatriation, and cargo & AVI pet logistics.",
     subServices: [
       { label: "Air Ticketing (Domestic & Intl)", subParam: "ticketing", tagline: "Instant commercial flight bookings across 500+ global airlines" },
-      { label: "Tours & Travel (Couples)", subParam: "tours-travel", tagline: "Curated romantic itineraries & private luxury tours" },
+      { label: "Travel & Tour (Couples)", subParam: "tours-travel", tagline: "Curated romantic itineraries & private luxury tours" },
       { label: "Visa Assistance Services", subParam: "visa", tagline: "Fast-track Schengen, UK, US, UAE & global visa clearance" },
       { label: "On-board Meal Arrangements", subParam: "onboard_meals", tagline: "Gourmet in-flight catering & dietary curation for group meet & greet" },
       { label: "Spa & Wellness", subParam: "spa-wellness", tagline: "Luxury couple spas, hydrotherapy & rejuvenating retreats" },
@@ -309,6 +322,8 @@ export function EnterpriseSolutions() {
                         navigate({ to: "/solutions/hotels" });
                       } else if (srv.id === "transport-service") {
                         navigate({ to: "/solutions/transport" });
+                      } else if (srv.id === "air-ticketing") {
+                        navigate({ to: "/solutions/special-services", search: { sub: "ticketing" } as any });
                       } else {
                         setSelectedService(srv);
                       }
@@ -354,6 +369,7 @@ export function EnterpriseSolutions() {
                       else if (srv.id === "air-charter") navigate({ to: "/solutions/aviation" });
                       else if (srv.id === "luxury-hotels") navigate({ to: "/solutions/hotels" });
                       else if (srv.id === "transport-service") navigate({ to: "/solutions/transport" });
+                      else if (srv.id === "air-ticketing") navigate({ to: "/solutions/special-services", search: { sub: "ticketing" } as any });
                       else setSelectedService(srv);
                     }}
                     className="group relative rounded-full overflow-hidden cursor-pointer shadow-[0_10px_25px_-5px_rgba(0,0,0,0.15)] ring-2 ring-[#d4af37]/40 ring-offset-4 ring-offset-white transition-all duration-500 bg-slate-900 flex-shrink-0 w-[5.5rem] h-[5.5rem] sm:w-24 sm:h-24 z-10"
@@ -401,6 +417,7 @@ export function EnterpriseSolutions() {
                     <div className="flex justify-center gap-4 sm:gap-6 w-full relative">
                       {renderPortal(OFFICIAL_SERVICES[3], 0.4)}
                       {renderPortal(OFFICIAL_SERVICES[4], 0.5)}
+                      {renderPortal(OFFICIAL_SERVICES[5], 0.6)}
                     </div>
                   </div>
                 );

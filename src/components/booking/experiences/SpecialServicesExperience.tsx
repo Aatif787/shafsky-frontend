@@ -29,6 +29,7 @@ import psoSecurityImg from "@/assets/others/pso-security.jpg";
 
 export type SpecialSubService =
   | "Spa & Wellness"
+  | "Travel & Tour (Honeymoon/Couples)"
   | "Tours & Travel (Honeymoon/Couples)"
   | "PSO (Personal Security Officer / VIP Shopping)";
 
@@ -47,8 +48,8 @@ const SPECIAL_SUB_SERVICES: {
     icon: Sparkles,
   },
   {
-    id: "Tours & Travel (Honeymoon/Couples)",
-    label: "Tours & Travel (Honeymoon)",
+    id: "Travel & Tour (Honeymoon/Couples)",
+    label: "Travel & Tour (Honeymoon)",
     desc: "Curated romantic itineraries, European honeymoons, private yacht charters, and luxury stays.",
     photo: toursTravelImg,
     icon: Globe,
@@ -81,7 +82,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
   const [spaGuests, setSpaGuests] = useState(2);
   const [spaTreatment, setSpaTreatment] = useState("Couple Hot Stone Therapy & Aromatherapy");
 
-  // 2. Tours & Travel fields
+  // 2. Travel & Tour fields
   const [tourDest, setTourDest] = useState("");
   const [tourStartDate, setTourStartDate] = useState("");
   const [tourEndDate, setTourEndDate] = useState("");
@@ -156,7 +157,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
         guests: spaGuests,
         treatment: spaTreatment,
       };
-    } else if (subService === "Tours & Travel (Honeymoon/Couples)") {
+    } else if (subService === "Travel & Tour (Honeymoon/Couples)" || subService === "Tours & Travel (Honeymoon/Couples)") {
       origin = tourDest;
       destination = tourDest;
       serviceDate = `${tourStartDate || "TBD"} to ${tourEndDate || "TBD"}`;
@@ -216,7 +217,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
     let serviceDetails = "";
     if (subService === "Spa & Wellness") {
       serviceDetails = `Location: ${spaLocation}%0ADate: ${spaDate}%0AGuests: ${spaGuests}%0ATreatment: ${spaTreatment}`;
-    } else if (subService === "Tours & Travel (Honeymoon/Couples)") {
+    } else if (subService === "Travel & Tour (Honeymoon/Couples)" || subService === "Tours & Travel (Honeymoon/Couples)") {
       serviceDetails = `Destination: ${tourDest}%0ADates: ${tourStartDate} to ${tourEndDate}%0AGuests: ${tourTravellers}%0AStyle: ${tourStyle}`;
     } else if (subService === "PSO (Personal Security Officer / VIP Shopping)") {
       serviceDetails = `Scope: ${psoType}%0ALocation: ${psoLocation}%0AStart Date: ${psoStartDate}%0ADuration: ${psoDurationDays} Days%0AOfficers: ${psoCount}%0AVIPs: ${psoVipCount}`;
@@ -388,8 +389,8 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
               </div>
             )}
 
-            {/* 2. TOURS & TRAVEL (HONEYMOON/COUPLES) SPECIFIC FIELDS */}
-            {subService === "Tours & Travel (Honeymoon/Couples)" && (
+            {/* 2. TRAVEL & TOUR (HONEYMOON/COUPLES) SPECIFIC FIELDS */}
+            {(subService === "Travel & Tour (Honeymoon/Couples)" || subService === "Tours & Travel (Honeymoon/Couples)") && (
               <div className="space-y-4">
                 <div>
                   <FieldLabel required>Destination / Honeymoon Circuit</FieldLabel>
@@ -599,7 +600,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
                   <span className="font-semibold text-slate-900">{spaLocation} ({spaGuests} Guests) • {spaTreatment}</span>
                 </div>
               )}
-              {subService === "Tours & Travel (Honeymoon/Couples)" && (
+              {(subService === "Travel & Tour (Honeymoon/Couples)" || subService === "Tours & Travel (Honeymoon/Couples)") && (
                 <div className="flex justify-between text-slate-600">
                   <span>Destination:</span>
                   <span className="font-semibold text-slate-900">{tourDest} ({tourTravellers} Travellers) • {tourStyle}</span>

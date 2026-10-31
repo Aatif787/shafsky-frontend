@@ -96,7 +96,7 @@ export const DEPARTMENT_CONTACTS: Record<string, DepartmentContact> = {
   holidays: {
     ...OFFICIAL_SUPPORT_DEPARTMENTS[1],
     id: "holidays",
-    name: "Tour, Travel & Holidays",
+    name: "Travel, Tour & Holidays",
   },
 
   // ─────────────────────────────────────────────────────────────

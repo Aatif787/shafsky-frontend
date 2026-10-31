@@ -106,7 +106,7 @@ export const OTHER_SERVICES_ITEMS: OtherServiceDropdownItem[] = [
     icon: Ticket,
   },
   {
-    label: "Tours & Travel",
+    label: "Travel & Tour",
     sub: "tours-travel",
     href: "/solutions/special-services?sub=tours-travel",
     icon: HeartHandshake,

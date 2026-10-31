@@ -74,7 +74,7 @@ function DedicatedTransportServicePage() {
     } else if (optId === "MUV / Large Vehicles") {
       setHeroSlideIndex(1);
     } else if (optId === "Economy / Standard") {
-      setHeroSlideIndex(2);
+      setHeroSlideIndex(0);
     }
 
     // Automatically select first valid canonical vehicle of the new category
@@ -151,6 +151,47 @@ function DedicatedTransportServicePage() {
             >
               Transport Service
             </h1>
+          </div>
+
+          {/* Uncropped Responsive Hero Image Slider */}
+          <div className="space-y-3">
+            <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center min-h-[260px] sm:min-h-[400px]">
+              <img
+                width={1600}
+                height={900}
+                src={TRANSPORT_HERO_SLIDES[heroSlideIndex]?.src || TRANSPORT_HERO_SLIDES[0].src}
+                alt={TRANSPORT_HERO_SLIDES[heroSlideIndex]?.alt || "Shafsky Luxury Transport Fleet"}
+                className="w-full h-auto object-contain object-center select-none block transition-opacity duration-300"
+                loading="eager"
+              />
+
+              {/* Slide Navigation Overlay Buttons */}
+              <div className="absolute inset-y-0 left-3 right-3 flex items-center justify-between pointer-events-none">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setHeroSlideIndex((prev) => (prev - 1 + TRANSPORT_HERO_SLIDES.length) % TRANSPORT_HERO_SLIDES.length)
+                  }
+                  className="pointer-events-auto p-2 rounded-full bg-slate-900/60 hover:bg-slate-900/90 text-white backdrop-blur-md transition shadow-md cursor-pointer"
+                  aria-label="Previous photo"
+                >
+                  <ArrowLeft size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHeroSlideIndex((prev) => (prev + 1) % TRANSPORT_HERO_SLIDES.length)}
+                  className="pointer-events-auto p-2 rounded-full bg-slate-900/60 hover:bg-slate-900/90 text-white backdrop-blur-md transition shadow-md cursor-pointer"
+                  aria-label="Next photo"
+                >
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+
+              {/* Photo Caption Badge */}
+              <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md text-white text-[11px] font-mono px-3 py-1 rounded-full border border-white/10 shadow-sm">
+                {TRANSPORT_HERO_SLIDES[heroSlideIndex]?.badge}
+              </div>
+            </div>
           </div>
 
 

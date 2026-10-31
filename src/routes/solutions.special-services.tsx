@@ -45,7 +45,7 @@ export const Route = createFileRoute("/solutions/special-services")({
     pageHead({
       title: "VIP Special Services, Air Ticketing, Tours, Visa & Medevac | Shafsky",
       description:
-        "Commercial air ticketing, curated tours and travel, fast-track visa assistance, on-board meals, luxury spa and wellness, PSO close protection, 24/7 air and train ambulance, HUM repatriation, and cargo pet logistics.",
+        "Commercial air ticketing, curated travel and tour, fast-track visa assistance, on-board meals, luxury spa and wellness, PSO close protection, 24/7 air and train ambulance, HUM repatriation, and cargo pet logistics.",
       path: "/solutions/special-services",
       jsonLd: [
         breadcrumbJsonLd([
@@ -86,7 +86,7 @@ function DedicatedSpecialServicesPage() {
   const [spaGuests, setSpaGuests] = useState(2);
   const [spaNotes, setSpaNotes] = useState("");
 
-  // 2. Tours & Travel (Destination, Dates/Month, Guests, Optional Wishes)
+  // 2. Travel & Tour (Destination, Dates/Month, Guests, Optional Wishes)
   const [tourDestination, setTourDestination] = useState("");
   const [tourDates, setTourDates] = useState("");
   const [tourGuests, setTourGuests] = useState(2);
@@ -190,7 +190,7 @@ function DedicatedSpecialServicesPage() {
       };
       notes = `${spaGuests} Guests — ${spaNotes || "No specific request"}`;
       serviceType = "Spa & Wellness";
-    } else if (selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
+    } else if (selectedOptionId === "Travel & Tour (Honeymoon/Couples)" || selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
       origin = tourDestination;
       destination = tourDestination;
       serviceDate = tourDates || undefined;
@@ -335,7 +335,7 @@ function DedicatedSpecialServicesPage() {
     let details = "";
     if (selectedOptionId === "Spa & Wellness") {
       details = `Location: ${spaLocation}%0ADate: ${spaDate}%0AGuests: ${spaGuests}%0APreferences: ${spaNotes || "None"}`;
-    } else if (selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
+    } else if (selectedOptionId === "Travel & Tour (Honeymoon/Couples)" || selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
       details = `Destination: ${tourDestination}%0ATravel Dates: ${tourDates}%0AGuests: ${tourGuests}%0ANotes: ${tourNotes || "None"}`;
     } else if (selectedOptionId === "PSO (Personal Security Officer / VIP Shopping)") {
       details = `Location: ${psoLocation}%0ADates: ${psoDates}%0AScope: ${psoScope}%0ANotes: ${psoNotes || "None"}`;
@@ -547,8 +547,8 @@ function DedicatedSpecialServicesPage() {
                       </div>
                     )}
 
-                    {/* 2. Tours & Travel Minimal Enquiry */}
-                    {selectedOptionId === "Tours & Travel (Honeymoon/Couples)" && (
+                    {/* 2. Travel & Tour Minimal Enquiry */}
+                    {(selectedOptionId === "Travel & Tour (Honeymoon/Couples)" || selectedOptionId === "Tours & Travel (Honeymoon/Couples)") && (
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
