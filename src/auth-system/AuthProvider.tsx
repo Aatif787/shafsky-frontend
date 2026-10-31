@@ -62,6 +62,25 @@ function clerkErrorMessage(err: unknown, fallback: string): Error {
   return new Error(fallback);
 }
 
+/**
+ * Clerk answers 422 form_param_value_invalid when the instance has no password
+ * strategy enabled. The app must then use the factors the instance does allow
+ * (email_code / oauth_google) instead of retrying the password.
+ */
+function isPasswordStrategyUnavailable(err: unknown): boolean {
+  if (!err || typeof err !== "object") return false;
+  const candidate = err as {
+    code?: string;
+    message?: string;
+    longMessage?: string;
+    errors?: { code?: string; message?: string; longMessage?: string }[];
+  };
+  const first = candidate.errors?.[0] || candidate;
+  const code = first.code || "";
+  const message = first.longMessage || first.message || "";
+  return code === "form_param_value_invalid" && /parameter strategy/i.test(message);
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
   if (!publishableKey) {
@@ -373,6 +392,30 @@ function AuthSession({
     return await exchangeActiveClerkSession(freshToken);
   };
 
+  const sendSignInCode = async (email: string) => {
+    if (!clerk) {
+      return { error: new Error("Clerk publishable key is not configured.") };
+    }
+    if (!clerk.isLoaded) {
+      return { error: new Error("Authentication is not ready.") };
+    }
+    try {
+      const resource = clerk.signIn.signIn;
+      const created = await resource.create({ identifier: email.trim().toLowerCase() });
+      if (created.error) {
+        return { error: clerkErrorMessage(created.error, "Sign in failed") };
+      }
+      const sent = await resource.emailCode.sendCode();
+      if (sent.error) {
+        return { error: clerkErrorMessage(sent.error, "Could not send the sign-in code") };
+      }
+      return { error: null as Error | null, verificationRequired: true };
+    } catch (err) {
+      console.error("[AuthProvider] Clerk email-code sign-in exception:", err);
+      return { error: clerkErrorMessage(err, "Sign in failed") };
+    }
+  };
+
   const signInWithPassword = async (email: string, password: string) => {
     if (!clerk) {
       return { error: new Error("Clerk publishable key is not configured.") };
@@ -386,6 +429,11 @@ function AuthSession({
         password,
       });
       if (attempt.error) {
+        if (isPasswordStrategyUnavailable(attempt.error)) {
+          // This Clerk instance has password sign-in disabled. Use the email code
+          // factor it does support rather than showing a dead-end error.
+          return await sendSignInCode(email);
+        }
         return { error: clerkErrorMessage(attempt.error, "Invalid login credentials") };
       }
       if (clerk.signIn.signIn.status === "complete") {
@@ -419,11 +467,15 @@ function AuthSession({
       return { error: new Error("Authentication is not ready.") };
     }
     try {
-      const verified = await clerk.signIn.signIn.mfa.verifyEmailCode({ code: code.trim() });
+      const resource = clerk.signIn.signIn;
+      const verified =
+        resource.status === "needs_first_factor"
+          ? await resource.emailCode.verifyCode({ code: code.trim() })
+          : await resource.mfa.verifyEmailCode({ code: code.trim() });
       if (verified.error) {
         return { error: clerkErrorMessage(verified.error, "Invalid verification code") };
       }
-      if (clerk.signIn.signIn.status !== "complete") {
+      if (resource.status !== "complete") {
         return { error: new Error("Additional verification is required before signing in.") };
       }
       return await establishFreshClerkSignIn();
@@ -739,6 +791,7 @@ function AuthSession({
     loading,
     clerkLoaded: clerk ? clerk.isLoaded : true,
     signInWithPassword,
+    sendSignInCode,
     verifySignInCode,
     signInWithGoogle,
     completeGoogleReturn,
