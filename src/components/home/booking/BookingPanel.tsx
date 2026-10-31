@@ -421,13 +421,14 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
 
       <div className="relative mx-auto max-w-[960px]">
         {/* Upper-left Corner Reference Travel Animation */}
-        {showSideAnimation && (
+
+                {showSideAnimation && (
           <motion.div
             initial={{ opacity: 0, y: 12, scale: 0.95 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-1 left-2 sm:top-2 sm:left-4 md:top-3 md:left-6 lg:top-3 lg:left-8 w-24 sm:w-36 md:w-44 lg:w-48 z-10 pointer-events-none select-none"
+            className="absolute -top-4 left-2 sm:-top-5 sm:left-4 md:-top-6 md:left-6 lg:-top-8 lg:left-8 w-24 sm:w-36 md:w-44 lg:w-48 z-30 pointer-events-none select-none"
           >
             <div className="relative w-full h-auto">
               <video
@@ -448,8 +449,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
             </div>
           </motion.div>
         )}
-
-        <motion.div
+<motion.div
           initial={{ opacity: 0, y: 35, scale: 0.97 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: false, amount: 0.15 }}
