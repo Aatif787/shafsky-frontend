@@ -20,7 +20,6 @@ import infantCareImg from "@/assets/others/infant-care.jpg";
 import trainAmbulanceImg from "@/assets/others/train-ambulance.jpg";
 import petCargoImg from "@/assets/others/pet-cargo.jpg";
 import visaAssistanceImg from "@/assets/others/visa-assistance.jpg";
-import onboardMealsImg from "@/assets/others/onboard-meals.jpg";
 import humanRemainsImg from "@/assets/others/human-remains.jpg";
 
 export type SpecialServiceOptionId =
@@ -103,7 +102,6 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "GOURMET IN-FLIGHT DINING & GROUP MEET & GREET CATERING",
     tagline:
       "Bespoke in-flight catering, customized dietary curation, and synchronized airside meal delivery for group and VIP Meet & Greet journeys.",
-    photo: onboardMealsImg,
     icon: UtensilsCrossed,
     inclusions: [],
   },
@@ -283,10 +281,18 @@ export function SpecialServiceHeroStage({
   onBack: () => void;
 }) {
   return (
-    <section className="relative w-full overflow-hidden bg-white border-b border-slate-200 py-6 sm:py-8 md:py-10">
+    <section
+      className={`relative w-full overflow-hidden bg-white border-b border-slate-200 ${
+        activeOption.photo ? "py-6 sm:py-8 md:py-10" : "py-4 sm:py-6"
+      }`}
+    >
       <div className="relative z-10 mx-auto w-full max-w-[1040px] xl:max-w-[1100px] 2xl:max-w-[1140px] px-4 sm:px-6 md:px-8">
         {/* Top Header Row: Back Button & Selected Service Status Badge */}
-        <div className="w-full mb-3.5 sm:mb-5 flex items-center justify-between gap-3">
+        <div
+          className={`w-full flex items-center justify-between gap-3 ${
+            activeOption.photo ? "mb-3.5 sm:mb-5" : ""
+          }`}
+        >
           <button
             onClick={onBack}
             className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/90 text-xs font-semibold shadow-xs hover:border-lime-500 transition-all cursor-pointer"

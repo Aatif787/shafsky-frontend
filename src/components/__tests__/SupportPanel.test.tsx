@@ -29,8 +29,8 @@ vi.mock("@/lib/branding/branding.context", () => ({
 }));
 
 describe("Support Department Directory & Dedicated /support Page Verification", () => {
-  it("contains exactly 5 canonical departments with complete data", () => {
-    expect(SUPPORT_DEPARTMENTS).toHaveLength(5);
+  it("contains exactly 4 canonical departments with complete data", () => {
+    expect(SUPPORT_DEPARTMENTS).toHaveLength(4);
   });
 
   it("DEPARTMENT 1 — Meet & Greet and Lounge", () => {
@@ -109,40 +109,26 @@ describe("Support Department Directory & Dedicated /support Page Verification", 
     expect(dept4.emails[1].email).toBe("mailto:hr.shafskyaviation@gmail.com");
   });
 
-  it("DEPARTMENT 5 — Finance", () => {
-    const dept5 = SUPPORT_DEPARTMENTS[4];
-    expect(dept5.departmentNumber).toBe(5);
-    expect(dept5.title).toBe("Finance");
-
-    // Phone exact string and tel: link
-    expect(dept5.phones).toHaveLength(1);
-    expect(dept5.phones[0].display).toBe("+91 88006 98554");
-    expect(dept5.phones[0].tel).toBe("tel:+918800698554");
-
-    // Email exact string and mailto: link
-    expect(dept5.emails).toHaveLength(1);
-    expect(dept5.emails[0].display).toBe("financeshafskyaviation@gmail.com");
-    expect(dept5.emails[0].email).toBe(
-      "mailto:financeshafskyaviation@gmail.com"
-    );
-  });
-
-  it("renders dedicated SupportPage with all 5 department titles and contact details", () => {
+  it("renders dedicated SupportPage with all 4 department titles and contact details, excluding Finance", () => {
     const html = renderToString(React.createElement(SupportPage));
 
     // Page Introduction
     expect(html).toContain("SUPPORT &amp; CONTACT");
     expect(html).toContain("How can we help you?");
     expect(html).toContain(
-      "Connect directly with the right Shafsky Aviation team for reservations, travel assistance, guest relations, escalations, and finance enquiries."
+      "Connect directly with the right Shafsky Aviation team for reservations, travel assistance, guest relations, and escalations."
     );
 
-    // All Department titles
+    // All 4 Department titles
     expect(html).toContain("Air Ticketing, Event Management, Transportation &amp; Hotels");
     expect(html).toContain("Visa Assistance, Air Ticketing, Hotels &amp; General Inquiry");
     expect(html).toContain("Meet &amp; Greet and Lounge");
     expect(html).toContain("Escalation");
-    expect(html).toContain("Finance");
+
+    // Finance is completely excluded
+    expect(html).not.toContain("financeshafskyaviation@gmail.com");
+    expect(html).not.toContain("+91 88006 98554");
+    expect(html).not.toContain("tel:+918800698554");
 
     // Every phone number visible
     expect(html).toContain("+91-9599087957");
@@ -151,7 +137,6 @@ describe("Support Department Directory & Dedicated /support Page Verification", 
     expect(html).toContain("+91 95996 15459");
     expect(html).toContain("+91 98188 50755");
     expect(html).toContain("+91 95992 24680");
-    expect(html).toContain("+91 88006 98554");
 
     // Every email address visible
     expect(html).toContain("shafskyaviation.social@gmail.com");
@@ -159,7 +144,6 @@ describe("Support Department Directory & Dedicated /support Page Verification", 
     expect(html).toContain("Gro.shafskyaviation@gmail.com");
     expect(html).toContain("gm.shafskyaviation@gmail.com");
     expect(html).toContain("hr.shafskyaviation@gmail.com");
-    expect(html).toContain("financeshafskyaviation@gmail.com");
 
     // Action links
     expect(html).toContain('href="tel:+919599087957"');
@@ -168,14 +152,12 @@ describe("Support Department Directory & Dedicated /support Page Verification", 
     expect(html).toContain('href="tel:+919599615459"');
     expect(html).toContain('href="tel:+919818850755"');
     expect(html).toContain('href="tel:+919599224680"');
-    expect(html).toContain('href="tel:+918800698554"');
 
     expect(html).toContain('href="mailto:shafskyaviation.social@gmail.com"');
     expect(html).toContain('href="mailto:commercialshafskyaviation@gmail.com"');
     expect(html).toContain('href="mailto:Gro.shafskyaviation@gmail.com"');
     expect(html).toContain('href="mailto:gm.shafskyaviation@gmail.com"');
     expect(html).toContain('href="mailto:hr.shafskyaviation@gmail.com"');
-    expect(html).toContain('href="mailto:financeshafskyaviation@gmail.com"');
 
     // Call and Email buttons
     expect(html).toContain(">Call Now</span>");

@@ -27,22 +27,18 @@ export function SupportPage() {
           </h1>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
             Connect directly with the right Shafsky Aviation team for reservations, travel
-            assistance, guest relations, escalations, and finance enquiries.
+            assistance, guest relations, and escalations.
           </p>
         </div>
 
-        {/* Department Contact Directory (Restrained Editorial 2-Column Layout) */}
+        {/* Department Contact Directory (Clean 2-Column Editorial Grid for 4 Departments) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-7 items-stretch">
           {SUPPORT_DEPARTMENTS.map((dept: SupportDepartment) => {
-            const isFullSpan = dept.departmentNumber === 5;
-
             return (
               <section
                 key={dept.id}
                 aria-labelledby={`dept-heading-${dept.departmentNumber}`}
-                className={`rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-[0_2px_8px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-all flex flex-col justify-between ${
-                  isFullSpan ? "lg:col-span-2" : ""
-                }`}
+                className="rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-[0_2px_8px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-all flex flex-col justify-between"
               >
                 <div>
                   {/* Department Card Header */}
@@ -65,48 +61,46 @@ export function SupportPage() {
 
                   <div className="h-px bg-slate-100 w-full mb-5" />
 
-                  {/* Contacts Grid: Stacks on mobile, splits on full-span desktop */}
-                  <div
-                    className={
-                      isFullSpan ? "grid grid-cols-1 md:grid-cols-2 gap-5" : "space-y-4"
-                    }
-                  >
+                  {/* Contacts Stack */}
+                  <div className="space-y-4">
                     {/* Phone Assistance */}
-                    <div>
-                      <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 mb-2.5">
-                        <Phone size={13} className="text-slate-400" />
-                        <span>
-                          {dept.phones.length > 1 ? "Phone Numbers" : "Phone Assistance"}
-                        </span>
-                      </div>
+                    {dept.phones.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 mb-2.5">
+                          <Phone size={13} className="text-slate-400" />
+                          <span>
+                            {dept.phones.length > 1 ? "Phone Numbers" : "Phone Assistance"}
+                          </span>
+                        </div>
 
-                      <div className="space-y-2">
-                        {dept.phones.map((phone, idx) => (
-                          <div
-                            key={idx}
-                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-xl bg-slate-50/90 border border-slate-200/70"
-                          >
-                            <div className="flex items-center gap-2">
-                              <PhoneCall size={14} className="text-lime-700 shrink-0" />
+                        <div className="space-y-2">
+                          {dept.phones.map((phone, idx) => (
+                            <div
+                              key={idx}
+                              className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-xl bg-slate-50/90 border border-slate-200/70"
+                            >
+                              <div className="flex items-center gap-2">
+                                <PhoneCall size={14} className="text-lime-700 shrink-0" />
+                                <a
+                                  href={phone.tel}
+                                  className="font-mono text-sm sm:text-[14.5px] font-semibold text-slate-900 hover:text-lime-800 transition-colors select-all"
+                                >
+                                  {phone.display}
+                                </a>
+                              </div>
                               <a
                                 href={phone.tel}
-                                className="font-mono text-sm sm:text-[14.5px] font-semibold text-slate-900 hover:text-lime-800 transition-colors select-all"
+                                aria-label={`Call ${dept.title} at ${phone.display}`}
+                                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-800 bg-white hover:bg-slate-100 active:bg-slate-200 border border-slate-300 shadow-xs transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-600 cursor-pointer"
                               >
-                                {phone.display}
+                                <PhoneCall size={12} className="text-lime-700" />
+                                <span>Call Now</span>
                               </a>
                             </div>
-                            <a
-                              href={phone.tel}
-                              aria-label={`Call ${dept.title} at ${phone.display}`}
-                              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-800 bg-white hover:bg-slate-100 active:bg-slate-200 border border-slate-300 shadow-xs transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-600 cursor-pointer"
-                            >
-                              <PhoneCall size={12} className="text-lime-700" />
-                              <span>Call Now</span>
-                            </a>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Email Enquiries */}
                     <div>

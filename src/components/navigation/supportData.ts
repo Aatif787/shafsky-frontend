@@ -13,13 +13,13 @@ export interface SupportDepartment {
   departmentNumber: number;
   title: string;
   categoryBadge: string;
-  iconType: "ticketing" | "visa" | "gro" | "escalation" | "finance";
+  iconType: "ticketing" | "visa" | "gro" | "escalation";
   phones: ContactPhone[];
   emails: ContactEmail[];
 }
 
 /**
- * 5 Canonical Shafsky Aviation Support Departments
+ * 4 Canonical Shafsky Aviation Support Departments
  * Exactly as specified by company communication standards.
  * Department 01 is Meet & Greet and Lounge.
  */
@@ -109,25 +109,6 @@ export const SUPPORT_DEPARTMENTS: SupportDepartment[] = [
       {
         display: "hr.shafskyaviation@gmail.com",
         email: "mailto:hr.shafskyaviation@gmail.com",
-      },
-    ],
-  },
-  {
-    id: "dept-5",
-    departmentNumber: 5,
-    title: "Finance",
-    categoryBadge: "Billing & Accounts",
-    iconType: "finance",
-    phones: [
-      {
-        display: "+91 88006 98554",
-        tel: "tel:+918800698554",
-      },
-    ],
-    emails: [
-      {
-        display: "financeshafskyaviation@gmail.com",
-        email: "mailto:financeshafskyaviation@gmail.com",
       },
     ],
   },

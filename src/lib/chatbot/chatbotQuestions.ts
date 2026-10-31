@@ -24,13 +24,13 @@ export interface QuickServiceRoute {
 }
 
 /**
- * 5 Canonical Shafsky Aviation Support Departments
+ * 4 Canonical Shafsky Aviation Support Departments
  * Directly matching the official Support Directory cards.
  */
 export const CHATBOT_DEPARTMENTS: SupportDepartment[] = SUPPORT_DEPARTMENTS;
 
 /**
- * Quick Service Shortcuts mapped directly to the 5 Canonical Departments
+ * Quick Service Shortcuts mapped directly to the 4 Canonical Departments
  */
 export const QUICK_SERVICE_ROUTING: QuickServiceRoute[] = [
   { id: "meet_greet", label: "Meet & Greet", departmentNumber: 1, iconName: "Crown" },
@@ -40,7 +40,6 @@ export const QUICK_SERVICE_ROUTING: QuickServiceRoute[] = [
   { id: "hotel", label: "Hotels & Stays", departmentNumber: 3, iconName: "Hotel" },
   { id: "infant", label: "Infant Care", departmentNumber: 1, iconName: "Baby" },
   { id: "escalation", label: "Escalation", departmentNumber: 4, iconName: "ShieldAlert" },
-  { id: "finance", label: "Finance & Accounts", departmentNumber: 5, iconName: "Ticket" },
 ];
 
 /**
@@ -232,3 +231,4 @@ export function buildDepartmentDirectWhatsAppMessage(
 export function resolveServiceDepartment(service: ChatbotServiceOption): DepartmentContact {
   return DEPARTMENT_CONTACTS[service.departmentId] || DEPARTMENT_CONTACTS.meet_greet;
 }
+

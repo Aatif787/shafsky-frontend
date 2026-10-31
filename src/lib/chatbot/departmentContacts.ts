@@ -39,7 +39,7 @@ export const VERIFIED_CENTRAL_OPS_PHONE = "+91-9599087959";
 export const VERIFIED_CENTRAL_OPS_WHATSAPP = "919599087959";
 
 /**
- * 5 Canonical Official Support Departments from Support Directory
+ * 4 Canonical Official Support Departments from Support Directory
  */
 export const OFFICIAL_SUPPORT_DEPARTMENTS: DepartmentContact[] = SUPPORT_DEPARTMENTS.map((dept: SupportDepartment) => ({
   id: dept.id,
@@ -137,16 +137,6 @@ export const DEPARTMENT_CONTACTS: Record<string, DepartmentContact> = {
     ...OFFICIAL_SUPPORT_DEPARTMENTS[3],
     id: "escalation",
     name: "Management & HR Escalation",
-  },
-
-  // ─────────────────────────────────────────────────────────────
-  // Department 05: Finance (Billing & Accounts)
-  // Phone: +91 88006 98554 | Email: financeshafskyaviation@gmail.com
-  // ─────────────────────────────────────────────────────────────
-  finance: {
-    ...OFFICIAL_SUPPORT_DEPARTMENTS[4],
-    id: "finance",
-    name: "Finance & Accounts",
   },
 };
 
