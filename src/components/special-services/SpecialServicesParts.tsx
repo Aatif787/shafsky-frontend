@@ -56,17 +56,9 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     label: "Air Ticketing Services",
     shortLabel: "Air Ticketing",
     badge: "DOMESTIC & INTERNATIONAL AIRLINE TICKETING",
-    tagline:
-      "Instant domestic and international airline bookings across 500+ commercial carriers, flexible corporate fares, and VIP seat assignments.",
+    tagline: "",
     icon: Ticket,
-    inclusions: [
-      "Instant Domestic & International Flight Ticketing across 500+ Global Airlines",
-      "Special Corporate & Marine/Offshore Fares, Extra Baggage & Flexible Re-booking",
-      "Premium Cabin Seat Reservation (Economy, Premium Economy, Business, First Class)",
-      "Special Airside Passenger Assistance: Wheelchair, Stretcher, Unaccompanied Minor",
-      "Instant PNR Generation, Web Check-in & Boarding Pass Issuance to WhatsApp",
-      "24/7 Dedicated Air Ticketing Operations Desk for Flight Changes & Urgent Cancellations",
-    ],
+    inclusions: [],
   },
   {
     id: "Travel & Tour (Honeymoon/Couples)",
@@ -332,6 +324,9 @@ export function SpecialServiceDetailsSection({
 }: {
   activeOption: SpecialServiceOptionDef;
 }) {
+  if (activeOption.id === "Air Ticketing Services" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
+    return null;
+  }
   return (
     <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">

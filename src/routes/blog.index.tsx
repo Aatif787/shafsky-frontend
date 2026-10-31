@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { BLOG_ARTICLES } from "@/data/blogArticles";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
-export const Route = createFileRoute("/blog")({
+export const Route = createFileRoute("/blog/")({
   head: () =>
     pageHead({
       title: "Airport Guides & Travel Tips | Shafsky Aviation Blog",

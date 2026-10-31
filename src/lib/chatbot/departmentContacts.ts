@@ -33,7 +33,7 @@ export function normalizePhoneNumber(phone: string): string {
 
 /**
  * Verified 24/7 Central Operations / Guest Relations Desk WhatsApp & Phone Number
- * Whole Guest Relationship Department (Department 03)
+ * Meet & Greet and Lounge (Department 01)
  */
 export const VERIFIED_CENTRAL_OPS_PHONE = "+91-9599087959";
 export const VERIFIED_CENTRAL_OPS_WHATSAPP = "919599087959";
@@ -60,68 +60,68 @@ export const OFFICIAL_SUPPORT_DEPARTMENTS: DepartmentContact[] = SUPPORT_DEPARTM
  */
 export const DEPARTMENT_CONTACTS: Record<string, DepartmentContact> = {
   // ─────────────────────────────────────────────────────────────
-  // Department 01: Air Ticketing, Event Management, Transportation & Hotels
+  // Department 01: Meet & Greet and Lounge
+  // Phones: +91-9599087959, +91 95996 15459 | Email: Gro.shafskyaviation@gmail.com
+  // ─────────────────────────────────────────────────────────────
+  meet_greet: {
+    ...OFFICIAL_SUPPORT_DEPARTMENTS[0],
+    id: "meet_greet",
+    name: "Meet & Greet Concierge",
+  },
+  meetgreet: {
+    ...OFFICIAL_SUPPORT_DEPARTMENTS[0],
+    id: "meetgreet",
+    name: "Meet & Greet Concierge",
+  },
+  doortodoor: {
+    ...OFFICIAL_SUPPORT_DEPARTMENTS[0],
+    id: "doortodoor",
+    name: "Door to Door Assistance",
+  },
+  gro: {
+    ...OFFICIAL_SUPPORT_DEPARTMENTS[0],
+    id: "gro",
+    name: "Meet & Greet and Lounge",
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  // Department 02: Air Ticketing, Event Management, Transportation & Hotels
   // Phone: +91-9599087957 | Email: shafskyaviation.social@gmail.com
   // ─────────────────────────────────────────────────────────────
   flight: {
-    ...OFFICIAL_SUPPORT_DEPARTMENTS[0],
+    ...OFFICIAL_SUPPORT_DEPARTMENTS[1],
     id: "flight",
     name: "Air Ticketing & Flight Support",
   },
   transport: {
-    ...OFFICIAL_SUPPORT_DEPARTMENTS[0],
+    ...OFFICIAL_SUPPORT_DEPARTMENTS[1],
     id: "transport",
     name: "Transportation & Luxury Fleet",
   },
   events: {
-    ...OFFICIAL_SUPPORT_DEPARTMENTS[0],
+    ...OFFICIAL_SUPPORT_DEPARTMENTS[1],
     id: "events",
     name: "Event Management & Logistics",
   },
 
   // ─────────────────────────────────────────────────────────────
-  // Department 02: Visa Assistance, Air Ticketing, Hotels & General Inquiry
+  // Department 03: Visa Assistance, Air Ticketing, Hotels & General Inquiry
   // Phone: +91 92175 22660 | Email: commercialshafskyaviation@gmail.com
   // ─────────────────────────────────────────────────────────────
   visa: {
-    ...OFFICIAL_SUPPORT_DEPARTMENTS[1],
+    ...OFFICIAL_SUPPORT_DEPARTMENTS[2],
     id: "visa",
     name: "Visa Assistance Services",
   },
   hotel: {
-    ...OFFICIAL_SUPPORT_DEPARTMENTS[1],
+    ...OFFICIAL_SUPPORT_DEPARTMENTS[2],
     id: "hotel",
     name: "Hotels & Stays",
   },
   holidays: {
-    ...OFFICIAL_SUPPORT_DEPARTMENTS[1],
+    ...OFFICIAL_SUPPORT_DEPARTMENTS[2],
     id: "holidays",
     name: "Travel, Tour & Holidays",
-  },
-
-  // ─────────────────────────────────────────────────────────────
-  // Department 03: Whole Guest Relationship Department (GRO & VIP Care)
-  // Phones: +91-9599087959, +91 95996 15459 | Email: Gro.shafskyaviation@gmail.com
-  // ─────────────────────────────────────────────────────────────
-  meet_greet: {
-    ...OFFICIAL_SUPPORT_DEPARTMENTS[2],
-    id: "meet_greet",
-    name: "Meet & Greet Concierge",
-  },
-  meetgreet: {
-    ...OFFICIAL_SUPPORT_DEPARTMENTS[2],
-    id: "meetgreet",
-    name: "Meet & Greet Concierge",
-  },
-  doortodoor: {
-    ...OFFICIAL_SUPPORT_DEPARTMENTS[2],
-    id: "doortodoor",
-    name: "Door to Door Assistance",
-  },
-  gro: {
-    ...OFFICIAL_SUPPORT_DEPARTMENTS[2],
-    id: "gro",
-    name: "Whole Guest Relationship Department",
   },
 
   // ─────────────────────────────────────────────────────────────

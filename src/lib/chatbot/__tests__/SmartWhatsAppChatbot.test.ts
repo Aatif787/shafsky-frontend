@@ -155,7 +155,7 @@ describe("Smart WhatsApp Chatbot Service & Department Architecture", () => {
       "918800698554", // Finance & Accounts
       "919217522660", // Visa & General Desks
       "919599087957", // Aviation & Logistics
-      "919599087959", // Whole Guest Relationship Department
+      "919599087959", // Meet & Greet and Lounge
       "919818850755", // Management & HR Escalation
     ];
     const uniquePhones = Array.from(new Set(Object.values(DEPARTMENT_CONTACTS).map((d) => d.normalizedPhone))).sort();

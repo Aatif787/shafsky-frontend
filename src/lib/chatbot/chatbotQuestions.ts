@@ -33,12 +33,12 @@ export const CHATBOT_DEPARTMENTS: SupportDepartment[] = SUPPORT_DEPARTMENTS;
  * Quick Service Shortcuts mapped directly to the 5 Canonical Departments
  */
 export const QUICK_SERVICE_ROUTING: QuickServiceRoute[] = [
-  { id: "meet_greet", label: "Meet & Greet", departmentNumber: 3, iconName: "Crown" },
-  { id: "flight", label: "Air Ticketing", departmentNumber: 1, iconName: "Ticket" },
-  { id: "visa", label: "Visa Assistance", departmentNumber: 2, iconName: "FileCheck" },
-  { id: "hotel", label: "Hotels & Stays", departmentNumber: 2, iconName: "Hotel" },
-  { id: "transport", label: "Transportation", departmentNumber: 1, iconName: "Car" },
-  { id: "infant", label: "Infant Care", departmentNumber: 3, iconName: "Baby" },
+  { id: "meet_greet", label: "Meet & Greet", departmentNumber: 1, iconName: "Crown" },
+  { id: "flight", label: "Air Ticketing", departmentNumber: 2, iconName: "Ticket" },
+  { id: "transport", label: "Transportation", departmentNumber: 2, iconName: "Car" },
+  { id: "visa", label: "Visa Assistance", departmentNumber: 3, iconName: "FileCheck" },
+  { id: "hotel", label: "Hotels & Stays", departmentNumber: 3, iconName: "Hotel" },
+  { id: "infant", label: "Infant Care", departmentNumber: 1, iconName: "Baby" },
   { id: "escalation", label: "Escalation", departmentNumber: 4, iconName: "ShieldAlert" },
   { id: "finance", label: "Finance & Accounts", departmentNumber: 5, iconName: "Ticket" },
 ];
