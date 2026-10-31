@@ -3,7 +3,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
   ArrowRight,
-  CheckCircle2,
   Car,
   PhoneCall,
   MessageSquare,
@@ -235,31 +234,50 @@ function DedicatedTransportServicePage() {
 
           {/* 2-Column Balanced Editorial Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
-            {/* Left Column: Option Title & Exact Inclusions List */}
-            <div className="lg:col-span-6 flex flex-col justify-start">
-              <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-lime-700 font-mono font-bold mb-3">
-                <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
-                <span>{activeOption.badge}</span>
+            {/* Left Column: Transport inclusions from the approved reference */}
+            <div className="lg:col-span-6 flex flex-col justify-start space-y-7">
+              <p className="text-base sm:text-lg text-slate-900 leading-relaxed">
+                Our Luxury Transport Fleet Provides A Comfortable And Stylish Experience For Both Business And Leisure Travel, Ensuring An Enjoyable Journey
+              </p>
+
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#0a196f] tracking-tight mb-3" style={display}>
+                  India’s Premier Door-to-Door Transport Network:
+                </h3>
+                <ol className="list-decimal pl-6 space-y-1.5 text-base sm:text-lg text-slate-900">
+                  <li>Airport to Hotel</li>
+                  <li>Hotel to Airport.</li>
+                  <li>Pickup &amp; Drop Right at Your Doorstep</li>
+                  <li>Pan-India Network Coverage</li>
+                  <li>On-Time, Reliable Transportation</li>
+                </ol>
               </div>
 
-              <h3 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0a196f] tracking-tight mb-6" style={display}>
-                {activeOption.id}
-              </h3>
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#0a196f] tracking-tight mb-3" style={display}>
+                  Vehicle Hygiene &amp; Comfort:
+                </h3>
+                <ol className="list-decimal pl-6 space-y-1.5 text-base sm:text-lg text-slate-900">
+                  <li>Regularly Sanitized &amp; Well-Maintained Vehicles</li>
+                  <li>Spacious Seating with Premium Comfort</li>
+                  <li>Clean Interiors with Fresh Air &amp; Pleasant Ambience</li>
+                </ol>
+              </div>
 
-              <div className="space-y-3">
-                {activeOption.inclusions.map((inc, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50/80 border border-slate-200/70 hover:border-slate-300 hover:bg-white hover:shadow-xs transition-all duration-200"
-                  >
-                    <div className="w-5 h-5 rounded-full bg-slate-900 text-lime-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <CheckCircle2 size={12} className="stroke-[2.5]" />
-                    </div>
-                    <span className="text-sm font-medium text-slate-900 leading-snug">
-                      {inc}
-                    </span>
-                  </div>
-                ))}
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#8a7418] tracking-tight mb-3" style={display}>
+                  Car Fleets:
+                </h3>
+                <ul className="list-disc pl-6 space-y-1.5 text-base sm:text-lg text-slate-900">
+                  <li><strong>Ultra Luxury:</strong> Bentley</li>
+                  <li><strong>Premium Luxury:</strong> BMW, Mercedes, Audi</li>
+                  <li><strong>Luxury SUVs:</strong> Range Rover, Land Cruiser</li>
+                  <li><strong>Premium SUVs:</strong> Defender, Toyota Fortuner</li>
+                  <li><strong>Premium:</strong> Toyota Camry, Innova Hycross</li>
+                  <li><strong>Executive:</strong> Kia Carnival, Honda City</li>
+                  <li><strong>Standard:</strong> Swift Dzire, Tata Tigor</li>
+                  <li><strong>Luxury Coaches (Buses):</strong> Volvo Bus VVIP</li>
+                </ul>
               </div>
             </div>
 
