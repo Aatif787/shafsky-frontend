@@ -23,6 +23,7 @@ import {
   FileCheck,
   PawPrint,
   Baby,
+  Package,
 } from "lucide-react";
 import { mono } from "@/components/home/theme";
 import { motion, AnimatePresence } from "framer-motion";
@@ -154,7 +155,7 @@ export const OTHER_SERVICES_ITEMS: OtherServiceDropdownItem[] = [
     icon: HeartHandshake,
   },
   {
-    label: "Cargo & Avi Pet",
+    label: "AVI & Animal Pet",
     sub: "cargo_avi_pet",
     href: "/solutions/special-services?sub=cargo_avi_pet",
     icon: PawPrint,
@@ -183,6 +184,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Transport", href: "/solutions/transport" },
   { label: "Hotel", href: "/solutions/hotels" },
   { label: "Private Charter", href: "/solutions/aviation" },
+  { label: "Cargo", href: "/solutions/cargo" },
   { label: "Other Services", href: "/solutions/special-services" },
   { label: "Support", href: "/support" },
 ];
@@ -201,6 +203,8 @@ export const getItemIcon = (label: string) => {
       return Hotel;
     case "Private Charter":
       return Plane;
+    case "Cargo":
+      return Package;
     case "Ticketing":
       return Ticket;
     case "Other Services":
