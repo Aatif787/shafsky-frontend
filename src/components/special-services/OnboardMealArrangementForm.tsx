@@ -32,32 +32,7 @@ export interface OnboardMealArrangementFormProps {
   className?: string;
 }
 
-const MEAL_TYPES = [
-  "Breakfast",
-  "Lunch",
-  "Dinner",
-  "Snacks",
-  "Beverages",
-  "Special Meal",
-] as const;
-
-const MEAL_PREFERENCES = [
-  "Vegetarian",
-  "Non-Vegetarian",
-  "Jain",
-  "Vegan",
-  "Halal",
-  "Gluten-Free",
-  "Other",
-] as const;
-
-const ALLERGIES_LIST = [
-  "None",
-  "Dairy",
-  "Gluten",
-  "Seafood",
-  "Other",
-] as const;
+const MEAL_PREFERENCES = ["Vegetarian", "Non-Vegetarian"] as const;
 
 export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProps> = ({
   onSuccess,
@@ -84,14 +59,9 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
   const [idType, setIdType] = useState<"Passport" | "Government-issued ID" | "Other">("Passport");
   const [idNumber, setIdNumber] = useState("");
 
-  // Section 3: Meal Arrangement Details
-  const [selectedMealTypes, setSelectedMealTypes] = useState<string[]>(["Breakfast"]);
+  // Section 3: Meal Arrangement Details (Veg / Non-Veg + count only)
   const [selectedMealPreferences, setSelectedMealPreferences] = useState<string[]>(["Vegetarian"]);
-  const [otherMealPreferenceText, setOtherMealPreferenceText] = useState("");
   const [mealCount, setMealCount] = useState<number>(4);
-  const [selectedAllergies, setSelectedAllergies] = useState<string[]>(["None"]);
-  const [otherAllergyText, setOtherAllergyText] = useState("");
-  const [additionalInstructions, setAdditionalInstructions] = useState("");
 
   // Section 4: Declaration
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
@@ -104,46 +74,12 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
     sectorRoute: string;
     date: string;
     mealCount: number;
-    mealTypes: string[];
     mealPreferences: string[];
   } | null>(null);
 
-  // Toggle Meal Type
-  const handleToggleMealType = (type: string) => {
-    setSelectedMealTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
-  };
-
-  // Toggle Meal Preference
-  const handleToggleMealPreference = (pref: string) => {
-    setSelectedMealPreferences((prev) => {
-      if (prev.includes(pref)) {
-        if (pref === "Other") setOtherMealPreferenceText("");
-        return prev.filter((p) => p !== pref);
-      } else {
-        return [...prev, pref];
-      }
-    });
-  };
-
-  // Toggle Allergy with Mutual Exclusivity for "None"
-  const handleToggleAllergy = (allergy: string) => {
-    setSelectedAllergies((prev) => {
-      if (allergy === "None") {
-        setOtherAllergyText("");
-        return ["None"];
-      } else {
-        const withoutNone = prev.filter((a) => a !== "None");
-        if (withoutNone.includes(allergy)) {
-          if (allergy === "Other") setOtherAllergyText("");
-          const updated = withoutNone.filter((a) => a !== allergy);
-          return updated.length === 0 ? ["None"] : updated;
-        } else {
-          return [...withoutNone, allergy];
-        }
-      }
-    });
+  // Single-select meal preference: Vegetarian or Non-Vegetarian.
+  const handleSelectMealPreference = (pref: string) => {
+    setSelectedMealPreferences([pref]);
   };
 
   // Form Submit Handler
@@ -178,43 +114,22 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
       return;
     }
 
-    // 4. Validate Meal Types (At least 1 required)
-    if (selectedMealTypes.length === 0) {
-      toast.error("Please select at least one meal type (e.g. Breakfast, Lunch, Dinner).");
-      return;
-    }
-
-    // 5. Validate Meal Count
+    // 4. Validate Meal Count
     if (!mealCount || mealCount < 1 || !Number.isInteger(Number(mealCount))) {
       toast.error("Please enter a valid positive whole number of meals.");
       return;
     }
 
-    // 6. Validate Conditional "Other" fields
-    if (selectedMealPreferences.includes("Other") && !otherMealPreferenceText.trim()) {
-      toast.error("Please specify your custom meal preference under 'Other'.");
-      return;
-    }
-    if (selectedAllergies.includes("Other") && !otherAllergyText.trim()) {
-      toast.error("Please specify your custom allergy or special requirement under 'Other'.");
-      return;
-    }
-
-    // 7. Validate Declaration
+    // 5. Validate Declaration
     if (!declarationConfirmed) {
       toast.error("Please check the declaration box before submitting your enquiry.");
       return;
     }
 
     // Prepare Notes & Details
-    const finalPreferences = selectedMealPreferences.map((p) =>
-      p === "Other" && otherMealPreferenceText.trim()
-        ? `Other: ${otherMealPreferenceText.trim()}`
-        : p
-    );
-    const finalAllergies = selectedAllergies.map((a) =>
-      a === "Other" && otherAllergyText.trim() ? `Other: ${otherAllergyText.trim()}` : a
-    );
+    const finalPreferences = selectedMealPreferences.length
+      ? selectedMealPreferences
+      : ["Vegetarian"];
 
     const notesSummary = [
       `[ON-BOARD MEAL ARRANGEMENT ENQUIRY]`,
@@ -222,14 +137,9 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
       flightNumber.trim() ? `Flight: ${flightNumber.trim().toUpperCase()}` : null,
       `Date: ${dateOfTravel}`,
       `Total Meals: ${mealCount}`,
-      `Meal Types: ${selectedMealTypes.join(", ")}`,
-      `Preferences: ${finalPreferences.join(", ")}`,
-      `Allergies/Dietary: ${finalAllergies.join(", ")}`,
+      `Preference: ${finalPreferences.join(", ")}`,
       idType ? `ID Type: ${idType}` : null,
       idNumber.trim() ? `ID No: ${idNumber.trim()}` : null,
-      additionalInstructions.trim()
-        ? `Instructions: ${additionalInstructions.trim()}`
-        : null,
     ]
       .filter(Boolean)
       .join(" | ");
@@ -246,10 +156,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
       destination: sectorRoute.split(/[–\-]/)[1]?.trim() || sectorRoute.trim(),
       meal_count: mealCount,
       passenger_count: mealCount,
-      meal_types: selectedMealTypes,
       meal_preferences: finalPreferences,
-      allergies: finalAllergies,
-      additional_instructions: additionalInstructions.trim() || undefined,
       id_type: idType,
       id_number: idNumber.trim() || undefined,
       declaration_confirmed: true,
@@ -277,7 +184,6 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
           sectorRoute: sectorRoute.trim(),
           date: dateOfTravel,
           mealCount,
-          mealTypes: selectedMealTypes,
           mealPreferences: finalPreferences,
         });
 
@@ -321,10 +227,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
         (flightNumber ? `• Flight: ${flightNumber}\n` : "") +
         `• Travel Date: ${dateOfTravel || submittedResult?.date}\n` +
         `• Meals Count: ${mealCount || submittedResult?.mealCount}\n` +
-        `• Meal Types: ${selectedMealTypes.join(", ")}\n` +
-        `• Preferences: ${selectedMealPreferences.join(", ")}\n` +
-        `• Allergies: ${selectedAllergies.join(", ")}\n` +
-        (additionalInstructions ? `• Instructions: ${additionalInstructions}\n\n` : "\n") +
+        `• Preference: ${selectedMealPreferences.join(", ")}\n` +
         `Please confirm our in-flight catering coordination.`
     );
     return `https://wa.me/${waNumber}?text=${text}`;
@@ -393,10 +296,10 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
 
             <div className="pt-2 border-t border-slate-200 space-y-1">
               <span className="text-slate-500 text-[10px] font-mono uppercase tracking-wider block">
-                Selected Meal Types & Preferences
+                Meal Preference
               </span>
               <span className="font-medium text-slate-900 block">
-                {submittedResult.mealTypes.join(", ")} • {submittedResult.mealPreferences.join(", ")}
+                {submittedResult.mealPreferences.join(", ")}
               </span>
             </div>
           </div>
@@ -586,7 +489,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
               </div>
             </div>
 
-            {/* ──────────────── SECTION 3: MEAL ARRANGEMENT DETAILS ──────────────── */}
+            {/* SECTION 3: MEAL ARRANGEMENT DETAILS */}
             <div className="space-y-6 pt-2">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
                 <span className="w-2 h-2 rounded-full bg-[#0a196f] inline-block" />
@@ -595,120 +498,55 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                 </h3>
               </div>
 
-              {/* Sub-section A: Meal Type (Interactive Touch-Friendly Chips) */}
-              <div className="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 space-y-3">
-                <div className="flex items-center justify-between pb-1 border-b border-slate-200/60">
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-900">
-                    A. Meal Type <span className="text-rose-500">*</span>
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-mono">Select multiple</span>
-                </div>
-
-                <div className="flex flex-wrap gap-2.5 pt-1">
-                  {MEAL_TYPES.map((type) => {
-                    const isChecked = selectedMealTypes.includes(type);
-                    return (
-                      <button
-                        type="button"
-                        key={type}
-                        onClick={() => handleToggleMealType(type)}
-                        className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm transition-all duration-150 cursor-pointer border ${
-                          isChecked
-                            ? "bg-[#0a196f] text-white border-[#0a196f] shadow-sm font-semibold ring-2 ring-[#0a196f]/15"
-                            : "bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100/70 font-medium"
-                        }`}
-                      >
-                        <span
-                          className={`w-4 h-4 rounded flex items-center justify-center border text-[10px] transition ${
-                            isChecked
-                              ? "bg-white/20 border-white/40 text-white"
-                              : "border-slate-300 bg-slate-50 text-transparent"
-                          }`}
-                        >
-                          <Check size={11} className={isChecked ? "opacity-100 stroke-[3]" : "opacity-0"} />
-                        </span>
-                        <span>{type}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Sub-section B: Meal Preference (Interactive Touch-Friendly Chips) */}
-              <div className="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 space-y-3">
-                <div className="flex items-center justify-between pb-1 border-b border-slate-200/60">
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-900">
-                    B. Meal Preference
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-mono">Select multiple</span>
-                </div>
-
-                <div className="flex flex-wrap gap-2.5 pt-1">
-                  {MEAL_PREFERENCES.map((pref) => {
-                    const isChecked = selectedMealPreferences.includes(pref);
-                    return (
-                      <button
-                        type="button"
-                        key={pref}
-                        onClick={() => handleToggleMealPreference(pref)}
-                        className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm transition-all duration-150 cursor-pointer border ${
-                          isChecked
-                            ? "bg-[#0a196f] text-white border-[#0a196f] shadow-sm font-semibold ring-2 ring-[#0a196f]/15"
-                            : "bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100/70 font-medium"
-                        }`}
-                      >
-                        <span
-                          className={`w-4 h-4 rounded flex items-center justify-center border text-[10px] transition ${
-                            isChecked
-                              ? "bg-white/20 border-white/40 text-white"
-                              : "border-slate-300 bg-slate-50 text-transparent"
-                          }`}
-                        >
-                          <Check size={11} className={isChecked ? "opacity-100 stroke-[3]" : "opacity-0"} />
-                        </span>
-                        <span>{pref === "Other" ? "Other (specify)" : pref}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Conditional "Other" Meal Preference Field */}
-                {selectedMealPreferences.includes("Other") && (
-                  <div className="pt-2 max-w-md animate-in fade-in-50 duration-200">
-                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
-                      Specify Preference <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Specify custom meal preference"
-                      value={otherMealPreferenceText}
-                      onChange={(e) => setOtherMealPreferenceText(e.target.value)}
-                      required
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15"
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Sub-section C: Number of Meals & Allergies */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {/* Number of Meals Stepper */}
-                <div className="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 space-y-3 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
-                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-900">
-                        C. Number of Meals and Allergies
-                      </span>
-                    </div>
-                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mt-3 mb-1">
-                      Number of Meals <span className="text-rose-500">*</span>
-                    </label>
-                    <p className="text-[11px] text-slate-500">
-                      Total meal portions to coordinate for this flight.
-                    </p>
+              <div className="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 space-y-5">
+                <div>
+                  <div className="flex items-center justify-between pb-1 border-b border-slate-200/60">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-900">
+                      Meal Preference <span className="text-rose-500">*</span>
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono">Choose one</span>
                   </div>
 
-                  <div className="flex items-center gap-3 pt-2">
+                  <div className="flex flex-wrap gap-2.5 pt-3">
+                    {MEAL_PREFERENCES.map((pref) => {
+                      const isChecked = selectedMealPreferences.includes(pref);
+                      return (
+                        <button
+                          type="button"
+                          key={pref}
+                          onClick={() => handleSelectMealPreference(pref)}
+                          aria-pressed={isChecked}
+                          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm transition-all duration-150 cursor-pointer border ${
+                            isChecked
+                              ? "bg-[#0a196f] text-white border-[#0a196f] shadow-sm font-semibold ring-2 ring-[#0a196f]/15"
+                              : "bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100/70 font-medium"
+                          }`}
+                        >
+                          <span
+                            className={`w-4 h-4 rounded-full flex items-center justify-center border text-[10px] transition ${
+                              isChecked
+                                ? "bg-white/20 border-white/40 text-white"
+                                : "border-slate-300 bg-slate-50 text-transparent"
+                            }`}
+                          >
+                            <Check size={11} className={isChecked ? "opacity-100 stroke-[3]" : "opacity-0"} />
+                          </span>
+                          <span>{pref}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="pt-1">
+                  <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Number of Meals <span className="text-rose-500">*</span>
+                  </label>
+                  <p className="text-[11px] text-slate-500">
+                    Total meal portions to coordinate for this flight.
+                  </p>
+
+                  <div className="flex items-center gap-3 pt-3">
                     <button
                       type="button"
                       onClick={() => setMealCount((c) => Math.max(1, c - 1))}
@@ -742,78 +580,6 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                       +
                     </button>
                   </div>
-                </div>
-
-                {/* Allergies / Special Requirements */}
-                <div className="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 space-y-3">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
-                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-900">
-                      Allergies / Special Requirements
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {ALLERGIES_LIST.map((allergy) => {
-                      const isChecked = selectedAllergies.includes(allergy);
-                      return (
-                        <button
-                          type="button"
-                          key={allergy}
-                          onClick={() => handleToggleAllergy(allergy)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all duration-150 cursor-pointer border ${
-                            isChecked
-                              ? "bg-[#0a196f] text-white border-[#0a196f] shadow-sm font-semibold ring-2 ring-[#0a196f]/15"
-                              : "bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100/70 font-medium"
-                          }`}
-                        >
-                          <span
-                            className={`w-3.5 h-3.5 rounded flex items-center justify-center border text-[9px] transition ${
-                              isChecked
-                                ? "bg-white/20 border-white/40 text-white"
-                                : "border-slate-300 bg-slate-50 text-transparent"
-                            }`}
-                          >
-                            <Check size={10} className={isChecked ? "opacity-100 stroke-[3]" : "opacity-0"} />
-                          </span>
-                          <span>{allergy === "Other" ? "Other (specify)" : allergy}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Conditional "Other" Allergy Field */}
-                  {selectedAllergies.includes("Other") && (
-                    <div className="pt-2 animate-in fade-in-50 duration-200">
-                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1">
-                        Specify Allergies <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Specify allergy or requirement"
-                        value={otherAllergyText}
-                        onChange={(e) => setOtherAllergyText(e.target.value)}
-                        required
-                        className="w-full px-3.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs text-slate-900 focus:outline-none focus:border-[#0a196f] focus:ring-1 focus:ring-[#0a196f]"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Sub-section D: Additional Instructions (Multiline Textarea) */}
-              <div className="pt-1">
-                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  D. Additional Instructions{" "}
-                  <span className="text-slate-400 text-[10px] font-normal">(Optional)</span>
-                </label>
-                <div className="relative">
-                  <textarea
-                    rows={3}
-                    placeholder="Any specific meal, brand, serving time or other requirements (optional)"
-                    value={additionalInstructions}
-                    onChange={(e) => setAdditionalInstructions(e.target.value)}
-                    className="w-full p-3.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15 transition resize-none leading-relaxed"
-                  />
                 </div>
               </div>
             </div>
