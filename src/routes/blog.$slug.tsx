@@ -51,5 +51,6 @@ export const Route = createFileRoute("/blog/$slug")({
 
 function BlogArticlePage() {
   const article = Route.useLoaderData();
+  if (!article) return null;
   return <BlogArticleView article={article} />;
 }
