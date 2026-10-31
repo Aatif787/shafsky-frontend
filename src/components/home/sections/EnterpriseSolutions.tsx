@@ -11,7 +11,6 @@ import planeImg from "@/assets/others/plane.png";
 import meetGreetImg from "@/assets/others/meetgreet.jpeg";
 import servicesImg from "@/assets/others/services.png";
 import specialserImg from "@/assets/others/specialser.png";
-import airTicketingImg from "@/assets/others/air-ticketing.jpg";
 
 interface SubServiceOption {
   label: string;
@@ -94,18 +93,6 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
       { label: "7 Star Hotels", subParam: "7 Star Hotels", tagline: "Royal palace estates, heritage suites & private villas" },
       { label: "5 Star Hotels", subParam: "5 Star Hotels", tagline: "Premier luxury city hotels & airport transit properties" },
       { label: "3 Star Hotels", subParam: "3 Star Hotels", tagline: "Comfortable executive transit stays & airport rooms" },
-    ],
-  },
-  {
-    id: "air-ticketing",
-    serviceParam: "ticketing",
-    title: "Air Ticketing Services",
-    photo: airTicketingImg,
-    alt: "Shafsky Domestic and International Air Ticketing Concierge Desk",
-    badge: "Airline Ticketing",
-    description: "Instant domestic and international flight bookings across 500+ global airlines, flexible corporate fares, and 24/7 ticketing desk support.",
-    subServices: [
-      { label: "Air Ticketing (Domestic & Intl)", subParam: "ticketing", tagline: "Instant commercial flight bookings across 500+ global airlines" },
     ],
   },
   {
@@ -322,8 +309,6 @@ export function EnterpriseSolutions() {
                         navigate({ to: "/solutions/hotels" });
                       } else if (srv.id === "transport-service") {
                         navigate({ to: "/solutions/transport" });
-                      } else if (srv.id === "air-ticketing") {
-                        navigate({ to: "/solutions/special-services", search: { sub: "ticketing" } as any });
                       } else {
                         setSelectedService(srv);
                       }
@@ -369,7 +354,6 @@ export function EnterpriseSolutions() {
                       else if (srv.id === "air-charter") navigate({ to: "/solutions/aviation" });
                       else if (srv.id === "luxury-hotels") navigate({ to: "/solutions/hotels" });
                       else if (srv.id === "transport-service") navigate({ to: "/solutions/transport" });
-                      else if (srv.id === "air-ticketing") navigate({ to: "/solutions/special-services", search: { sub: "ticketing" } as any });
                       else setSelectedService(srv);
                     }}
                     className="group relative rounded-full overflow-hidden cursor-pointer shadow-[0_10px_25px_-5px_rgba(0,0,0,0.15)] ring-2 ring-[#d4af37]/40 ring-offset-4 ring-offset-white transition-all duration-500 bg-slate-900 flex-shrink-0 w-[5.5rem] h-[5.5rem] sm:w-24 sm:h-24 z-10"
@@ -417,7 +401,6 @@ export function EnterpriseSolutions() {
                     <div className="flex justify-center gap-4 sm:gap-6 w-full relative">
                       {renderPortal(OFFICIAL_SERVICES[3], 0.4)}
                       {renderPortal(OFFICIAL_SERVICES[4], 0.5)}
-                      {renderPortal(OFFICIAL_SERVICES[5], 0.6)}
                     </div>
                   </div>
                 );
