@@ -40,20 +40,20 @@ describe("Navigation navbar (Direct Individual Links)", () => {
       href: "/airports",
     });
     expect(NAV_ITEMS[3]).toEqual({
+      label: "Cargo",
+      href: "/solutions/cargo",
+    });
+    expect(NAV_ITEMS[4]).toEqual({
       label: "Transport",
       href: "/solutions/transport",
     });
-    expect(NAV_ITEMS[4]).toEqual({
+    expect(NAV_ITEMS[5]).toEqual({
       label: "Hotel",
       href: "/solutions/hotels",
     });
-    expect(NAV_ITEMS[5]).toEqual({
+    expect(NAV_ITEMS[6]).toEqual({
       label: "Private Charter",
       href: "/solutions/aviation",
-    });
-    expect(NAV_ITEMS[6]).toEqual({
-      label: "Cargo",
-      href: "/solutions/cargo",
     });
     expect(NAV_ITEMS[7]).toEqual({
       label: "Other Services",

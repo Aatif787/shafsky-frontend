@@ -187,10 +187,10 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Meet & Greet", href: "/solutions/concierge" },
   { label: "Lounge", href: "/lounge" },
   { label: "Airports", href: "/airports" },
+  { label: "Cargo", href: "/solutions/cargo" },
   { label: "Transport", href: "/solutions/transport" },
   { label: "Hotel", href: "/solutions/hotels" },
   { label: "Private Charter", href: "/solutions/aviation" },
-  { label: "Cargo", href: "/solutions/cargo" },
   { label: "Other Services", href: "/solutions/special-services" },
   { label: "Support", href: "/support" },
 ];
