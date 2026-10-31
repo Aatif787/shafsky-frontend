@@ -354,7 +354,14 @@ function DedicatedSpecialServicesPage() {
     }
 
     const text = `Hello Shafsky VIP Concierge Desk,%0A%0AI would like to inquire about:%0A*Service:* ${selectedOptionId}%0A${details}%0A%0A*Name:* ${clientName}%0A*Phone:* ${phone}%0A*Email:* ${email || "N/A"}`;
-    const targetPhone = selectedOptionId === "Air Ticketing Services" ? "919599087957" : "919599087959";
+    const targetPhone =
+      selectedOptionId === "Air Ticketing Services" ||
+      selectedOptionId === "Air Ambulance (Airborne ICU Jet)"
+        ? "919599087957"
+        : selectedOptionId === "Train Ambulance" ||
+            selectedOptionId === "Train Ambulance (Train ICU Escort)"
+          ? "919599225778"
+          : "919599087959";
     return `https://wa.me/${targetPhone}?text=${text}`;
   };
 
