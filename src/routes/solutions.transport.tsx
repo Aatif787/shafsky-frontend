@@ -42,21 +42,15 @@ export type { TransportOptionId, TransportOptionDef };
 
 const TRANSPORT_HERO_SLIDES = [
   {
-    src: "/images/transport/tarmac-chauffeur.webp",
-    alt: "Shafsky Airside Tarmac Mercedes-Benz S-Class Chauffeur Transfer",
-    badge: "1/3 • Tarmac Chauffeur Transfer",
-    label: "Tarmac Transfer",
-  },
-  {
     src: "/images/transport/fleet-skyline.webp",
     alt: "Shafsky Chauffeured Executive Sedans and Passenger Vans",
-    badge: "2/3 • Chauffeured Executive Fleet",
+    badge: "1/2 • Chauffeured Executive Fleet",
     label: "Executive Fleet",
   },
   {
     src: "/images/transport/curbside-chauffeur.webp",
     alt: "Shafsky Curbside Executive Chauffeur Reception & City Transfer",
-    badge: "3/3 • Curbside Arrival",
+    badge: "2/2 • Curbside Arrival",
     label: "Curbside Arrival",
   },
 ];
@@ -285,10 +279,6 @@ function DedicatedTransportServicePage() {
             <div className="lg:col-span-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  {
-                    src: "/images/transport/tarmac-chauffeur.webp",
-                    alt: "Tarmac Sedan Arrival Reception",
-                  },
                   {
                     src: "/images/transport/fleet-skyline.webp",
                     alt: "Chauffeured Executive Fleet & Sedans",
