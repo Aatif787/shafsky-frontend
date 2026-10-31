@@ -129,10 +129,9 @@ describe("LoungeEnquiryForm Component", () => {
     expect(loungeDetailsIndex).toBeGreaterThan(yourDetailsIndex);
   });
 
-  it("displays airport local timezone transparently", () => {
+  it("does not display timezone field in frontend", () => {
     const html = renderToString(<LoungeEnquiryForm initialAirport="DEL" initialCategory="Domestic" />);
-    expect(html).toContain("Airport TZ");
-    expect(html).toContain("Asia/Kolkata");
+    expect(html).not.toContain("Airport TZ");
   });
 
   it("submits enquiry with category 'Lounge' through the API", async () => {

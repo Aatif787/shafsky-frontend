@@ -106,6 +106,8 @@ describe("Dedicated Cargo Page and Form", () => {
     const res = await enquiryApi.submit(payload);
     expect(enquiryApi.submit).toHaveBeenCalledWith(payload);
     expect(res.success).toBe(true);
-    expect(res.data?.bookingRef).toBe("CRG-987654");
+    if (res.success) {
+      expect(res.data.bookingRef).toBe("CRG-987654");
+    }
   });
 });

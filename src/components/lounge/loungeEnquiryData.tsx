@@ -241,7 +241,7 @@ export function computeFrontendCutoff(params: {
       noticeHours,
       gracePeriodHours,
       minRequiredHours,
-      message: `Standard notice period met (${leadTimeHours.toFixed(1)}h notice in ${tz}).`,
+      message: `Standard notice period met (${leadTimeHours.toFixed(1)}h advance notice).`,
     };
   }
 
@@ -549,7 +549,7 @@ export const LoungeCutoffFeedback: React.FC<LoungeCutoffFeedbackProps> = ({
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>
-              Notice window met ({activeEligibility.leadTimeHours.toFixed(0)}h notice in airport local time: {currentAirportTimezone}).
+              Notice window met ({activeEligibility.leadTimeHours.toFixed(0)}h advance notice).
             </span>
           </div>
           {checkingEligibility && (

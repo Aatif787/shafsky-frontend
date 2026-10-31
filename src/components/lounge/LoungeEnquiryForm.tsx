@@ -559,12 +559,7 @@ export const LoungeEnquiryForm: React.FC<LoungeEnquiryFormProps> = ({
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-800">
             Lounge Details
           </h3>
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-slate-500 font-medium">Service Information</span>
-            <span className="hidden sm:inline-flex font-mono text-[10px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/70">
-              Airport TZ: {currentAirportTimezone} {airportLocalTimeDisplay && `(${airportLocalTimeDisplay})`}
-            </span>
-          </div>
+          <span className="text-[11px] text-slate-500 font-medium">Service Information</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
