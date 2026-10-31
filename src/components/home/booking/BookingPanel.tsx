@@ -78,15 +78,6 @@ export interface BookingPanelProps {
 
 export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
   const navigate = useNavigate();
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.defaultMuted = true;
-      videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
-    }
-  }, []);
   const [activeMode, setActiveMode] = useState<BookingServiceMode>("airport");
   const [originCode, setOriginCode] = useState<string>("");
   const [destCode, setDestCode] = useState<string>("");
