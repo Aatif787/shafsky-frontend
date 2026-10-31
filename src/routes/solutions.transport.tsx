@@ -8,6 +8,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { display } from "@/components/home/theme";
+import home5Img from "@/assets/homepage/home5.jpeg";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
@@ -34,10 +35,25 @@ import {
   type TransportOptionId,
   type TransportOptionDef,
 } from "@/data/transportation";
-import { VehicleDetailsSection } from "@/components/transportation/VehicleDetailsSection";
+import { VehicleShowcaseSection } from "@/components/transportation/VehicleShowcaseSection";
 import { Footer } from "@/components/home/sections/Footer";
 
 export type { TransportOptionId, TransportOptionDef };
+
+const TRANSPORT_HERO_SLIDES = [
+  {
+    src: "/images/transport/fleet-skyline.webp",
+    alt: "Shafsky Chauffeured Executive Sedans and Passenger Vans",
+    badge: "1/2 • Chauffeured Executive Fleet",
+    label: "Executive Fleet",
+  },
+  {
+    src: "/images/transport/curbside-chauffeur.webp",
+    alt: "Shafsky Curbside Executive Chauffeur Reception & City Transfer",
+    badge: "2/2 • Curbside Arrival",
+    label: "Curbside Arrival",
+  },
+];
 
 function DedicatedTransportServicePage() {
   const navigate = useNavigate();
@@ -46,13 +62,20 @@ function DedicatedTransportServicePage() {
 
   const [selectedOptionId, setSelectedOptionId] = useState<TransportOptionId>("Luxury Vehicles");
   const [activeVehicleId, setActiveVehicleId] = useState<string>("merc-maybach-s-class");
+  const [heroSlideIndex, setHeroSlideIndex] = useState(0);
 
   const activeOption =
     TRANSPORT_OPTIONS.find((o) => o.id === selectedOptionId) || TRANSPORT_OPTIONS[0];
 
   const handleSelectOption = (optId: TransportOptionId) => {
     setSelectedOptionId(optId);
-
+    if (optId === "Luxury Vehicles") {
+      setHeroSlideIndex(0);
+    } else if (optId === "MUV / Large Vehicles") {
+      setHeroSlideIndex(1);
+    } else if (optId === "Economy / Standard") {
+      setHeroSlideIndex(2);
+    }
 
     // Automatically select first valid canonical vehicle of the new category
     const targetOpt = TRANSPORT_OPTIONS.find((o) => o.id === optId) || TRANSPORT_OPTIONS[0];
@@ -137,37 +160,16 @@ function DedicatedTransportServicePage() {
       {/* ─────────────────────────────────────────────────────────────
           2. VEHICLE SHOWROOM: CINEMATIC STAGE, CIRCULAR SELECTOR & DETAILS
           ───────────────────────────────────────────────────────────── */}
-      <section className="py-10 sm:py-14 bg-slate-50 border-b border-slate-200 px-4 sm:px-6">
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
-            {TRANSPORT_OPTIONS.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => handleSelectOption(option.id)}
-                className={`rounded-full border px-5 py-3 text-xs sm:text-sm font-bold uppercase tracking-wider transition ${selectedOptionId === option.id ? "bg-violet-600 text-white border-violet-600" : "bg-white text-slate-700 border-slate-200 hover:border-violet-400"}`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {displayVehicles.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setActiveVehicleId(item.id)}
-                className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${activeVehicleId === item.id ? "border-violet-500 bg-violet-50 text-slate-950" : "border-slate-200 bg-white text-slate-700 hover:border-violet-300"}`}
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
-          {displayVehicles.find((item) => item.id === activeVehicleId) && (
-            <VehicleDetailsSection vehicle={displayVehicles.find((item) => item.id === activeVehicleId)!} />
-          )}
-        </div>
-      </section>
+      <VehicleShowcaseSection
+        vehicles={displayVehicles}
+        categoryTitle={activeOption.label}
+        categories={TRANSPORT_OPTIONS.map((o) => o.id)}
+        selectedCategory={selectedOptionId}
+        onSelectCategory={handleSelectOption}
+        selectedVehicleId={activeVehicleId}
+        onSelectVehicle={setActiveVehicleId}
+      />
+
       {/* ─────────────────────────────────────────────────────────────
           5. COMPANY CATALOG CONTENT & UNCOPPED GALLERY
           ───────────────────────────────────────────────────────────── */}
@@ -236,7 +238,43 @@ function DedicatedTransportServicePage() {
               </div>
             </div>
 
-
+            {/* Right Column: Original Aspect Ratio Uncropped Gallery */}
+            <div className="lg:col-span-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[
+                  {
+                    src: "/images/transport/fleet-skyline.webp",
+                    alt: "Chauffeured Executive Fleet & Sedans",
+                  },
+                  {
+                    src: "/images/transport/curbside-chauffeur.webp",
+                    alt: "Curbside Executive Arrival",
+                  },
+                  {
+                    src: home5Img,
+                    alt: "Dedicated Airport Porterage & Fleet Apron",
+                  },
+                ].map((img, idx) => (
+                  <div
+                    key={idx}
+                    className="w-full rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 bg-white group hover:border-lime-400 hover:shadow-md transition-all duration-300 flex flex-col"
+                  >
+                    <div className="relative aspect-[16/10] w-full bg-slate-50 overflow-hidden flex items-center justify-center">
+                      <img width={1600} height={900} src={img.src}
+                        alt={img.alt}
+                        className="w-full h-full object-cover object-center select-none block group-hover:scale-103 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-3.5 bg-white border-t border-slate-100">
+                      <span className="text-xs font-semibold text-slate-900 tracking-tight font-sans block group-hover:text-[#0a196f] transition-colors">
+                        {img.alt}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
