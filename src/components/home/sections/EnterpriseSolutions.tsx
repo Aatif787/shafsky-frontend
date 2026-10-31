@@ -278,26 +278,16 @@ export function EnterpriseSolutions() {
           </div>
         ) : (
           <>
-            {/* DESKTOP 6-CARD HORIZONTAL ALIGNMENT SHOWCASE */}
-            <div className="hidden lg:grid lg:grid-cols-6 gap-6 items-start justify-items-center max-w-7xl mx-auto">
+            {/* DESKTOP 5-SERVICE HORIZONTAL ALIGNMENT SHOWCASE (PERFECTLY CENTERED) */}
+            <div className="hidden lg:grid lg:grid-cols-5 gap-6 xl:gap-8 items-start justify-items-center max-w-6xl xl:max-w-7xl mx-auto">
               {OFFICIAL_SERVICES.map((srv, idx) => {
-                const serviceOffsets = [
-                  { x: -75, y: 0 },
-                  { x: -40, y: -35 },
-                  { x: 0, y: 50 },
-                  { x: 0, y: 50 },
-                  { x: 40, y: -35 },
-                  { x: 75, y: 0 },
-                ];
-                const offset = serviceOffsets[idx] || { x: 0, y: 30 };
-
                 return (
                   <motion.div
                     key={srv.id}
-                    initial={{ opacity: 0, x: offset.x, y: offset.y, scale: 0.92 }}
-                    whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+                    initial={{ opacity: 0, y: 24, scale: 0.95 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
                     viewport={{ once: false, amount: 0.2 }}
-                    transition={{ duration: 0.7, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.6, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
                     whileHover={{ y: -6, scale: 1.02 }}
                     whileTap={{ scale: 0.96 }}
                     className="flex flex-col items-center text-center w-full group cursor-pointer"
@@ -327,7 +317,7 @@ export function EnterpriseSolutions() {
 
                     {/* Service Pillar Heading */}
                     <h3
-                      className="text-sm sm:text-base font-bold text-slate-900 tracking-tight group-hover:text-lime-700 transition-colors duration-300 max-w-[190px] leading-snug"
+                      className="text-sm sm:text-base font-bold text-slate-900 tracking-tight group-hover:text-lime-700 transition-colors duration-300 max-w-[200px] leading-snug text-balance min-h-[44px] flex items-start justify-center"
                       style={display}
                     >
                       {srv.title}
