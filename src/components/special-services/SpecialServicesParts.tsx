@@ -7,7 +7,6 @@ import {
   HeartHandshake,
   FileCheck,
   PawPrint,
-  Ticket,
   ShieldCheck,
   UtensilsCrossed,
   Baby,
@@ -16,7 +15,6 @@ import { display } from "@/components/home/theme";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import specialserImg from "@/assets/others/specialser.png";
-import airTicketingImg from "@/assets/others/air-ticketing.jpg";
 import infantCareImg from "@/assets/others/infant-care.jpg";
 import trainAmbulanceImg from "@/assets/others/train-ambulance.jpg";
 import petCargoImg from "@/assets/others/pet-cargo.jpg";
@@ -25,7 +23,6 @@ import onboardMealsImg from "@/assets/others/onboard-meals.jpg";
 import humanRemainsImg from "@/assets/others/human-remains.jpg";
 
 export type SpecialServiceOptionId =
-  | "Air Ticketing Services"
   | "Tours & Travel (Honeymoon/Couples)"
   | "Visa Assistance Services"
   | "On-board Meal Arrangements for Group Meet & Greet Bookings"
@@ -51,24 +48,6 @@ export interface SpecialServiceOptionDef {
 }
 
 export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
-  {
-    id: "Air Ticketing Services",
-    label: "Air Ticketing Services",
-    shortLabel: "Air Ticketing",
-    badge: "DOMESTIC & INTERNATIONAL AIRLINE TICKETING",
-    tagline:
-      "Instant domestic and international airline bookings across 500+ commercial carriers, flexible corporate fares, and VIP seat assignments.",
-    photo: airTicketingImg,
-    icon: Ticket,
-    inclusions: [
-      "Instant Domestic & International Flight Ticketing across 500+ Global Airlines",
-      "Special Corporate & Marine/Offshore Fares, Extra Baggage & Flexible Re-booking",
-      "Premium Cabin Seat Reservation (Economy, Premium Economy, Business, First Class)",
-      "Special Airside Passenger Assistance: Wheelchair, Stretcher, Unaccompanied Minor",
-      "Instant PNR Generation, Web Check-in & Boarding Pass Issuance to WhatsApp",
-      "24/7 Dedicated Air Ticketing Operations Desk for Flight Changes & Urgent Cancellations",
-    ],
-  },
   {
     id: "Tours & Travel (Honeymoon/Couples)",
     label: "Tours & Travel (Honeymoon/Couples)",
