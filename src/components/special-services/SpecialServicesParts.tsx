@@ -24,6 +24,7 @@ import humanRemainsImg from "@/assets/others/human-remains.jpg";
 
 export type SpecialServiceOptionId =
   | "Air Ticketing Services"
+  | "Travel & Tour"
   | "Travel & Tour (Honeymoon/Couples)"
   | "Tours & Travel (Honeymoon/Couples)"
   | "Visa Assistance Services"
@@ -60,16 +61,16 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     inclusions: [],
   },
   {
-    id: "Travel & Tour (Honeymoon/Couples)",
-    label: "Travel & Tour (Honeymoon/Couples)",
+    id: "Travel & Tour",
+    label: "Travel & Tour",
     shortLabel: "Travel & Tour",
-    badge: "CURATED ROMANTIC GETAWAYS & HONEYMOONS",
+    badge: "CURATED LUXURY ITINERARIES & GLOBAL TOURS",
     tagline:
-      "Curated romantic itineraries, European honeymoons, private yacht charters, and luxury stays.",
+      "Curated travel itineraries, European tours, private yacht charters, and luxury stays.",
     photo: specialserImg,
     icon: HeartHandshake,
     inclusions: [
-      "Tailored Luxury Honeymoon Circuits & Private Romantic Escapes (Paris, Venice, Amalfi, Switzerland)",
+      "Tailored Luxury Travel Circuits & Private Escapes (Paris, Venice, Amalfi, Switzerland)",
       "Private Aircraft Charter & Chauffeured Luxury Ground Fleet Synchronization",
       "5-Star Heritage Palace & Signature Eiffel / Presidential Suite Reservations",
       "VIP Fast-Track Monument Access, Private Seine Dinner Cruises & Curated Moments",
@@ -196,20 +197,20 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
   },
   {
     id: "Cargo & AVI Pet Freight",
-    label: "Cargo & AVI Pet Freight",
-    shortLabel: "Cargo & AVI Pet",
-    badge: "AIR FREIGHT & IATA LIVE ANIMAL (AVI) LOGISTICS",
+    label: "AVI & Animal Pet Transport",
+    shortLabel: "AVI & Animal",
+    badge: "IATA LIVE ANIMAL (AVI) & PET LOGISTICS",
     tagline:
-      "Specialized aviation freight handling, IATA-compliant live animal & pet booking, and airside customs documentation clearance.",
+      "IATA-compliant live animal & pet relocation, climate-controlled cargo hold allocation, and airside veterinary clearance.",
     photo: petCargoImg,
     icon: PawPrint,
     inclusions: [
       "IATA Live Animal (AVI) Pet Transport with Climate-Controlled Cargo Hold Allocation",
       "Pet Relocation Documentation, Veterinary Fit-to-Fly Verification & IATA Crates",
-      "High-Value Express Air Freight, Temperature-Sensitive Pharma & Valuables Escort",
-      "Customs Documentation Liaison, Air Waybill (AWB) Generation & Express Tarmac Clearance",
+      "Dedicated Airside Pet Escort & Temperature-Monitored Boarding",
+      "Customs Documentation Liaison, Pet Clearance & Express Tarmac Escort",
       "Airside Supervised Loading with Real-Time Departure WhatsApp Photo Updates",
-      "24/7 Air Cargo Operations Desk Liaison across All Major Commercial Airline Carriers",
+      "24/7 Live Animal Operations Desk Liaison across All Major Commercial Airline Carriers",
     ],
   },
   {
@@ -244,7 +245,7 @@ export function resolveSpecialServiceFromSearch(search: unknown): SpecialService
     return "Air Ticketing Services";
   }
   if (sub.includes("travel") || sub.includes("tour") || sub.includes("honeymoon")) {
-    return "Travel & Tour (Honeymoon/Couples)";
+    return "Travel & Tour";
   }
   if (sub.includes("visa")) {
     return "Visa Assistance Services";
@@ -745,7 +746,7 @@ export function SpecialServiceMedicalAndLogisticsFields({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Cargo / Pet Details *
+                Live Animal / Pet Details *
               </label>
               <input
                 type="text"
