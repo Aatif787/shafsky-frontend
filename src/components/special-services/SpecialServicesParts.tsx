@@ -16,7 +16,6 @@ import { display } from "@/components/home/theme";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import specialserImg from "@/assets/others/specialser.png";
-import airAmbulanceImg from "@/assets/others/air-ambulance.jpg";
 import airTicketingImg from "@/assets/others/air-ticketing.jpg";
 import infantCareImg from "@/assets/others/infant-care.jpg";
 import trainAmbulanceImg from "@/assets/others/train-ambulance.jpg";
@@ -160,7 +159,6 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "24/7 AIRBORNE ICU & BED-TO-BED MEDICAL EVACUATION",
     tagline:
       "Dedicated ICU aircraft, certified aero-medical doctors, and seamless bed-to-bed hospital transfer across India and worldwide.",
-    photo: airAmbulanceImg,
     icon: Plane,
     inclusions: [
       "Dedicated Airborne ICU Jet (Learjet / Hawker / King Air) on 2-Hour Rapid Standby",
