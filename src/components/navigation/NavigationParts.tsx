@@ -101,12 +101,6 @@ export interface OtherServiceDropdownItem {
 
 export const OTHER_SERVICES_ITEMS: OtherServiceDropdownItem[] = [
   {
-    label: "Cargo",
-    sub: "cargo",
-    href: "/solutions/cargo",
-    icon: Package,
-  },
-  {
     label: "Air Ticketing",
     sub: "ticketing",
     href: "/solutions/special-services?sub=ticketing",
@@ -187,12 +181,11 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Meet & Greet", href: "/solutions/concierge" },
   { label: "Lounge", href: "/lounge" },
   { label: "Airports", href: "/airports" },
-  { label: "Cargo", href: "/solutions/cargo" },
   { label: "Transport", href: "/solutions/transport" },
   { label: "Hotel", href: "/solutions/hotels" },
   { label: "Private Charter", href: "/solutions/aviation" },
+  { label: "Cargo", href: "/solutions/cargo" },
   { label: "Other Services", href: "/solutions/special-services" },
-  { label: "Support", href: "/support" },
 ];
 
 export const getItemIcon = (label: string) => {
@@ -455,6 +448,25 @@ export const NavigationMobileDrawer: React.FC<NavigationMobileDrawerProps> = ({
                   </Link>
                 );
               })}
+
+              <Link
+                to="/support"
+                onClick={() => setMobileOpen(false)}
+                className={`flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-semibold transition-colors ${
+                  isItemActive("/support")
+                    ? "bg-[#0a196f]/10 text-[#0a196f] font-bold"
+                    : "text-slate-800 hover:text-[#0a196f] hover:bg-slate-100/60"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <PhoneCall
+                    size={16}
+                    className={isItemActive("/support") ? "text-[#0a196f]" : "text-slate-500"}
+                  />
+                  <span>Support</span>
+                </div>
+                <ArrowRight size={13} className="text-slate-400 shrink-0" />
+              </Link>
             </div>
           </div>
 

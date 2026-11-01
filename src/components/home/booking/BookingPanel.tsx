@@ -421,15 +421,16 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
             className="absolute -top-4 left-2 sm:-top-5 sm:left-4 md:-top-6 md:left-6 lg:-top-8 lg:left-8 w-24 sm:w-36 md:w-44 lg:w-48 z-30 pointer-events-none select-none"
           >
-            <div className="relative w-full h-auto">
-              <picture>
+            <div className="relative w-full h-auto mix-blend-multiply">
+              <picture className="mix-blend-multiply">
                 <source srcSet="/videos/travel-animation.webp" type="image/webp" />
                 <img
                   src="/videos/travel-animation.webp"
                   alt="Shafsky Aviation travel concierge animation"
                   width={1170}
                   height={696}
-                  className="w-full h-auto object-contain select-none pointer-events-none block"
+                  className="w-full h-auto object-contain select-none pointer-events-none block mix-blend-multiply"
+                  style={{ mixBlendMode: "multiply" }}
                   loading="eager"
                   decoding="async"
                 />
