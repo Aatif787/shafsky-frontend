@@ -265,7 +265,7 @@ export function serviceCatalogJsonLd() {
     {
       "@type": "ListItem",
       position: 2,
-      name: "Private Charter",
+      name: "Air Charter",
       url: absoluteUrl("/solutions/aviation"),
     },
     {

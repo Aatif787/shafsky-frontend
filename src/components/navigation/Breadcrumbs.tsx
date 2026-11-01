@@ -23,7 +23,7 @@ const CATEGORY_MAP: Record<string, { label: string; href: string }> = {
   "/solutions/transport": { label: "Transport Services", href: "/solutions/transport" },
   "/solutions/special-services": { label: "Special Services", href: "/solutions/special-services" },
   "/solutions/infant-care": { label: "Infant Care", href: "/solutions/infant-care" },
-  "/solutions/aviation": { label: "Private Aviation", href: "/solutions/aviation" },
+  "/solutions/aviation": { label: "Air Charter", href: "/solutions/aviation" },
   "/charter": { label: "Private Aviation", href: "/charter" },
   "/airports": { label: "Coverage", href: "/airports" },
   "/services/guide": { label: "About", href: "/services/guide" },
@@ -50,7 +50,7 @@ const SUB_SERVICE_MAP: Record<string, string> = {
   train_ambulance: "Train Ambulance",
   hum: "HUM Repatriation",
   hum_repatriation: "HUM Repatriation",
-  charter: "Private Charter",
+  charter: "Air Charter",
 };
 
 export function Breadcrumbs({

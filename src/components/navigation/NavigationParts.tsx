@@ -68,7 +68,7 @@ export const PRIMARY_SERVICES: ServiceMenuItem[] = [
     features: ["7 Star & 5 Star Suites", "Transit Airport Hotels", "Day-Use Rooms", "Express Check-In"],
   },
   {
-    title: "Private Charter",
+    title: "Air Charter",
     href: "/solutions/aviation",
     descriptor: "Private Jet • Helicopter • Air Ambulance • Corporate Fleet",
     icon: Plane,
@@ -184,7 +184,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Cargo", href: "/solutions/cargo" },
   { label: "Transport", href: "/solutions/transport" },
   { label: "Hotel", href: "/solutions/hotels" },
-  { label: "Private Charter", href: "/solutions/aviation" },
+  { label: "Air Charter", href: "/solutions/aviation" },
   { label: "Other Services", href: "/solutions/special-services" },
 ];
 
@@ -200,6 +200,7 @@ export const getItemIcon = (label: string) => {
       return Car;
     case "Hotel":
       return Hotel;
+    case "Air Charter":
     case "Private Charter":
       return Plane;
     case "Cargo":

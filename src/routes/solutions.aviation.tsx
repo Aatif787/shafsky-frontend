@@ -45,7 +45,7 @@ export {
 export const Route = createFileRoute("/solutions/aviation")({
   head: () =>
     pageHead({
-      title: "Private Jet & Helicopter Charter in India | Shafsky Aviation",
+      title: "Air Charter & Helicopter Charter in India | Shafsky Aviation",
       description:
         "On-demand private jets, helicopters, and mission aircraft across India. Corporate, tourism, pilgrim, and celebrity charter with rapid flight clearance.",
       path: "/solutions/aviation",
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/solutions/aviation")({
       jsonLd: [
         breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Private Charter", path: "/solutions/aviation" },
+          { name: "Air Charter", path: "/solutions/aviation" },
         ]),
       ],
     }),
@@ -291,7 +291,7 @@ function DedicatedAirCharterPage() {
   };
 
   const getWhatsAppDirectLink = () => {
-    const text = `Hello Shafsky Aviation Charter Desk,%0A%0AI would like a quotation for Private Charter:%0A- Charter Option: ${selectedOptionId}%0A- Route: ${tripType} (${origin} -> ${destination})%0A- Departure: ${departDate} at ${departTime}${tripType === "Round Trip" ? `%0A- Return: ${returnDate} at ${returnTime}` : ""}%0A- Passengers: ${paxCount} Pax%0A- Aircraft Preference: ${aircraftPreference}%0A- Client Name: ${clientName}%0A- Phone: ${phone}%0A- Email: ${email || "N/A"}`;
+    const text = `Hello Shafsky Aviation Charter Desk,%0A%0AI would like a quotation for Air Charter:%0A- Charter Option: ${selectedOptionId}%0A- Route: ${tripType} (${origin} -> ${destination})%0A- Departure: ${departDate} at ${departTime}${tripType === "Round Trip" ? `%0A- Return: ${returnDate} at ${returnTime}` : ""}%0A- Passengers: ${paxCount} Pax%0A- Aircraft Preference: ${aircraftPreference}%0A- Client Name: ${clientName}%0A- Phone: ${phone}%0A- Email: ${email || "N/A"}`;
     return `https://wa.me/919599087959?text=${text}`;
   };
 

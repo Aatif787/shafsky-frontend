@@ -238,9 +238,9 @@ export const CHARTER_HERO_SLIDES: CharterHeroSlide[] = [
   {
     type: "image",
     src: HOMEPAGE_PHOTOS.privateCharter.src,
-    alt: "Shafsky Private Jet and Helicopter Private Charter Fleet",
-    badge: "2/4 • Shafsky Private Charter Fleet",
-    label: "Private Charter Fleet",
+    alt: "Shafsky Private Jet and Helicopter Air Charter Fleet",
+    badge: "2/4 • Shafsky Air Charter Fleet",
+    label: "Air Charter Fleet",
   },
   {
     type: "image",
@@ -300,17 +300,17 @@ export function AviationHeroStage({
 
           <div className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-mono font-bold text-lime-800 uppercase tracking-widest bg-lime-50 px-3.5 sm:px-4 py-1.5 rounded-full border border-lime-300 shadow-xs">
             <span className="w-2 h-2 rounded-full bg-lime-500 inline-block animate-pulse" />
-            <span>VIP AVIATION & PRIVATE FLIGHT DESK</span>
+            <span>VIP AVIATION & AIR CHARTER DESK</span>
           </div>
         </div>
 
-        {/* Page Title: Private Charter */}
+        {/* Page Title: Air Charter */}
         <div className="text-center max-w-3xl mx-auto mb-5 sm:mb-7">
           <h1
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-tight"
             style={display}
           >
-            Private Charter
+            Air Charter
           </h1>
         </div>
 
@@ -620,70 +620,45 @@ export function AviationOptionSpecificFields({
 }
 
 export function AviationSpecificationsSection({
-  activeOption,
+  activeOption: _activeOption,
 }: {
-  activeOption: CharterOptionDef;
-}) {
+  activeOption?: CharterOptionDef;
+} = {}) {
+  const charterServices = [
+    "Domestic and International Charter",
+    "Corporate Charter",
+    "Private Charters",
+    "Helicopter Charters",
+    "Tourism Charter",
+    "Pilgrim Charters",
+    "Celebrities Charters",
+    "Adventure Sport Charters",
+    "Wedding Charter",
+    "Air Ambulance charter",
+  ];
+
   return (
-    <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.4em] text-lime-700 font-bold font-mono bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200">
-            <span>FLEET & SERVICE SPECIFICATIONS</span>
-          </div>
-          <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
-            Private Charter Inclusions.
-          </h2>
-          <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-            Comprehensive aircraft capabilities, ground handling, and flight details.
+    <section className="py-12 sm:py-16 md:py-20 bg-white border-t border-slate-100">
+      <div className="mx-auto w-full max-w-[1040px] xl:max-w-[1100px] 2xl:max-w-[1140px] px-4 sm:px-6 md:px-8">
+        <div
+          className="space-y-7 text-slate-900 max-w-3xl text-left"
+          style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+        >
+          <p className="text-base sm:text-lg md:text-[19px] leading-relaxed text-slate-900">
+            Air Charter Service provide flexible, secure, and premium travel solutions tailored to individual and business needs. With a focus on comfort, privacy, and efficiency, these services ensure seamless journeys across domestic and international destinations.
           </p>
-        </div>
 
-        {/* Clean Full-Width Inclusions Showcase */}
-        <div className="bg-slate-50/60 rounded-3xl border border-slate-200/90 p-6 sm:p-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-6 border-b border-slate-200 mb-6">
-            <div>
-              <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-lime-700 font-mono font-bold mb-1">
-                <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
-                {activeOption.badge}
-              </div>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#0a196f] tracking-tight" style={display}>
-                {activeOption.id}
-              </h3>
-            </div>
-            <span className="text-xs font-mono font-bold text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200 self-start sm:self-auto">
-              {activeOption.inclusions.length} Inclusions Verified
-            </span>
-          </div>
-
-          {activeOption.id === "Private Charter" && (
-            <div className="mb-6 rounded-2xl overflow-hidden border border-amber-200/80 shadow-sm bg-slate-900">
-              <img
-                width={1600}
-                height={900}
-                loading="lazy"
-                decoding="async"
-                src="/images/charter/luxury-cabin.webp"
-                alt="Shafsky Ultra-Luxury Private Jet Executive VIP Cabin"
-                className="w-full h-56 sm:h-72 object-cover object-center"
-              />
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {activeOption.inclusions.map((inc, i) => (
-              <div
-                key={i}
-                className="flex items-start gap-3.5 rounded-2xl bg-white border border-slate-200/80 p-4 shadow-xs hover:border-lime-400 transition-colors"
+          <ul className="space-y-3.5 sm:space-y-4 list-none pl-0 text-slate-900">
+            {charterServices.map((service, index) => (
+              <li
+                key={index}
+                className="flex items-start gap-3 text-base sm:text-lg md:text-[19px] leading-snug text-slate-900"
               >
-                <CheckCircle2 size={18} className="text-lime-600 shrink-0 mt-0.5" />
-                <span className="text-sm sm:text-[14.5px] font-semibold text-slate-900 leading-snug">
-                  {inc}
-                </span>
-              </div>
+                <span className="select-none font-bold text-slate-900 shrink-0">•</span>
+                <span>{service}</span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
     </section>

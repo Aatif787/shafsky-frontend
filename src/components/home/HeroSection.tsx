@@ -16,7 +16,7 @@ export function HeroSection({}: { visible: boolean }) {
 
       {/* SEO: single keyword-rich H1 for the homepage (visually hidden, design unchanged) */}
       <h1 className="sr-only">
-        Airport Meet &amp; Greet, VIP Concierge and Private Charter Services across India
+        Airport Meet &amp; Greet, VIP Concierge and Air Charter Services across India
       </h1>
 
       {/* Responsive Auto-scrolling Photography Stream with Classical Desktop Framing */}

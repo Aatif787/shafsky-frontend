@@ -19,7 +19,7 @@ export const HERO_CONTENT = {
   subtitle:
     "Shafsky Aviation Services's Suswagatam concierge service meets you at the aerobridge, fast-tracks every checkpoint and delivers you to your destination — door to door, every flight.",
   ctaPrimary: "Book Services",
-  ctaSecondary: ICICI_REVIEW_MODE ? "VIP Lounge" : "Private Charter",
+  ctaSecondary: ICICI_REVIEW_MODE ? "VIP Lounge" : "Air Charter",
   ctaWhatsApp: "WhatsApp Us",
 } as const;
 
@@ -54,7 +54,7 @@ export const HOMEPAGE_FAQS: readonly FAQItem[] = [
     q: "How do I book a private charter flight?",
     a: "Simply share your travel dates, route, and passenger count with us. We check aircraft availability right away and send you a transparent charter quote within 45 minutes.",
     cta: {
-      label: "Explore Private Charters",
+      label: "Explore Air Charters",
       href: "/solutions/aviation",
     },
   },
