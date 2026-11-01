@@ -87,7 +87,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
           "The most common mistake is going to the wrong terminal — especially confusing Terminal 1 with Terminal 3, or assuming all domestic flights use the same terminal. Check your ticket the night before and again on the morning of travel.",
           "The second is underestimating the road journey. Delhi traffic is unpredictable, and the airport is far from most of the city. Your host can make the terminal fast, but they cannot shorten the drive — leave early.",
           "The third is not keeping documents accessible. Buried passports and boarding passes slow down every checkpoint, escorted or not. Keep them in a jacket pocket or an easily reached pouch.",
-          "The fourth is skipping the booking lead time. Hosts are assigned per booking, and last-minute requests depend on who is free at your terminal. The 12/24-hour rule exists for a reason — use it when you can.",
+          "The fourth is skipping the booking lead time. Hosts are assigned per booking, and last-minute requests depend on who is free at your terminal. The 6/12-hour rule exists for a reason — use it when you can.",
         ],
       },
       {
@@ -102,7 +102,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       {
         heading: "How to book and how early",
         paragraphs: [
-          "Book at least 12 hours ahead for domestic flights and 24 hours ahead for international flights. That window lets the team assign your host, verify terminal and flight details, and arrange add-ons like lounge access or a specific vehicle.",
+          "Book at least 6 hours ahead for domestic flights and 12 hours ahead for international flights. That window lets the team assign your host, verify terminal and flight details, and arrange add-ons like lounge access or a specific vehicle.",
           "For last-minute travel, call or WhatsApp +91 9599087959 — the operations team runs 24/7 and regularly accommodates requests with a few hours' notice, subject to host availability at your terminal.",
           "To book online: choose Delhi (DEL) as your airport, select arrival or departure, pick your package, and you will receive a confirmation with host details before travel day. Start at the [booking page](/book).",
         ],
@@ -115,7 +115,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       },
       {
         q: "How early should I book Meet & Greet at DEL?",
-        a: "At least 12 hours ahead for domestic flights and 24 hours ahead for international flights. Last-minute requests are often possible via phone or WhatsApp, subject to host availability.",
+        a: "At least 6 hours ahead for domestic flights and 12 hours ahead for international flights. Last-minute requests are often possible via phone or WhatsApp, subject to host availability.",
       },
       {
         q: "Is fast-track immigration guaranteed with Meet & Greet?",
@@ -231,7 +231,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       },
       {
         q: "How far in advance should I book?",
-        a: "At least 12 hours for domestic and 24 hours for international flights. Last-minute bookings are often possible by phone, subject to host availability.",
+        a: "At least 6 hours for domestic and 12 hours for international flights. Last-minute bookings are often possible by phone, subject to host availability.",
       },
       {
         q: "Does Meet & Greet include wheelchair assistance?",
@@ -276,7 +276,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
         heading: "How to arrange fast-track with your booking",
         paragraphs: [
           "Fast-track is booked as part of a Meet & Greet package, not as a standalone product you buy at a counter. When you [book](/book), select Delhi (DEL) and your travel direction; mention fast-track as a requirement so the team confirms current lane availability for your terminal and time.",
-          "Availability varies by time of day, terminal and airport operational decisions. Booking 24 hours ahead for international flights gives the team the best chance to confirm arrangements and brief your host.",
+          "Availability varies by time of day, terminal and airport operational decisions. Booking 12 hours ahead for international flights gives the team the best chance to confirm arrangements and brief your host.",
           "On the day, keep your passport and boarding pass ready. The host handles routing and timing; document presentation at the counter is yours. The combination — right lane, right moment, documents ready — is what makes the process fast.",
         ],
       },

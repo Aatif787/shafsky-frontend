@@ -215,7 +215,7 @@ export const createBooking = createServerFn({ method: "POST" })
       };
     }
 
-    // Airport services: 12h domestic / 24h international
+    // Airport services: 6h domestic / 12h international
     const getAirportCode = (str: string): string | null => {
       if (!str) return null;
       const match = str.match(/\(([A-Z0-9]{3,4})\)/i);
@@ -237,7 +237,7 @@ export const createBooking = createServerFn({ method: "POST" })
     const destCode = getAirportCode(data.destination) || "BOM";
 
     const travelHint = `${data.trip_type || ""} ${(data as any).flight_type || ""} ${(data as any).travel_type || ""}`;
-    const threshold = /international/i.test(travelHint) ? 24 : 12;
+    const threshold = /international/i.test(travelHint) ? 12 : 6;
 
     const toIsoDateTime = (dateStr: string, notesStr?: string, searchKey?: string): string | null => {
       if (!dateStr) return null;

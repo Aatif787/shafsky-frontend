@@ -60,7 +60,7 @@ export const HOMEPAGE_FAQS: readonly FAQItem[] = [
   },
   {
     q: "How early do I need to book my airport service?",
-    a: "We recommend booking at least 12 hours in advance for domestic flights and 24 hours for international flights. If your trip is last minute, reach out to our team directly and we will do our best to arrange it.",
+    a: "We recommend booking at least 6 hours in advance for domestic flights and 12 hours for international flights. If your trip is last minute, reach out to our team directly and we will do our best to arrange it.",
     cta: {
       label: "Book Your Service",
       href: "/#book",
@@ -108,7 +108,7 @@ export const WHY_CHOOSE_US: WhyItem[] = [
   {
     icon: Clock,
     title: "Advance Booking",
-    desc: "Airport services: 12 hours for domestic, 24 hours for international. For urgent requests, call our executive.",
+    desc: "Airport services: 6 hours for domestic, 12 hours for international. For urgent requests, call our executive.",
   },
   {
     icon: Award,
@@ -227,7 +227,7 @@ export const FAQ_ITEMS: [string, string][] = [
   ],
   [
     "Do you accept last-minute bookings?",
-    "Airport services must be booked at least 12 hours in advance for domestic flights and 24 hours for international flights. For urgent requests, call our executive on +91 9599087959.",
+    "Airport services must be booked at least 6 hours in advance for domestic flights and 12 hours for international flights. For urgent requests, call our executive on +91 9599087959.",
   ],
   [
     "Is the service available for groups?",

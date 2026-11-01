@@ -329,6 +329,7 @@ export function useFlightVerification({
       const errorMsg = formatFlightLookupError(resJson?.error || resJson?.message || resJson, res?.status);
       if (
         errorMsg.toLowerCase().includes("cutoff") ||
+        errorMsg.toLowerCase().includes("6 hours") ||
         errorMsg.toLowerCase().includes("12 hours") ||
         errorMsg.toLowerCase().includes("24 hours")
       ) {

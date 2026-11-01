@@ -309,7 +309,7 @@ export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProp
                 <span>Urgent VIP Airport Clearance Available</span>
               </div>
               <p className="text-xs text-rose-900 font-sans leading-relaxed">
-                This flight is scheduled within our standard advance notice window (less than 12h for domestic or 24h for international). Our 24/7 team can assist with short-notice bookings.
+                This flight is scheduled within our standard advance notice window (less than 6h for domestic or 12h for international). Our 24/7 team can assist with short-notice bookings.
               </p>
               <a
                 href={`https://wa.me/919599087959?text=${encodeURIComponent(

@@ -118,7 +118,7 @@ function ServiceGuidePage() {
     },
     {
       q: "How far in advance should I book?",
-      a: "We recommend booking at least 12 hours prior to your travel time. For last-minute or urgent same-day bookings, our 24/7 WhatsApp desk provides immediate authorization.",
+      a: "We recommend booking at least 6 hours in advance for domestic flights and 12 hours for international flights. For last-minute or urgent same-day bookings, our 24/7 WhatsApp desk provides immediate authorization.",
     },
   ];
 

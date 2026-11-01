@@ -52,7 +52,7 @@ export const AIRPORT_GUIDES: Record<string, AirportGuide> = {
         heading: "Who benefits most, and how early to book",
         paragraphs: [
           "Meet & Greet at DEL pays for itself in four situations: families travelling with children or elderly parents, business travellers on tight schedules, first-time visitors to India who do not know the airport layout, and VIP or celebrity travellers who want discretion. If none of these apply and you know DEL well, you may not need it — and an honest provider will tell you that.",
-          "As a rule of thumb, book at least 12 hours ahead for domestic flights and 24 hours ahead for international ones. This gives the team time to assign your host, confirm terminal and flight details, and arrange any add-ons like lounge access or a specific vehicle.",
+          "As a rule of thumb, book at least 6 hours ahead for domestic flights and 12 hours ahead for international ones. This gives the team time to assign your host, confirm terminal and flight details, and arrange any add-ons like lounge access or a specific vehicle.",
           "Travelling last-minute? Call or WhatsApp +91 9599087959. The operations team runs 24/7 and regularly accommodates requests with just a few hours' notice, subject to host availability at your terminal.",
           "To book online, head to the booking page, choose Delhi (DEL) as your airport, pick arrival or departure, and select your package. You will get a confirmation with your host's details before your travel date.",
         ],
@@ -104,7 +104,7 @@ export const AIRPORT_GUIDES: Record<string, AirportGuide> = {
         heading: "Who benefits most, and how early to book",
         paragraphs: [
           "At BOM, the service is most valuable for international arrivals (immigration plus a big unfamiliar terminal), families with children or elderly members, business travellers heading straight to meetings, and anyone arriving during peak hours or the monsoon season.",
-          "Book at least 12 hours ahead for domestic and 24 hours ahead for international flights. For early-morning international departures from T2 — when counters and security are at their busiest — earlier booking helps the team assign a host who knows that shift's layout.",
+          "Book at least 6 hours ahead for domestic and 12 hours ahead for international flights. For early-morning international departures from T2 — when counters and security are at their busiest — earlier booking helps the team assign a host who knows that shift's layout.",
           "Last-minute plans are common in Mumbai. The operations team works 24/7 on +91 9599087959 and can often arrange a host with a few hours' notice, depending on terminal availability.",
           "To book, choose Mumbai (BOM) on the booking page, select arrival or departure, and pick your package. Your confirmation includes host details ahead of travel day.",
         ],
@@ -156,7 +156,7 @@ export const AIRPORT_GUIDES: Record<string, AirportGuide> = {
         heading: "Who benefits most, and how early to book",
         paragraphs: [
           "The service is ideal for international arrivals, tech professionals on tight itineraries, families with young children or elderly parents, and first-time visitors to Bengaluru who are unfamiliar with the airport's scale.",
-          "Book at least 12 hours ahead for domestic flights and 24 hours ahead for international flights. During festive seasons and long weekends, when BLR sees heavy traffic, booking earlier is wise.",
+          "Book at least 6 hours ahead for domestic flights and 12 hours ahead for international flights. During festive seasons and long weekends, when BLR sees heavy traffic, booking earlier is wise.",
           "For last-minute needs, the 24/7 operations team on +91 9599087959 can often arrange a host within a few hours, subject to availability at your terminal.",
           "Booking is simple: select Bengaluru (BLR) on the booking page, choose arrival or departure, and pick a package. Host details arrive before your travel date.",
         ],
@@ -216,7 +216,7 @@ export const AIRPORT_GUIDES: Record<string, AirportGuide> = {
         heading: "Who benefits most, and how early to book",
         paragraphs: [
           "At HYD, the service suits international arrivals, business travellers on the Hyderabad IT corridor, families with children or elderly members, and anyone who wants a predictable, assisted transit through a busy terminal.",
-          "Book at least 12 hours ahead for domestic flights and 24 hours ahead for international flights. The 24/7 team on +91 9599087959 can often handle last-minute requests within a few hours, depending on host availability.",
+          "Book at least 6 hours ahead for domestic flights and 12 hours ahead for international flights. The 24/7 team on +91 9599087959 can often handle last-minute requests within a few hours, depending on host availability.",
           "To book, select Hyderabad (HYD) on the booking page, choose arrival or departure, and select your package. You will receive your host's details before you travel.",
         ],
       },
@@ -275,7 +275,7 @@ export const AIRPORT_GUIDES: Record<string, AirportGuide> = {
         heading: "Who benefits most, and how early to book",
         paragraphs: [
           "The service is most valuable for international arrivals, elderly travellers, families with children, business visitors on tight schedules, and first-time visitors navigating Chennai's changing terminal layout.",
-          "Book at least 12 hours ahead for domestic flights and 24 hours ahead for international flights. The 24/7 operations team on +91 9599087959 can often accommodate last-minute bookings within a few hours.",
+          "Book at least 6 hours ahead for domestic flights and 12 hours ahead for international flights. The 24/7 operations team on +91 9599087959 can often accommodate last-minute bookings within a few hours.",
           "To book, choose Chennai (MAA) on the booking page, select arrival or departure, and pick your package. Host details are shared before your travel date.",
         ],
       },

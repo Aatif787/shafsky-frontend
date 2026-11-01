@@ -604,6 +604,7 @@ export function useAirportPayment({
         const errDetail = createData?.detail || createData?.error || "Error initializing booking.";
         if (
           errDetail.toLowerCase().includes("cutoff") ||
+          errDetail.toLowerCase().includes("6 hours") ||
           errDetail.toLowerCase().includes("12 hours") ||
           errDetail.toLowerCase().includes("24 hours")
         ) {

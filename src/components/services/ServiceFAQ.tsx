@@ -19,7 +19,7 @@ export function ServiceFAQ({ serviceName, faqs }: ServiceFAQProps) {
   const defaultFaqs: FAQPair[] = [
     {
       q: `How far in advance should I book ${serviceName}?`,
-      a: `We recommend booking at least 12–24 hours prior to flight departure or arrival to guarantee host availability. For short-notice requests within 4 hours, contact our 24/7 support line directly.`,
+      a: `We recommend booking at least 6 hours ahead for domestic flights and 12 hours ahead for international flights prior to flight departure or arrival to guarantee host availability. For short-notice requests within 4 hours, contact our 24/7 support line directly.`,
     },
     {
       q: `Where will my Guest Relations Officer meet me?`,

@@ -90,13 +90,13 @@ export interface FlightEligibility {
 
 /**
  * Computes airport-service booking eligibility.
- * Domestic: 12 hours. International: 24 hours.
+ * Domestic: 6 hours. International: 12 hours.
  */
 export function checkBookingEligibility(
   scheduledTime: string,
   airportIata: string,
   tripType?: string,
-  threshold: number = 12,
+  threshold: number = 6,
   isArrival: boolean = false,
 ): FlightEligibility {
   const targetDate = parseFlightDateTime(scheduledTime, airportIata);
@@ -137,7 +137,7 @@ export function checkBookingEligibility(
   const eventLabel = isArrival ? "arrival" : "departure";
   const blockingMessage = isBookable
     ? undefined
-    : `Airport services need at least ${threshold} hours before ${eventLabel} (${threshold === 24 ? "international" : "domestic"}). Flight is in ${timeStr}. For urgent help, call our executive on +91 9599087959.`;
+    : `Airport services need at least ${threshold} hours before ${eventLabel} (${threshold === 12 ? "international" : "domestic"}). Flight is in ${timeStr}. For urgent help, call our executive on +91 9599087959.`;
 
   return {
     isBookable,

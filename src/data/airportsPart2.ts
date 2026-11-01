@@ -246,7 +246,7 @@ export const baseFAQ: [string, string][] = [
   ],
   [
     "How far in advance should I book?",
-    "Ideally 24 hours. For VVIP arrivals and ad-hoc charter we operate a 4-hour express desk.",
+    "At least 6 hours for domestic flights and 12 hours for international flights. For VVIP arrivals and ad-hoc charter we operate a 4-hour express desk.",
   ],
   [
     "Do you handle international transit?",
