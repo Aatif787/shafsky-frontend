@@ -68,7 +68,7 @@ export function Navigation({ visible = true }: { visible?: boolean }) {
   const activeNavItems = ICICI_REVIEW_MODE
     ? NAV_ITEMS.filter(
         (item) =>
-          !["Transport", "Hotel", "Air Charter", "Private Charter", "Cargo", "Ticketing", "Other Services"].includes(
+          !["Transport", "Hotels", "Hotel", "Air Charter", "Private Charter", "Cargo", "Ticketing", "Other Services"].includes(
             item.label
           )
       )

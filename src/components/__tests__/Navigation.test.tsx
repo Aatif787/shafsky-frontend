@@ -48,7 +48,7 @@ describe("Navigation navbar (Direct Individual Links)", () => {
       href: "/solutions/transport",
     });
     expect(NAV_ITEMS[5]).toEqual({
-      label: "Hotel",
+      label: "Hotels",
       href: "/solutions/hotels",
     });
     expect(NAV_ITEMS[6]).toEqual({
@@ -79,7 +79,7 @@ describe("Navigation navbar (Direct Individual Links)", () => {
     expect(html).toContain(">Transport</span>");
 
     expect(html).toContain('href="/solutions/hotels"');
-    expect(html).toContain(">Hotel</span>");
+    expect(html).toContain(">Hotels</span>");
 
     expect(html).toContain('href="/solutions/aviation"');
     expect(html).toContain(">Air Charter</span>");

@@ -59,7 +59,7 @@ export const PRIMARY_SERVICES: ServiceMenuItem[] = [
     features: ["Mercedes Maybach & S-Class", "Large MUV & Coach", "Tarmac Escort", "24/7 Curbside Meet"],
   },
   {
-    title: "Hotel",
+    title: "Hotels",
     href: "/solutions/hotels",
     descriptor: "7 Star • 5 Star • 3 Star • Transit Day-Use",
     icon: Hotel,
@@ -183,7 +183,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Airports", href: "/airports" },
   { label: "Cargo", href: "/solutions/cargo" },
   { label: "Transport", href: "/solutions/transport" },
-  { label: "Hotel", href: "/solutions/hotels" },
+  { label: "Hotels", href: "/solutions/hotels" },
   { label: "Air Charter", href: "/solutions/aviation" },
   { label: "Other Services", href: "/solutions/special-services" },
 ];
@@ -198,6 +198,7 @@ export const getItemIcon = (label: string) => {
       return Armchair;
     case "Transport":
       return Car;
+    case "Hotels":
     case "Hotel":
       return Hotel;
     case "Air Charter":
