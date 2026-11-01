@@ -133,14 +133,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
       "Armed and unarmed close protection officers for high-profile VIPs, executive escorts, and private luxury boutique shopping.",
     photo: psoSecurityImg,
     icon: ShieldCheck,
-    inclusions: [
-      "Ex-Military & Special Forces Certified Close Protection Officers (Armed / Unarmed)",
-      "Private Luxury Shopping Escorts across Premier Fashion Districts (Chanel, LV, Gucci, Rolex)",
-      "Armored Luxury Convoy Fleet, Tarmac-to-Boutique Secure Transit & Motorcade",
-      "Discreet High-Net-Worth Crowd Management & Confidential Route Reconnaissance",
-      "Personal Luggage & High-Value Asset Security Handling from Airside to Hotel",
-      "24/7 Operations Desk Coordination & Dedicated Executive Security Detail",
-    ],
+    inclusions: [],
   },
   {
     id: "Air Ambulance (Airborne ICU Jet)",
@@ -316,7 +309,7 @@ export function SpecialServiceDetailsSection({
 }: {
   activeOption: SpecialServiceOptionDef;
 }) {
-  if (activeOption.id === "Air Ticketing Services" || activeOption.id === "Cargo & AVI Pet Freight" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
+  if (activeOption.id === "Air Ticketing Services" || activeOption.id === "Cargo & AVI Pet Freight" || activeOption.id === "PSO (Personal Security Officer / VIP Shopping)" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
     return null;
   }
   return (

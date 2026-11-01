@@ -101,7 +101,7 @@ function DedicatedSpecialServicesPage() {
   // 3. Security Services (Location, Dates/Duration, Scope, Notes)
   const [psoLocation, setPsoLocation] = useState("");
   const [psoDates, setPsoDates] = useState("");
-  const [psoScope, setPsoScope] = useState("VIP Luxury Shopping Escort");
+  const [psoScope, setPsoScope] = useState("");
   const [psoNotes, setPsoNotes] = useState("");
 
   // 4. Air Ambulance (From, To, Urgency/Date, Patient Condition)
@@ -222,7 +222,7 @@ function DedicatedSpecialServicesPage() {
         scope: psoScope,
         notes: psoNotes,
       };
-      notes = `${psoScope} in ${psoLocation} — ${psoNotes || "None"}`;
+      notes = psoScope ? `${psoScope} in ${psoLocation} — ${psoNotes || "None"}` : `Security detail in ${psoLocation} — ${psoNotes || "None"}`;
       serviceType = "VIP Escort";
     } else if (selectedOptionId === "Air Ambulance (Airborne ICU Jet)") {
       origin = airAmbPickup;
@@ -348,7 +348,7 @@ function DedicatedSpecialServicesPage() {
     } else if (selectedOptionId === "Travel & Tour" || selectedOptionId === "Travel & Tour (Honeymoon/Couples)" || selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
       details = `Destination: ${tourDestination}%0ATravel Dates: ${tourDates}%0AGuests: ${tourGuests}%0ANotes: ${tourNotes || "None"}`;
     } else if (selectedOptionId === "PSO (Personal Security Officer / VIP Shopping)") {
-      details = `Location: ${psoLocation}%0ADates: ${psoDates}%0AScope: ${psoScope}%0ANotes: ${psoNotes || "None"}`;
+      details = `Location: ${psoLocation}%0ADates: ${psoDates}${psoScope ? `%0AScope: ${psoScope}` : ""}%0ANotes: ${psoNotes || "None"}`;
     } else if (selectedOptionId === "Air Ambulance (Airborne ICU Jet)") {
       details = `From: ${airAmbPickup}%0ATo: ${airAmbDest}%0ADate/Urgency: ${airAmbDate}%0APatient Needs: ${airAmbNotes || "Urgent"}`;
     } else if (selectedOptionId === "Train Ambulance" || selectedOptionId === "Train Ambulance (Train ICU Escort)") {
@@ -651,17 +651,15 @@ function DedicatedSpecialServicesPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                              Scope of Detail *
+                              Scope of Detail (Optional)
                             </label>
-                            <select
+                            <input
+                              type="text"
                               value={psoScope}
                               onChange={(e) => setPsoScope(e.target.value)}
+                              placeholder="e.g. VIP escort, armed bodyguard, convoy"
                               className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
-                            >
-                              <option value="VIP Luxury Shopping Escort">VIP Luxury Shopping Escort</option>
-                              <option value="24/7 Close Protection Officer">24/7 Close Protection Officer</option>
-                              <option value="Armored Convoy & Airport Transit">Armored Convoy & Airport Transit</option>
-                            </select>
+                            />
                           </div>
                           <div>
                             <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
