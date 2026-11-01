@@ -45,7 +45,7 @@ export const Route = createFileRoute("/solutions/special-services")({
     pageHead({
       title: "VIP Special Services, Air Ticketing, Tours, Visa & Medevac | Shafsky",
       description:
-        "Commercial air ticketing, curated travel and tour, fast-track visa assistance, on-board meals, luxury spa and wellness, PSO close protection, 24/7 air and train ambulance, HUM repatriation, and AVI live animal pet logistics.",
+        "Commercial air ticketing, curated travel and tour, fast-track visa assistance, on-board meals, luxury spa and wellness, security services, 24/7 air and train ambulance, HUM repatriation, and AVI live animal pet logistics.",
       path: "/solutions/special-services",
       jsonLd: [
         breadcrumbJsonLd([
@@ -98,7 +98,7 @@ function DedicatedSpecialServicesPage() {
   const [tourGuests, setTourGuests] = useState(2);
   const [tourNotes, setTourNotes] = useState("");
 
-  // 3. PSO Close Protection (Location, Dates/Duration, Scope, Notes)
+  // 3. Security Services (Location, Dates/Duration, Scope, Notes)
   const [psoLocation, setPsoLocation] = useState("");
   const [psoDates, setPsoDates] = useState("");
   const [psoScope, setPsoScope] = useState("VIP Luxury Shopping Escort");
@@ -618,7 +618,7 @@ function DedicatedSpecialServicesPage() {
                       </div>
                     )}
 
-                    {/* 3. PSO Close Protection Minimal Enquiry */}
+                    {/* 3. Security Services Minimal Enquiry */}
                     {selectedOptionId === "PSO (Personal Security Officer / VIP Shopping)" && (
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

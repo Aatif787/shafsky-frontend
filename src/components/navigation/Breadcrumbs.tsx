@@ -50,6 +50,7 @@ const SUB_SERVICE_MAP: Record<string, string> = {
   train_ambulance: "Train Ambulance",
   hum: "HUM Repatriation",
   hum_repatriation: "HUM Repatriation",
+  pso: "Security Services",
   charter: "Air Charter",
 };
 

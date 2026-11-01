@@ -131,7 +131,7 @@ export const OTHER_SERVICES_ITEMS: OtherServiceDropdownItem[] = [
     icon: Sparkles,
   },
   {
-    label: "PSO Close Protection",
+    label: "Security Services",
     sub: "pso",
     href: "/solutions/special-services?sub=pso",
     icon: ShieldCheck,

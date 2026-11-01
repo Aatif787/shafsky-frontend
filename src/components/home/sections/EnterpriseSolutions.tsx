@@ -102,7 +102,7 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
     photo: specialserImg,
     alt: "Shafsky Special Services with Taj Mahal Agra",
     badge: "Special Services",
-    description: "Dedicated air cargo logistics, commercial air ticketing, curated travel & tour, fast-track visa assistance, on-board meal arrangements, luxury spa & wellness, PSO close protection, 24/7 medevac air & train ambulance, HUM repatriation, and AVI & live animal pet logistics.",
+    description: "Dedicated air cargo logistics, commercial air ticketing, curated travel & tour, fast-track visa assistance, on-board meal arrangements, luxury spa & wellness, Security Services, 24/7 medevac air & train ambulance, HUM repatriation, and AVI & live animal pet logistics.",
     subServices: [
       { label: "Cargo Logistics & Freight", subParam: "cargo", tagline: "Express air cargo, heavy freight charter & customs clearance" },
       { label: "Air Ticketing (Domestic & Intl)", subParam: "ticketing", tagline: "Instant commercial flight bookings across 500+ global airlines" },
@@ -110,7 +110,7 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
       { label: "Visa Assistance Services", subParam: "visa", tagline: "Fast-track Schengen, UK, US, UAE & global visa clearance" },
       { label: "On-board Meal Arrangements", subParam: "onboard_meals", tagline: "Gourmet in-flight catering & dietary curation for group meet & greet" },
       { label: "Spa & Wellness", subParam: "spa-wellness", tagline: "Luxury couple spas, hydrotherapy & rejuvenating retreats" },
-      { label: "PSO (Security & VIP Shopping)", subParam: "pso", tagline: "Personal security officers & luxury boutique escort" },
+      { label: "Security Services", subParam: "pso", tagline: "Personal security officers & luxury boutique escort" },
       { label: "Air Ambulance", subParam: "air_ambulance", tagline: "24/7 dedicated airborne ICU jets & bed-to-bed medevac" },
       { label: "Train Ambulance", subParam: "train_ambulance", tagline: "Long-distance rail patient transfer with ICU team & oxygen" },
       { label: "HUM (Human Remains Transport)", subParam: "hum", tagline: "Mortal remains repatriation across domestic & global sectors" },
