@@ -4,6 +4,7 @@ import {
   Sparkles,
   Plane,
   Train,
+  Car,
   HeartHandshake,
   FileCheck,
   PawPrint,
@@ -201,7 +202,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     shortLabel: "AVI & Animal",
     badge: "IATA LIVE ANIMAL (AVI) & PET LOGISTICS",
     tagline:
-      "IATA-compliant live animal & domestic pet relocation, climate-controlled cabin & aircraft hold allocation, and airside veterinary clearance.",
+      "IATA & Rail compliant pet relocation across Air, Train, and Road Transport — climate-controlled cabins, verified documentation, and door-to-door escort.",
     photo: petCargoImg,
     icon: PawPrint,
     inclusions: [],
@@ -397,6 +398,10 @@ export function SpecialServiceMedicalAndLogisticsFields({
   setCargoDetails,
   cargoDate,
   setCargoDate,
+  petTransportMode,
+  setPetTransportMode,
+  petNotes,
+  setPetNotes,
 }: {
   selectedOptionId: SpecialServiceOptionId;
   today: string;
@@ -442,6 +447,10 @@ export function SpecialServiceMedicalAndLogisticsFields({
   setCargoDetails: (v: string) => void;
   cargoDate: string;
   setCargoDate: (v: string) => void;
+  petTransportMode?: "Air" | "Train" | "Road Transport";
+  setPetTransportMode?: (v: "Air" | "Train" | "Road Transport") => void;
+  petNotes?: string;
+  setPetNotes?: (v: string) => void;
 }) {
   return (
     <>
@@ -703,27 +712,109 @@ export function SpecialServiceMedicalAndLogisticsFields({
       {/* 8. Cargo & AVI Pet Freight Minimal Enquiry */}
       {selectedOptionId === "Cargo & AVI Pet Freight" && (
         <div className="space-y-4">
+          {/* Mode of Pet Transport Selector */}
+          <div>
+            <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Select Mode of Pet Transport *
+            </label>
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              {[
+                {
+                  id: "Air" as const,
+                  label: "Air Transport",
+                  desc: "Flight & Air Cargo",
+                  icon: Plane,
+                },
+                {
+                  id: "Train" as const,
+                  label: "Train Transport",
+                  desc: "Railways AC Coupe",
+                  icon: Train,
+                },
+                {
+                  id: "Road Transport" as const,
+                  label: "Road Transport",
+                  desc: "Door-to-Door Fleet",
+                  icon: Car,
+                },
+              ].map((m) => {
+                const Icon = m.icon;
+                const isSelected = (petTransportMode || "Air") === m.id;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => setPetTransportMode?.(m.id)}
+                    className={`flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-xl border text-center transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-lime-50/90 border-lime-500 ring-2 ring-lime-500/20 text-slate-950 shadow-xs font-bold"
+                        : "bg-white border-slate-200 hover:border-slate-300 text-slate-700"
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 transition-colors ${
+                        isSelected
+                          ? "bg-lime-500 text-slate-950"
+                          : "bg-slate-100 text-slate-600"
+                      }`}
+                    >
+                      <Icon size={16} />
+                    </div>
+                    <span className="text-xs leading-tight font-semibold">
+                      {m.label}
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-medium mt-0.5 hidden sm:inline">
+                      {m.desc}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Departure Airport / City *
+                {petTransportMode === "Air"
+                  ? "Departure Airport / City *"
+                  : petTransportMode === "Train"
+                  ? "Departure Railway Station / City *"
+                  : "Pickup Address / City *"}
               </label>
               <input
                 type="text"
                 value={cargoOrigin}
                 onChange={(e) => setCargoOrigin(e.target.value)}
+                placeholder={
+                  petTransportMode === "Air"
+                    ? "e.g. Delhi Airport (DEL)"
+                    : petTransportMode === "Train"
+                    ? "e.g. New Delhi Railway Station (NDLS)"
+                    : "e.g. Gurgaon (Doorstep Pickup)"
+                }
                 required
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
               />
             </div>
             <div>
               <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Destination Airport / Country *
+                {petTransportMode === "Air"
+                  ? "Destination Airport / City / Country *"
+                  : petTransportMode === "Train"
+                  ? "Destination Railway Station / City *"
+                  : "Drop-off Address / City *"}
               </label>
               <input
                 type="text"
                 value={cargoDest}
                 onChange={(e) => setCargoDest(e.target.value)}
+                placeholder={
+                  petTransportMode === "Air"
+                    ? "e.g. Bangalore (BLR) or London (LHR)"
+                    : petTransportMode === "Train"
+                    ? "e.g. Mumbai Central / Bangalore City"
+                    : "e.g. Jaipur, Rajasthan (Doorstep Drop)"
+                }
                 required
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
               />
@@ -732,19 +823,20 @@ export function SpecialServiceMedicalAndLogisticsFields({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Live Animal / Pet Details *
+                Pet / Live Animal Details (Breed, Age & Weight) *
               </label>
               <input
                 type="text"
                 value={cargoDetails}
                 onChange={(e) => setCargoDetails(e.target.value)}
+                placeholder="e.g. Golden Retriever, 2 yrs, 25 kg, crate ready"
                 required
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
               />
             </div>
             <div>
               <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Preferred Dispatch Date *
+                Preferred Travel / Dispatch Date *
               </label>
               <input
                 type="date"
@@ -755,6 +847,18 @@ export function SpecialServiceMedicalAndLogisticsFields({
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
               />
             </div>
+          </div>
+          <div>
+            <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
+              Special Care / Handling Requirements (Optional)
+            </label>
+            <input
+              type="text"
+              value={petNotes || ""}
+              onChange={(e) => setPetNotes?.(e.target.value)}
+              placeholder="e.g. In-cabin preferred, feeding during transit, crate assistance"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
+            />
           </div>
         </div>
       )}

@@ -134,6 +134,8 @@ function DedicatedSpecialServicesPage() {
   const [cargoDest, setCargoDest] = useState("");
   const [cargoDetails, setCargoDetails] = useState("");
   const [cargoDate, setCargoDate] = useState("");
+  const [petTransportMode, setPetTransportMode] = useState<"Air" | "Train" | "Road Transport">("Air");
+  const [petNotes, setPetNotes] = useState("");
 
   // 9. Air Ticketing (From, To, Travel Date, Class & Pax, Notes)
   const [ticketOrigin, setTicketOrigin] = useState("");
@@ -282,13 +284,15 @@ function DedicatedSpecialServicesPage() {
       serviceCategory = "Cargo & Logistics";
       details = {
         service: selectedOptionId,
+        transport_mode: petTransportMode,
         origin: cargoOrigin,
         destination: cargoDest,
         cargo_pet_details: cargoDetails,
         date: cargoDate,
+        special_notes: petNotes || undefined,
       };
-      notes = `AVI & Pet Details: ${cargoDetails} from ${cargoOrigin} to ${cargoDest}`;
-      serviceType = "AVI Pet Transport";
+      notes = `AVI Pet Relocation (${petTransportMode}): ${cargoDetails} from ${cargoOrigin} to ${cargoDest} on ${cargoDate}${petNotes ? ` — Notes: ${petNotes}` : ""}`;
+      serviceType = `AVI Pet (${petTransportMode})`;
     } else if (selectedOptionId === "Air Ticketing Services") {
       origin = ticketOrigin;
       destination = ticketDest;
@@ -354,7 +358,7 @@ function DedicatedSpecialServicesPage() {
     } else if (selectedOptionId === "Visa Assistance Services") {
       details = `Country: ${visaCountry}%0ACategory: ${visaCategory}%0ATravel Date: ${visaDate}%0AApplicants: ${visaApplicants}%0APassport: ${visaPassport.trim().toUpperCase()}`;
     } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
-      details = `From: ${cargoOrigin}%0ATo: ${cargoDest}%0APet Details: ${cargoDetails}%0ADate: ${cargoDate}`;
+      details = `Transport Mode: ${petTransportMode}%0AFrom: ${cargoOrigin}%0ATo: ${cargoDest}%0APet Details: ${cargoDetails}%0ADate: ${cargoDate}${petNotes ? `%0ANotes: ${encodeURIComponent(petNotes)}` : ""}`;
     } else if (selectedOptionId === "Air Ticketing Services") {
       details = `Sector: ${ticketOrigin} to ${ticketDest}%0ADate: ${ticketDate}%0ACabin Class: ${ticketClass}%0APassengers: ${ticketPax}%0ANotes: ${ticketNotes || "None"}`;
     }
@@ -720,6 +724,10 @@ function DedicatedSpecialServicesPage() {
                       setCargoDetails={setCargoDetails}
                       cargoDate={cargoDate}
                       setCargoDate={setCargoDate}
+                      petTransportMode={petTransportMode}
+                      setPetTransportMode={setPetTransportMode}
+                      petNotes={petNotes}
+                      setPetNotes={setPetNotes}
                     />
 
                     {/* 9. Air Ticketing Minimal Enquiry */}
