@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Edit2 } from "lucide-react";
 import { BookingProgressHeader } from "../../shared/BookingProgressHeader";
 import { BookingSuccessPass } from "../../shared/BookingSuccessPass";
 import { useAirportWorkflow, resolveBookingServiceTime } from "../../hooks/useAirportWorkflow";
+import { validateFlightEvent } from "@/services/flight/FlightTimeUtils";
 import { AirportServiceSelection } from "./AirportServiceSelection";
 import { EditJourneyDrawer } from "../../shared/EditJourneyDrawer";
 import { BookingSummaryReviewStep } from "./BookingSummaryReviewStep";
@@ -333,6 +334,22 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
     }
 
     const direction = (state.direction || "arrival").toLowerCase();
+
+    // Revalidate flight event before payment order creation
+    const flightEventCheck = validateFlightEvent({
+      direction: direction === "transit" ? "arrival" : (direction as any),
+      serviceDate: state.serviceDate,
+      scheduledTimeStr: serviceClock,
+      airportCode: direction === "departure" ? originCode : destCode,
+      travelType: state.travelType,
+      liveStatus: state.validatedFlightData?.arrival?.actual ? "LANDED" : undefined,
+    });
+
+    if (flightEventCheck.isPast) {
+      toast.error(flightEventCheck.blockingMessage || "This flight has already departed/arrived. Please select a future flight.");
+      return;
+    }
+
     const departureTime = direction === "arrival" ? undefined : serviceAt.toISOString();
     const arrivalTime = direction === "departure" ? undefined : serviceAt.toISOString();
     const packageSlug = (state.selectedPackageId || state.selectedPackage || state.selectedService || "gold")

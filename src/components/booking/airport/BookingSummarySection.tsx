@@ -5,6 +5,7 @@ import { SUPPORTED_CURRENCIES, formatPrice, convertFromINR } from "@/lib/currenc
 import { AIRPORT_REGISTRY } from "@/data/airportRegistry";
 import { AirportServiceType, ServiceItemAvailability } from "@/lib/api/multiServiceApi";
 import { FlightData } from "@/services/flight/FlightTypes";
+import { validateFlightEvent } from "@/services/flight/FlightTimeUtils";
 import { PassengerDetail, PaymentStatus } from "./types";
 
 export interface BookingSummarySectionProps {
@@ -88,6 +89,33 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
   handleRetryPayment,
   submitting,
 }) => {
+  const flightEventCheck = React.useMemo(() => {
+    const sDate = format(dateValue, "yyyy-MM-dd");
+    let targetTimeStr: string | null = null;
+    let targetAirport = airportCode;
+
+    if (direction === "departure") {
+      targetTimeStr = verifiedFlight?.departure?.scheduledTime || null;
+      targetAirport = cleanOrigin || originCode || airportCode;
+    } else {
+      targetTimeStr = verifiedFlight?.arrival?.scheduledTime || verifiedFlight?.departure?.scheduledTime || null;
+      targetAirport = cleanDest || destCode || airportCode;
+    }
+
+    if (!targetTimeStr) {
+      return { isPast: false, isCutoffViolated: false, blockingMessage: undefined };
+    }
+
+    return validateFlightEvent({
+      direction: direction === "transit" ? "arrival" : direction,
+      serviceDate: sDate,
+      scheduledTimeStr: targetTimeStr,
+      airportCode: targetAirport,
+      liveStatus: verifiedFlight?.arrival?.actual ? "LANDED" : undefined,
+    });
+  }, [dateValue, verifiedFlight, direction, airportCode, cleanOrigin, originCode, cleanDest, destCode]);
+
+  const isFlightExpired = flightEventCheck.isPast;
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
       {/* Header row */}
@@ -185,12 +213,14 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
                     </span>
                     <span
                       className={`font-mono text-[9px] uppercase px-2 py-0.5 rounded-full font-bold ${
-                        isAvailable
+                        isFlightExpired
+                          ? "bg-rose-100 text-rose-800 border border-rose-200"
+                          : isAvailable
                           ? "bg-lime-100 text-lime-800"
                           : "bg-amber-100 text-amber-800 border border-amber-200"
                       }`}
                     >
-                      {isAvailable ? "Available" : "Arrangement Request"}
+                      {isFlightExpired ? "Flight Expired" : isAvailable ? "Available" : "Arrangement Request"}
                     </span>
                   </div>
                   <span className="text-[11px] text-slate-500 font-medium">
@@ -204,7 +234,11 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
                 </div>
 
                 <div className="text-right sm:self-center font-mono font-bold text-sm">
-                  {isAvailable ? (
+                  {isFlightExpired ? (
+                    <span className="text-rose-600 font-semibold text-xs">
+                      Not Bookable
+                    </span>
+                  ) : isAvailable ? (
                     <span className="text-slate-900">
                       {formatPrice(convertFromINR(itemPriceInr, selectedCurrency), selectedCurrency)}
                     </span>
@@ -323,6 +357,15 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
             Share
           </button>
 
+          {isFlightExpired && (
+            <div className="w-full mb-3 flex items-center gap-2.5 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-medium">
+              <AlertCircle size={16} className="text-rose-600 shrink-0" />
+              <span className="leading-snug">
+                {flightEventCheck.blockingMessage || "This flight has already departed or arrived. Please select a future flight to proceed."}
+              </span>
+            </div>
+          )}
+
           {isArrangementOnly ? (
             <button
               type="button"
@@ -362,10 +405,19 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
                 </>
               )}
             </button>
+          ) : isFlightExpired ? (
+            <button
+              type="button"
+              disabled
+              className="flex-1 sm:flex-none min-w-[200px] inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-200 px-6 py-3 text-xs font-mono font-extrabold uppercase tracking-widest text-slate-400 cursor-not-allowed shadow-none"
+            >
+              <Lock size={14} />
+              <span>Flight Expired</span>
+            </button>
           ) : (
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || isFlightExpired}
               className="flex-1 sm:flex-none min-w-[200px] inline-flex items-center justify-center gap-2 rounded-2xl bg-lime-500 hover:bg-lime-400 px-6 py-3 text-xs font-mono font-extrabold uppercase tracking-widest text-slate-950 shadow-md shadow-lime-500/25 transition-all disabled:opacity-50 cursor-pointer"
             >
               {submitting ? (

@@ -539,22 +539,39 @@ export const TransitFlightDetailsSection: React.FC<TransitFlightDetailsSectionPr
             )}
 
             {flightFetchError && !isCutoffUrgent && !routeMismatch && (
-              <div className="rounded-2xl border border-amber-300 bg-amber-50/70 p-4 text-xs text-amber-900 flex items-start gap-3">
-                <AlertCircle size={18} className="text-amber-700 shrink-0 mt-0.5" />
-                <div className="flex-1 space-y-1">
-                  <p className="font-semibold">{flightFetchError}</p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsManualMode(true);
-                      setManualFlightNum(flightNumber);
-                    }}
-                    className="mt-1 font-mono font-bold text-amber-950 underline block cursor-pointer"
-                  >
-                    → Enter incoming flight details manually
-                  </button>
-                </div>
-              </div>
+              (() => {
+                const isPastErr =
+                  flightFetchError.toLowerCase().includes("already departed") ||
+                  flightFetchError.toLowerCase().includes("already arrived") ||
+                  flightFetchError.toLowerCase().includes("already landed") ||
+                  flightFetchError.toLowerCase().includes("past");
+                return (
+                  <div className={`rounded-2xl border p-4 text-xs flex items-start gap-3 ${
+                    isPastErr ? "border-rose-300 bg-rose-50/90 text-rose-950" : "border-amber-300 bg-amber-50/70 text-amber-900"
+                  }`}>
+                    <AlertCircle size={18} className={`shrink-0 mt-0.5 ${isPastErr ? "text-rose-600" : "text-amber-700"}`} />
+                    <div className="flex-1 space-y-1">
+                      <p className="font-semibold">{flightFetchError}</p>
+                      {isPastErr ? (
+                        <p className="text-[11px] text-rose-800">
+                          Bookings cannot be accepted for flights that have already departed or arrived.
+                        </p>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsManualMode(true);
+                            setManualFlightNum(flightNumber);
+                          }}
+                          className="mt-1 font-mono font-bold text-amber-950 underline block cursor-pointer"
+                        >
+                          → Enter incoming flight details manually
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()
             )}
 
             {isFlightFetching && (

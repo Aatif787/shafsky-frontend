@@ -18,6 +18,7 @@ import { IntelligentAirlineAutocomplete } from "../shared/IntelligentAirlineAuto
 import { FlightTimePicker } from "../shared/FlightTimePicker";
 import { AirportSuggestionPicker } from "../shared/AirportSuggestionPicker";
 import { FlightData } from "@/services/flight/FlightTypes";
+import { validateFlightEvent } from "@/services/flight/FlightTimeUtils";
 import { RouteMismatchInfo } from "./types";
 
 export interface DirectFlightDetailsSectionProps {
@@ -129,6 +130,20 @@ export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProp
   handleKeepSelectedRoute,
   handleUseFlightRoute,
 }) => {
+  // Compute manual mode past-flight check
+  const manualTimeCheck = React.useMemo(() => {
+    if (!isManualMode) return null;
+    const targetTime = direction === "departure" ? manualDepTime : manualArrTime;
+    const targetApt = direction === "departure" ? (originCode || airportCode) : (destCode || airportCode);
+    if (!targetTime) return null;
+    return validateFlightEvent({
+      direction: direction === "transit" ? "arrival" : direction,
+      serviceDate,
+      scheduledTimeStr: targetTime,
+      airportCode: targetApt,
+      travelType,
+    });
+  }, [isManualMode, direction, manualDepTime, manualArrTime, originCode, destCode, airportCode, serviceDate, travelType]);
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
       <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
@@ -407,25 +422,51 @@ export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProp
 
           {/* Automatic Fetch / Generic Error Warning (Never shown during route mismatch) */}
           {flightFetchError && !isCutoffUrgent && !routeMismatch && (
-            <div className="rounded-2xl border border-amber-300 bg-amber-50/70 p-4 text-xs text-amber-900 flex items-start gap-3">
-              <AlertCircle size={18} className="text-amber-700 shrink-0 mt-0.5" />
-              <div className="flex-1 space-y-1">
-                <p className="font-semibold">{flightFetchError}</p>
-                <p className="text-[11px] text-amber-800">
-                  Automatic flight verification failure never blocks your booking. Click below to enter your flight times manually.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsManualMode(true);
-                    setManualFlightNum(flightNumber);
-                  }}
-                  className="mt-1 font-mono font-bold text-amber-950 underline block cursor-pointer"
+            (() => {
+              const isPastErr =
+                flightFetchError.toLowerCase().includes("already departed") ||
+                flightFetchError.toLowerCase().includes("already arrived") ||
+                flightFetchError.toLowerCase().includes("already landed") ||
+                flightFetchError.toLowerCase().includes("past");
+              return (
+                <div
+                  className={`rounded-2xl border p-4 text-xs flex items-start gap-3 ${
+                    isPastErr
+                      ? "border-rose-300 bg-rose-50/90 text-rose-950"
+                      : "border-amber-300 bg-amber-50/70 text-amber-900"
+                  }`}
                 >
-                  → Continue with manual flight entry
-                </button>
-              </div>
-            </div>
+                  <AlertCircle
+                    size={18}
+                    className={`shrink-0 mt-0.5 ${isPastErr ? "text-rose-600" : "text-amber-700"}`}
+                  />
+                  <div className="flex-1 space-y-1">
+                    <p className="font-semibold">{flightFetchError}</p>
+                    {isPastErr ? (
+                      <p className="text-[11px] text-rose-800">
+                        Bookings cannot be accepted for flights that have already departed or arrived. Please select a future flight.
+                      </p>
+                    ) : (
+                      <>
+                        <p className="text-[11px] text-amber-800">
+                          Automatic flight verification failure never blocks your booking. Click below to enter your flight times manually.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsManualMode(true);
+                            setManualFlightNum(flightNumber);
+                          }}
+                          className="mt-1 font-mono font-bold text-amber-950 underline block cursor-pointer"
+                        >
+                          → Continue with manual flight entry
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })()
           )}
 
           {/* Fetching Flight Skeleton Placeholder */}
@@ -612,6 +653,16 @@ export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProp
                 >
                   ← Return to automatic flight fetch
                 </button>
+              </div>
+            </div>
+          )}
+
+          {manualTimeCheck?.isPast && (
+            <div className="rounded-xl border border-rose-300 bg-rose-50/90 p-3.5 text-xs text-rose-950 flex items-start gap-2.5">
+              <AlertCircle size={16} className="text-rose-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold">{manualTimeCheck.blockingMessage || "This flight time is in the past."}</p>
+                <p className="text-[11px] text-rose-800">Please choose a future flight schedule to continue.</p>
               </div>
             </div>
           )}

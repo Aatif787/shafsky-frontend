@@ -9,6 +9,7 @@ import { getTransitCategory } from "@/data/airportRegistry";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { PassengerDetail, PaymentStatus } from "../types";
 import { sanitizeFlightInput, buildAnchoredServiceClock } from "../utils";
+import { validateFlightEvent } from "@/services/flight/FlightTimeUtils";
 
 interface UseAirportPaymentProps {
   passengers: PassengerDetail[];
@@ -434,6 +435,38 @@ export function useAirportPayment({
 
     if ((destCode || "").toUpperCase() === "DEL" && travelType === "international") {
       terminalVal2 = "Terminal 3";
+    }
+
+    // Pre-Payment Flight Expiry Revalidation
+    const targetClock1 = direction === "departure" ? depClock1 : arrClock1;
+    const targetAirport1 = direction === "departure" ? (cleanOrigin || airportCode) : (cleanDest || airportCode);
+    const flight1Check = validateFlightEvent({
+      direction: direction === "transit" ? "arrival" : direction,
+      serviceDate,
+      scheduledTimeStr: targetClock1,
+      airportCode: targetAirport1,
+      travelType,
+      liveStatus: verifiedFlight?.arrival?.actual ? "LANDED" : undefined,
+    });
+
+    if (flight1Check.isPast) {
+      toast.error(flight1Check.blockingMessage || "This flight has already departed/arrived. Please select a future flight.");
+      return;
+    }
+
+    if (direction === "transit") {
+      const flight2Check = validateFlightEvent({
+        direction: "departure",
+        serviceDate: serviceDate2,
+        scheduledTimeStr: depClock2,
+        airportCode: cleanOrigin || transitCode || airportCode,
+        travelType,
+      });
+
+      if (flight2Check.isPast) {
+        toast.error(flight2Check.blockingMessage || "The connecting flight has already departed. Please select a future flight.");
+        return;
+      }
     }
 
     if (multiServiceResponse && multiServiceResponse.none_available) {

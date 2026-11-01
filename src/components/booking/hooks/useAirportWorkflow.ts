@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegistry";
 import { FlightData } from "@/services/flight/FlightTypes";
+import { validateFlightEvent } from "@/services/flight/FlightTimeUtils";
 import { ApiClient } from "@/lib/ApiClient";
 import { airportApi } from "@/lib/api/airportApi";
 import { toast } from "sonner";
@@ -336,6 +337,33 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       }
 
       const { flightInfo, transitCodes } = parseFlightInfoFromValidationResponse(targetObj, flightNum);
+
+      // ─── PAST FLIGHT & CUTOFF VALIDATION ───
+      const curDir = (state.direction || "departure").toLowerCase();
+      const schedTime = curDir === "departure" ? flightInfo.departure?.scheduledTime : flightInfo.arrival?.scheduledTime;
+      const targetAirport = curDir === "departure" ? (flightInfo.origin?.code || state.airportCode) : (flightInfo.destination?.code || state.airportCode);
+      const flightPastCheck = validateFlightEvent({
+        direction: curDir === "transit" ? "arrival" : (curDir as any),
+        serviceDate: departDate,
+        scheduledTimeStr: schedTime,
+        airportCode: targetAirport,
+        travelType: state.travelType,
+        liveStatus: targetObj?.status || targetObj?.flight_status,
+      });
+
+      if (flightPastCheck.isPast) {
+        const errMsg = flightPastCheck.blockingMessage || "This flight has already departed/arrived. Please select a future flight.";
+        updateState({
+          flightStateMode: "ERROR",
+          flightErrorMessage: errMsg,
+          isFlightValidated: false,
+          validatedFlightData: null,
+          isManualMode: false,
+        });
+        toast.error(errMsg);
+        setBusy(false);
+        return false;
+      }
 
       // ─── ROUTE MATCH & SUPPORTED AIRPORT SERVICE VALIDATION ───
       const routeCheck = verifyFlightRouteMatch({

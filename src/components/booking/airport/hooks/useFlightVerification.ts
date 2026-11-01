@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ApiClient } from "@/lib/ApiClient";
 import { FlightData } from "@/services/flight/FlightTypes";
+import { validateFlightEvent } from "@/services/flight/FlightTimeUtils";
 import { getAirportRegistryEntry, isIndianAirportCode } from "@/data/airportRegistry";
 import { formatFlightLookupError } from "../../hooks/useAirportWorkflow";
 import {
@@ -150,6 +151,16 @@ export function useFlightVerification({
 
       const resJson = await res.json().catch(() => null);
 
+      if (resJson?.code === "FLIGHT_EXPIRED" || resJson?.data?.is_expired) {
+        const pastMsg = resJson?.rejection_reason || "This flight has already departed/arrived. Please select a future flight.";
+        setFlightFetchError(pastMsg);
+        setIsFlightVerified(false);
+        setVerifiedFlight(null);
+        setManualFlightNum(cleaned);
+        toast.error(pastMsg);
+        return;
+      }
+
       if (res.ok && resJson && resJson.success) {
         const raw = resJson.data?.flightData || resJson.data?.flight_data || resJson.data;
         const flightObj = Array.isArray(raw) ? raw[0] : raw;
@@ -235,6 +246,31 @@ export function useFlightVerification({
           const selectedServiceAirport = (airportCode || "").trim().toUpperCase();
           const flOrigin = (flightData.origin?.code || "").trim().toUpperCase();
           const flDest = (flightData.destination?.code || "").trim().toUpperCase();
+
+          // Past Flight & Cutoff Validation
+          const eventCheck = validateFlightEvent({
+            direction: direction === "transit" ? "arrival" : direction,
+            serviceDate,
+            scheduledTimeStr: direction === "departure" ? anchoredDepSched : anchoredArrSched,
+            airportCode: direction === "departure" ? (flOrigin || airportCode) : (flDest || airportCode),
+            travelType,
+            liveStatus: flightObj?.status || flightObj?.flight_status,
+          });
+
+          if (eventCheck.isPast) {
+            const pastMsg = eventCheck.blockingMessage || "This flight has already departed/arrived. Please select a future flight.";
+            setFlightFetchError(pastMsg);
+            setIsFlightVerified(false);
+            setVerifiedFlight(null);
+            setManualFlightNum(cleaned);
+            setRouteMismatch(null);
+            toast.error(pastMsg);
+            return;
+          }
+
+          if (eventCheck.isCutoffViolated) {
+            setIsCutoffUrgent(true);
+          }
 
           const evalResult = evaluateFlightRouteMatch({
             direction,
@@ -385,6 +421,16 @@ export function useFlightVerification({
       });
 
       const resJson = await res.json().catch(() => null);
+
+      if (resJson?.code === "FLIGHT_EXPIRED" || resJson?.data?.is_expired) {
+        const pastMsg = resJson?.rejection_reason || "This flight has already departed/arrived. Please select a future flight.";
+        setFlightFetchError(pastMsg);
+        setIsFlightVerified(false);
+        setVerifiedFlight(null);
+        setManualFlightNum(cleaned);
+        toast.error(pastMsg);
+        return;
+      }
 
       if (res.ok && resJson && resJson.success) {
         const raw = resJson.data?.flightData || resJson.data?.flight_data || resJson.data;

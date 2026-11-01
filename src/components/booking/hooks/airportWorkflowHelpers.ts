@@ -96,6 +96,21 @@ export function formatFlightLookupError(error: unknown, status?: number): string
 
     const upper = rawString.toUpperCase();
 
+    // ===== FLIGHT ALREADY DEPARTED OR ARRIVED (EXPIRED) =====
+    if (
+      errorCode === "FLIGHT_EXPIRED" ||
+      upper.includes("ALREADY DEPARTED") ||
+      upper.includes("ALREADY ARRIVED") ||
+      upper.includes("HAS ALREADY LANDED") ||
+      upper.includes("HAS LANDED") ||
+      upper.includes("FLIGHT_EXPIRED")
+    ) {
+      if (rawString.length < 250 && rawString.length > 5 && !rawString.startsWith("{")) {
+        return rawString;
+      }
+      return "This flight has already departed/arrived. Please select a future flight.";
+    }
+
     // ===== TIMEOUT ERRORS =====
     if (
       upper.includes("TIMEOUT") ||

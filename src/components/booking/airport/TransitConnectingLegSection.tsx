@@ -321,23 +321,40 @@ export const TransitConnectingLegSection: React.FC<TransitConnectingLegSectionPr
           )}
 
           {flightFetchError2 && !routeMismatch2 && (
-            <div className="rounded-2xl border border-amber-300 bg-amber-50/70 p-4 text-xs text-amber-950 space-y-2">
-              <div className="flex items-center gap-2 font-bold font-mono uppercase text-amber-800">
-                <AlertCircle size={15} className="text-amber-600 shrink-0" />
-                Schedule Notice
-              </div>
-              <p className="leading-relaxed">{flightFetchError2}</p>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsManualMode2(true);
-                  setManualFlightNum2(flightNumber2);
-                }}
-                className="font-mono text-xs font-bold text-amber-800 hover:text-amber-950 underline cursor-pointer"
-              >
-                Enter connecting flight details manually →
-              </button>
-            </div>
+            (() => {
+              const isPastErr =
+                flightFetchError2.toLowerCase().includes("already departed") ||
+                flightFetchError2.toLowerCase().includes("already arrived") ||
+                flightFetchError2.toLowerCase().includes("already landed") ||
+                flightFetchError2.toLowerCase().includes("past");
+              return (
+                <div className={`rounded-2xl border p-4 text-xs space-y-2 ${
+                  isPastErr ? "border-rose-300 bg-rose-50/90 text-rose-950" : "border-amber-300 bg-amber-50/70 text-amber-950"
+                }`}>
+                  <div className={`flex items-center gap-2 font-bold font-mono uppercase ${isPastErr ? "text-rose-800" : "text-amber-800"}`}>
+                    <AlertCircle size={15} className={`shrink-0 ${isPastErr ? "text-rose-600" : "text-amber-600"}`} />
+                    {isPastErr ? "Flight Departed / Expired" : "Schedule Notice"}
+                  </div>
+                  <p className="leading-relaxed">{flightFetchError2}</p>
+                  {isPastErr ? (
+                    <p className="text-[11px] text-rose-800">
+                      Bookings cannot be accepted for flights that have already departed.
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsManualMode2(true);
+                        setManualFlightNum2(flightNumber2);
+                      }}
+                      className="font-mono text-xs font-bold text-amber-800 hover:text-amber-950 underline cursor-pointer"
+                    >
+                      Enter connecting flight details manually →
+                    </button>
+                  )}
+                </div>
+              );
+            })()
           )}
 
           {isFlightVerified2 && verifiedFlight2 && (

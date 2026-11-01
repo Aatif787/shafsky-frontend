@@ -219,6 +219,22 @@ export const extractIata = (raw?: string): string => {
  * Safely anchors a flight time-of-day onto the intended calendar service date.
  * Avoids submitting past dates from provider timetables or cached entries.
  */
+export function addDaysToYmd(ymd: string, days: number): string {
+  try {
+    const parts = ymd.split("-").map(Number);
+    if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1]) && !isNaN(parts[2])) {
+      const utc = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2] + days));
+      const y = utc.getUTCFullYear();
+      const m = String(utc.getUTCMonth() + 1).padStart(2, "0");
+      const d = String(utc.getUTCDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+  } catch {
+    /* fallback to original */
+  }
+  return ymd;
+}
+
 export function buildAnchoredServiceClock(
   targetDate: string,
   rawTimeVal: string | null | undefined,
@@ -240,13 +256,7 @@ export function buildAnchoredServiceClock(
 
   let finalDate = targetDate;
   if (isArrivalNextDay) {
-    try {
-      const d = new Date(`${targetDate}T00:00:00`);
-      d.setDate(d.getDate() + 1);
-      finalDate = d.toISOString().split("T")[0];
-    } catch {
-      finalDate = targetDate;
-    }
+    finalDate = addDaysToYmd(targetDate, 1);
   }
   return `${finalDate}T${formattedTime}`;
 }
