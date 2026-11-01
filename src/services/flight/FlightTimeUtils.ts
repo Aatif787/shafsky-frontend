@@ -126,12 +126,15 @@ const CANCELLED_STATUSES = new Set([
 ]);
 
 export interface FlightEventValidationParams {
-  scheduledTime: string | null | undefined;
-  airportIata: string;
+  scheduledTime?: string | null;
+  scheduledTimeStr?: string | null;
+  airportIata?: string;
+  airportCode?: string;
   direction: "arrival" | "departure" | "transit";
   serviceDate?: string;
   travelType?: "domestic" | "international";
   flightStatus?: string | null;
+  liveStatus?: string | null;
   cutoffHours?: number; // 6 for domestic, 12 for international
   isArrivalNextDay?: boolean;
   referenceNow?: Date; // For deterministic testing
@@ -166,13 +169,13 @@ export function addDaysToYmd(ymd: string, days: number): string {
  * Authoritative validator for past flights and advance cutoff notice across all booking touchpoints.
  */
 export function validateFlightEvent(params: FlightEventValidationParams): FlightEventValidationResult {
+  const scheduledTime = params.scheduledTime ?? params.scheduledTimeStr;
+  const airportIata = params.airportIata ?? params.airportCode ?? "";
+  const flightStatus = params.flightStatus ?? params.liveStatus ?? null;
   const {
-    scheduledTime,
-    airportIata,
     direction,
     serviceDate,
     travelType = "domestic",
-    flightStatus,
     cutoffHours,
     isArrivalNextDay = false,
     referenceNow,

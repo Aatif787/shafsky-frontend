@@ -446,7 +446,7 @@ export function useAirportPayment({
       scheduledTimeStr: targetClock1,
       airportCode: targetAirport1,
       travelType,
-      liveStatus: verifiedFlight?.arrival?.actual ? "LANDED" : undefined,
+      liveStatus: verifiedFlight?.arrival?.actualTime ? "LANDED" : undefined,
     });
 
     if (flight1Check.isPast) {

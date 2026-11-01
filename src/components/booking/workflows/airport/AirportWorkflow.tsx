@@ -342,7 +342,7 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       scheduledTimeStr: serviceClock,
       airportCode: direction === "departure" ? originCode : destCode,
       travelType: state.travelType,
-      liveStatus: state.validatedFlightData?.arrival?.actual ? "LANDED" : undefined,
+      liveStatus: state.validatedFlightData?.arrival?.actualTime ? "LANDED" : undefined,
     });
 
     if (flightEventCheck.isPast) {

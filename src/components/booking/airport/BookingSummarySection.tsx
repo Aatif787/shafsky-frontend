@@ -111,7 +111,7 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
       serviceDate: sDate,
       scheduledTimeStr: targetTimeStr,
       airportCode: targetAirport,
-      liveStatus: verifiedFlight?.arrival?.actual ? "LANDED" : undefined,
+      liveStatus: verifiedFlight?.arrival?.actualTime ? "LANDED" : undefined,
     });
   }, [dateValue, verifiedFlight, direction, airportCode, cleanOrigin, originCode, cleanDest, destCode]);
 
