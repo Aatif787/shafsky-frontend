@@ -18,7 +18,6 @@ import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import specialserImg from "@/assets/others/specialser.png";
 import infantCareImg from "@/assets/others/infant-care.jpg";
-import trainAmbulanceImg from "@/assets/others/train-ambulance.jpg";
 import petCargoImg from "@/assets/others/pet-cargo.jpg";
 import visaAssistanceImg from "@/assets/others/visa-assistance.jpg";
 import humanRemainsImg from "@/assets/others/human-remains.jpg";
@@ -167,7 +166,6 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "RAILWAY ICU TRANSFER & MEDICAL ESCORT",
     tagline:
       "Cost-effective long-distance patient rail transfer in 1AC/2AC medical coupes equipped with doctors, continuous oxygen, and monitoring.",
-    photo: trainAmbulanceImg,
     icon: Train,
     inclusions: [
       "Comfortable Rail Patient Transit in Air-Conditioned 1AC / 2AC Reserved Medical Coupe",
