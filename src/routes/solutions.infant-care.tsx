@@ -7,7 +7,6 @@ import {
 import { display, mono } from "@/components/home/theme";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 import { Footer } from "@/components/home/sections/Footer";
-import infantCareBanner from "@/assets/others/infant-care.jpg";
 import { InfantCareEnquiryForm } from "@/components/special-services/InfantCareEnquiryForm";
 
 export const Route = createFileRoute("/solutions/infant-care")({
@@ -68,18 +67,6 @@ function DedicatedInfantCarePage() {
             </div>
           </div>
 
-          {/* Banner Photo */}
-          <div className="relative w-full aspect-[16/9] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-slate-100 flex items-center justify-center select-none">
-            <img
-              width={1600}
-              height={900}
-              src={infantCareBanner}
-              alt="Shafsky Aviation Infant Care and Family Airport Concierge Service"
-              className="w-full h-full object-cover object-center select-none block pointer-events-none"
-              loading="eager"
-              draggable={false}
-            />
-          </div>
         </div>
       </section>
 
