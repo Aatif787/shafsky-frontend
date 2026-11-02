@@ -2,9 +2,8 @@ import React from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
-  Sparkles,
 } from "lucide-react";
-import { display, mono } from "@/components/home/theme";
+import { display } from "@/components/home/theme";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 import { Footer } from "@/components/home/sections/Footer";
 import { InfantCareEnquiryForm } from "@/components/special-services/InfantCareEnquiryForm";
@@ -71,12 +70,8 @@ function DedicatedInfantCarePage() {
       <section id="enquiry" className="py-12 sm:py-20 bg-slate-50/80 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-wider text-lime-700 mb-2" style={mono}>
-              <Sparkles size={13} className="text-lime-600" />
-              <span>QUICK ENQUIRY • PERSONAL COORDINATION</span>
-            </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
-              Arrange Infant Care Assistance
+              Infant Care Enquiry Form
             </h1>
           </div>
 
