@@ -113,7 +113,7 @@ export const OTHER_SERVICES_ITEMS: OtherServiceDropdownItem[] = [
     icon: HeartHandshake,
   },
   {
-    label: "Visa Assistance",
+    label: "Passport and Visa",
     sub: "visa",
     href: "/solutions/special-services?sub=visa",
     icon: FileCheck,

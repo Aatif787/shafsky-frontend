@@ -319,12 +319,12 @@ export const BOOKING_CONFIGURATIONS: Record<string, ServiceBookingConfig> = {
   // ── 6. TRAVEL SERVICES: VISA ASSISTANCE ──
   visa: {
     id: "visa",
-    serviceName: "Visa Assist",
+    serviceName: "Passport and Visa",
     category: "travel",
     icon: Building2,
-    tagline: "Fast-Track Visa Assist & Processing",
+    tagline: "Fast-Track Passport and Visa Processing",
     description: "Expedited diplomatic visa processing, VIP doorstep biometrics, and business travel visas.",
-    ctaText: "Request Visa Assist",
+    ctaText: "Request Passport and Visa",
     steps: [
       {
         id: "visa_details",

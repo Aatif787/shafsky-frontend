@@ -37,7 +37,7 @@ const SUB_SERVICE_MAP: Record<string, string> = {
   fast_track: "Fast Track",
   transport: "Transportation",
   hotel: "Hotel Booking",
-  visa: "Visa Assist",
+  visa: "Passport and Visa",
   ticketing: "Air Ticketing",
   "infant-care": "Infant Care",
   infant_care: "Infant Care",
