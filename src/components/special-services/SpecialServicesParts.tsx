@@ -17,7 +17,6 @@ import { display } from "@/components/home/theme";
 import spaWellnessImg from "@/assets/others/spa-wellness.jpg";
 import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import specialserImg from "@/assets/others/specialser.png";
-import infantCareImg from "@/assets/others/infant-care.jpg";
 import petCargoImg from "@/assets/others/pet-cargo.jpg";
 import humanRemainsImg from "@/assets/others/human-remains.jpg";
 import airAmbulanceImg from "@/assets/others/airambulance.jpeg";
@@ -168,7 +167,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     id: "Cargo & AVI Pet Freight",
     label: "AVI & Animal Pet Transport",
     shortLabel: "AVI & Animal",
-    badge: "IATA LIVE ANIMAL (AVI) & PET LOGISTICS",
+    badge: "",
     tagline:
       "IATA & Rail compliant pet relocation across Air, Train, and Road Transport — climate-controlled cabins, verified documentation, and door-to-door escort.",
     photo: petCargoImg,
@@ -182,7 +181,6 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "DEDICATED AIRPORT INFANT & FAMILY CARE",
     tagline:
       "Compassionate airport concierge assistance for parents travelling with infants, pram escort, and seamless airside coordination.",
-    photo: infantCareImg,
     icon: Baby,
     inclusions: [],
   },
