@@ -96,9 +96,6 @@ function DedicatedInfantCarePage() {
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
               Arrange Infant Care Assistance
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-slate-600 max-w-lg mx-auto">
-              Submit your flight details below and our operations desk will promptly confirm your dedicated family escort.
-            </p>
           </div>
 
           <InfantCareEnquiryForm />

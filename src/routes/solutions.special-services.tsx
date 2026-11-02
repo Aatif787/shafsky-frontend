@@ -436,6 +436,12 @@ function DedicatedSpecialServicesPage() {
                 Train Ambulance
               </h2>
             </div>
+          ) : selectedOptionId === "Infant Care Services" ? (
+            <div className="text-center mb-8">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
+                Infant Care
+              </h2>
+            </div>
           ) : (
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-wider text-lime-700 mb-2">
