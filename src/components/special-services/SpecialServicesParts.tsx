@@ -178,7 +178,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     id: "Infant Care Services",
     label: "Infant Care Services",
     shortLabel: "Infant Care",
-    badge: "DEDICATED AIRPORT INFANT & FAMILY CARE",
+    badge: "",
     tagline:
       "Compassionate airport concierge assistance for parents travelling with infants, pram escort, and seamless airside coordination.",
     icon: Baby,

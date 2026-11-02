@@ -259,7 +259,7 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
       <div className="border-b border-slate-100 pb-5">
         <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-lime-700 mb-1" style={mono}>
           <Baby size={16} className="text-lime-600" />
-          <span>AIRPORT INFANT & PARENT ASSISTANCE</span>
+          <span>Arrange Infant Care Assistance</span>
         </div>
         <h3 className="text-xl sm:text-2xl font-bold text-slate-950 tracking-tight" style={display}>
           Infant Care Enquiry Form
