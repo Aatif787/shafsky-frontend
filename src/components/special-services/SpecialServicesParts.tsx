@@ -58,7 +58,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     id: "Air Ticketing Services",
     label: "Air Ticketing Services",
     shortLabel: "Air Ticketing",
-    badge: "DOMESTIC & INTERNATIONAL AIRLINE TICKETING",
+    badge: "",
     tagline: "",
     icon: Ticket,
     inclusions: [],
