@@ -8,7 +8,6 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { display } from "@/components/home/theme";
-import home5Img from "@/assets/homepage/home5.jpeg";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 import { useWebsiteContacts } from "@/hooks/useWebsiteContacts";
 
@@ -212,114 +211,65 @@ function DedicatedTransportServicePage() {
       />
 
       {/* ─────────────────────────────────────────────────────────────
-          5. COMPANY CATALOG CONTENT & UNCOPPED GALLERY
+          5. COMPANY CATALOG CONTENT
           ───────────────────────────────────────────────────────────── */}
       <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-8 border-t border-slate-100">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-4xl">
           {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 text-[10.5px] uppercase tracking-[0.35em] text-lime-700 font-bold font-mono bg-lime-50 px-3.5 py-1 rounded-full border border-lime-200 mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-500 inline-block" />
-              <span>FLEET CATEGORIES & DETAILS</span>
-            </div>
+          <div className="text-center max-w-3xl mx-auto mb-10">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight" style={display}>
-              Transport Inclusions & Fleet.
+              Transport Inclusions
             </h2>
-            <p className="mt-3 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
-              Chauffeured tarmac transfers, executive MPVs, and luxury inter-city transport.
-            </p>
           </div>
 
-          {/* 2-Column Balanced Editorial Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
-            {/* Left Column: Transport inclusions from the approved reference */}
-            <div className="lg:col-span-6 flex flex-col justify-start space-y-7">
-              <p className="text-base sm:text-lg text-slate-900 leading-relaxed">
-                Our Luxury Transport Fleet Provides A Comfortable And Stylish Experience For Both Business And Leisure Travel, Ensuring An Enjoyable Journey
-              </p>
+          {/* Transport inclusions */}
+          <div className="flex flex-col justify-start space-y-7">
+            <p className="text-base sm:text-lg text-slate-900 leading-relaxed">
+              Our Luxury Transport Fleet Provides A Comfortable And Stylish Experience For Both Business And Leisure Travel, Ensuring An Enjoyable Journey
+            </p>
 
-              <div>
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#0a196f] tracking-tight mb-3" style={display}>
-                  India’s Premier Door-to-Door Transport Network:
-                </h3>
-                <ol className="list-decimal pl-6 space-y-1.5 text-base sm:text-lg text-slate-900">
-                  <li>Airport to Hotel</li>
-                  <li>Hotel to Airport.</li>
-                  <li>Pickup &amp; Drop Right at Your Doorstep</li>
-                  <li>Pan-India Network Coverage</li>
-                  <li>On-Time, Reliable Transportation</li>
-                </ol>
-              </div>
-
-              <div>
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#0a196f] tracking-tight mb-3" style={display}>
-                  Vehicle Hygiene &amp; Comfort:
-                </h3>
-                <ol className="list-decimal pl-6 space-y-1.5 text-base sm:text-lg text-slate-900">
-                  <li>Regularly Sanitized &amp; Well-Maintained Vehicles</li>
-                  <li>Spacious Seating with Premium Comfort</li>
-                  <li>Clean Interiors with Fresh Air &amp; Pleasant Ambience</li>
-                </ol>
-              </div>
-
-              <div>
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#8a7418] tracking-tight mb-3" style={display}>
-                  Car Fleets:
-                </h3>
-                <ul className="list-disc pl-6 space-y-1.5 text-base sm:text-lg text-slate-900">
-                  <li><strong>Ultra Luxury:</strong> Bentley</li>
-                  <li><strong>Premium Luxury:</strong> BMW, Mercedes, Audi</li>
-                  <li><strong>Luxury SUVs:</strong> Range Rover, Land Cruiser</li>
-                  <li><strong>Premium SUVs:</strong> Defender, Toyota Fortuner</li>
-                  <li><strong>Premium:</strong> Toyota Camry, Innova Hycross</li>
-                  <li><strong>Executive:</strong> Kia Carnival, Honda City</li>
-                  <li><strong>Standard:</strong> Swift Dzire, Tata Tigor</li>
-                  <li><strong>Luxury Coaches (Buses):</strong> Volvo Bus VVIP</li>
-                </ul>
-              </div>
+            <div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#0a196f] tracking-tight mb-3" style={display}>
+                India’s Premier Door-to-Door Transport Network:
+              </h3>
+              <ol className="list-decimal pl-6 space-y-1.5 text-base sm:text-lg text-slate-900">
+                <li>Airport to Hotel</li>
+                <li>Hotel to Airport.</li>
+                <li>Pickup &amp; Drop Right at Your Doorstep</li>
+                <li>Pan-India Network Coverage</li>
+                <li>On-Time, Reliable Transportation</li>
+              </ol>
             </div>
 
-            {/* Right Column: Original Aspect Ratio Uncropped Gallery */}
-            <div className="lg:col-span-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  {
-                    src: "/images/transport/fleet-skyline.webp",
-                    alt: "Chauffeured Executive Fleet & Sedans",
-                  },
-                  {
-                    src: "/images/transport/curbside-chauffeur.webp",
-                    alt: "Curbside Executive Arrival",
-                  },
-                  {
-                    src: home5Img,
-                    alt: "Dedicated Airport Porterage & Fleet Apron",
-                  },
-                ].map((img, idx) => (
-                  <div
-                    key={idx}
-                    className="w-full rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 bg-white group hover:border-lime-400 hover:shadow-md transition-all duration-300 flex flex-col"
-                  >
-                    <div className="relative aspect-[16/10] w-full bg-slate-50 overflow-hidden flex items-center justify-center">
-                      <img width={1600} height={900} src={img.src}
-                        alt={img.alt}
-                        className="w-full h-full object-cover object-center select-none block group-hover:scale-103 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="p-3.5 bg-white border-t border-slate-100">
-                      <span className="text-xs font-semibold text-slate-900 tracking-tight font-sans block group-hover:text-[#0a196f] transition-colors">
-                        {img.alt}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#0a196f] tracking-tight mb-3" style={display}>
+                Vehicle Hygiene &amp; Comfort:
+              </h3>
+              <ol className="list-decimal pl-6 space-y-1.5 text-base sm:text-lg text-slate-900">
+                <li>Regularly Sanitized &amp; Well-Maintained Vehicles</li>
+                <li>Spacious Seating with Premium Comfort</li>
+                <li>Clean Interiors with Fresh Air &amp; Pleasant Ambience</li>
+              </ol>
+            </div>
+
+            <div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#8a7418] tracking-tight mb-3" style={display}>
+                Car Fleets:
+              </h3>
+              <ul className="list-disc pl-6 space-y-1.5 text-base sm:text-lg text-slate-900">
+                <li><strong>Ultra Luxury:</strong> Bentley</li>
+                <li><strong>Premium Luxury:</strong> BMW, Mercedes, Audi</li>
+                <li><strong>Luxury SUVs:</strong> Range Rover, Land Cruiser</li>
+                <li><strong>Premium SUVs:</strong> Defender, Toyota Fortuner</li>
+                <li><strong>Premium:</strong> Toyota Camry, Innova Hycross</li>
+                <li><strong>Executive:</strong> Kia Carnival, Honda City</li>
+                <li><strong>Standard:</strong> Swift Dzire, Tata Tigor</li>
+                <li><strong>Luxury Coaches (Buses):</strong> Volvo Bus VVIP</li>
+              </ul>
             </div>
           </div>
         </div>
       </section>
-
 
       <Footer />
     </div>
