@@ -412,6 +412,18 @@ function DedicatedSpecialServicesPage() {
                 Air Ticketing
               </h2>
             </div>
+          ) : selectedOptionId === "Travel & Tour" || (selectedOptionId as any) === "Travel & Tour (Honeymoon/Couples)" || (selectedOptionId as any) === "Tours & Travel (Honeymoon/Couples)" ? (
+            <div className="text-center mb-8">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
+                Travel &amp; Tour
+              </h2>
+            </div>
+          ) : selectedOptionId === "Human Remains (HUM)" || (selectedOptionId as any) === "Dignified Human Remains (HUM)" ? (
+            <div className="text-center mb-8">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
+                Human Remains (HUM)
+              </h2>
+            </div>
           ) : selectedOptionId === "Air Ambulance (Airborne ICU Jet)" ? (
             <div className="text-center mb-8">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>

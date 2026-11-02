@@ -3,9 +3,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
   Sparkles,
-  Clock,
-  PhoneCall,
-  MessageSquare,
 } from "lucide-react";
 import { display, mono } from "@/components/home/theme";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
@@ -105,47 +102,6 @@ function DedicatedInfantCarePage() {
           </div>
 
           <InfantCareEnquiryForm />
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────
-       * 3. VIP OPERATIONS DESK CONTACT
-       * ─────────────────────────────────────────────────────────── */}
-      <section className="py-10 bg-white border-t border-slate-200 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl p-6 sm:p-8 rounded-3xl bg-slate-950 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-lime-400 mb-2" style={mono}>
-              <Clock size={12} />
-              <span>24/7 PRIORITY FAMILY DESK</span>
-            </div>
-            <h3 className="text-lg sm:text-xl font-bold" style={display}>
-              Travelling within 24 Hours or Need Immediate Assistance?
-            </h3>
-            <p className="text-xs text-slate-400 mt-1 max-w-xl">
-              Our airport duty managers are available 24/7 to coordinate emergency baby travel requirements, urgent layovers, and airport meet-and-greets.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full md:w-auto">
-            <a
-              href="https://wa.me/919599225778?text=Hello%20Shafsky%20Desk%2C%20I%20need%20urgent%20Infant%20Care%20airport%20assistance."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-md"
-              style={mono}
-            >
-              <MessageSquare size={15} />
-              <span>WhatsApp Us</span>
-            </a>
-            <a
-              href="tel:+919599225778"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 font-mono text-xs font-bold uppercase tracking-wider transition-all"
-              style={mono}
-            >
-              <PhoneCall size={14} className="text-lime-400" />
-              <span>Call (+91 95992 25778)</span>
-            </a>
-          </div>
         </div>
       </section>
 
