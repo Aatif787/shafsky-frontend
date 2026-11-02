@@ -43,14 +43,10 @@ const TRANSPORT_HERO_SLIDES = [
   {
     src: "/images/transport/fleet-skyline.webp",
     alt: "Shafsky Chauffeured Executive Sedans and Passenger Vans",
-    badge: "1/2 • Chauffeured Executive Fleet",
-    label: "Executive Fleet",
   },
   {
     src: "/images/transport/curbside-chauffeur.webp",
     alt: "Shafsky Curbside Executive Chauffeur Reception & City Transfer",
-    badge: "2/2 • Curbside Arrival",
-    label: "Curbside Arrival",
   },
 ];
 
@@ -184,11 +180,6 @@ function DedicatedTransportServicePage() {
                 >
                   <ArrowRight size={16} />
                 </button>
-              </div>
-
-              {/* Photo Caption Badge */}
-              <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md text-white text-[11px] font-mono px-3 py-1 rounded-full border border-white/10 shadow-sm">
-                {TRANSPORT_HERO_SLIDES[heroSlideIndex]?.badge}
               </div>
             </div>
           </div>
