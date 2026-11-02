@@ -7,7 +7,6 @@ import {
   MapPin,
   Send,
   CheckCircle2,
-  Sparkles,
   MessageSquare,
 } from "lucide-react";
 import { display } from "@/components/home/theme";
@@ -26,7 +25,6 @@ import {
   CHARTER_OPTIONS,
   CHARTER_HERO_SLIDES,
   AviationHeroStage,
-  AviationCategorySelector,
   AviationOptionSpecificFields,
   AviationSpecificationsSection,
   type CharterOptionId,
@@ -319,30 +317,12 @@ function DedicatedAirCharterPage() {
         handleMouseUp={handleMouseUp}
       />
 
-      {/* 2. 10 PRIVATE CHARTER OPTIONS SELECTOR */}
-      <AviationCategorySelector
-        selectedOptionId={selectedOptionId}
-        handleSelectOption={handleSelectOption}
-      />
+
 
       {/* 3. SELECTED CHARTER REQUEST PANEL (Tailored Quotation Flow) */}
       <section className="py-12 sm:py-16 bg-slate-50/60 border-b border-slate-200 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
-          {/* Active Option Heading */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-wider text-lime-700 mb-2">
-              <Sparkles size={13} className="text-lime-600" />
-              <span>{activeOption.badge} — REQUEST QUOTATION</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
-              {activeOption.id}
-            </h2>
-            {activeOption.tagline ? (
-              <p className="mt-1 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-                {activeOption.tagline}
-              </p>
-            ) : null}
-          </div>
+
 
           {/* Progressive Steps Indicator */}
           <div className="flex items-center justify-center gap-3 sm:gap-6 mb-8 text-xs font-mono font-bold">
@@ -430,22 +410,46 @@ function DedicatedAirCharterPage() {
               {/* STEP 1: ROUTING & SCHEDULE */}
               {currentStep === 1 && (
                 <form onSubmit={handleStep1Next} className="space-y-6">
-                  {/* Trip Type Selector */}
-                  <div className="flex items-center gap-2">
-                    {(["One Way", "Round Trip", "Multi-City"] as const).map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => setTripType(t)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all cursor-pointer ${
-                          tripType === t
-                            ? "bg-slate-900 text-white shadow-sm"
-                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                        }`}
+                  {/* Charter Category & Trip Type Selector */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Charter Category
+                      </label>
+                      <select
+                        value={selectedOptionId}
+                        onChange={(e) => handleSelectOption(e.target.value as CharterOptionId)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
                       >
-                        {t}
-                      </button>
-                    ))}
+                        {CHARTER_OPTIONS.map((opt) => (
+                          <option key={opt.id} value={opt.id}>
+                            {opt.id}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Trip Type
+                      </label>
+                      <div className="flex items-center gap-2">
+                        {(["One Way", "Round Trip", "Multi-City"] as const).map((t) => (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => setTripType(t)}
+                            className={`flex-1 py-2.5 rounded-xl text-xs font-bold font-mono transition-all cursor-pointer ${
+                              tripType === t
+                                ? "bg-slate-900 text-white shadow-sm"
+                                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                            }`}
+                          >
+                            {t}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Origin & Destination */}
