@@ -20,6 +20,7 @@ import {
 import { pageDisplay, pageMono, Panel } from "@/components/site/PageShell";
 import { checkStaffAccess } from "@/lib/admin.functions";
 import { ensureApplicationSession } from "@/auth/ensureSession";
+import { NotificationBell } from "@/components/admin/notifications/NotificationBell";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   loader: async () => {
@@ -324,7 +325,8 @@ function AdminLayout() {
 
       {/* Mobile Top Header */}
       <div className="flex flex-col flex-1 min-w-0">
-        <header className="lg:hidden flex items-center justify-between border-b border-white/10 bg-[#090d16] px-6 py-4">
+        {/* Mobile Top Header */}
+        <header className="lg:hidden flex items-center justify-between border-b border-white/10 bg-[#090d16] px-6 py-3.5">
           <div>
             <div
               className="text-[#5ed3ff] font-bold text-[10px] uppercase tracking-[0.25em]"
@@ -336,12 +338,39 @@ function AdminLayout() {
               OPS PORTAL
             </div>
           </div>
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="text-white/80 hover:text-white"
-          >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          <div className="flex items-center gap-3">
+            <NotificationBell />
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="text-white/80 hover:text-white p-1"
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </header>
+
+        {/* Desktop Top Header Bar */}
+        <header className="hidden lg:flex items-center justify-between border-b border-white/10 bg-[#090d16]/90 backdrop-blur-md px-8 py-3.5 sticky top-0 z-20">
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[#5ed3ff]" style={pageMono}>
+              Operations Console
+            </span>
+            <span className="text-white/20">/</span>
+            <span className="text-xs text-white/60 font-mono capitalize">
+              {currentPath.replace(/^\/admin\/?/, "") || "dashboard"}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <NotificationBell />
+            <div className="h-4 w-px bg-white/10" />
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="text-[11px] font-mono text-white/70 uppercase tracking-wider" style={pageMono}>
+                {roles[0] || "Staff"}
+              </span>
+            </div>
+          </div>
         </header>
 
         {/* Mobile Navigation Drawer */}
