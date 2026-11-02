@@ -8,7 +8,7 @@ const ALL_SELECTOR_SERVICES = [
   { id: "transport", t: "Airport Transfer", Icon: Car },
   { id: "porter", t: "Porter Service", Icon: Package },
   { id: "baggage", t: "Baggage Assist", Icon: Package },
-  { id: "visa", t: "Visa Assist", Icon: Sparkles },
+  { id: "visa", t: "Passport and Visa", Icon: Sparkles },
   { id: "hotel", t: "Hotel Booking", Icon: Building2 },
   { id: "wheelchair", t: "Wheelchair Assist", Icon: HeartPulse },
 ];

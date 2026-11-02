@@ -107,7 +107,7 @@ const OFFICIAL_SERVICES: ServiceCategory[] = [
       { label: "Cargo Logistics & Freight", subParam: "cargo", tagline: "Express air cargo, heavy freight charter & customs clearance" },
       { label: "Air Ticketing (Domestic & Intl)", subParam: "ticketing", tagline: "Instant commercial flight bookings across 500+ global airlines" },
       { label: "Travel & Tour", subParam: "tours-travel", tagline: "Curated travel itineraries & private luxury tours" },
-      { label: "Visa Assistance Services", subParam: "visa", tagline: "Fast-track Schengen, UK, US, UAE & global visa clearance" },
+      { label: "Passport and Visa", subParam: "visa", tagline: "Fast-track Schengen, UK, US, UAE & global visa clearance" },
       { label: "On-board Meal Arrangements", subParam: "onboard_meals", tagline: "Gourmet in-flight catering & dietary curation for group meet & greet" },
       { label: "Spa & Wellness", subParam: "spa-wellness", tagline: "Luxury couple spas, hydrotherapy & rejuvenating retreats" },
       { label: "Security Services", subParam: "pso", tagline: "Personal security officers & luxury boutique escort" },

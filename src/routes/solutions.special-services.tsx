@@ -403,7 +403,7 @@ function DedicatedSpecialServicesPage() {
           ) : selectedOptionId === "Visa Assistance Services" ? (
             <div className="text-center mb-8">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
-                Visa Assist
+                Passport and Visa
               </h2>
             </div>
           ) : selectedOptionId === "Air Ticketing Services" ? (
