@@ -51,8 +51,8 @@ function DedicatedInfantCarePage() {
        * ─────────────────────────────────────────────────────────── */}
       <section className="relative w-full overflow-hidden bg-white border-b border-slate-200 py-6 sm:py-8 md:py-10">
         <div className="relative z-10 mx-auto w-full max-w-[1040px] xl:max-w-[1100px] 2xl:max-w-[1140px] px-4 sm:px-6 md:px-8">
-          {/* Header Row: Back Button & Status Badge */}
-          <div className="w-full mb-4 sm:mb-6 flex items-center justify-between gap-3">
+          {/* Header Row: Back Button */}
+          <div className="w-full flex items-center justify-between gap-3">
             <button
               onClick={handleBack}
               className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/90 text-xs font-semibold shadow-xs hover:border-lime-500 transition-all cursor-pointer"
@@ -60,11 +60,6 @@ function DedicatedInfantCarePage() {
               <ArrowLeft size={14} className="text-lime-600" />
               <span>Back</span>
             </button>
-
-            <div className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-mono font-bold text-lime-800 uppercase tracking-widest bg-lime-50 px-3.5 sm:px-4 py-1.5 rounded-full border border-lime-300 shadow-xs" style={mono}>
-              <span className="w-2 h-2 rounded-full bg-lime-500 inline-block animate-pulse" />
-              <span>DEDICATED AIRPORT INFANT & FAMILY CARE</span>
-            </div>
           </div>
 
         </div>
