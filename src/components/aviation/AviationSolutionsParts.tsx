@@ -3,6 +3,8 @@ import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { display } from "@/components/home/theme";
 import { HOMEPAGE_PHOTOS } from "@/lib/homepage-photos";
 import jetTarmac from "@/assets/homepage/home2.jpeg";
+import airAmbulanceImg from "@/assets/others/airambulance.jpeg";
+import airAmbulance1Img from "@/assets/others/airambulance1.jpeg";
 
 export type CharterOptionId =
   | "Domestic and International Charter"
@@ -538,6 +540,26 @@ export function AviationOptionSpecificFields({
               <span>Aero-Medical Critical Care ICU Aircraft</span>
             </span>
             <span className="text-red-200">Certified Stretcher & Aviation Doctor</span>
+          </div>
+
+          {/* Air Ambulance Visual Previews */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-red-200/80 shadow-xs bg-white">
+              <img
+                src={airAmbulanceImg}
+                alt="Air Ambulance ICU Aircraft"
+                className="w-full h-full object-cover object-center select-none"
+                loading="lazy"
+              />
+            </div>
+            <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-red-200/80 shadow-xs bg-white">
+              <img
+                src={airAmbulance1Img}
+                alt="Air Ambulance Patient Medical Transport"
+                className="w-full h-full object-cover object-center select-none"
+                loading="lazy"
+              />
+            </div>
           </div>
 
           <div>

@@ -21,6 +21,9 @@ import infantCareImg from "@/assets/others/infant-care.jpg";
 import petCargoImg from "@/assets/others/pet-cargo.jpg";
 import visaAssistanceImg from "@/assets/others/visa-assistance.jpg";
 import humanRemainsImg from "@/assets/others/human-remains.jpg";
+import airAmbulanceImg from "@/assets/others/airambulance.jpeg";
+import airAmbulance1Img from "@/assets/others/airambulance1.jpeg";
+import trainImg from "@/assets/others/train.jpeg";
 
 export type SpecialServiceOptionId =
   | "Air Ticketing Services"
@@ -46,6 +49,7 @@ export interface SpecialServiceOptionDef {
   badge: string;
   tagline: string;
   photo?: string;
+  photos?: string[];
   icon: React.ComponentType<{ size?: number; className?: string }>;
   inclusions: string[];
 }
@@ -142,6 +146,8 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "24/7 AIRBORNE ICU & BED-TO-BED MEDICAL EVACUATION",
     tagline:
       "Dedicated ICU aircraft, certified aero-medical doctors, and seamless bed-to-bed hospital transfer across India and worldwide.",
+    photo: airAmbulanceImg,
+    photos: [airAmbulanceImg, airAmbulance1Img],
     icon: Plane,
     inclusions: [
       "Dedicated Airborne ICU Jet (Learjet / Hawker / King Air) on 2-Hour Rapid Standby",
@@ -159,6 +165,8 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "RAILWAY ICU TRANSFER & MEDICAL ESCORT",
     tagline:
       "Cost-effective long-distance patient rail transfer in 1AC/2AC medical coupes equipped with doctors, continuous oxygen, and monitoring.",
+    photo: trainImg,
+    photos: [trainImg],
     icon: Train,
     inclusions: [
       "Comfortable Rail Patient Transit in Air-Conditioned 1AC / 2AC Reserved Medical Coupe",
@@ -259,17 +267,25 @@ export function SpecialServiceHeroStage({
   activeOption: SpecialServiceOptionDef;
   onBack: () => void;
 }) {
+  const photosList =
+    activeOption.photos && activeOption.photos.length > 0
+      ? activeOption.photos
+      : activeOption.photo
+      ? [activeOption.photo]
+      : [];
+  const hasPhotos = photosList.length > 0;
+
   return (
     <section
       className={`relative w-full overflow-hidden bg-white border-b border-slate-200 ${
-        activeOption.photo ? "py-6 sm:py-8 md:py-10" : "py-4 sm:py-6"
+        hasPhotos ? "py-6 sm:py-8 md:py-10" : "py-4 sm:py-6"
       }`}
     >
       <div className="relative z-10 mx-auto w-full max-w-[1040px] xl:max-w-[1100px] 2xl:max-w-[1140px] px-4 sm:px-6 md:px-8">
         {/* Top Header Row: Back Button & Selected Service Status Badge */}
         <div
           className={`w-full flex items-center justify-between gap-3 ${
-            activeOption.photo ? "mb-3.5 sm:mb-5" : ""
+            hasPhotos ? "mb-3.5 sm:mb-5" : ""
           }`}
         >
           <button
@@ -286,17 +302,38 @@ export function SpecialServiceHeroStage({
           </div>
         </div>
 
-        {activeOption.photo && (
+        {photosList.length === 1 && (
           <div className="relative w-full aspect-[16/9] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none">
             <img
               width={1600}
               height={900}
-              src={activeOption.photo}
+              src={photosList[0]}
               alt={activeOption.label}
               className="w-full h-full object-cover object-center select-none block pointer-events-none bg-white"
               loading="eager"
               draggable={false}
             />
+          </div>
+        )}
+
+        {photosList.length > 1 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full">
+            {photosList.map((src, idx) => (
+              <div
+                key={idx}
+                className="relative w-full aspect-[16/9] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none"
+              >
+                <img
+                  width={1024}
+                  height={576}
+                  src={src}
+                  alt={`${activeOption.label} ${idx + 1}`}
+                  className="w-full h-full object-cover object-center select-none block pointer-events-none bg-white"
+                  loading="eager"
+                  draggable={false}
+                />
+              </div>
+            ))}
           </div>
         )}
       </div>
