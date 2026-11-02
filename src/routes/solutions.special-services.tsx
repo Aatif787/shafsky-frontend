@@ -122,7 +122,8 @@ function DedicatedSpecialServicesPage() {
   const [humDate, setHumDate] = useState("");
   const [humScope, setHumScope] = useState("Domestic Repatriation (Airport to Airport)");
 
-  // 7. Visa Assistance (Country, Category, Date, Applicants, Passport)
+  // 7. Passport & Visa Assistance (Country, Category, Date, Applicants, Passport)
+  const [passportOrVisa, setPassportOrVisa] = useState<"Passport" | "Visa">("Visa");
   const [visaCountry, setVisaCountry] = useState("");
   const [visaCategory, setVisaCategory] = useState("Tourist / Visitor Visa");
   const [visaDate, setVisaDate] = useState("");
@@ -170,10 +171,7 @@ function DedicatedSpecialServicesPage() {
       return;
     }
 
-    if (selectedOptionId === "Visa Assistance Services" && !visaPassport.trim()) {
-      alert("Please provide your passport number.");
-      return;
-    }
+
 
     setIsSubmitting(true);
 
@@ -267,16 +265,18 @@ function DedicatedSpecialServicesPage() {
       origin = "India";
       destination = visaCountry;
       serviceDate = visaDate || undefined;
+      const passportStr = visaPassport.trim() ? visaPassport.trim().toUpperCase() : undefined;
       details = {
         service: selectedOptionId,
+        service_type: passportOrVisa,
         destination_country: visaCountry,
-        visa_category: visaCategory,
+        category: visaCategory,
         travel_date: visaDate,
         applicants_count: visaApplicants,
-        passport_number: visaPassport.trim().toUpperCase(),
+        ...(passportStr ? { passport_number: passportStr } : {}),
       };
-      notes = `${visaCategory} for ${visaCountry} (${visaApplicants} Applicants) | Passport: ${visaPassport.trim().toUpperCase()}`;
-      serviceType = "Visa Assistance";
+      notes = `${passportOrVisa}: ${visaCategory} for ${visaCountry} (${visaApplicants} Applicants)${passportStr ? ` | Passport: ${passportStr}` : ""}`;
+      serviceType = passportOrVisa === "Passport" ? "Passport Assistance" : "Visa Assistance";
     } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
       origin = cargoOrigin;
       destination = cargoDest;
@@ -356,7 +356,8 @@ function DedicatedSpecialServicesPage() {
     } else if (selectedOptionId === "Human Remains (HUM)" || (selectedOptionId as any) === "Dignified Human Remains (HUM)") {
       details = `From: ${humOrigin}%0ATo: ${humDest}%0ATimeline: ${humDate}%0AScope: ${humScope}`;
     } else if (selectedOptionId === "Visa Assistance Services") {
-      details = `Country: ${visaCountry}%0ACategory: ${visaCategory}%0ATravel Date: ${visaDate}%0AApplicants: ${visaApplicants}%0APassport: ${visaPassport.trim().toUpperCase()}`;
+      const passportLine = passportOrVisa === "Passport" ? "" : (visaPassport.trim() ? `%0APassport: ${visaPassport.trim().toUpperCase()}` : "%0APassport: Optional / Pending");
+      details = `Service: ${passportOrVisa}%0ACountry: ${visaCountry}%0ACategory: ${visaCategory}%0ATravel Date: ${visaDate}%0AApplicants: ${visaApplicants}${passportLine}`;
     } else if (selectedOptionId === "Cargo & AVI Pet Freight") {
       details = `Transport Mode: ${petTransportMode}%0AFrom: ${cargoOrigin}%0ATo: ${cargoDest}%0APet Details: ${cargoDetails}%0ADate: ${cargoDate}${petNotes ? `%0ANotes: ${encodeURIComponent(petNotes)}` : ""}`;
     } else if (selectedOptionId === "Air Ticketing Services") {
@@ -770,6 +771,8 @@ function DedicatedSpecialServicesPage() {
                       setVisaApplicants={setVisaApplicants}
                       visaPassport={visaPassport}
                       setVisaPassport={setVisaPassport}
+                      passportOrVisa={passportOrVisa}
+                      setPassportOrVisa={setPassportOrVisa}
                       cargoOrigin={cargoOrigin}
                       setCargoOrigin={setCargoOrigin}
                       cargoDest={cargoDest}
