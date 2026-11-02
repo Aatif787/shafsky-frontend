@@ -19,7 +19,6 @@ import psoSecurityImg from "@/assets/others/pso-security.jpg";
 import specialserImg from "@/assets/others/specialser.png";
 import infantCareImg from "@/assets/others/infant-care.jpg";
 import petCargoImg from "@/assets/others/pet-cargo.jpg";
-import visaAssistanceImg from "@/assets/others/visa-assistance.jpg";
 import humanRemainsImg from "@/assets/others/human-remains.jpg";
 import airAmbulanceImg from "@/assets/others/airambulance.jpeg";
 import airAmbulance1Img from "@/assets/others/airambulance1.jpeg";
@@ -86,19 +85,11 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     id: "Visa Assistance Services",
     label: "Visa Assistance Services",
     shortLabel: "Visa Assistance",
-    badge: "FAST-TRACK DIPLOMATIC & CORPORATE VISA ASSIST",
+    badge: "",
     tagline:
       "Expedited visa processing, VIP doorstep biometrics, document vetting, and priority embassy liaison for international travel.",
-    photo: visaAssistanceImg,
     icon: FileCheck,
-    inclusions: [
-      "Expedited Business, Tourist, Diplomatic, Student & Medical Visa Processing",
-      "Doorstep Biometric Coordination & Priority VIP Appointment Scheduling",
-      "Comprehensive Document Verification, Cover Letter Drafting & Embassy File Review",
-      "Fast-Track Processing for Schengen, UK, US, UAE, Singapore & 50+ Global Hubs",
-      "Official Corporate Delegation & Diplomatic Mission Priority File Submission",
-      "24/7 Visa Helpdesk Status Tracking & Secure Courier Passport Delivery",
-    ],
+    inclusions: [],
   },
   {
     id: "On-board Meal Arrangements for Group Meet & Greet Bookings",
@@ -348,7 +339,7 @@ export function SpecialServiceDetailsSection({
 }: {
   activeOption: SpecialServiceOptionDef;
 }) {
-  if (activeOption.id === "Air Ticketing Services" || activeOption.id === "Cargo & AVI Pet Freight" || activeOption.id === "PSO (Personal Security Officer / VIP Shopping)" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
+  if (activeOption.id === "Air Ticketing Services" || activeOption.id === "Cargo & AVI Pet Freight" || activeOption.id === "PSO (Personal Security Officer / VIP Shopping)" || activeOption.id === "Visa Assistance Services" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
     return null;
   }
   return (
