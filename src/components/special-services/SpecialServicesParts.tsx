@@ -20,9 +20,6 @@ import specialserImg from "@/assets/others/specialser.png";
 import infantCareImg from "@/assets/others/infant-care.jpg";
 import petCargoImg from "@/assets/others/pet-cargo.jpg";
 import humanRemainsImg from "@/assets/others/human-remains.jpg";
-import airAmbulanceImg from "@/assets/others/airambulance.jpeg";
-import airAmbulance1Img from "@/assets/others/airambulance1.jpeg";
-import trainImg from "@/assets/others/train.jpeg";
 
 export type SpecialServiceOptionId =
   | "Air Ticketing Services"
@@ -134,39 +131,21 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     id: "Air Ambulance (Airborne ICU Jet)",
     label: "Air Ambulance",
     shortLabel: "Air Ambulance",
-    badge: "24/7 AIRBORNE ICU & BED-TO-BED MEDICAL EVACUATION",
+    badge: "",
     tagline:
       "Dedicated ICU aircraft, certified aero-medical doctors, and seamless bed-to-bed hospital transfer across India and worldwide.",
-    photo: airAmbulanceImg,
-    photos: [airAmbulanceImg, airAmbulance1Img],
     icon: Plane,
-    inclusions: [
-      "Dedicated Airborne ICU Jet (Learjet / Hawker / King Air) on 2-Hour Rapid Standby",
-      "Board-Certified Aero-Medical Flight Physicians & Critical Care ICU Nurses Onboard",
-      "Full Advanced Life Support Suite: Transport Ventilator, Defibrillator, Multipara Monitors",
-      "Ramp Surface Ambulance Synchronized at Both Origin & Destination Airport Tarmacs",
-      "Direct Airport Authority / DGCA Priority Clearance for Airside Medical Flights",
-      "24/7 Hospital-to-Hospital Coordination Desk & Continuous Bedside Handover",
-    ],
+    inclusions: [],
   },
   {
     id: "Train Ambulance",
     label: "Train Ambulance",
     shortLabel: "Train Ambulance",
-    badge: "RAILWAY ICU TRANSFER & MEDICAL ESCORT",
+    badge: "",
     tagline:
       "Cost-effective long-distance patient rail transfer in 1AC/2AC medical coupes equipped with doctors, continuous oxygen, and monitoring.",
-    photo: trainImg,
-    photos: [trainImg],
     icon: Train,
-    inclusions: [
-      "Comfortable Rail Patient Transit in Air-Conditioned 1AC / 2AC Reserved Medical Coupe",
-      "Accompanied by Experienced Critical Care Physician & Emergency Nursing Staff",
-      "Continuous Medical Grade Oxygen Cylinders & Emergency Life-Support Medicine Kit",
-      "Bed-to-Bed Surface Ambulance at Departure Station and Arrival Platform",
-      "Priority Stretcher & Station Master Wheelchair Transit onto Train Compartment",
-      "24/7 Rail Operations Control Room Standby & Continuous Family Tracking",
-    ],
+    inclusions: [],
   },
   {
     id: "Human Remains (HUM)",
@@ -339,7 +318,7 @@ export function SpecialServiceDetailsSection({
 }: {
   activeOption: SpecialServiceOptionDef;
 }) {
-  if (activeOption.id === "Air Ticketing Services" || activeOption.id === "Cargo & AVI Pet Freight" || activeOption.id === "PSO (Personal Security Officer / VIP Shopping)" || activeOption.id === "Visa Assistance Services" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
+  if (activeOption.id === "Air Ticketing Services" || activeOption.id === "Cargo & AVI Pet Freight" || activeOption.id === "PSO (Personal Security Officer / VIP Shopping)" || activeOption.id === "Visa Assistance Services" || activeOption.id === "Air Ambulance (Airborne ICU Jet)" || activeOption.id === "Train Ambulance" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
     return null;
   }
   return (
