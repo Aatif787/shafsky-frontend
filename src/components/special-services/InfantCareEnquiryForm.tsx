@@ -255,20 +255,6 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
       onSubmit={handleSubmit}
       className={`bg-white rounded-3xl border border-slate-200/90 shadow-xl p-6 sm:p-10 space-y-6 ${className}`}
     >
-      {/* Form Header */}
-      <div className="border-b border-slate-100 pb-5">
-        <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-lime-700 mb-1" style={mono}>
-          <Baby size={16} className="text-lime-600" />
-          <span>Arrange Infant Care Assistance</span>
-        </div>
-        <h3 className="text-xl sm:text-2xl font-bold text-slate-950 tracking-tight" style={display}>
-          Infant Care Enquiry Form
-        </h3>
-        <p className="text-xs sm:text-sm text-slate-600 mt-1">
-          Complete the details below to arrange dedicated airport assistance for you and your baby.
-        </p>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {/* 1. Parent Name */}
         <div>
