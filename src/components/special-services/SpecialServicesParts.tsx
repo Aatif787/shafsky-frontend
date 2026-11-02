@@ -20,6 +20,9 @@ import specialserImg from "@/assets/others/specialser.png";
 import infantCareImg from "@/assets/others/infant-care.jpg";
 import petCargoImg from "@/assets/others/pet-cargo.jpg";
 import humanRemainsImg from "@/assets/others/human-remains.jpg";
+import airAmbulanceImg from "@/assets/others/airambulance.jpeg";
+import airAmbulance1Img from "@/assets/others/airambulance1.jpeg";
+import trainImg from "@/assets/others/train.jpeg";
 
 export type SpecialServiceOptionId =
   | "Air Ticketing Services"
@@ -126,6 +129,8 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "",
     tagline:
       "Dedicated ICU aircraft, certified aero-medical doctors, and seamless bed-to-bed hospital transfer across India and worldwide.",
+    photo: airAmbulanceImg,
+    photos: [airAmbulanceImg, airAmbulance1Img],
     icon: Plane,
     inclusions: [],
   },
@@ -136,6 +141,8 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "",
     tagline:
       "Cost-effective long-distance patient rail transfer in 1AC/2AC medical coupes equipped with doctors, continuous oxygen, and monitoring.",
+    photo: trainImg,
+    photos: [trainImg],
     icon: Train,
     inclusions: [],
   },
