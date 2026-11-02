@@ -394,18 +394,26 @@ function DedicatedSpecialServicesPage() {
       <section id="request-form" className="py-12 sm:py-16 bg-slate-50/70 border-b border-slate-200 px-4 sm:px-6 lg:px-8 scroll-mt-6">
         <div className={selectedOptionId === "On-board Meal Arrangements for Group Meet & Greet Bookings" ? "mx-auto max-w-4xl" : "mx-auto max-w-3xl"}>
           {/* Active Option Heading */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-wider text-lime-700 mb-2">
-              <Sparkles size={13} className="text-lime-600" />
-              <span>QUICK ENQUIRY • CUSTOM QUOTATION</span>
+          {selectedOptionId === "On-board Meal Arrangements for Group Meet & Greet Bookings" ? (
+            <div className="text-center mb-8">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
+                On-board Meal Arrangements
+              </h2>
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
-              {activeOption.label} Enquiry
-            </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-600 max-w-lg mx-auto">
-              Share your details below to receive a custom quote within 15 minutes, or chat directly with our concierge desk.
-            </p>
-          </div>
+          ) : (
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-wider text-lime-700 mb-2">
+                <Sparkles size={13} className="text-lime-600" />
+                <span>QUICK ENQUIRY • CUSTOM QUOTATION</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
+                {activeOption.label} Enquiry
+              </h2>
+              <p className="mt-1 text-xs sm:text-sm text-slate-600 max-w-lg mx-auto">
+                Share your details below to receive a custom quote within 15 minutes, or chat directly with our concierge desk.
+              </p>
+            </div>
+          )}
 
           {selectedOptionId === "On-board Meal Arrangements for Group Meet & Greet Bookings" ? (
             <OnboardMealArrangementForm />

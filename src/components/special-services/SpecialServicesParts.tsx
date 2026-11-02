@@ -104,7 +104,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     id: "On-board Meal Arrangements for Group Meet & Greet Bookings",
     label: "On-board Meal Arrangements",
     shortLabel: "On-board Meals",
-    badge: "GOURMET IN-FLIGHT DINING & GROUP MEET & GREET CATERING",
+    badge: "",
     tagline:
       "Bespoke in-flight catering, customized dietary curation, and synchronized airside meal delivery for group and VIP Meet & Greet journeys.",
     icon: UtensilsCrossed,
@@ -296,10 +296,12 @@ export function SpecialServiceHeroStage({
             <span>Back</span>
           </button>
 
-          <div className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-mono font-bold text-lime-800 uppercase tracking-widest bg-lime-50 px-3.5 sm:px-4 py-1.5 rounded-full border border-lime-300 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-lime-500 inline-block animate-pulse" />
-            <span>{activeOption.badge}</span>
-          </div>
+          {activeOption.badge ? (
+            <div className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-mono font-bold text-lime-800 uppercase tracking-widest bg-lime-50 px-3.5 sm:px-4 py-1.5 rounded-full border border-lime-300 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-lime-500 inline-block animate-pulse" />
+              <span>{activeOption.badge}</span>
+            </div>
+          ) : null}
         </div>
 
         {photosList.length === 1 && (
