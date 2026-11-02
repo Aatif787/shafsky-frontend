@@ -115,7 +115,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     id: "PSO (Personal Security Officer / VIP Shopping)",
     label: "Security Services",
     shortLabel: "Security Services",
-    badge: "CLOSE PROTECTION & LUXURY RETAIL ESCORT",
+    badge: "",
     tagline:
       "Armed and unarmed close protection officers for high-profile VIPs, executive escorts, and private luxury boutique shopping.",
     photo: psoSecurityImg,
