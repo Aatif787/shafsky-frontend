@@ -415,11 +415,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     availablePackages.length,
   ]);
 
-  // Mumbai Airport Express Fee rule
+  // Mumbai Airport Express Fee rule (calculated independently per service)
   const expressFeeDetails = useMemo(() => {
-    const isBom = (airportCode || "").toUpperCase() === "BOM";
-    if (!isBom) return { feeInr: 0, isApplicable: false, advanceHours: null };
-
     const rawDep = flightVerification.isFlightVerified && flightVerification.verifiedFlight?.departure?.scheduledTime
       ? flightVerification.verifiedFlight.departure.scheduledTime
       : flightVerification.manualDepTime
@@ -432,43 +429,96 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
       ? buildAnchoredServiceClock(serviceDate, flightVerification.manualArrTime, "12:30")
       : null;
 
-    const dir = (direction || "departure").toLowerCase();
     const isInternational = (travelType || "domestic").toLowerCase() === "international";
 
-    let targetTimeStr: string | null = null;
-    let offsetMs = 0;
+    // Determine services to evaluate independently
+    const servicesToCheck: { serviceType: AirportServiceType; airport: string; price: number }[] = [];
 
-    if (dir === "departure") {
-      targetTimeStr = rawDep;
-      if (!targetTimeStr) return { feeInr: 0, isApplicable: false, advanceHours: null };
-      offsetMs = isInternational ? 3 * 60 * 60 * 1000 : (1 * 60 + 30) * 60 * 1000;
-    } else {
-      targetTimeStr = rawArr || rawDep;
-      if (!targetTimeStr) return { feeInr: 0, isApplicable: false, advanceHours: null };
-      offsetMs = 0;
-    }
+    if (selectedServices && selectedServices.length > 0) {
+      for (const st of selectedServices) {
+        const sApt = (
+          st === "DEPARTURE"
+            ? cleanOrigin || originCode || (direction === "departure" ? airportCode : "")
+            : st === "ARRIVAL"
+              ? cleanDest || destCode || (direction === "arrival" ? airportCode : "")
+              : cleanTransit || transitCode || searchParams?.transit || (direction === "transit" ? airportCode : "")
+        ).trim().toUpperCase();
 
-    try {
-      const hasOffset = /[Zz]|[+-]\d{2}:?\d{2}$/.test(targetTimeStr);
-      const normalizedStr = hasOffset ? targetTimeStr : `${targetTimeStr}+05:30`;
-      const flightTimestamp = new Date(normalizedStr).getTime();
-      if (isNaN(flightTimestamp)) return { feeInr: 0, isApplicable: false, advanceHours: null };
-
-      const serviceStartMs = flightTimestamp - offsetMs;
-      const advanceMs = serviceStartMs - Date.now();
-      const advanceHours = advanceMs / (1000 * 60 * 60);
-
-      if (advanceMs > 0 && advanceMs < 24 * 60 * 60 * 1000) {
-        const fee = Math.round(baseInrTotalPrice * 0.50 * 100) / 100;
-        return { feeInr: fee, isApplicable: true, advanceHours };
+        const availItem = multiServiceAvailability.find(
+          (a) => a.service_type === st && (!sApt || a.airport_code.toUpperCase() === sApt)
+        );
+        let sPrice = 0;
+        if (availItem && availItem.total_price !== undefined && availItem.total_price > 0) {
+          sPrice = availItem.total_price;
+        } else {
+          sPrice = baseInrTotalPrice;
+        }
+        servicesToCheck.push({ serviceType: st, airport: sApt, price: sPrice });
       }
-      return { feeInr: 0, isApplicable: false, advanceHours };
-    } catch {
-      return { feeInr: 0, isApplicable: false, advanceHours: null };
+    } else {
+      const singleApt = (airportCode || "").trim().toUpperCase();
+      const singleSt = (direction || "departure").toUpperCase() as AirportServiceType;
+      servicesToCheck.push({ serviceType: singleSt, airport: singleApt, price: baseInrTotalPrice });
     }
+
+    let totalFeeInr = 0;
+    let minAdvanceHours: number | null = null;
+
+    for (const svc of servicesToCheck) {
+      if (svc.airport !== "BOM") continue;
+
+      let targetTimeStr: string | null = null;
+      let offsetMs = 0;
+
+      if (svc.serviceType === "DEPARTURE") {
+        targetTimeStr = rawDep || rawArr;
+        if (!targetTimeStr) continue;
+        offsetMs = isInternational ? 3 * 60 * 60 * 1000 : (1 * 60 + 30) * 60 * 1000;
+      } else {
+        // ARRIVAL or TRANSIT
+        targetTimeStr = rawArr || rawDep;
+        if (!targetTimeStr) continue;
+        offsetMs = 0;
+      }
+
+      try {
+        const hasOffset = /[Zz]|[+-]\d{2}:?\d{2}$/.test(targetTimeStr);
+        const normalizedStr = hasOffset ? targetTimeStr : `${targetTimeStr}+05:30`;
+        const flightTimestamp = new Date(normalizedStr).getTime();
+        if (isNaN(flightTimestamp)) continue;
+
+        const serviceStartMs = flightTimestamp - offsetMs;
+        const advanceMs = serviceStartMs - Date.now();
+        const advanceHours = advanceMs / (1000 * 60 * 60);
+
+        if (advanceMs > 0 && advanceMs < 24 * 60 * 60 * 1000) {
+          const fee = Math.round(svc.price * 0.50 * 100) / 100;
+          totalFeeInr += fee;
+          if (minAdvanceHours === null || advanceHours < minAdvanceHours) {
+            minAdvanceHours = advanceHours;
+          }
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    return {
+      feeInr: Math.round(totalFeeInr * 100) / 100,
+      isApplicable: totalFeeInr > 0,
+      advanceHours: minAdvanceHours,
+    };
   }, [
-    airportCode,
+    selectedServices,
+    cleanOrigin,
+    originCode,
     direction,
+    airportCode,
+    cleanDest,
+    destCode,
+    cleanTransit,
+    transitCode,
+    searchParams?.transit,
     travelType,
     serviceDate,
     flightVerification.isFlightVerified,
@@ -476,6 +526,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     flightVerification.manualDepTime,
     flightVerification.manualArrTime,
     baseInrTotalPrice,
+    multiServiceAvailability,
   ]);
 
   const expressFeeInr = isArrangementOnly ? 0 : expressFeeDetails.feeInr;
