@@ -289,3 +289,33 @@ export const sanitizeFlightInput = (input: string): string => {
   }
   return clean;
 };
+
+/**
+ * Normalizes airport terminals into canonical Shafsky naming ("Terminal 1 & 2" or "Terminal 3").
+ */
+export function normalizeTerminalName(raw?: string | null): string {
+  if (!raw) return "";
+  const s = String(raw).trim().toUpperCase();
+  if (
+    s === "1" ||
+    s === "2" ||
+    s === "T1" ||
+    s === "T2" ||
+    s === "TERMINAL 1" ||
+    s === "TERMINAL 2" ||
+    s === "TERMINAL 1 & 2" ||
+    s === "TERMINAL 1&2" ||
+    s === "T1 & T2" ||
+    s === "T1&T2" ||
+    s === "T1/T2" ||
+    s === "T1_T2" ||
+    s.includes("TERMINAL 1") ||
+    s.includes("TERMINAL 2")
+  ) {
+    return "Terminal 1 & 2";
+  }
+  if (s === "3" || s === "T3" || s === "TERMINAL 3" || s.includes("TERMINAL 3")) {
+    return "Terminal 3";
+  }
+  return String(raw).trim();
+}

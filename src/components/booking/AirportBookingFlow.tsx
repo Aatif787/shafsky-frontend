@@ -1,28 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { toast } from "sonner";
 import { format, parseISO, isValid } from "date-fns";
-import { resolveApiUrl } from "@/lib/api/config";
 import {
   getAirportRegistryEntry,
-  getTransitCategory,
   getRouteFlightCategory,
-  AIRPORT_REGISTRY,
 } from "@/data/airportRegistry";
-import {
-  convertFromINR,
-  formatPrice,
-  detectDefaultCurrency,
-} from "@/lib/currency";
-import {
-  MultiServiceApi,
-  AirportServiceType,
-  ServiceItemAvailability,
-  MultiServiceAvailabilityResponse,
-} from "@/lib/api/multiServiceApi";
+import { formatPrice } from "@/lib/currency";
 
 // Modular Airport Domain Components & Types
-import { AirportBookingFlowProps, PassengerDetail, AirportPackageItem } from "./airport/types";
-import { extractIata, buildAnchoredServiceClock } from "./airport/utils";
+import { AirportBookingFlowProps } from "./airport/types";
+import { extractIata } from "./airport/utils";
 import { BookingConfirmationView } from "./airport/BookingConfirmationView";
 import { ServiceArrangementConfirmationView } from "./airport/ServiceArrangementConfirmationView";
 import { TripContextBanner } from "./airport/TripContextBanner";
@@ -34,6 +20,10 @@ import { TransitFlightDetailsSection } from "./airport/TransitFlightDetailsSecti
 // Custom Domain Hooks
 import { useFlightVerification } from "./airport/hooks/useFlightVerification";
 import { useAirportPayment } from "./airport/hooks/useAirportPayment";
+import { usePassengerDetails } from "./airport/hooks/usePassengerDetails";
+import { useTerminalSelection } from "./airport/hooks/useTerminalSelection";
+import { useMultiServicePackages } from "./airport/hooks/useMultiServicePackages";
+import { useExpressFeeCalculation } from "./airport/hooks/useExpressFeeCalculation";
 
 export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
   // 1. Initial State from Search Params & Intent
@@ -80,7 +70,6 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
   const handleTravelTypeChange = (newType: "domestic" | "international") => {
     if (isCategoryLocked && !explicitlyAcceptedRoute) {
-      // Category is locked by the homepage booking flow route unless explicitly accepted
       return;
     }
     setTravelType(newType);
@@ -101,13 +90,17 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
   const initialOrigin =
     direction === "arrival"
-      ? (rawOrigin && rawOrigin !== airportCode ? rawOrigin : "")
-      : (rawOrigin || (direction === "departure" ? airportCode : ""));
+      ? rawOrigin && rawOrigin !== airportCode
+        ? rawOrigin
+        : ""
+      : rawOrigin || (direction === "departure" ? airportCode : "");
 
   const initialDestination =
     direction === "departure"
-      ? (rawDest && rawDest !== airportCode ? rawDest : "")
-      : (rawDest || (direction === "arrival" ? airportCode : ""));
+      ? rawDest && rawDest !== airportCode
+        ? rawDest
+        : ""
+      : rawDest || (direction === "arrival" ? airportCode : "");
 
   const [originCode, setOriginCode] = useState<string>(initialOrigin);
   const [destCode, setDestCode] = useState<string>(initialDestination);
@@ -206,405 +199,126 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     setManualDatePopoverOpen2(false);
   };
 
-  const [paxAdults, setPaxAdults] = useState<number>(() => Math.min(10, Math.max(1, Number(searchParams?.pax_adults) || 1)));
-  const paxChildren = Math.max(0, Number(searchParams?.pax_children) || 0);
-  const paxInfants = Math.max(0, Number(searchParams?.pax_infants) || 0);
-  const totalPax = paxAdults + paxChildren + paxInfants;
+  // 3. Passenger Details Hook
+  const passengerDetails = usePassengerDetails({ searchParams });
+  const {
+    passengers,
+    paxAdults,
+    paxChildren,
+    paxInfants,
+    totalPax,
+    handlePaxChange,
+    updatePassenger,
+    copyFromPassenger1,
+    fullName,
+    age,
+    phone,
+    email,
+  } = passengerDetails;
 
-  // Selected Service Package & Authoritative Unit Price
-  const initialPkgId = searchParams?.package_id || searchParams?.service_id || "gold";
-  const [selectedPackageId, setSelectedPackageId] = useState<string>(initialPkgId);
-  const [selectedPackageName, setSelectedPackageName] = useState<string>(
-    searchParams?.package_name || (initialPkgId ? `${initialPkgId.charAt(0).toUpperCase() + initialPkgId.slice(1)} Service` : "VIP Airport Service")
-  );
-  const [selectedPackagePrice, setSelectedPackagePrice] = useState<string>(searchParams?.package_price || "");
-
-  // Dynamic Database-Driven Packages
-  const [availablePackages, setAvailablePackages] = useState<AirportPackageItem[]>([]);
-  const [isPackagesLoading, setIsPackagesLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!airportCode) return;
-    let active = true;
-    setIsPackagesLoading(true);
-    const jt = (direction || "departure").toUpperCase();
-    const transitCat = direction === "transit" && originCode && destCode ? getTransitCategory(originCode, destCode) : null;
-    const ft = (transitCat || travelType || "domestic").toUpperCase();
-    const routeParams = originCode && destCode ? `&origin=${encodeURIComponent(originCode)}&destination=${encodeURIComponent(destCode)}` : "";
-    const url = resolveApiUrl(`/api/airport/services?airport=${airportCode}&journey_type=${jt}&flight_type=${ft}${routeParams}`);
-
-    fetch(url, { headers: { "Accept": "application/json" } })
-      .then((res) => res.json())
-      .then((data) => {
-        if (!active) return;
-        if (data?.packages && Array.isArray(data.packages) && data.packages.length > 0) {
-          setAvailablePackages(data.packages);
-          const current = data.packages.find((p: any) => p.id.toLowerCase() === (selectedPackageId || "").toLowerCase());
-          if (current) {
-            setSelectedPackagePrice(String(current.basePrice));
-            setSelectedPackageName(current.title);
-          } else {
-            setSelectedPackageId(data.packages[0].id);
-            setSelectedPackageName(data.packages[0].title);
-            setSelectedPackagePrice(String(data.packages[0].basePrice));
-          }
-        }
-      })
-      .catch((err) => console.warn("[AirportBookingFlow] Failed to fetch catalog packages:", err))
-      .finally(() => {
-        if (active) setIsPackagesLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [airportCode, direction, travelType, originCode, destCode]);
-
-  // Multi-Service Selection & Dynamic Availability State
-  const [selectedServices, setSelectedServices] = useState<AirportServiceType[]>(() => {
-    const sParam = typeof searchParams?.services === "string" ? searchParams.services : "";
-    if (sParam.trim()) {
-      const tokens = sParam.split(",").map((s: string) => s.trim().toUpperCase());
-      const mapped: AirportServiceType[] = [];
-      for (const t of tokens) {
-        if (t === "DEPARTURE" && !mapped.includes("DEPARTURE")) mapped.push("DEPARTURE");
-        if (t === "ARRIVAL" && !mapped.includes("ARRIVAL")) mapped.push("ARRIVAL");
-        if ((t === "TRANSIT" || t === "CONNECTION") && !mapped.includes("TRANSIT")) mapped.push("TRANSIT");
-      }
-      if (mapped.length > 0) return mapped;
-    }
-    const rawDir = (initialDirection || "departure").toUpperCase();
-    if (rawDir === "TRANSIT") return ["TRANSIT"];
-    if (rawDir === "ARRIVAL") return ["ARRIVAL"];
-    return ["DEPARTURE"];
-  });
-
-  const [packageByService, setPackageByService] = useState<Record<AirportServiceType, string>>(() => {
-    let sessionPkgs: Record<string, string> = {};
-    try {
-      const s = typeof window !== "undefined" ? window.sessionStorage?.getItem("shafsky_booking_intent") : null;
-      if (s) {
-        const parsed = JSON.parse(s);
-        if (parsed.packages_by_service) sessionPkgs = parsed.packages_by_service;
-      }
-    } catch {}
-
-    const pkg = searchParams?.package_id || searchParams?.service_id || "";
-    const primaryDir = (initialDirection || "departure").toUpperCase();
-    return {
-      DEPARTURE: (searchParams?.pkg_departure as string) || sessionPkgs.DEPARTURE || (primaryDir === "DEPARTURE" && pkg ? pkg : ""),
-      ARRIVAL: (searchParams?.pkg_arrival as string) || sessionPkgs.ARRIVAL || (primaryDir === "ARRIVAL" && pkg ? pkg : ""),
-      TRANSIT: (searchParams?.pkg_transit as string) || sessionPkgs.TRANSIT || (primaryDir === "TRANSIT" && pkg ? pkg : ""),
-    };
-  });
-
-  const [multiServiceAvailability, setMultiServiceAvailability] = useState<ServiceItemAvailability[]>([]);
-  const [multiServiceResponse, setMultiServiceResponse] = useState<MultiServiceAvailabilityResponse | null>(null);
-  const [, setIsMultiServiceLoading] = useState<boolean>(false);
-
-  // Multi-Currency State & Live Conversion
-  const [selectedCurrency, setSelectedCurrency] = useState<string>(() => detectDefaultCurrency());
-
-  const numericUnitPrice = useMemo(() => {
-    const p = Number(String(selectedPackagePrice).replace(/[^0-9.]/g, ""));
-    if (p > 0) return p;
-    const pkg = availablePackages.find((item) => item.id.toLowerCase() === (selectedPackageId || "").toLowerCase());
-    if (pkg && pkg.basePrice > 0) return pkg.basePrice;
-    const id = (selectedPackageId || "").toLowerCase();
-    if (id.includes("platinum") || id.includes("elite")) return 9500;
-    if (id.includes("gold") || id.includes("meet")) return 5500;
-    if (id.includes("silver") || id.includes("basic")) return 3500;
-    return 5500;
-  }, [selectedPackagePrice, selectedPackageId, availablePackages]);
-
-  // Policy: Children & Infants are complimentary / free. Only Adults are billable.
-  const billablePax = paxAdults;
-  const baseInrTotalPrice = numericUnitPrice * billablePax;
-  const convertedUnitPrice = useMemo(() => convertFromINR(numericUnitPrice, selectedCurrency), [numericUnitPrice, selectedCurrency]);
-
-  // Sync multi-service availability whenever route, date, passengers, or selections change
-  useEffect(() => {
-    let active = true;
-    const effOrigin = cleanOrigin || originCode || (direction === "departure" ? airportCode : "");
-    const effDest = cleanDest || destCode || (direction === "arrival" ? airportCode : "");
-    const effTransit = cleanTransit || transitCode || searchParams?.transit || (direction === "transit" ? airportCode : "");
-
-    if (!effOrigin && !effDest && !airportCode) return;
-    if (!selectedServices || selectedServices.length === 0) return;
-    if (!billablePax || billablePax < 1) return;
-
-    setIsMultiServiceLoading(true);
-
-    MultiServiceApi.checkAvailability({
-      origin_code: effOrigin || airportCode || "DEL",
-      dest_code: effDest || airportCode || "BOM",
-      transit_codes: effTransit ? [effTransit] : undefined,
-      flight_num: flightVerification.flightNumber || undefined,
-      service_date: serviceDate || undefined,
-      guest_count: billablePax,
-      selected_services: selectedServices.map((st) => ({
-        service_type: st,
-        package_slug: packageByService[st] || (st === (direction || "departure").toUpperCase() ? (selectedPackageId || initialPkgId) : undefined),
-        airport_code: st === "DEPARTURE" ? effOrigin : st === "ARRIVAL" ? effDest : effTransit,
-      })),
-    })
-      .then((res) => {
-        if (!active) return;
-        setMultiServiceResponse(res);
-        setMultiServiceAvailability(res.services || []);
-      })
-      .catch((err) => {
-        console.warn("[AirportBookingFlow] Multi-service availability error:", err);
-      })
-      .finally(() => {
-        if (active) setIsMultiServiceLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [
-    originCode,
-    destCode,
+  // 4. Multi-Service Packages & Catalog Availability Hook
+  const multiServicePkg = useMultiServicePackages({
+    searchParams,
     airportCode,
     direction,
-    flightVerification.flightNumber,
+    initialDirection,
+    travelType,
+    originCode,
+    destCode,
+    cleanOrigin,
+    cleanDest,
+    cleanTransit,
+    transitCode,
+    selectedTerminal: "", // placeholder, updated via sync below
     serviceDate,
-    billablePax,
+    flightNumber: flightVerification.flightNumber,
+    paxAdults,
+  });
+
+  const {
+    initialPkgId,
+    selectedPackageId,
+    setSelectedPackageId,
+    selectedPackageName,
+    setSelectedPackageName,
+    selectedPackagePrice,
+    setSelectedPackagePrice,
+    availablePackages,
+    isPackagesLoading,
     selectedServices,
     packageByService,
-  ]);
-
-  // Only true when an itinerary contains strictly unsupported airports NOT covered in our database
-  const isArrangementOnly = useMemo(() => {
-    if (multiServiceResponse) {
-      if (multiServiceResponse.none_available) return true;
-      const hasUnsupported = selectedServices.some((st) => {
-        const sApt =
-          st === "DEPARTURE"
-            ? cleanOrigin || originCode || (direction === "departure" ? airportCode : "")
-            : st === "ARRIVAL"
-              ? cleanDest || destCode || (direction === "arrival" ? airportCode : "")
-              : cleanTransit || transitCode || searchParams?.transit || (direction === "transit" ? airportCode : "");
-        const sAptClean = (sApt || "").trim().toUpperCase();
-        const avail = multiServiceAvailability.find(
-          (a) => a.service_type === st && (!sAptClean || a.airport_code.toUpperCase() === sAptClean)
-        );
-        return avail ? !avail.is_airport_supported : false;
-      });
-      if (hasUnsupported && !multiServiceResponse.any_available) return true;
-    }
-    if (!isPackagesLoading && availablePackages.length === 0 && airportCode) {
-      return true;
-    }
-    return false;
-  }, [
+    setPackageByService,
+    multiServiceAvailability,
     multiServiceResponse,
-    selectedServices,
-    cleanOrigin,
-    originCode,
-    direction,
-    airportCode,
-    cleanDest,
-    destCode,
-    cleanTransit,
-    transitCode,
-    searchParams?.transit,
-    multiServiceAvailability,
-    isPackagesLoading,
-    availablePackages.length,
-  ]);
-
-  // Mumbai Airport Express Fee rule (calculated independently per service)
-  const expressFeeDetails = useMemo(() => {
-    const rawDep = flightVerification.isFlightVerified && flightVerification.verifiedFlight?.departure?.scheduledTime
-      ? flightVerification.verifiedFlight.departure.scheduledTime
-      : flightVerification.manualDepTime
-      ? buildAnchoredServiceClock(serviceDate, flightVerification.manualDepTime, "10:00")
-      : null;
-
-    const rawArr = flightVerification.isFlightVerified && flightVerification.verifiedFlight?.arrival?.scheduledTime
-      ? flightVerification.verifiedFlight.arrival.scheduledTime
-      : flightVerification.manualArrTime
-      ? buildAnchoredServiceClock(serviceDate, flightVerification.manualArrTime, "12:30")
-      : null;
-
-    const isInternational = (travelType || "domestic").toLowerCase() === "international";
-
-    // Determine services to evaluate independently
-    const servicesToCheck: { serviceType: AirportServiceType; airport: string; price: number }[] = [];
-
-    if (selectedServices && selectedServices.length > 0) {
-      for (const st of selectedServices) {
-        const sApt = (
-          st === "DEPARTURE"
-            ? cleanOrigin || originCode || (direction === "departure" ? airportCode : "")
-            : st === "ARRIVAL"
-              ? cleanDest || destCode || (direction === "arrival" ? airportCode : "")
-              : cleanTransit || transitCode || searchParams?.transit || (direction === "transit" ? airportCode : "")
-        ).trim().toUpperCase();
-
-        const availItem = multiServiceAvailability.find(
-          (a) => a.service_type === st && (!sApt || a.airport_code.toUpperCase() === sApt)
-        );
-        let sPrice = 0;
-        if (availItem && availItem.total_price !== undefined && availItem.total_price > 0) {
-          sPrice = availItem.total_price;
-        } else {
-          sPrice = baseInrTotalPrice;
-        }
-        servicesToCheck.push({ serviceType: st, airport: sApt, price: sPrice });
-      }
-    } else {
-      const singleApt = (airportCode || "").trim().toUpperCase();
-      const singleSt = (direction || "departure").toUpperCase() as AirportServiceType;
-      servicesToCheck.push({ serviceType: singleSt, airport: singleApt, price: baseInrTotalPrice });
-    }
-
-    let totalFeeInr = 0;
-    let minAdvanceHours: number | null = null;
-
-    for (const svc of servicesToCheck) {
-      if (svc.airport !== "BOM") continue;
-
-      let targetTimeStr: string | null = null;
-      let offsetMs = 0;
-
-      if (svc.serviceType === "DEPARTURE") {
-        targetTimeStr = rawDep || rawArr;
-        if (!targetTimeStr) continue;
-        offsetMs = isInternational ? 3 * 60 * 60 * 1000 : (1 * 60 + 30) * 60 * 1000;
-      } else {
-        // ARRIVAL or TRANSIT
-        targetTimeStr = rawArr || rawDep;
-        if (!targetTimeStr) continue;
-        offsetMs = 0;
-      }
-
-      try {
-        const hasOffset = /[Zz]|[+-]\d{2}:?\d{2}$/.test(targetTimeStr);
-        const normalizedStr = hasOffset ? targetTimeStr : `${targetTimeStr}+05:30`;
-        const flightTimestamp = new Date(normalizedStr).getTime();
-        if (isNaN(flightTimestamp)) continue;
-
-        const serviceStartMs = flightTimestamp - offsetMs;
-        const advanceMs = serviceStartMs - Date.now();
-        const advanceHours = advanceMs / (1000 * 60 * 60);
-
-        if (advanceMs > 0 && advanceMs < 24 * 60 * 60 * 1000) {
-          const fee = Math.round(svc.price * 0.50 * 100) / 100;
-          totalFeeInr += fee;
-          if (minAdvanceHours === null || advanceHours < minAdvanceHours) {
-            minAdvanceHours = advanceHours;
-          }
-        }
-      } catch {
-        continue;
-      }
-    }
-
-    return {
-      feeInr: Math.round(totalFeeInr * 100) / 100,
-      isApplicable: totalFeeInr > 0,
-      advanceHours: minAdvanceHours,
-    };
-  }, [
-    selectedServices,
-    cleanOrigin,
-    originCode,
-    direction,
-    airportCode,
-    cleanDest,
-    destCode,
-    cleanTransit,
-    transitCode,
-    searchParams?.transit,
-    travelType,
-    serviceDate,
-    flightVerification.isFlightVerified,
-    flightVerification.verifiedFlight,
-    flightVerification.manualDepTime,
-    flightVerification.manualArrTime,
+    selectedCurrency,
+    setSelectedCurrency,
+    numericUnitPrice,
+    billablePax,
     baseInrTotalPrice,
-    multiServiceAvailability,
-  ]);
+    convertedUnitPrice,
+    isArrangementOnly,
+  } = multiServicePkg;
 
-  const expressFeeInr = isArrangementOnly ? 0 : expressFeeDetails.feeInr;
-  const isExpressFeeApplicable = isArrangementOnly ? false : expressFeeDetails.isApplicable;
-  const isMultiService = selectedServices.length > 1;
-  const effectiveBaseInrTotalPrice = isArrangementOnly
-    ? 0
-    : isMultiService && multiServiceResponse
-    ? multiServiceResponse.total_payable
-    : baseInrTotalPrice;
-  const totalPrice = isArrangementOnly ? 0 : effectiveBaseInrTotalPrice + expressFeeInr;
-  const convertedExpressFee = useMemo(() => convertFromINR(expressFeeInr, selectedCurrency), [expressFeeInr, selectedCurrency]);
-  const convertedTotalPrice = useMemo(() => (isArrangementOnly ? 0 : convertFromINR(totalPrice, selectedCurrency)), [isArrangementOnly, totalPrice, selectedCurrency]);
-
-  // Dynamic Multi-Passenger State
-  const [passengers, setPassengers] = useState<PassengerDetail[]>(() => {
-    const count = Math.min(10, Math.max(1, Number(searchParams?.pax_adults) || 1));
-    return Array.from({ length: count }, () => ({
-      fullName: "",
-      age: "",
-      phone: "",
-      email: "",
-    }));
+  // 5. Terminal Selection & Dynamic Upgrade Engine Hook
+  const terminalSelection = useTerminalSelection({
+    rawAirportCode,
+    initialTravelType,
+    searchParams,
+    airportCode,
+    cleanOrigin,
+    originCode,
+    cleanDest,
+    destCode,
+    direction,
+    travelType,
+    flightVerification,
+    selectedPackageId,
+    setSelectedPackageId,
+    setSelectedPackageName,
+    setSelectedPackagePrice,
+    setPackageByService,
   });
 
-  const handlePaxChange = (newCount: number) => {
-    if (newCount > 10) {
-      toast.info("Maximum 10 passengers allowed per booking. For larger groups, please contact our VIP desk.");
-      return;
-    }
-    const count = Math.min(10, Math.max(1, newCount));
-    setPaxAdults(count);
-    setPassengers((prev) => {
-      if (prev.length === count) return prev;
-      if (prev.length < count) {
-        const added = Array.from({ length: count - prev.length }, () => ({
-          fullName: "",
-          age: "",
-          phone: "",
-          email: "",
-        }));
-        return [...prev, ...added];
-      }
-      return prev.slice(0, count);
-    });
-  };
+  const {
+    selectedTerminal,
+    terminalNoticeDismissed,
+    setTerminalNoticeDismissed,
+    terminalMismatch,
+    handleApplyTerminalSwitch,
+  } = terminalSelection;
 
-  const updatePassenger = (index: number, field: keyof PassengerDetail, value: string) => {
-    setPassengers((prev) => {
-      const updated = [...prev];
-      if (!updated[index]) {
-        updated[index] = { fullName: "", age: "", phone: "", email: "" };
-      }
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
-  };
+  // 6. Mumbai Airport Express Fee Hook
+  const expressFeeHook = useExpressFeeCalculation({
+    selectedServices,
+    cleanOrigin,
+    originCode,
+    direction,
+    airportCode,
+    cleanDest,
+    destCode,
+    cleanTransit,
+    transitCode,
+    searchParams,
+    travelType,
+    serviceDate,
+    flightVerification,
+    baseInrTotalPrice,
+    multiServiceAvailability,
+    isArrangementOnly,
+    multiServiceResponse,
+    selectedCurrency,
+  });
 
-  const copyFromPassenger1 = (index: number) => {
-    setPassengers((prev) => {
-      const p1 = prev[0] || { phone: "", email: "" };
-      const updated = [...prev];
-      if (updated[index]) {
-        updated[index] = {
-          ...updated[index],
-          phone: p1.phone || "",
-          email: p1.email || "",
-        };
-      }
-      return updated;
-    });
-  };
+  const {
+    expressFeeInr,
+    isExpressFeeApplicable,
+    expressFeeLabel,
+    expressFeeNotice,
+    totalPrice,
+    convertedExpressFee,
+    convertedTotalPrice,
+  } = expressFeeHook;
 
-  const primaryPassenger = passengers[0] || { fullName: "", age: "", phone: "", email: "" };
-  const fullName = primaryPassenger.fullName;
-  const age = primaryPassenger.age;
-  const phone = primaryPassenger.phone;
-  const email = primaryPassenger.email;
   const [specialRequests, setSpecialRequests] = useState<string>("");
   const [showNotes, setShowNotes] = useState<boolean>(false);
 
@@ -637,7 +351,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
     window.open(waUrl, "_blank");
   };
 
-  // 3. Payment & Security Lifecycle Hook
+  // 7. Payment & Security Lifecycle Hook
   const paymentHook = useAirportPayment({
     passengers,
     fullName,
@@ -702,18 +416,20 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
 
   // SUCCESS SCREEN: BOOKING CONFIRMED ONLY UPON SERVER-SIDE PAYMENT VERIFICATION
   if (paymentHook.confirmedBookingRef && paymentHook.isPaymentVerified && paymentHook.paymentStatus === "PAID") {
-    const activeFlight = flightVerification.isFlightVerified && flightVerification.verifiedFlight
-      ? `${flightVerification.verifiedFlight.flightNum} (${flightVerification.verifiedFlight.carrier.name || "Verified Flight"})`
-      : flightVerification.isManualMode
-      ? `${flightVerification.manualFlightNum} (${flightVerification.manualAirline || flightVerification.manualAirlineIata || "Airline"})`
-      : flightVerification.flightNumber;
+    const activeFlight =
+      flightVerification.isFlightVerified && flightVerification.verifiedFlight
+        ? `${flightVerification.verifiedFlight.flightNum} (${flightVerification.verifiedFlight.carrier.name || "Verified Flight"})`
+        : flightVerification.isManualMode
+        ? `${flightVerification.manualFlightNum} (${flightVerification.manualAirline || flightVerification.manualAirlineIata || "Airline"})`
+        : flightVerification.flightNumber;
 
     const activeFlight1 = activeFlight;
-    const activeFlight2 = flightVerification.isFlightVerified2 && flightVerification.verifiedFlight2
-      ? `${flightVerification.verifiedFlight2.flightNum} (${flightVerification.verifiedFlight2.carrier.name || "Verified Flight"})`
-      : flightVerification.isManualMode2
-      ? `${flightVerification.manualFlightNum2} (${flightVerification.manualAirline2 || flightVerification.manualAirlineIata2 || "Airline"})`
-      : flightVerification.flightNumber2;
+    const activeFlight2 =
+      flightVerification.isFlightVerified2 && flightVerification.verifiedFlight2
+        ? `${flightVerification.verifiedFlight2.flightNum} (${flightVerification.verifiedFlight2.carrier.name || "Verified Flight"})`
+        : flightVerification.isManualMode2
+        ? `${flightVerification.manualFlightNum2} (${flightVerification.manualAirline2 || flightVerification.manualAirlineIata2 || "Airline"})`
+        : flightVerification.flightNumber2;
 
     return (
       <BookingConfirmationView
@@ -765,6 +481,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
         setSelectedPackageName={setSelectedPackageName}
         setSelectedPackagePrice={setSelectedPackagePrice}
         setPackageByService={setPackageByService}
+        selectedTerminal={selectedTerminal}
       />
 
       {paymentHook.arrangementSubmitted ? (
@@ -874,19 +591,24 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               setConfirmingRouteUpdate={flightVerification.setConfirmingRouteUpdate}
               handleKeepSelectedRoute={flightVerification.handleKeepSelectedRoute}
               handleUseFlightRoute={flightVerification.handleUseFlightRoute}
-              routeMismatch2={flightVerification.routeMismatch2}
-              setRouteMismatch2={flightVerification.setRouteMismatch2}
-              confirmingRouteUpdate2={flightVerification.confirmingRouteUpdate2}
-              setConfirmingRouteUpdate2={flightVerification.setConfirmingRouteUpdate2}
-              handleKeepSelectedRoute2={flightVerification.handleKeepSelectedRoute2}
-              handleUseFlightRoute2={flightVerification.handleUseFlightRoute2}
             />
           ) : (
             <DirectFlightDetailsSection
-              isManualMode={flightVerification.isManualMode}
-              setIsManualMode={flightVerification.setIsManualMode}
+              direction={direction}
+              airportCityName={airportCityName}
+              airportCode={airportCode}
+              originCode={originCode}
+              setOriginCode={setOriginCode}
+              destCode={destCode}
+              setDestCode={setDestCode}
+              travelType={travelType}
+              handleTravelTypeChange={handleTravelTypeChange}
+              isFlightVerified={flightVerification.isFlightVerified}
+              verifiedFlight={flightVerification.verifiedFlight}
               flightNumber={flightVerification.flightNumber}
               setFlightNumber={flightVerification.setFlightNumber}
+              isManualMode={flightVerification.isManualMode}
+              setIsManualMode={flightVerification.setIsManualMode}
               setIsFlightVerified={flightVerification.setIsFlightVerified}
               setVerifiedFlight={flightVerification.setVerifiedFlight}
               flightFetchError={flightVerification.flightFetchError}
@@ -900,19 +622,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               dateValue={dateValue}
               handleDateChange={handleDateChange}
               todayStart={todayStart}
-              isFlightVerified={flightVerification.isFlightVerified}
-              direction={direction}
-              airportCode={airportCode}
-              airportCityName={airportCityName}
-              originCode={originCode}
-              setOriginCode={setOriginCode}
-              destCode={destCode}
-              setDestCode={setDestCode}
-              travelType={travelType}
-              handleTravelTypeChange={handleTravelTypeChange}
               serviceDate={serviceDate}
               fullName={fullName}
-              verifiedFlight={flightVerification.verifiedFlight}
               manualAirline={flightVerification.manualAirline}
               setManualAirline={flightVerification.setManualAirline}
               manualAirlineIata={flightVerification.manualAirlineIata}
@@ -935,6 +646,10 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
               setConfirmingRouteUpdate={flightVerification.setConfirmingRouteUpdate}
               handleKeepSelectedRoute={flightVerification.handleKeepSelectedRoute}
               handleUseFlightRoute={flightVerification.handleUseFlightRoute}
+              terminalMismatch={terminalMismatch}
+              handleApplyTerminalSwitch={handleApplyTerminalSwitch}
+              terminalNoticeDismissed={terminalNoticeDismissed}
+              setTerminalNoticeDismissed={setTerminalNoticeDismissed}
             />
           )}
 
@@ -989,6 +704,8 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
             isArrangementOnly={isArrangementOnly}
             isExpressFeeApplicable={isExpressFeeApplicable}
             convertedExpressFee={convertedExpressFee}
+            expressFeeLabel={expressFeeLabel}
+            expressFeeNotice={expressFeeNotice}
             paxChildren={paxChildren}
             paxInfants={paxInfants}
             handleShareQuoteWhatsApp={handleShareQuoteWhatsApp}

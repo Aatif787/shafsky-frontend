@@ -45,6 +45,7 @@ interface UseAirportPaymentProps {
   gstNumber: string;
   gstBillingAddress: string;
   searchParams?: Record<string, any>;
+  selectedTerminal?: string;
 
   // Flight 1
   isFlightVerified: boolean;
@@ -109,6 +110,7 @@ export function useAirportPayment({
   gstNumber,
   gstBillingAddress,
   searchParams,
+  selectedTerminal,
 
   isFlightVerified,
   verifiedFlight,
@@ -404,13 +406,13 @@ export function useAirportPayment({
       manualArrTime || "12:30"
     );
 
-    let terminalVal1 = isFlightVerified
+    let terminalVal1 = selectedTerminal || (isFlightVerified
       ? direction === "arrival"
         ? verifiedFlight?.arrival?.terminal
         : verifiedFlight?.departure?.terminal
       : direction === "arrival"
       ? manualArrTerminal
-      : manualDepTerminal;
+      : manualDepTerminal);
 
     if ((airportCode || "").toUpperCase() === "DEL" && travelType === "international") {
       terminalVal1 = "Terminal 3";
