@@ -453,6 +453,7 @@ export function AirportBookingFlow({ searchParams }: AirportBookingFlowProps) {
         totalPax={totalPax}
         phone={phone}
         email={email}
+        paymentToken={paymentHook.paymentToken}
         multiServiceResponse={multiServiceResponse}
       />
     );

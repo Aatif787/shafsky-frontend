@@ -695,15 +695,23 @@ export function useAirportPayment({
       }
 
       const formattedContact = toRazorpayContact(cleanPhone);
+      const orderCurrency = String(createData.data?.currency || "INR").toUpperCase();
 
       // 5. Open Official Razorpay Checkout Modal (Multi-Currency, UPI, Google Pay & Cards)
       const rzpOptions: Record<string, unknown> = {
         key: keyId,
         amount: amountPaise,
-        currency: selectedCurrency,
+        currency: orderCurrency,
         name: "Shafsky Aviation Services Concierge",
         description: `${selectedPackageName} (${airportCode}) — ${bookingRefToUse}`,
         order_id: orderId,
+        notes: {
+          booking_ref: bookingRefToUse,
+          channel: "web",
+          customer_name: cleanName,
+          customer_email: cleanEmail,
+          customer_phone: cleanPhone,
+        },
         prefill: {
           name: cleanName,
           email: cleanEmail,
@@ -877,14 +885,22 @@ export function useAirportPayment({
       }
 
       const formattedContact = toRazorpayContact(phone);
+      const retryCurrency = String(retryData.data?.currency || "INR").toUpperCase();
 
       const rzpOptions: Record<string, unknown> = {
         key: keyId,
         amount: amountPaise,
-        currency: selectedCurrency,
+        currency: retryCurrency,
         name: "Shafsky Aviation Services",
         description: `${selectedPackageName} (${airportCode}) — ${activeBookingRef}`,
         order_id: orderId,
+        notes: {
+          booking_ref: activeBookingRef,
+          channel: "web",
+          customer_name: fullName,
+          customer_email: email,
+          customer_phone: phone,
+        },
         prefill: {
           name: fullName,
           email: email,

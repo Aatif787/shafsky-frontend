@@ -1,9 +1,10 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
-import { CheckCircle2, ShieldCheck, Copy, AlertCircle } from "lucide-react";
+import { CheckCircle2, ShieldCheck, Copy, AlertCircle, FileDown } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { formatPrice } from "@/lib/currency";
+import { resolveApiUrl } from "@/lib/ApiClient";
 import { MultiServiceAvailabilityResponse } from "@/lib/api/multiServiceApi";
 
 export interface BookingConfirmationViewProps {
@@ -27,6 +28,7 @@ export interface BookingConfirmationViewProps {
   totalPax: number;
   phone: string;
   email: string;
+  paymentToken?: string | null;
   multiServiceResponse: MultiServiceAvailabilityResponse | null;
 }
 
@@ -51,8 +53,15 @@ export const BookingConfirmationView: React.FC<BookingConfirmationViewProps> = (
   totalPax,
   phone,
   email,
+  paymentToken,
   multiServiceResponse,
 }) => {
+  const invoiceDownloadUrl =
+    confirmedBookingRef && paymentToken
+      ? resolveApiUrl(
+          `/api/payments/invoices/${encodeURIComponent(confirmedBookingRef)}/pdf?payment_token=${encodeURIComponent(paymentToken)}`
+        )
+      : null;
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:py-16">
       <div className="overflow-hidden rounded-3xl border border-lime-400 bg-white shadow-xl">
@@ -253,13 +262,25 @@ export const BookingConfirmationView: React.FC<BookingConfirmationViewProps> = (
           </div>
 
           {/* Actions */}
-          <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="pt-3 flex flex-col sm:flex-row flex-wrap items-center justify-between gap-3">
             <Link
               to="/"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-slate-800 transition"
             >
               <span>Return to Home</span>
             </Link>
+
+            {invoiceDownloadUrl && (
+              <a
+                href={invoiceDownloadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-lime-600 px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-white hover:bg-lime-700 transition"
+              >
+                <FileDown size={15} />
+                <span>Download Tax Invoice (PDF)</span>
+              </a>
+            )}
 
             <a
               href={`https://wa.me/919599087959?text=${encodeURIComponent(

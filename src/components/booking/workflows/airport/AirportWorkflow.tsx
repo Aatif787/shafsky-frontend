@@ -219,6 +219,13 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
       name: "Shafsky Aviation Services Concierge",
       description: `Airport Service — ${targetRef}`,
       order_id: orderId,
+      notes: {
+        booking_ref: targetRef,
+        channel: "web",
+        customer_name: state.fullName,
+        customer_email: state.email,
+        customer_phone: state.phone,
+      },
       prefill: {
         name: state.fullName,
         email: state.email,
