@@ -216,19 +216,19 @@ export const UNMAPPED_LEGACY_PATTERNS = [
 export const CANONICAL_HOST = "shafskyaviation.com";
 export const CANONICAL_ORIGIN = `https://${CANONICAL_HOST}`;
 
+// Every .in host (apex and www) permanently redirects to the canonical .com domain.
 const REDIRECT_HOSTS = new Set([
+  "shafskyaviation.in",
   "www.shafskyaviation.in",
   "www.shafskyaviation.com",
 ]);
 
-const APEX_SERVED_HOSTS = new Set([
-  CANONICAL_HOST,
-  "shafskyaviation.in",
-]);
+const APEX_SERVED_HOSTS = new Set([CANONICAL_HOST]);
 
 const WWW_TO_APEX_HOSTS: Record<string, string> = {
-  "www.shafskyaviation.in": "shafskyaviation.in",
-  "www.shafskyaviation.com": "shafskyaviation.com",
+  "shafskyaviation.in": CANONICAL_HOST,
+  "www.shafskyaviation.in": CANONICAL_HOST,
+  "www.shafskyaviation.com": CANONICAL_HOST,
 };
 
 // Build set of valid uppercase airport codes from registry
@@ -339,8 +339,8 @@ export function extractClientProtocol(
 
 /**
  * Resolves whether a request needs an HTTP 301 redirect to normalize:
- * 1. Hostname (www.shafskyaviation.in -> shafskyaviation.in, www.shafskyaviation.com -> shafskyaviation.com; both apex domains serve directly with no cross-domain redirect)
- * 2. Protocol (http -> https on apex serving domains and www redirect hosts)
+ * 1. Hostname (shafskyaviation.in and www.shafskyaviation.in -> shafskyaviation.com, www.shafskyaviation.com -> shafskyaviation.com)
+ * 2. Protocol (http -> https on the canonical domain and redirect hosts)
  * 3. Verified legacy WordPress routes
  * 4. Airport route casing and trailing slashes (/airports/del/ -> /airports/DEL)
  * 5. General trailing slashes (except root /)
