@@ -19,7 +19,7 @@ import { FlightTimePicker } from "../shared/FlightTimePicker";
 import { AirportSuggestionPicker } from "../shared/AirportSuggestionPicker";
 import { FlightData } from "@/services/flight/FlightTypes";
 import { validateFlightEvent } from "@/services/flight/FlightTimeUtils";
-import { RouteMismatchInfo } from "./types";
+import { RouteMismatchInfo, TerminalMismatchInfo } from "./types";
 
 export interface DirectFlightDetailsSectionProps {
   isManualMode: boolean;
@@ -74,6 +74,10 @@ export interface DirectFlightDetailsSectionProps {
   setConfirmingRouteUpdate?: (confirm: boolean) => void;
   handleKeepSelectedRoute?: () => void;
   handleUseFlightRoute?: () => void;
+  terminalMismatch?: TerminalMismatchInfo | null;
+  handleApplyTerminalSwitch?: (upgradeToGold?: boolean) => void;
+  terminalNoticeDismissed?: boolean;
+  setTerminalNoticeDismissed?: (dismissed: boolean) => void;
 }
 
 export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProps> = ({
@@ -129,6 +133,10 @@ export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProp
   setConfirmingRouteUpdate,
   handleKeepSelectedRoute,
   handleUseFlightRoute,
+  terminalMismatch,
+  handleApplyTerminalSwitch,
+  terminalNoticeDismissed,
+  setTerminalNoticeDismissed,
 }) => {
   // Compute manual mode past-flight check
   const manualTimeCheck = React.useMemo(() => {
@@ -618,6 +626,67 @@ export const DirectFlightDetailsSection: React.FC<DirectFlightDetailsSectionProp
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Terminal Mismatch Notice & Upgrade/Switch Action */}
+          {terminalMismatch && !terminalNoticeDismissed && (
+            <div
+              data-testid="terminal-mismatch-banner"
+              className="rounded-2xl border-2 border-amber-400 bg-amber-50/95 p-4 sm:p-5 text-amber-950 space-y-3.5 shadow-xs"
+            >
+              <div className="flex items-start gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-800 border border-amber-300">
+                  <AlertCircle size={18} />
+                </div>
+                <div className="space-y-1 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h4 className="font-bold font-sans text-sm text-amber-950">
+                      Flight Operating Terminal Notice: {terminalMismatch.detectedTerminal} Detected
+                    </h4>
+                    <span className="text-[9.5px] uppercase font-mono font-extrabold bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded-full border border-amber-300/80">
+                      Terminal Notice
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-900 leading-relaxed font-sans">
+                    Flight <span className="font-mono font-bold">{terminalMismatch.flightNum}</span> operates from{" "}
+                    <span className="font-bold underline">{terminalMismatch.detectedTerminal}</span> at {terminalMismatch.airportName}, but your booking is currently set to{" "}
+                    <span className="font-bold underline">{terminalMismatch.selectedTerminal}</span>.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2.5 pt-1 border-t border-amber-200/70">
+                <button
+                  type="button"
+                  data-testid="switch-terminal-btn"
+                  onClick={() => handleApplyTerminalSwitch?.(false)}
+                  className="rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-sans text-xs font-bold px-4 py-2 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Check size={14} />
+                  {terminalMismatch.actionLabel}
+                </button>
+
+                {terminalMismatch.canUpgradeToGold && (
+                  <button
+                    type="button"
+                    data-testid="upgrade-gold-btn"
+                    onClick={() => handleApplyTerminalSwitch?.(true)}
+                    className="rounded-xl bg-slate-900 hover:bg-black text-lime-300 font-sans text-xs font-bold px-4 py-2 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer ring-1 ring-lime-400/40"
+                  >
+                    <span>Upgrade to Gold (Lounge Access • ₹3,500)</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  data-testid="keep-terminal-btn"
+                  onClick={() => setTerminalNoticeDismissed?.(true)}
+                  className="rounded-xl border border-amber-300 hover:bg-amber-100/60 text-amber-900 font-sans text-xs font-semibold px-3 py-2 transition-colors cursor-pointer"
+                >
+                  Keep {terminalMismatch.selectedTerminal}
+                </button>
               </div>
             </div>
           )}

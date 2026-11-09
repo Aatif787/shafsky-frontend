@@ -7,6 +7,7 @@ import {
   Car,
   HeartHandshake,
   FileCheck,
+  FileText,
   PawPrint,
   Ticket,
   ShieldCheck,
@@ -387,6 +388,8 @@ export function SpecialServiceMedicalAndLogisticsFields({
   setVisaApplicants,
   visaPassport,
   setVisaPassport,
+  passportOrVisa,
+  setPassportOrVisa,
   cargoOrigin,
   setCargoOrigin,
   cargoDest,
@@ -436,6 +439,8 @@ export function SpecialServiceMedicalAndLogisticsFields({
   setVisaApplicants: (v: number) => void;
   visaPassport: string;
   setVisaPassport: (v: string) => void;
+  passportOrVisa?: "Passport" | "Visa";
+  setPassportOrVisa?: (v: "Passport" | "Visa") => void;
   cargoOrigin: string;
   setCargoOrigin: (v: string) => void;
   cargoDest: string;
@@ -628,43 +633,113 @@ export function SpecialServiceMedicalAndLogisticsFields({
         </div>
       )}
 
-      {/* 7. Visa Assistance Minimal Enquiry */}
+      {/* 7. Passport & Visa Assistance Minimal Enquiry */}
       {selectedOptionId === "Visa Assistance Services" && (
         <div className="space-y-4">
+          {/* Mode Selector: Passport vs Visa */}
+          <div>
+            <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Select Service Required *
+            </label>
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+              {[
+                {
+                  id: "Passport" as const,
+                  label: "Passport",
+                  desc: "Fresh, Renewal & Tatkal",
+                  icon: FileText,
+                },
+                {
+                  id: "Visa" as const,
+                  label: "Visa",
+                  desc: "Tourist, Business & Official",
+                  icon: FileCheck,
+                },
+              ].map((m) => {
+                const Icon = m.icon;
+                const isSelected = (passportOrVisa || "Visa") === m.id;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => {
+                      setPassportOrVisa?.(m.id);
+                      if (m.id === "Passport") {
+                        setVisaCategory("Fresh / New Passport");
+                      } else {
+                        setVisaCategory("Tourist / Visitor Visa");
+                      }
+                    }}
+                    className={`flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-xl border text-center transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-lime-50/90 border-lime-500 ring-2 ring-lime-500/20 text-slate-950 shadow-xs font-bold"
+                        : "bg-white border-slate-200 hover:border-slate-300 text-slate-700"
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 transition-colors ${
+                        isSelected
+                          ? "bg-lime-500 text-slate-950"
+                          : "bg-slate-100 text-slate-600"
+                      }`}
+                    >
+                      <Icon size={16} />
+                    </div>
+                    <span className="text-xs font-bold tracking-tight">{m.label}</span>
+                    <span className="text-[10px] text-slate-500">{m.desc}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Destination Country *
+                {passportOrVisa === "Passport" ? "Country of Passport / Travel *" : "Destination Country *"}
               </label>
               <input
                 type="text"
                 value={visaCountry}
                 onChange={(e) => setVisaCountry(e.target.value)}
-                placeholder="e.g. United Kingdom, UAE, USA, Schengen"
+                placeholder={passportOrVisa === "Passport" ? "e.g. India, UK, USA" : "e.g. United Kingdom, UAE, USA, Schengen"}
                 required
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
               />
             </div>
             <div>
               <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Visa Category *
+                {passportOrVisa === "Passport" ? "Passport Service *" : "Visa Category *"}
               </label>
               <select
                 value={visaCategory}
                 onChange={(e) => setVisaCategory(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 bg-white"
               >
-                <option value="Tourist / Visitor Visa">Tourist / Visitor Visa</option>
-                <option value="Business & Corporate Visa">Business & Corporate Visa</option>
-                <option value="Medical Treatment Visa">Medical Treatment Visa</option>
-                <option value="Diplomatic / Official Visa">Diplomatic / Official Visa</option>
+                {passportOrVisa === "Passport" ? (
+                  <>
+                    <option value="Fresh / New Passport">Fresh / New Passport</option>
+                    <option value="Passport Renewal / Re-issue">Passport Renewal / Re-issue</option>
+                    <option value="Tatkal / Expedited Passport">Tatkal / Expedited Passport</option>
+                    <option value="Lost / Damaged Passport Assistance">Lost / Damaged Passport Assistance</option>
+                    <option value="Minor / Child Passport">Minor / Child Passport</option>
+                    <option value="ECR / Non-ECR Emigration Check">ECR / Non-ECR Emigration Check</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="Tourist / Visitor Visa">Tourist / Visitor Visa</option>
+                    <option value="Business & Corporate Visa">Business & Corporate Visa</option>
+                    <option value="Medical Treatment Visa">Medical Treatment Visa</option>
+                    <option value="Diplomatic / Official Visa">Diplomatic / Official Visa</option>
+                  </>
+                )}
               </select>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Intended Travel Date *
+                {passportOrVisa === "Passport" ? "Target Completion Date *" : "Intended Travel Date *"}
               </label>
               <input
                 type="date"
@@ -690,19 +765,22 @@ export function SpecialServiceMedicalAndLogisticsFields({
               />
             </div>
           </div>
-          <div>
-            <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-              Passport Number *
-            </label>
-            <input
-              type="text"
-              value={visaPassport}
-              onChange={(e) => setVisaPassport(e.target.value.toUpperCase())}
-              placeholder="Enter passport number (e.g. A12345678)"
-              required
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 font-mono uppercase"
-            />
-          </div>
+
+          {/* If Passport chosen: DO NOT ASK PASSPORT NUMBER. If Visa chosen: ASK AS OPTIONAL */}
+          {passportOrVisa !== "Passport" && (
+            <div>
+              <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Passport Number <span className="text-slate-400 font-normal">(Optional)</span>
+              </label>
+              <input
+                type="text"
+                value={visaPassport}
+                onChange={(e) => setVisaPassport(e.target.value.toUpperCase())}
+                placeholder="Enter passport number (optional, e.g. A12345678)"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500 font-mono uppercase"
+              />
+            </div>
+          )}
         </div>
       )}
 

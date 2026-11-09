@@ -39,6 +39,8 @@ export interface BookingSummarySectionProps {
   isArrangementOnly: boolean;
   isExpressFeeApplicable: boolean;
   convertedExpressFee: number;
+  expressFeeLabel?: string;
+  expressFeeNotice?: string;
   paxChildren: number;
   paxInfants: number;
   handleShareQuoteWhatsApp: () => void;
@@ -80,6 +82,8 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
   isArrangementOnly,
   isExpressFeeApplicable,
   convertedExpressFee,
+  expressFeeLabel,
+  expressFeeNotice,
   paxChildren,
   paxInfants,
   handleShareQuoteWhatsApp,
@@ -303,7 +307,7 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
               {`${formatPrice(convertedTotalPrice, selectedCurrency)} payable today for confirmed services`}
               {isExpressFeeApplicable && (
                 <span className="text-amber-700 font-bold ml-1">
-                  + {formatPrice(convertedExpressFee, selectedCurrency)} (50% Express Fee)
+                  + {formatPrice(convertedExpressFee, selectedCurrency)} {expressFeeLabel || "(Express Fee)"}
                 </span>
               )}
               {paxChildren + paxInfants > 0 && (
@@ -318,7 +322,7 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
             </span>
             {isExpressFeeApplicable && (
               <div className="mt-2 flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-2.5 py-1 text-[11px] text-amber-900 font-medium">
-                <span>⚡ <strong>50% Express Fee Applied:</strong> Mumbai Airport booking under 24 hours before service start time.</span>
+                <span>{expressFeeNotice || "⚡ Express Fee Applied: Booking under 24 hours before service start time."}</span>
               </div>
             )}
           </div>

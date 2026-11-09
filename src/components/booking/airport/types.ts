@@ -19,6 +19,18 @@ export interface RouteMismatchInfo {
   leg?: 1 | 2;
 }
 
+export interface TerminalMismatchInfo {
+  flightNum: string;
+  airportCode: string;
+  airportName: string;
+  selectedTerminal: string;
+  detectedTerminal: string;
+  rawDetectedTerminal?: string;
+  canUpgradeToGold?: boolean;
+  priceDifferenceInr?: number;
+  actionLabel: string;
+}
+
 export interface PassengerDetail {
   fullName: string;
   age: string;

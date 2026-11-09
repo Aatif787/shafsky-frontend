@@ -26,6 +26,7 @@ export interface TripContextBannerProps {
   setSelectedPackageName: (name: string) => void;
   setSelectedPackagePrice: (price: string) => void;
   setPackageByService: React.Dispatch<React.SetStateAction<Record<AirportServiceType, string>>>;
+  selectedTerminal?: string;
 }
 
 export const TripContextBanner: React.FC<TripContextBannerProps> = ({
@@ -48,6 +49,7 @@ export const TripContextBanner: React.FC<TripContextBannerProps> = ({
   setSelectedPackageName,
   setSelectedPackagePrice,
   setPackageByService,
+  selectedTerminal,
 }) => {
   return (
     <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xs">
@@ -85,6 +87,14 @@ export const TripContextBanner: React.FC<TripContextBannerProps> = ({
           {travelType} {direction}
         </span>
         <span>•</span>
+        {selectedTerminal && (
+          <>
+            <span className="rounded-md bg-amber-50 text-amber-900 border border-amber-200/80 px-2 py-0.5 font-bold">
+              {selectedTerminal}
+            </span>
+            <span>•</span>
+          </>
+        )}
         <span className="inline-flex items-center gap-1.5 bg-lime-50 text-slate-900 border border-lime-300/80 px-2 py-0.5 rounded-md font-bold">
           <CalendarDays size={12} className="text-lime-700" />
           <span>{format(dateValue, "dd MMM yyyy")}</span>
