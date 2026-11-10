@@ -423,8 +423,6 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
 
         const orderId = result.data?.razorpay_order_id;
         const keyId = result.data?.razorpay_key_id;
-        const iciciRedirect = result.data?.icici_redirect_url;
-        const paymentGateway = String(result.data?.payment_gateway || "").toUpperCase();
         const authoritativeAmount = Number(result.data?.totalAmount || reviewTotal);
         const currency = result.data?.currency || state.catalogCurrency || "INR";
         const amountPaise = result.data?.razorpay_amount_paise;
@@ -437,19 +435,6 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
           console.warn(
             `[AirportWorkflow] Charge ₹${authoritativeAmount} differs from review ₹${reviewTotal}`
           );
-        }
-
-        if (paymentGateway === "ICICI" || iciciRedirect) {
-          if (!iciciRedirect || typeof iciciRedirect !== "string") {
-            setPaymentStatus("DISMISSED");
-            toast.error(apiError || result?.error || "Booking saved. ICICI payment could not be started — use Retry Payment.");
-            setBusy(false);
-            return;
-          }
-          setPaymentStatus("OPEN");
-          toast.loading("Redirecting to ICICI Bank secure payment…", { id: "icici-redirect" });
-          window.location.assign(iciciRedirect);
-          return;
         }
 
         if (orderId && keyId && !String(orderId).startsWith("order_sim_")) {
@@ -495,22 +480,9 @@ export function AirportWorkflow({ searchParams }: AirportWorkflowProps) {
         }
         const orderId = result.data?.razorpay_order_id;
         const keyId = result.data?.razorpay_key_id;
-        const iciciRedirect = result.data?.icici_redirect_url;
-        const paymentGateway = String(result.data?.gateway || result.data?.payment_gateway || "").toUpperCase();
         const authoritativeAmount = Number(result.data?.totalAmount || totalPrice);
         const currency = result.data?.currency || state.catalogCurrency || "INR";
         const amountPaise = result.data?.razorpay_amount_paise;
-
-        if (paymentGateway === "ICICI" || iciciRedirect) {
-          if (!iciciRedirect || typeof iciciRedirect !== "string") {
-            toast.error(apiError || "Unable to generate ICICI payment session for retry.");
-            setBusy(false);
-            return;
-          }
-          toast.loading("Redirecting to ICICI Bank secure payment…", { id: "icici-redirect" });
-          window.location.assign(iciciRedirect);
-          return;
-        }
 
         if (orderId && keyId && !String(orderId).startsWith("order_sim_")) {
           await launchRazorpayModal(orderId, keyId, authoritativeAmount, currency, bookingRef, amountPaise);

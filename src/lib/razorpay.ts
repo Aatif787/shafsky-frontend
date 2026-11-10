@@ -31,6 +31,14 @@ export interface RazorpayCheckoutOptions {
   onDismiss?: () => void;
 }
 
+/** True when checkout can open Razorpay (ICICI hosted page is offline). */
+export function hasLiveRazorpayOrder(
+  orderId?: string | null,
+  keyId?: string | null,
+): boolean {
+  return Boolean(orderId && keyId && !String(orderId).startsWith("order_sim_"));
+}
+
 /**
  * Loads the official Razorpay Standard Checkout SDK script asynchronously.
  */
