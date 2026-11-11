@@ -366,7 +366,7 @@ export function useFlightVerification({
       }
 
       // Check for cutoff violation in error message
-      const errorMsg = formatFlightLookupError(resJson?.error || resJson?.message || resJson, res?.status);
+      const errorMsg = formatFlightLookupError(resJson, res?.status);
       if (
         errorMsg.toLowerCase().includes("cutoff") ||
         errorMsg.toLowerCase().includes("6 hours") ||
@@ -572,7 +572,7 @@ export function useFlightVerification({
         }
       }
 
-      const errorMsg = formatFlightLookupError(resJson?.error || resJson?.message || resJson, res?.status);
+      const errorMsg = formatFlightLookupError(resJson, res?.status);
       setFlightFetchError2(errorMsg || "Live schedule not found for connecting flight. Please provide details manually below.");
       setIsFlightVerified2(false);
       setVerifiedFlight2(null);

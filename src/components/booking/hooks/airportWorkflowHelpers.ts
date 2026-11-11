@@ -189,9 +189,11 @@ export function formatFlightLookupError(error: unknown, status?: number): string
       upper.includes("PROVIDER_FAILURE") ||
       upper.includes("AERODATABOX") ||
       errorCode === "SERVICE_ERROR" ||
-      errorCode === "PROVIDER_ERROR"
+      errorCode === "PROVIDER_ERROR" ||
+      errorCode === "PROVIDER_UNAVAILABLE" ||
+      errorCode === "PROVIDER_NOT_CONFIGURED"
     ) {
-      return `Flight data provider temporarily unavailable. Our data service is experiencing issues. Please try again or enter flight details manually.`;
+      return `Live flight data is temporarily unavailable. Please try again shortly or enter your flight times manually.`;
     }
 
     // ===== VALIDATION ERRORS (400 / 422) =====
@@ -212,7 +214,7 @@ export function formatFlightLookupError(error: unknown, status?: number): string
       status === 503 ||
       status === 504
     ) {
-      return `Backend service is currently unavailable. The flight validation server cannot be reached. Please check backend server status or enter flight details manually.`;
+      return `We couldn't reach our flight lookup service. Please check your connection and try again, or enter your flight times manually.`;
     }
 
     // ===== SERVER ERRORS (500) =====
