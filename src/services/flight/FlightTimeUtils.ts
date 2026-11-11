@@ -186,41 +186,7 @@ export function validateFlightEvent(params: FlightEventValidationParams): Flight
     ? cutoffHours
     : (travelType === "international" ? 12 : 6);
 
-  // 1. Check live flight status first
-  const normalizedStatus = (flightStatus || "").trim().toUpperCase();
-  if (CANCELLED_STATUSES.has(normalizedStatus)) {
-    return {
-      isBookable: false,
-      isPast: true,
-      isCutoffViolated: false,
-      blockingMessage: "This flight has been cancelled. Please select an active future flight.",
-      remainingHours: 0,
-    };
-  }
-
-  if (direction === "departure" && DEPARTED_STATUSES.has(normalizedStatus)) {
-    return {
-      isBookable: false,
-      isPast: true,
-      isCutoffViolated: false,
-      blockingMessage: "This flight has already departed. Please select a future flight.",
-      remainingHours: 0,
-    };
-  }
-
-  if ((direction === "arrival" || direction === "transit") && ARRIVED_STATUSES.has(normalizedStatus)) {
-    return {
-      isBookable: false,
-      isPast: true,
-      isCutoffViolated: false,
-      blockingMessage: direction === "transit"
-        ? "This flight has already arrived/departed. Please select a future flight."
-        : "This flight has already arrived. Please select a future flight.",
-      remainingHours: 0,
-    };
-  }
-
-  // 2. Validate scheduled time presence
+  // 1. Validate scheduled time presence
   if (!scheduledTime || !scheduledTime.trim()) {
     return {
       isBookable: false,
@@ -231,10 +197,11 @@ export function validateFlightEvent(params: FlightEventValidationParams): Flight
     };
   }
 
-  // 3. Anchor schedule time with serviceDate and date rollover
+  // 2. Anchor schedule time with serviceDate and date rollover
   let isoTime = scheduledTime.trim();
-  if (serviceDate && !isoTime.includes("-")) {
-    const timePart = isoTime.includes("T") ? isoTime.split("T")[1] : isoTime;
+  if (serviceDate) {
+    const timeMatch = isoTime.match(/(?:T|\s)?(\d{1,2}:\d{2}(?::\d{2})?)/);
+    const timePart = timeMatch ? timeMatch[1] : (isoTime.includes("T") ? isoTime.split("T")[1] : isoTime);
     let targetD = serviceDate;
     if (isArrivalNextDay) {
       targetD = addDaysToYmd(serviceDate, 1);
@@ -257,7 +224,7 @@ export function validateFlightEvent(params: FlightEventValidationParams): Flight
   const diffMs = targetDate.getTime() - now.getTime();
   const diffHours = diffMs / 3600000;
 
-  // 4. Past flight check (strict event time comparison)
+  // 3. Past flight check (strict event time comparison)
   if (diffHours <= 0) {
     const pastMessage = direction === "arrival"
       ? "This flight has already arrived. Please select a future flight."
@@ -273,6 +240,56 @@ export function validateFlightEvent(params: FlightEventValidationParams): Flight
       eventDate: targetDate,
       remainingHours: Math.max(0, diffHours),
     };
+  }
+
+  // 4. Live flight status for same-day operational flight events
+  // Note: Live status from radar/flight databases (e.g. "Landed", "Departed") reflects the CURRENT physical flight.
+  // When a flight is booked for a future date (e.g. tomorrow or next week), live status from a previous
+  // flight instance must NEVER mark the future flight as past/expired.
+  const normalizedStatus = (flightStatus || "").trim().toUpperCase();
+
+  const airportTz = getAirportTimezone(airportIata);
+  const offsetMin = getOffsetMinutes(airportTz, now);
+  const nowInTz = new Date(now.getTime() + offsetMin * 60000);
+  const nowDateStr = `${nowInTz.getUTCFullYear()}-${String(nowInTz.getUTCMonth() + 1).padStart(2, "0")}-${String(nowInTz.getUTCDate()).padStart(2, "0")}`;
+
+  const eventDateInTz = new Date(targetDate.getTime() + offsetMin * 60000);
+  const eventDateStr = `${eventDateInTz.getUTCFullYear()}-${String(eventDateInTz.getUTCMonth() + 1).padStart(2, "0")}-${String(eventDateInTz.getUTCDate()).padStart(2, "0")}`;
+
+  const isTodayFlight = eventDateStr === nowDateStr;
+
+  if (isTodayFlight) {
+    if (CANCELLED_STATUSES.has(normalizedStatus)) {
+      return {
+        isBookable: false,
+        isPast: true,
+        isCutoffViolated: false,
+        blockingMessage: "This flight has been cancelled. Please select an active future flight.",
+        remainingHours: 0,
+      };
+    }
+
+    if (direction === "departure" && DEPARTED_STATUSES.has(normalizedStatus)) {
+      return {
+        isBookable: false,
+        isPast: true,
+        isCutoffViolated: false,
+        blockingMessage: "This flight has already departed. Please select a future flight.",
+        remainingHours: 0,
+      };
+    }
+
+    if ((direction === "arrival" || direction === "transit") && ARRIVED_STATUSES.has(normalizedStatus)) {
+      return {
+        isBookable: false,
+        isPast: true,
+        isCutoffViolated: false,
+        blockingMessage: direction === "transit"
+          ? "This flight has already arrived/departed. Please select a future flight."
+          : "This flight has already arrived. Please select a future flight.",
+        remainingHours: 0,
+      };
+    }
   }
 
   // 5. Advance notice cutoff check

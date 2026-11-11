@@ -152,7 +152,11 @@ export function useFlightVerification({
       const resJson = await res.json().catch(() => null);
 
       if (resJson?.code === "FLIGHT_EXPIRED" || resJson?.data?.is_expired) {
-        const pastMsg = resJson?.rejection_reason || "This flight has already departed/arrived. Please select a future flight.";
+        const pastMsg =
+          resJson?.data?.rejection_reason ||
+          resJson?.rejection_reason ||
+          resJson?.error ||
+          "This flight has already departed/arrived. Please select a future flight.";
         setFlightFetchError(pastMsg);
         setIsFlightVerified(false);
         setVerifiedFlight(null);
@@ -423,7 +427,11 @@ export function useFlightVerification({
       const resJson = await res.json().catch(() => null);
 
       if (resJson?.code === "FLIGHT_EXPIRED" || resJson?.data?.is_expired) {
-        const pastMsg = resJson?.rejection_reason || "This flight has already departed/arrived. Please select a future flight.";
+        const pastMsg =
+          resJson?.data?.rejection_reason ||
+          resJson?.rejection_reason ||
+          resJson?.error ||
+          "This flight has already departed/arrived. Please select a future flight.";
         setFlightFetchError(pastMsg);
         setIsFlightVerified(false);
         setVerifiedFlight(null);

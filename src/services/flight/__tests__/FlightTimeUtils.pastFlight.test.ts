@@ -199,5 +199,53 @@ describe("Past Flight & Event Verification - validateFlightEvent", () => {
     expect(res.isBookable).toBe(false);
     expect(res.blockingMessage).toContain("Flight schedule time is required");
   });
+
+  it("11. Future date flight with stale live status (Landed/Departed) is ALLOWED and NOT marked past", () => {
+    // Flight booked for 2 days in future (2026-11-03)
+    // External API returns status "Landed" from yesterday/today's earlier run
+    const resDep = validateFlightEvent({
+      scheduledTime: "17:15:00",
+      airportIata: "BOM",
+      direction: "departure",
+      serviceDate: "2026-11-03",
+      travelType: "domestic",
+      flightStatus: "Landed",
+      referenceNow: mockNow,
+    });
+
+    expect(resDep.isBookable).toBe(true);
+    expect(resDep.isPast).toBe(false);
+    expect(resDep.blockingMessage).toBeUndefined();
+
+    const resArr = validateFlightEvent({
+      scheduledTime: "17:15:00",
+      airportIata: "DEL",
+      direction: "arrival",
+      serviceDate: "2026-11-03",
+      travelType: "domestic",
+      flightStatus: "Arrived",
+      referenceNow: mockNow,
+    });
+
+    expect(resArr.isBookable).toBe(true);
+    expect(resArr.isPast).toBe(false);
+    expect(resArr.blockingMessage).toBeUndefined();
+  });
+
+  it("12. Flight with scheduledTime containing past timetable date correctly re-anchors to future serviceDate", () => {
+    // Timetable returns past date string "2026-10-31T14:00:00", but user requested future date 2026-11-04
+    const res = validateFlightEvent({
+      scheduledTime: "2026-10-31T14:00:00",
+      airportIata: "BOM",
+      direction: "departure",
+      serviceDate: "2026-11-04",
+      travelType: "domestic",
+      referenceNow: mockNow,
+    });
+
+    expect(res.isBookable).toBe(true);
+    expect(res.isPast).toBe(false);
+    expect(res.eventDate?.toISOString()).toContain("2026-11-04");
+  });
 });
 
