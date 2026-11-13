@@ -242,6 +242,10 @@ export function SpecialServiceHeroStage({
       ? [activeOption.photo]
       : [];
   const hasPhotos = photosList.length > 0;
+  const isTravelTour =
+    activeOption.id === "Travel & Tour" ||
+    activeOption.shortLabel === "Travel & Tour" ||
+    (Boolean(activeOption.label) && activeOption.label.toLowerCase().includes("travel"));
 
   return (
     <section
@@ -271,6 +275,18 @@ export function SpecialServiceHeroStage({
             </div>
           ) : null}
         </div>
+
+        {/* Proper Heading at Top of Travel and Tour */}
+        {isTravelTour && (
+          <div className="text-center max-w-3xl mx-auto mb-4 sm:mb-6">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
+              style={display}
+            >
+              Travel &amp; Tour
+            </h1>
+          </div>
+        )}
 
         {photosList.length === 1 && (
           <div className="relative w-full aspect-[16/9] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none">
