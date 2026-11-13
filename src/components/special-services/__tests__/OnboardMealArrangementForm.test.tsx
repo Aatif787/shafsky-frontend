@@ -133,9 +133,11 @@ describe("OnboardMealArrangementForm Component", () => {
     expect(html).toContain("Government-issued ID");
   });
 
-  it("renders submission action and confirmation controls", () => {
+  it("renders submission action and confirmation controls with instant WhatsApp enquiry", () => {
     const html = renderToString(<OnboardMealArrangementForm />);
     expect(html).toContain("Submit Enquiry");
     expect(html).toContain("Zero charge • Official enquiry for custom quotation");
+    expect(html).toContain("Instant WhatsApp Enquiry");
+    expect(html).toContain("https://wa.me/919599087957");
   });
 });

@@ -372,7 +372,8 @@ function DedicatedSpecialServicesPage() {
       selectedOptionId === "Visa Assistance Services" ||
       selectedOptionId === "Travel & Tour" ||
       (selectedOptionId as any) === "Travel & Tour (Honeymoon/Couples)" ||
-      (selectedOptionId as any) === "Tours & Travel (Honeymoon/Couples)"
+      (selectedOptionId as any) === "Tours & Travel (Honeymoon/Couples)" ||
+      selectedOptionId === "On-board Meal Arrangements for Group Meet & Greet Bookings"
         ? "919599087957"
         : selectedOptionId === "Train Ambulance" ||
             selectedOptionId === "Train Ambulance (Train ICU Escort)" ||

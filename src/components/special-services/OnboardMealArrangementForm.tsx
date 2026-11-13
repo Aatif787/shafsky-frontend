@@ -39,9 +39,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
   className = "",
 }) => {
   const queryClient = useQueryClient();
-  const { getPrimaryContact } = useWebsiteContacts();
-  const primaryContact = getPrimaryContact("meet_greet_lounge");
-  const waNumber = primaryContact?.full_phone_number?.replace(/\D/g, "") || "919599087959";
+  const waNumber = "919599087957";
 
   // Section 1: Passenger & Route Details
   const [passengerName, setPassengerName] = useState("");
@@ -237,6 +235,23 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
         `• Meals Count: ${mealCount || submittedResult?.mealCount}\n` +
         `• Preference: ${selectedMealPreferences.join(", ")}\n` +
         `Please confirm our in-flight catering coordination.`
+    );
+    return `https://wa.me/${waNumber}?text=${text}`;
+  };
+
+  const getInstantWhatsAppLink = () => {
+    const text = encodeURIComponent(
+      `Hello Shafsky Aviation VIP Concierge Desk,\n\n` +
+        `I would like to inquire about On-board Meal Arrangements for group travel.\n` +
+        (passengerName ? `• Contact Name: ${passengerName}\n` : "") +
+        (phone ? `• Phone: ${phone}\n` : "") +
+        (email ? `• Email: ${email}\n` : "") +
+        (sectorRoute ? `• Route: ${sectorRoute}\n` : "") +
+        (flightNumber ? `• Flight: ${flightNumber}\n` : "") +
+        (dateOfTravel ? `• Travel Date: ${dateOfTravel}\n` : "") +
+        `• Meals Count: ${mealCount}\n` +
+        `• Preference: ${selectedMealPreferences.join(", ")}\n\n` +
+        `Please provide a custom quotation for in-flight catering coordination.`
     );
     return `https://wa.me/${waNumber}?text=${text}`;
   };
@@ -624,7 +639,17 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                 <span>Zero charge • Official enquiry for custom quotation</span>
               </div>
 
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto justify-end">
+                <a
+                  href={getInstantWhatsAppLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs font-mono tracking-wider transition-all"
+                >
+                  <MessageSquare size={14} className="text-lime-400" />
+                  <span>Instant WhatsApp Enquiry</span>
+                </a>
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
