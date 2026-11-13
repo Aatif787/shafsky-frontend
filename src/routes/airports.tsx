@@ -4,7 +4,6 @@ import {
   Search,
   ChevronDown,
   MapPin,
-  Map,
   Phone,
   Globe,
   Shield,
@@ -208,11 +207,6 @@ function AirportsListingView() {
                 <h3 className="text-xl font-bold text-slate-900">All Airports</h3>
               </div>
             </div>
-
-            <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-purple-200 text-xs font-semibold text-[#7c3aed] hover:bg-purple-50 transition cursor-pointer self-start sm:self-auto">
-              <Map className="w-3.5 h-3.5" />
-              <span>View on Map</span>
-            </button>
           </div>
 
           {/* ALPHABET FILTER PILLS ROW */}
