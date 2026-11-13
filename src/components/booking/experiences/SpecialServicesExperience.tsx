@@ -224,7 +224,13 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
       serviceDetails = `Scope: ${psoType}%0ALocation: ${psoLocation}%0AStart Date: ${psoStartDate}%0ADuration: ${psoDurationDays} Days%0AOfficers: ${psoCount}%0AVIPs: ${psoVipCount}`;
     }
 
-    const targetPhone = subService === "Spa & Wellness" ? "919599087957" : "919599087959";
+    const targetPhone =
+      subService === "Spa & Wellness" ||
+      subService === "Travel & Tour" ||
+      subService === "Travel & Tour (Honeymoon/Couples)" ||
+      subService === "Tours & Travel (Honeymoon/Couples)"
+        ? "919599087957"
+        : "919599087959";
     const summary = `Service: Special Services%0ASub-Service: ${subService}%0A${serviceDetails}%0A%0AContact: ${guestName}%0APhone: ${guestPhone}%0AEmail: ${guestEmail || "N/A"}%0ANotes: ${specialNotes || "None"}`;
     return `https://wa.me/${targetPhone}?text=Hello%20Shafsky%20Special%20Services%20Desk,%20I%20would%20like%20to%20request%20assistance:%0A%0A${summary}`;
   };

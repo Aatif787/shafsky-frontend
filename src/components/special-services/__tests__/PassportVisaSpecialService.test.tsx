@@ -27,5 +27,16 @@ describe("Passport and Visa - Special Services", () => {
       "Expedited visa processing, VIP doorstep biometrics, document vetting, and priority embassy liaison for international travel."
     );
   });
+
+  it("renders proper heading at the top of Travel and Tour hero stage", () => {
+    const tourOption = SPECIAL_SERVICES_OPTIONS.find((opt) => opt.id === "Travel & Tour")!;
+    expect(tourOption).toBeDefined();
+
+    const html = renderToString(
+      <SpecialServiceHeroStage activeOption={tourOption} onBack={() => {}} />
+    );
+
+    expect(html).toContain("Travel &amp; Tour");
+  });
 });
 
