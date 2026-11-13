@@ -221,6 +221,18 @@ export function resolveSpecialServiceFromSearch(search: unknown): SpecialService
   return "Air Ticketing Services";
 }
 
+const HERO_HEADING_SERVICE_IDS = new Set<SpecialServiceOptionId>([
+  "Spa & Wellness",
+  "PSO (Personal Security Officer / VIP Shopping)",
+  "Air Ambulance (Airborne ICU Jet)",
+  "Train Ambulance",
+  "Train Ambulance (Train ICU Escort)",
+  "Human Remains (HUM)",
+  "Dignified Human Remains (HUM)",
+  "Cargo & AVI Pet Freight",
+  "Infant Care Services",
+]);
+
 export function SpecialServiceHeroStage({
   activeOption,
   onBack,
@@ -245,6 +257,8 @@ export function SpecialServiceHeroStage({
     (Boolean(activeOption.label) &&
       (activeOption.label.toLowerCase().includes("passport") ||
         activeOption.label.toLowerCase().includes("visa")));
+  const hasProperHeroHeading =
+    !isTravelTour && !isVisa && HERO_HEADING_SERVICE_IDS.has(activeOption.id);
 
   return (
     <section
@@ -299,6 +313,27 @@ export function SpecialServiceHeroStage({
             <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
               Expedited visa processing, VIP doorstep biometrics, document vetting, and priority embassy liaison for international travel.
             </p>
+          </div>
+        )}
+
+        {/* Proper Heading at Top of Dedicated Special Service Pages */}
+        {hasProperHeroHeading && (
+          <div
+            className={`text-center max-w-3xl mx-auto ${
+              hasPhotos ? "mb-4 sm:mb-6" : "mb-2 sm:mb-4"
+            }`}
+          >
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
+              style={display}
+            >
+              {activeOption.label}
+            </h1>
+            {activeOption.tagline ? (
+              <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+                {activeOption.tagline}
+              </p>
+            ) : null}
           </div>
         )}
 
