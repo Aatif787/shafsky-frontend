@@ -155,14 +155,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
       "Compassionate, fully documented repatriation of mortal remains across domestic and international aviation sectors.",
     photo: humanRemainsImg,
     icon: HeartHandshake,
-    inclusions: [
-      "Full Domestic & International Air Repatriation Clearance by Dedicated Case Managers",
-      "Hospital NOC, Death Certificate Clearance, Embalming Certificate & Police Clearances",
-      "Certified Embalming Procedure & International Zinc-Lined Coffin Hermetic Sealing",
-      "Embassy / Consular Clearance, Quarantine / Health Officer Approvals & NOCs",
-      "Priority Aviation Allocation & Direct Airside Tarmac Dignified Receiving",
-      "Complete Compassionate Guidance with Real-Time Family Progress Updates",
-    ],
+    inclusions: [],
   },
   {
     id: "Cargo & AVI Pet Freight",
@@ -201,7 +194,7 @@ export function resolveSpecialServiceFromSearch(search: unknown): SpecialService
   if (sub.includes("travel") || sub.includes("tour") || sub.includes("honeymoon")) {
     return "Travel & Tour";
   }
-  if (sub.includes("visa")) {
+  if (sub.includes("visa") || sub.includes("passport")) {
     return "Visa Assistance Services";
   }
   if (sub.includes("meal") || sub.includes("catering") || sub.includes("onboard") || sub.includes("dining")) {
@@ -246,18 +239,24 @@ export function SpecialServiceHeroStage({
     activeOption.id === "Travel & Tour" ||
     activeOption.shortLabel === "Travel & Tour" ||
     (Boolean(activeOption.label) && activeOption.label.toLowerCase().includes("travel"));
+  const isVisa =
+    activeOption.id === "Visa Assistance Services" ||
+    activeOption.shortLabel === "Passport and Visa" ||
+    (Boolean(activeOption.label) &&
+      (activeOption.label.toLowerCase().includes("passport") ||
+        activeOption.label.toLowerCase().includes("visa")));
 
   return (
     <section
       className={`relative w-full overflow-hidden bg-white border-b border-slate-200 ${
-        hasPhotos ? "py-6 sm:py-8 md:py-10" : "py-4 sm:py-6"
+        hasPhotos ? "py-6 sm:py-8 md:py-10" : "py-6 sm:py-8"
       }`}
     >
       <div className="relative z-10 mx-auto w-full max-w-[1040px] xl:max-w-[1100px] 2xl:max-w-[1140px] px-4 sm:px-6 md:px-8">
         {/* Top Header Row: Back Button & Selected Service Status Badge */}
         <div
           className={`w-full flex items-center justify-between gap-3 ${
-            hasPhotos ? "mb-3.5 sm:mb-5" : ""
+            hasPhotos ? "mb-3.5 sm:mb-5" : "mb-3 sm:mb-4"
           }`}
         >
           <button
@@ -285,6 +284,21 @@ export function SpecialServiceHeroStage({
             >
               Travel &amp; Tour
             </h1>
+          </div>
+        )}
+
+        {/* Proper Heading at Top of Passport and Visa */}
+        {isVisa && (
+          <div className="text-center max-w-3xl mx-auto mb-2 sm:mb-4">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
+              style={display}
+            >
+              Passport and Visa
+            </h1>
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+              Expedited visa processing, VIP doorstep biometrics, document vetting, and priority embassy liaison for international travel.
+            </p>
           </div>
         )}
 
@@ -332,7 +346,19 @@ export function SpecialServiceDetailsSection({
 }: {
   activeOption: SpecialServiceOptionDef;
 }) {
-  if (activeOption.id === "Air Ticketing Services" || activeOption.id === "Travel & Tour" || activeOption.id === "Cargo & AVI Pet Freight" || activeOption.id === "PSO (Personal Security Officer / VIP Shopping)" || activeOption.id === "Visa Assistance Services" || activeOption.id === "Air Ambulance (Airborne ICU Jet)" || activeOption.id === "Train Ambulance" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
+  if (
+    activeOption.id === "Air Ticketing Services" ||
+    activeOption.id === "Travel & Tour" ||
+    activeOption.id === "Cargo & AVI Pet Freight" ||
+    activeOption.id === "PSO (Personal Security Officer / VIP Shopping)" ||
+    activeOption.id === "Visa Assistance Services" ||
+    activeOption.id === "Air Ambulance (Airborne ICU Jet)" ||
+    activeOption.id === "Train Ambulance" ||
+    activeOption.id === "Human Remains (HUM)" ||
+    activeOption.id === "Dignified Human Remains (HUM)" ||
+    !activeOption.inclusions ||
+    activeOption.inclusions.length === 0
+  ) {
     return null;
   }
   return (

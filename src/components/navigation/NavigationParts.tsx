@@ -263,7 +263,7 @@ export const checkSpecialServiceActive = (
     case "hum":
       return rawSub === "hum" || rawSub.includes("remains");
     case "visa":
-      return rawSub.includes("visa");
+      return rawSub.includes("visa") || rawSub.includes("passport");
     case "cargo_avi_pet":
       return rawSub.includes("cargo") || rawSub.includes("avi") || rawSub.includes("pet");
     case "ticketing":

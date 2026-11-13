@@ -368,7 +368,8 @@ function DedicatedSpecialServicesPage() {
     const targetPhone =
       selectedOptionId === "Air Ticketing Services" ||
       selectedOptionId === "Air Ambulance (Airborne ICU Jet)" ||
-      selectedOptionId === "Spa & Wellness"
+      selectedOptionId === "Spa & Wellness" ||
+      selectedOptionId === "Visa Assistance Services"
         ? "919599087957"
         : selectedOptionId === "Train Ambulance" ||
             selectedOptionId === "Train Ambulance (Train ICU Escort)" ||
@@ -405,7 +406,7 @@ function DedicatedSpecialServicesPage() {
           ) : selectedOptionId === "Visa Assistance Services" ? (
             <div className="text-center mb-8">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
-                Passport and Visa
+                Passport and Visa Enquiry Form
               </h2>
             </div>
           ) : selectedOptionId === "Air Ticketing Services" ? (
