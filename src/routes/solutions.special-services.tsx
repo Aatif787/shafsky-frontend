@@ -367,7 +367,8 @@ function DedicatedSpecialServicesPage() {
     const text = `Hello Shafsky VIP Concierge Desk,%0A%0AI would like to inquire about:%0A*Service:* ${selectedOptionId}%0A${details}%0A%0A*Name:* ${clientName}%0A*Phone:* ${phone}%0A*Email:* ${email || "N/A"}`;
     const targetPhone =
       selectedOptionId === "Air Ticketing Services" ||
-      selectedOptionId === "Air Ambulance (Airborne ICU Jet)"
+      selectedOptionId === "Air Ambulance (Airborne ICU Jet)" ||
+      selectedOptionId === "Spa & Wellness"
         ? "919599087957"
         : selectedOptionId === "Train Ambulance" ||
             selectedOptionId === "Train Ambulance (Train ICU Escort)" ||
