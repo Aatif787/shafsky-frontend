@@ -531,7 +531,7 @@ function DedicatedLuxuryHotelsPage() {
                 Shafsky Aviation provides seamless Hotel coordination and accommodation management across India. Our curated network includes 7-star, 5-star, and premium 3-star Hotels, ensuring comfort, convenience, and world-class hospitality for VIP guests, corporate clients, delegations, and international &amp; Domestic travellers.
               </p>
 
-              {/* Two-Column Hotel Lists */}
+              {/* Two-Column Hotel Inclusions */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 pt-1">
                 {/* Luxury Hotels (5★ - 7★) */}
                 <div>
@@ -542,69 +542,73 @@ function DedicatedLuxuryHotelsPage() {
                     Luxury Hotels (5★ - 7★)
                   </h3>
                   <ul className="space-y-2 text-xs sm:text-[13px] font-semibold text-slate-800 leading-snug">
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>Taj Palace</span>
+                      <span>5★ &amp; 7★ Ultra-Luxury Suites &amp; Heritage Palaces</span>
                     </li>
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>ITC Maurya</span>
+                      <span>Complimentary Room Upgrades &amp; Early Check-In*</span>
                     </li>
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>The Imperial</span>
+                      <span>Executive Club Lounge Access &amp; Dedicated Butler Care</span>
                     </li>
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>The Oberoi</span>
+                      <span>Fine Dining &amp; Curated Culinary Experiences</span>
                     </li>
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>The Lodhi</span>
+                      <span>Luxury Wellness Spas &amp; Hydrotherapy Retreats</span>
                     </li>
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>The Leela Palace</span>
+                      <span>VIP In-Suite Express Check-In &amp; Check-Out</span>
                     </li>
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>Taj Mahal Hotel</span>
+                      <span>Direct Chauffeur Airport Pickup &amp; Drop Transfers</span>
                     </li>
                   </ul>
                 </div>
 
-                {/* 3 ★ Hotels */}
+                {/* Premium & Transit Hotels (3★ - 4★) */}
                 <div>
                   <h3
                     className="text-base sm:text-lg font-extrabold text-[#0a196f] underline decoration-[#0a196f] decoration-2 underline-offset-4 mb-3 tracking-tight"
                     style={display}
                   >
-                    3 ★ Hotels
+                    Premium &amp; Transit Hotels (3★ - 4★)
                   </h3>
                   <ul className="space-y-2 text-xs sm:text-[13px] font-semibold text-slate-800 leading-snug">
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>Hotel Classic Diplomat</span>
+                      <span>Prime Aerocity &amp; Airport-Adjacent Locations</span>
                     </li>
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>De Pavilion Hotel</span>
+                      <span>Flexible Day-Use &amp; Overnight Transit Stay Blocks</span>
                     </li>
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>Airport Hotel</span>
+                      <span>Quiet Soundproofed Executive Rooms</span>
                     </li>
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>Hotel Castle Blue</span>
+                      <span>High-Speed Wi-Fi &amp; Ergonomic Workspaces</span>
                     </li>
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>Round D Clock Hotel</span>
+                      <span>24/7 Multi-Cuisine All-Day Dining &amp; Room Service</span>
                     </li>
-                    <li className="flex items-center gap-2 sm:whitespace-nowrap">
+                    <li className="flex items-center gap-2">
                       <span className="text-[#0a196f] font-bold">•</span>
-                      <span>Ibis New Delhi Aerocity</span>
+                      <span>Round-the-Clock Airport Shuttle Coordination</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-[#0a196f] font-bold">•</span>
+                      <span>Priority Baggage Assistance &amp; Secure Storage</span>
                     </li>
                   </ul>
                 </div>
