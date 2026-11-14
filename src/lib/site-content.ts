@@ -35,14 +35,6 @@ export interface FAQItem {
 
 export const HOMEPAGE_FAQS: readonly FAQItem[] = [
   {
-    q: "What does the airport Meet and Greet service include?",
-    a: "A dedicated host greets you at the terminal curbside for departures, or right as you exit the aerobridge on arrival. They take care of your luggage, guide you through check-in and security, and escort you smoothly to your lounge or waiting car.",
-    cta: {
-      label: "Book Airport Service",
-      href: "/#book",
-    },
-  },
-  {
     q: "Which airports are your services available at?",
     a: "We operate in more than 20 airports across India, including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi, and Ahmedabad.",
     cta: {
