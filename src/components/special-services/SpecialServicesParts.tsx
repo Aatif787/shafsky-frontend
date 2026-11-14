@@ -176,8 +176,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     label: "Infant Care Services",
     shortLabel: "Infant Care",
     badge: "",
-    tagline:
-      "Compassionate airport concierge assistance for parents travelling with infants, pram escort, and seamless airside coordination.",
+    tagline: "",
     photo: infantCareImg,
     icon: Baby,
     inclusions: [],
@@ -235,6 +234,7 @@ const HERO_HEADING_SERVICE_IDS = new Set<SpecialServiceOptionId>([
   "Dignified Human Remains (HUM)",
   "Cargo & AVI Pet Freight",
   "Infant Care Services",
+  "On-board Meal Arrangements for Group Meet & Greet Bookings",
 ]);
 
 export function SpecialServiceHeroStage({

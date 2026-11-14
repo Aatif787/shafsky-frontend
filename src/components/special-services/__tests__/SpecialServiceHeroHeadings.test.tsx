@@ -20,6 +20,7 @@ describe("SpecialServiceHeroStage - proper headings for special services", () =>
     { sub: "hum", id: "Human Remains (HUM)" },
     { sub: "cargo_avi_pet", id: "Cargo & AVI Pet Freight" },
     { sub: "infant-care", id: "Infant Care Services" },
+    { sub: "meals", id: "On-board Meal Arrangements for Group Meet & Greet Bookings" },
   ] as const;
 
   it.each(cases)(
@@ -43,10 +44,9 @@ describe("SpecialServiceHeroStage - proper headings for special services", () =>
     }
   );
 
-  it("does not alter Air Ticketing or On-board Meal hero headings", () => {
+  it("does not alter Air Ticketing hero headings", () => {
     for (const id of [
       "Air Ticketing Services",
-      "On-board Meal Arrangements for Group Meet & Greet Bookings",
     ] as const) {
       const option = SPECIAL_SERVICES_OPTIONS.find((opt) => opt.id === id)!;
       const html = renderToString(
