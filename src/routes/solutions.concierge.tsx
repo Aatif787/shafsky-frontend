@@ -315,11 +315,11 @@ function MeetGreetDedicatedPage() {
             )}
 
             {/* Authentic Inclusions & Transit Types */}
-            <div className="max-w-4xl mx-auto flex flex-col justify-start">
+            <div className="max-w-2xl mx-auto flex flex-col items-center">
               {!activeCatalog.tagline && (
-                <>
+                <div className="text-center mb-6">
                   <div
-                    className="inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-lime-700 font-mono font-bold mb-3"
+                    className="inline-flex items-center justify-center gap-2 text-[11px] uppercase tracking-widest text-lime-700 font-mono font-bold mb-3"
                     style={mono}
                   >
                     <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
@@ -327,16 +327,16 @@ function MeetGreetDedicatedPage() {
                   </div>
 
                   <h3
-                    className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0a196f] tracking-tight mb-6"
+                    className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0a196f] tracking-tight"
                     style={display}
                   >
                     {activeCatalog.id}
                   </h3>
-                </>
+                </div>
               )}
 
               {activeCatalog.transitTypes && !activeCatalog.tagline && (
-                <div className="mb-6 p-4 rounded-2xl bg-lime-50/80 border border-lime-300 text-xs font-mono">
+                <div className="w-full max-w-xl mb-6 p-4 rounded-2xl bg-lime-50/80 border border-lime-300 text-xs font-mono">
                   <span className="font-bold text-lime-900 block mb-1">Supported transit types:</span>
                   <ul className="list-disc list-inside text-slate-700 space-y-1">
                     {activeCatalog.transitTypes.map((tt) => (
@@ -346,7 +346,7 @@ function MeetGreetDedicatedPage() {
                 </div>
               )}
 
-              <div className="space-y-4 sm:space-y-4.5">
+              <div className="w-fit max-w-full mx-auto space-y-4 sm:space-y-4.5 text-left">
                 {activeCatalog.inclusions.map((inc, i) => (
                   <div key={i} className="flex items-start gap-3.5 text-sm sm:text-[15px] text-slate-900 leading-snug">
                     <span className="text-slate-900 font-bold text-xl leading-none mt-0.5">•</span>
