@@ -165,7 +165,7 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
 
   const getWhatsAppDirectLink = () => {
     const text = encodeURIComponent(
-      `Hello Shafsky Concierge Desk,\n\nI would like to inquire about *Infant Care Services*:\n\n*Parent Name:* ${parentName.trim() || "Valued Guest"}\n*Airport:* ${airport.trim() || "Airport"}\n*Flight:* ${flightNumber.trim().toUpperCase() || "Not specified"}${flightDate ? ` on ${flightDate}` : ""}\n*Infant Age:* ${infantAge.trim() || "Not specified"}\n*Assistance Required:* ${assistanceRequired}\n*Additional Requirements:* ${additionalRequirements.trim() || "None"}\n*WhatsApp:* ${whatsappNumber.trim()}`
+      `Hello Shafsky Concierge Desk,\n\nI would like to inquire about *Infant Care Services*:\n\n*Parent Name:* ${parentName.trim() || "Valued Guest"}\n*Airport:* ${airport.trim() || "Not specified"}\n*Flight:* ${flightNumber.trim().toUpperCase() || "Not specified"}${flightDate ? ` on ${flightDate}` : ""}\n*Infant Age:* ${infantAge.trim() || "Not specified"}\n*Assistance Required:* ${assistanceRequired}\n*Additional Requirements:* ${additionalRequirements.trim() || "None"}\n*WhatsApp:* ${whatsappNumber.trim() || "Not specified"}`
     );
     return `https://wa.me/919599225778?text=${text}`;
   };
@@ -422,17 +422,17 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
         />
       </div>
 
-      {/* Submit Button */}
-      <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
+      {/* Action Buttons: Instant WhatsApp Enquiry + Submit Enquiry */}
+      <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
         <a
           href={getWhatsAppDirectLink()}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-xs font-mono text-slate-600 hover:text-emerald-700 transition"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold tracking-wider shadow-md transition-all cursor-pointer"
           style={mono}
         >
-          <MessageSquare size={14} className="text-emerald-600" />
-          <span>Need Instant Assistance? Chat on WhatsApp</span>
+          <MessageSquare size={14} className="text-lime-400" />
+          <span>Instant WhatsApp Enquiry</span>
         </a>
 
         <button
