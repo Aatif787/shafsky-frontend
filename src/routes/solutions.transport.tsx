@@ -36,10 +36,15 @@ import {
 } from "@/data/transportation";
 import { VehicleShowcaseSection } from "@/components/transportation/VehicleShowcaseSection";
 import { Footer } from "@/components/home/sections/Footer";
+import transportHeroImg from "@/assets/others/transport.jpeg";
 
 export type { TransportOptionId, TransportOptionDef };
 
 const TRANSPORT_HERO_SLIDES = [
+  {
+    src: transportHeroImg,
+    alt: "Shafsky Airport Arrival Chauffeur Guest Pickup & Luxury Sedan",
+  },
   {
     src: "/images/transport/fleet-skyline.webp",
     alt: "Shafsky Chauffeured Executive Sedans and Passenger Vans",

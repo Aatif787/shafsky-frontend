@@ -23,6 +23,8 @@ import humanRemainsImg from "@/assets/others/human-remains.jpg";
 import airAmbulanceImg from "@/assets/others/airambulance.jpeg";
 import airAmbulance1Img from "@/assets/others/airambulance1.jpeg";
 import trainImg from "@/assets/others/train.jpeg";
+import infantCareImg from "@/assets/others/infantcare.jpeg";
+import onboardMealsImg from "@/assets/others/on board meal .jpeg";
 
 export type SpecialServiceOptionId =
   | "Air Ticketing Services"
@@ -90,6 +92,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "",
     tagline:
       "Bespoke in-flight catering, customized dietary curation, and synchronized airside meal delivery for group and VIP Meet & Greet journeys.",
+    photo: onboardMealsImg,
     icon: UtensilsCrossed,
     inclusions: [],
   },
@@ -175,6 +178,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     badge: "",
     tagline:
       "Compassionate airport concierge assistance for parents travelling with infants, pram escort, and seamless airside coordination.",
+    photo: infantCareImg,
     icon: Baby,
     inclusions: [],
   },
@@ -338,13 +342,13 @@ export function SpecialServiceHeroStage({
         )}
 
         {photosList.length === 1 && (
-          <div className="relative w-full aspect-[16/9] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none">
+          <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none">
             <img
               width={1600}
               height={900}
               src={photosList[0]}
               alt={activeOption.label}
-              className="w-full h-full object-cover object-center select-none block pointer-events-none bg-white"
+              className="w-full h-auto object-contain object-center select-none block pointer-events-none bg-white"
               loading="eager"
               draggable={false}
             />
