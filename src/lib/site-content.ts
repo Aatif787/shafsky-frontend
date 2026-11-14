@@ -36,7 +36,7 @@ export interface FAQItem {
 export const HOMEPAGE_FAQS: readonly FAQItem[] = [
   {
     q: "Which airports are your services available at?",
-    a: "We operate in more than 20 airports across India, including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi, and Ahmedabad.",
+    a: "We operate in more than 20 airports across India, including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi, and Ahmedabad, as well as major international hubs worldwide including Singapore, Dubai, Saudi Arabia, London, USA, Abu Dhabi, Bangkok, Hong Kong, Malaysia, and more.",
     cta: {
       label: "View Covered Airports",
       href: "/airports",
@@ -211,7 +211,7 @@ export const FAQ_ITEMS: [string, string][] = [
   ],
   [
     "Which airports do you cover?",
-    "We operate at 20 Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi and Jaipur.",
+    "We operate across 20+ airports in India (including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi, and Jaipur) as well as prime international hubs worldwide including Singapore, Dubai, Saudi Arabia, London, USA, Abu Dhabi, Bangkok, Hong Kong, Malaysia, and beyond.",
   ],
   [
     "How do I book?",
