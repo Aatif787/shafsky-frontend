@@ -299,16 +299,6 @@ function MeetGreetDedicatedPage() {
 
           {/* Active Catalog Showcase (Seamless Pure Editorial Layout without Boxed Card Container) */}
           <div className="w-full">
-            {/* Optional Full Width Hero Banner (e.g. for Transit Service - Zero Cropping) */}
-            {activeCatalog.heroBanner && (
-              <div className="mb-10 rounded-2xl overflow-hidden shadow-sm bg-slate-50 border border-slate-100">
-                <img width={1600} height={900} src={activeCatalog.heroBanner}
-                  alt="Transit Service Waiting Lounge & Apron View"
-                  className="w-full h-auto object-contain object-center select-none block"
-                />
-              </div>
-            )}
-
             {/* Optional Transit Header & Tagline */}
             {activeCatalog.tagline && (
               <div className="text-center mb-10 pb-6 border-b border-slate-100">
@@ -324,82 +314,45 @@ function MeetGreetDedicatedPage() {
               </div>
             )}
 
-            {/* 2-Column Balanced Editorial Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
-              {/* Left Column: Authentic Inclusions & Transit Types */}
-              <div className="lg:col-span-6 flex flex-col justify-start">
-                {!activeCatalog.tagline && (
-                  <>
-                    <div
-                      className="inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-lime-700 font-mono font-bold mb-3"
-                      style={mono}
-                    >
-                      <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
-                      SERVICE DETAILS
-                    </div>
-
-                    <h3
-                      className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0a196f] tracking-tight mb-6"
-                      style={display}
-                    >
-                      {activeCatalog.id}
-                    </h3>
-                  </>
-                )}
-
-                {activeCatalog.transitTypes && !activeCatalog.tagline && (
-                  <div className="mb-6 p-4 rounded-2xl bg-lime-50/80 border border-lime-300 text-xs font-mono">
-                    <span className="font-bold text-lime-900 block mb-1">Supported transit types:</span>
-                    <ul className="list-disc list-inside text-slate-700 space-y-1">
-                      {activeCatalog.transitTypes.map((tt) => (
-                        <li key={tt}>{tt}</li>
-                      ))}
-                    </ul>
+            {/* Authentic Inclusions & Transit Types */}
+            <div className="max-w-4xl mx-auto flex flex-col justify-start">
+              {!activeCatalog.tagline && (
+                <>
+                  <div
+                    className="inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-lime-700 font-mono font-bold mb-3"
+                    style={mono}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-lime-500 inline-block" />
+                    SERVICE DETAILS
                   </div>
-                )}
 
-                <div className="space-y-4 sm:space-y-4.5">
-                  {activeCatalog.inclusions.map((inc, i) => (
-                    <div key={i} className="flex items-start gap-3.5 text-sm sm:text-[15px] text-slate-900 leading-snug">
-                      <span className="text-slate-900 font-bold text-xl leading-none mt-0.5">•</span>
-                      <span className="font-semibold text-slate-900">{inc}</span>
-                    </div>
-                  ))}
+                  <h3
+                    className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0a196f] tracking-tight mb-6"
+                    style={display}
+                  >
+                    {activeCatalog.id}
+                  </h3>
+                </>
+              )}
+
+              {activeCatalog.transitTypes && !activeCatalog.tagline && (
+                <div className="mb-6 p-4 rounded-2xl bg-lime-50/80 border border-lime-300 text-xs font-mono">
+                  <span className="font-bold text-lime-900 block mb-1">Supported transit types:</span>
+                  <ul className="list-disc list-inside text-slate-700 space-y-1">
+                    {activeCatalog.transitTypes.map((tt) => (
+                      <li key={tt}>{tt}</li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
+              )}
 
-              {/* Right Column: Original Aspect Ratio Uncropped Gallery */}
-              <div className="lg:col-span-6">
-                {(() => {
-                  const allImages = [
-                    ...activeCatalog.topImages,
-                    ...(activeCatalog.bottomImages || []),
-                  ];
-
-                  return (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {allImages.map((img, idx) => (
-                        <div
-                          key={idx}
-                          className="w-full rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 bg-white group hover:border-lime-400 transition-all"
-                        >
-                          <div className="w-full bg-slate-50 overflow-hidden flex items-center justify-center">
-                            <img width={1600} height={900} loading="lazy" decoding="async"
-                              src={img.src}
-                              alt={img.alt}
-                              className="w-full h-auto object-contain object-center select-none block group-hover:scale-102 transition-transform duration-500"
-                            />
-                          </div>
-                          <div className="p-3 bg-white border-t border-slate-100">
-                            <span className="text-[11px] font-mono font-bold text-slate-800 tracking-wide block">
-                              {img.alt}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })()}
+              <div className="space-y-4 sm:space-y-4.5">
+                {activeCatalog.inclusions.map((inc, i) => (
+                  <div key={i} className="flex items-start gap-3.5 text-sm sm:text-[15px] text-slate-900 leading-snug">
+                    <span className="text-slate-900 font-bold text-xl leading-none mt-0.5">•</span>
+                    <span className="font-semibold text-slate-900">{inc}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
