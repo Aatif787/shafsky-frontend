@@ -184,12 +184,13 @@ function DedicatedSpecialServicesPage() {
     let serviceType: string = selectedOptionId;
 
     if (selectedOptionId === "Spa & Wellness") {
-      origin = spaLocation;
-      destination = spaLocation;
+      const cleanLocation = spaLocation.trim();
+      origin = cleanLocation || undefined;
+      destination = cleanLocation || undefined;
       serviceDate = spaDate || undefined;
       details = {
         service: selectedOptionId,
-        location: spaLocation,
+        location: cleanLocation || "Not specified",
         date: spaDate,
         guests: spaGuests,
         notes: spaNotes,
@@ -344,7 +345,7 @@ function DedicatedSpecialServicesPage() {
   const getWhatsAppDirectLink = () => {
     let details = "";
     if (selectedOptionId === "Spa & Wellness") {
-      details = `Location: ${spaLocation}%0ADate: ${spaDate}%0AGuests: ${spaGuests}%0APreferences: ${spaNotes || "None"}`;
+      details = `Location: ${spaLocation.trim() || "Not specified"}%0ADate: ${spaDate}%0AGuests: ${spaGuests}%0APreferences: ${spaNotes || "None"}`;
     } else if (selectedOptionId === "Travel & Tour" || selectedOptionId === "Travel & Tour (Honeymoon/Couples)" || selectedOptionId === "Tours & Travel (Honeymoon/Couples)") {
       details = `Destination: ${tourDestination}%0ATravel Dates: ${tourDates}%0AGuests: ${tourGuests}%0ANotes: ${tourNotes || "None"}`;
     } else if (selectedOptionId === "PSO (Personal Security Officer / VIP Shopping)") {
@@ -369,6 +370,9 @@ function DedicatedSpecialServicesPage() {
       selectedOptionId === "Air Ticketing Services" ||
       selectedOptionId === "Air Ambulance (Airborne ICU Jet)" ||
       selectedOptionId === "Spa & Wellness" ||
+      selectedOptionId === "PSO (Personal Security Officer / VIP Shopping)" ||
+      selectedOptionId === "Human Remains (HUM)" ||
+      (selectedOptionId as any) === "Dignified Human Remains (HUM)" ||
       selectedOptionId === "Visa Assistance Services" ||
       selectedOptionId === "Travel & Tour" ||
       (selectedOptionId as any) === "Travel & Tour (Honeymoon/Couples)" ||
@@ -568,13 +572,12 @@ function DedicatedSpecialServicesPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1">
-                              Preferred City / Hotel *
+                              Preferred City / Hotel (Optional)
                             </label>
                             <input
                               type="text"
                               value={spaLocation}
                               onChange={(e) => setSpaLocation(e.target.value)}
-                              required
                               className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none focus:border-lime-500"
                             />
                           </div>

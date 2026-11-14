@@ -226,6 +226,7 @@ export function SpecialServicesExperience({ initialSubService }: SpecialServices
 
     const targetPhone =
       subService === "Spa & Wellness" ||
+      subService === "PSO (Personal Security Officer / VIP Shopping)" ||
       subService === "Travel & Tour" ||
       subService === "Travel & Tour (Honeymoon/Couples)" ||
       subService === "Tours & Travel (Honeymoon/Couples)"

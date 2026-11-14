@@ -49,11 +49,12 @@ describe("SpecialServiceDetailsSection - Human Remains (HUM)", () => {
     expect(dignifiedHtml).toBe("");
   });
 
-  it("preserves SERVICE DETAILS & INCLUSIONS for unrelated special services", () => {
+  it("does not render SERVICE DETAILS & INCLUSIONS on Spa & Wellness", () => {
     const spaOption = SPECIAL_SERVICES_OPTIONS.find((opt) => opt.id === "Spa & Wellness")!;
+    expect(spaOption.inclusions).toEqual([]);
     const html = renderToString(<SpecialServiceDetailsSection activeOption={spaOption} />);
-    expect(html).toContain("SERVICE DETAILS &amp; INCLUSIONS");
-    expect(html).toContain("Spa &amp; Wellness");
+    expect(html).toBe("");
+    expect(html).not.toContain("SERVICE DETAILS &amp; INCLUSIONS");
   });
 });
 

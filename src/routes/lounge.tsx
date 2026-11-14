@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/home/sections/Footer";
+import { display } from "@/components/home/theme";
 import { LoungeEnquiryForm } from "@/components/lounge/LoungeEnquiryForm";
 import {
   LoungeHeroCarousel,
@@ -41,6 +42,16 @@ function LoungePage() {
       >
         {/* Upper section image showcase (NOT on the side), followed by Enquiry Form (100% responsive for all devices) */}
         <div className="w-full space-y-8 sm:space-y-10">
+          {/* Page Heading */}
+          <div className="text-center max-w-3xl mx-auto">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
+              style={display}
+            >
+              Lounge Services
+            </h1>
+          </div>
+
           {/* Upper Section Showcase (Clean images, NO text on images, 100% responsive on mobile, 90% on desktop) */}
           <div className="w-full max-w-5xl mx-auto">
             <LoungeHeroCarousel onOpenLightbox={(idx) => setLightboxIndex(idx)} />

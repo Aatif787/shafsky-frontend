@@ -106,14 +106,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
       "Private couples spa suites, therapeutic hot stone treatments, and 5-star wellness retreats.",
     photo: spaWellnessImg,
     icon: Sparkles,
-    inclusions: [
-      "Private Couple Spa Suites with Jacuzzi & Aromatherapy Steam Rooms",
-      "Certified Ayurvedic Doctors & International Holistic Wellness Therapists",
-      "Signature Volcanic Hot Stone Therapy & Deep Tissue Rejuvenation",
-      "Cold-Pressed Organic Essential Oils & Customized Herbal Infusions",
-      "VIP Airport Layover Express Rejuvenation & Hydro-Massage Access",
-      "24/7 Dedicated Wellness Concierge Booking & Private Suite Reservations",
-    ],
+    inclusions: [],
   },
   {
     id: "PSO (Personal Security Officer / VIP Shopping)",
@@ -155,8 +148,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     label: "Human Remains (HUM)",
     shortLabel: "HUM Repatriation",
     badge: "",
-    tagline:
-      "Compassionate, fully documented repatriation of mortal remains across domestic and international aviation sectors.",
+    tagline: "",
     photo: humanRemainsImg,
     icon: HeartHandshake,
     inclusions: [],
@@ -391,6 +383,7 @@ export function SpecialServiceDetailsSection({
     activeOption.id === "Air Ticketing Services" ||
     activeOption.id === "Travel & Tour" ||
     activeOption.id === "Cargo & AVI Pet Freight" ||
+    activeOption.id === "Spa & Wellness" ||
     activeOption.id === "PSO (Personal Security Officer / VIP Shopping)" ||
     activeOption.id === "Visa Assistance Services" ||
     activeOption.id === "Air Ambulance (Airborne ICU Jet)" ||

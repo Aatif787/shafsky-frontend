@@ -124,7 +124,7 @@ export const AIRPORT_IMAGES_MAP: Record<string, string[]> = {
     "/images/airports/lko/hazratganj-clock-tower.webp",
   ],
   maa: [
-    "/images/airports/maa/chennai-airport-terminal.webp",
+    "/images/airports/maa/chennai.jpeg",
     "/images/airports/maa/marina-beach-chennai.webp",
     "/images/airports/maa/kapaleeshwarar-temple.webp",
     "/images/airports/maa/chennai-central-station.webp",
