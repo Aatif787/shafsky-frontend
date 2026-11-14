@@ -52,7 +52,7 @@ export const HOMEPAGE_FAQS: readonly FAQItem[] = [
   },
   {
     q: "How do I book a private charter flight?",
-    a: "Simply share your travel dates, route, and passenger count with us. We check aircraft availability right away and send you a transparent charter quote within 45 minutes.",
+    a: "Simply share your travel dates, route, and passenger count with us. We check aircraft availability right away and send you a transparent charter quote as soon as possible.",
     cta: {
       label: "Explore Air Charters",
       href: "/solutions/aviation",
