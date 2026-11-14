@@ -308,7 +308,7 @@ export function useAirportWorkflow(searchParamsOrService?: any, initialOriginArg
       const resJson = await response.json();
 
       if (!response.ok || !resJson.success) {
-        const errMsg = formatFlightLookupError(resJson?.error || resJson?.message || resJson, response.status);
+        const errMsg = formatFlightLookupError(resJson, response.status);
         updateState({
           flightStateMode: "ERROR",
           flightErrorMessage: errMsg,

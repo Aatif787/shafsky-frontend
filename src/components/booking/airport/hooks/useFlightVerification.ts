@@ -152,7 +152,11 @@ export function useFlightVerification({
       const resJson = await res.json().catch(() => null);
 
       if (resJson?.code === "FLIGHT_EXPIRED" || resJson?.data?.is_expired) {
-        const pastMsg = resJson?.rejection_reason || "This flight has already departed/arrived. Please select a future flight.";
+        const pastMsg =
+          resJson?.data?.rejection_reason ||
+          resJson?.rejection_reason ||
+          resJson?.error ||
+          "This flight has already departed/arrived. Please select a future flight.";
         setFlightFetchError(pastMsg);
         setIsFlightVerified(false);
         setVerifiedFlight(null);
@@ -362,7 +366,7 @@ export function useFlightVerification({
       }
 
       // Check for cutoff violation in error message
-      const errorMsg = formatFlightLookupError(resJson?.error || resJson?.message || resJson, res?.status);
+      const errorMsg = formatFlightLookupError(resJson, res?.status);
       if (
         errorMsg.toLowerCase().includes("cutoff") ||
         errorMsg.toLowerCase().includes("6 hours") ||
@@ -423,7 +427,11 @@ export function useFlightVerification({
       const resJson = await res.json().catch(() => null);
 
       if (resJson?.code === "FLIGHT_EXPIRED" || resJson?.data?.is_expired) {
-        const pastMsg = resJson?.rejection_reason || "This flight has already departed/arrived. Please select a future flight.";
+        const pastMsg =
+          resJson?.data?.rejection_reason ||
+          resJson?.rejection_reason ||
+          resJson?.error ||
+          "This flight has already departed/arrived. Please select a future flight.";
         setFlightFetchError(pastMsg);
         setIsFlightVerified(false);
         setVerifiedFlight(null);
@@ -564,7 +572,7 @@ export function useFlightVerification({
         }
       }
 
-      const errorMsg = formatFlightLookupError(resJson?.error || resJson?.message || resJson, res?.status);
+      const errorMsg = formatFlightLookupError(resJson, res?.status);
       setFlightFetchError2(errorMsg || "Live schedule not found for connecting flight. Please provide details manually below.");
       setIsFlightVerified2(false);
       setVerifiedFlight2(null);

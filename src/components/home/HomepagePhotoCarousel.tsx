@@ -7,6 +7,10 @@ import { ICICI_REVIEW_MODE } from "@/lib/config/reviewMode";
 // Authentic Shafsky Aviation photos in deliberate order with GREET photo in the middle
 const ALL_HOMEPAGE_PHOTOS = [
   {
+    id: "infantcare",
+    photo: HOMEPAGE_PHOTOS.infantCare,
+  },
+  {
     id: "jet",
     photo: HOMEPAGE_PHOTOS.heroJet,
   },
@@ -61,6 +65,7 @@ const ALL_HOMEPAGE_PHOTOS = [
 ];
 
 const REVIEW_MODE_PHOTO_IDS = new Set([
+  "infantcare",
   "greet",
   "transit",
   "vvip",

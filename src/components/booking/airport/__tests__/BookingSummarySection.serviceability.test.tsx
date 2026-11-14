@@ -75,7 +75,8 @@ describe("BookingSummarySection Serviceability Handling", () => {
     expect(html).not.toContain("Encrypted payment via Razorpay");
 
     // 4. Must display the required exact text
-    expect(html).toContain("This airport is not currently serviceable. Submit your request and our team will check availability.");
+    expect(html).not.toContain("This airport is not currently serviceable.");
+    expect(html).toContain("Submit your request and our team will check availability.");
     expect(html).toContain("Our team will review your request and contact you.");
 
     // 5. Must NOT contain the word 'concierge' anywhere

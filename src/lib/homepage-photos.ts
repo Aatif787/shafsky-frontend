@@ -15,9 +15,21 @@ import meetImg from "@/assets/homepage/widescreen/meet.jpeg";
 import transitImg from "@/assets/homepage/widescreen/transit.jpeg";
 import vvipImg from "@/assets/homepage/widescreen/vvip.jpeg";
 import wheelImg from "@/assets/homepage/widescreen/wheel.jpeg";
-import airTicketingImg from "@/assets/others/air-ticketing.jpg";
+import airTicketingImg from "@/assets/others/airticketing.jpeg";
+import infantCareImg from "@/assets/others/infantcare.jpeg";
 
 export const HOMEPAGE_PHOTOS = {
+  // Dedicated Airport Infant Care & Family Concierge (Widescreen 16:9)
+  infantCare: {
+    src: infantCareImg,
+    width: 1920,
+    height: 1080,
+    aspectRatio: "16 / 9",
+    alt: "Shafsky airport concierge hostess assisting parents and infant in departure terminal",
+    subject: "Dedicated Airport Infant Care & Family Concierge",
+    orientation: "landscape" as const,
+  },
+
   // Hero Editorial Visual (Widescreen 16:9)
   heroJet: {
     src: home2Img,

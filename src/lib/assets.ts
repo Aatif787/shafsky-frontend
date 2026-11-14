@@ -53,7 +53,7 @@ export const ASSETS = {
   amd: "/images/airports/amd/ahmedabad-svpia-terminal.webp",
   goi: "/images/airports/goi/goa-dabolim-terminal.webp",
   gox: "/images/airports/gox/goa-mopa-manohar-terminal.webp",
-  maa: "/images/airports/maa/chennai-airport-terminal.webp",
+  maa: "/images/airports/maa/chennai.jpeg",
   ccu: "/images/airports/ccu/kolkata-nscbi-terminal.webp",
   cok: "/images/airports/cok/cochin-cia-terminal.webp",
   atq: "/images/airports/atq/amritsar-sgrdj-terminal.webp",

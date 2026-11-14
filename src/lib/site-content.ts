@@ -35,16 +35,8 @@ export interface FAQItem {
 
 export const HOMEPAGE_FAQS: readonly FAQItem[] = [
   {
-    q: "What does the airport Meet and Greet service include?",
-    a: "A dedicated host greets you at the terminal curbside for departures, or right as you exit the aerobridge on arrival. They take care of your luggage, guide you through check-in and security, and escort you smoothly to your lounge or waiting car.",
-    cta: {
-      label: "Book Airport Service",
-      href: "/#book",
-    },
-  },
-  {
     q: "Which airports are your services available at?",
-    a: "We operate in more than 20 airports across India, including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi, and Ahmedabad.",
+    a: "We operate in more than 20 airports across India, including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi, and Ahmedabad, as well as major international hubs worldwide including Singapore, Dubai, Saudi Arabia, London, USA, Abu Dhabi, Bangkok, Hong Kong, Malaysia, and more.",
     cta: {
       label: "View Covered Airports",
       href: "/airports",
@@ -52,18 +44,10 @@ export const HOMEPAGE_FAQS: readonly FAQItem[] = [
   },
   {
     q: "How do I book a private charter flight?",
-    a: "Simply share your travel dates, route, and passenger count with us. We check aircraft availability right away and send you a transparent charter quote within 45 minutes.",
+    a: "Simply share your travel dates, route, and passenger count with us. We check aircraft availability right away and send you a transparent charter quote as soon as possible.",
     cta: {
       label: "Explore Air Charters",
       href: "/solutions/aviation",
-    },
-  },
-  {
-    q: "How early do I need to book my airport service?",
-    a: "We recommend booking at least 6 hours in advance for domestic flights and 12 hours for international flights. If your trip is last minute, reach out to our team directly and we will do our best to arrange it.",
-    cta: {
-      label: "Book Your Service",
-      href: "/#book",
     },
   },
   {
@@ -219,7 +203,7 @@ export const FAQ_ITEMS: [string, string][] = [
   ],
   [
     "Which airports do you cover?",
-    "We operate at 20 Indian airports including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi and Jaipur.",
+    "We operate across 20+ airports in India (including Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, Goa, Kochi, and Jaipur) as well as prime international hubs worldwide including Singapore, Dubai, Saudi Arabia, London, USA, Abu Dhabi, Bangkok, Hong Kong, Malaysia, and beyond.",
   ],
   [
     "How do I book?",
@@ -255,7 +239,7 @@ export const FOOTER_CONTENT = {
   phone: "+91 9599087959",
   copyright: "Shafsky Aviation Services Pvt. Ltd. All Rights Reserved.",
   services: ["Meet & Greet", "Lounge Access", "Transport", "Hotels", "Concierge"],
-  companyLinks: ["About Us", "Our Team", "Contact"],
+  companyLinks: ["About Us", "Contact"],
   legalLinks: ["Privacy Policy", "Terms of Use"],
 } as const;
 

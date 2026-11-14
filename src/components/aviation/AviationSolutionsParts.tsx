@@ -660,24 +660,24 @@ export function AviationSpecificationsSection({
   ];
 
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-white border-t border-slate-100">
-      <div className="mx-auto w-full max-w-[1040px] xl:max-w-[1100px] 2xl:max-w-[1140px] px-4 sm:px-6 md:px-8">
+    <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-white border-t border-slate-100">
+      <div className="mx-auto w-full max-w-4xl">
         <div
-          className="space-y-7 text-slate-900 max-w-3xl text-left"
+          className="space-y-6 sm:space-y-8 text-slate-900 w-full"
           style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
         >
-          <p className="text-base sm:text-lg md:text-[19px] leading-relaxed text-slate-900">
+          <p className="w-full text-justify hyphens-auto text-base sm:text-lg md:text-[19px] leading-relaxed text-slate-900">
             Air Charter Service provide flexible, secure, and premium travel solutions tailored to individual and business needs. With a focus on comfort, privacy, and efficiency, these services ensure seamless journeys across domestic and international destinations.
           </p>
 
-          <ul className="space-y-3.5 sm:space-y-4 list-none pl-0 text-slate-900">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 sm:gap-y-4 list-none pl-0 text-slate-900">
             {charterServices.map((service, index) => (
               <li
                 key={index}
-                className="flex items-start gap-3 text-base sm:text-lg md:text-[19px] leading-snug text-slate-900"
+                className="flex items-start gap-3 text-base sm:text-lg md:text-[19px] leading-snug text-slate-900 text-left"
               >
-                <span className="select-none font-bold text-slate-900 shrink-0">•</span>
-                <span>{service}</span>
+                <span className="select-none font-bold text-slate-900 shrink-0 leading-snug">•</span>
+                <span className="break-words">{service}</span>
               </li>
             ))}
           </ul>

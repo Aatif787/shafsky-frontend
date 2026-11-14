@@ -56,11 +56,7 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [airport, setAirport] = useState(initialAirport);
   const [flightNumber, setFlightNumber] = useState("");
-  const [flightDate, setFlightDate] = useState(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split("T")[0];
-  });
+  const [flightDate, setFlightDate] = useState("");
   const [infantAge, setInfantAge] = useState("");
   const [assistanceRequired, setAssistanceRequired] = useState<AssistanceRequiredType>("Departure");
   const [additionalRequirements, setAdditionalRequirements] = useState("");
@@ -91,31 +87,13 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
       return;
     }
 
-    // 3. Validate Airport
-    if (!airport.trim()) {
-      toast.error("Please specify the airport (e.g. DEL, BOM, BLR).");
-      return;
-    }
-
-    // 4. Validate Flight Number
-    if (!flightNumber.trim()) {
-      toast.error("Please provide the flight number (e.g. 6E 2134, AI 804).");
-      return;
-    }
-
-    // 5. Validate Flight Date
-    if (!flightDate) {
-      toast.error("Please select your flight date.");
-      return;
-    }
-
-    // 6. Validate Infant Age
+    // 3. Validate Infant Age
     if (!infantAge.trim()) {
       toast.error("Please specify your infant's age (e.g. 8 Months, 1 Year).");
       return;
     }
 
-    // 7. Validate Assistance Required
+    // 4. Validate Assistance Required
     if (!assistanceRequired) {
       toast.error("Please select the assistance required (Arrival, Departure, or Transit).");
       return;
@@ -127,8 +105,8 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
       `[INFANT CARE ASSISTANCE ENQUIRY]`,
       `Parent: ${trimmedParentName}`,
       `WhatsApp: ${cleanPhone}`,
-      `Airport: ${airport.trim()}`,
-      `Flight: ${flightNumber.trim().toUpperCase()} on ${flightDate}`,
+      `Airport: ${airport.trim() || "Not specified"}`,
+      `Flight: ${flightNumber.trim().toUpperCase() || "Not specified"}${flightDate ? ` on ${flightDate}` : ""}`,
       `Infant Age: ${infantAge.trim()}`,
       `Assistance Required: ${assistanceRequired}`,
       `Additional Requirements: ${additionalRequirements.trim() || "None"}`,
@@ -138,10 +116,10 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
       service: "Infant Care Services",
       parent_name: trimmedParentName,
       whatsapp_number: cleanPhone,
-      airport: airport.trim(),
-      flight_number: flightNumber.trim().toUpperCase(),
-      flight_date: flightDate,
-      service_date: flightDate,
+      airport: airport.trim() || undefined,
+      flight_number: flightNumber.trim().toUpperCase() || undefined,
+      flight_date: flightDate || undefined,
+      service_date: flightDate || undefined,
       infant_age: infantAge.trim(),
       assistance_required: assistanceRequired,
       additional_requirements: additionalRequirements.trim() || undefined,
@@ -154,9 +132,9 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
         passengerEmail: `${cleanPhone}@whatsapp.shafsky.internal`,
         serviceCategory: "Travel Support",
         serviceType: "Infant Care Services",
-        origin: airport.trim(),
-        destination: airport.trim(),
-        serviceDate: flightDate,
+        origin: airport.trim() || undefined,
+        destination: airport.trim() || undefined,
+        serviceDate: flightDate || undefined,
         notes: notesSummary,
         details: payloadDetails,
       });
@@ -187,7 +165,7 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
 
   const getWhatsAppDirectLink = () => {
     const text = encodeURIComponent(
-      `Hello Shafsky Concierge Desk,\n\nI would like to inquire about *Infant Care Services*:\n\n*Parent Name:* ${parentName.trim() || "Valued Guest"}\n*Airport:* ${airport.trim() || "Airport"}\n*Flight:* ${flightNumber.trim().toUpperCase() || "Flight"} on ${flightDate}\n*Infant Age:* ${infantAge.trim() || "Not specified"}\n*Assistance Required:* ${assistanceRequired}\n*Additional Requirements:* ${additionalRequirements.trim() || "None"}\n*WhatsApp:* ${whatsappNumber.trim()}`
+      `Hello Shafsky Concierge Desk,\n\nI would like to inquire about *Infant Care Services*:\n\n*Parent Name:* ${parentName.trim() || "Valued Guest"}\n*Airport:* ${airport.trim() || "Not specified"}\n*Flight:* ${flightNumber.trim().toUpperCase() || "Not specified"}${flightDate ? ` on ${flightDate}` : ""}\n*Infant Age:* ${infantAge.trim() || "Not specified"}\n*Assistance Required:* ${assistanceRequired}\n*Additional Requirements:* ${additionalRequirements.trim() || "None"}\n*WhatsApp:* ${whatsappNumber.trim() || "Not specified"}`
     );
     return `https://wa.me/919599225778?text=${text}`;
   };
@@ -233,7 +211,9 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
               setSubmittedResult(null);
               setParentName("");
               setWhatsappNumber("");
+              setAirport(initialAirport);
               setFlightNumber("");
+              setFlightDate("");
               setInfantAge("");
               setAdditionalRequirements("");
             }}
@@ -295,13 +275,12 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
         {/* 3. Airport */}
         <div>
           <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5" style={mono}>
-            Airport <span className="text-rose-500">*</span>
+            Airport <span className="text-slate-400 font-normal">(Optional)</span>
           </label>
           <div className="relative">
             <MapPin size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="text"
-              required
               value={airport}
               onChange={(e) => setAirport(e.target.value)}
               placeholder="e.g. New Delhi (DEL) / Mumbai (BOM)"
@@ -314,13 +293,12 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
         {/* 4. Flight Number */}
         <div>
           <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5" style={mono}>
-            Flight Number <span className="text-rose-500">*</span>
+            Flight Number <span className="text-slate-400 font-normal">(Optional)</span>
           </label>
           <div className="relative">
             <Plane size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="text"
-              required
               value={flightNumber}
               onChange={(e) => setFlightNumber(e.target.value.toUpperCase())}
               placeholder="e.g. 6E 2134 / AI 804 / EK 512"
@@ -333,13 +311,12 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
         {/* 5. Flight Date */}
         <div>
           <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 mb-1.5" style={mono}>
-            Flight Date <span className="text-rose-500">*</span>
+            Flight Date <span className="text-slate-400 font-normal">(Optional)</span>
           </label>
           <div className="relative">
             <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="date"
-              required
               min={today}
               value={flightDate}
               onChange={(e) => setFlightDate(e.target.value)}
@@ -445,17 +422,17 @@ export const InfantCareEnquiryForm: React.FC<InfantCareEnquiryFormProps> = ({
         />
       </div>
 
-      {/* Submit Button */}
-      <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
+      {/* Action Buttons: Instant WhatsApp Enquiry + Submit Enquiry */}
+      <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
         <a
           href={getWhatsAppDirectLink()}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-xs font-mono text-slate-600 hover:text-emerald-700 transition"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold tracking-wider shadow-md transition-all cursor-pointer"
           style={mono}
         >
-          <MessageSquare size={14} className="text-emerald-600" />
-          <span>Need Instant Assistance? Chat on WhatsApp</span>
+          <MessageSquare size={14} className="text-lime-400" />
+          <span>Instant WhatsApp Enquiry</span>
         </a>
 
         <button

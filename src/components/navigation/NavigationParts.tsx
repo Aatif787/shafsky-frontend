@@ -175,12 +175,11 @@ export interface NavItem {
 
 /**
  * Navbar Navigation Items in exact specified order:
- * Meet & Greet | Lounge | Airports | Transport | Hotel | Private Charter | Other Services | Support
+ * Meet & Greet | Lounge | Cargo | Transport | Hotels | Air Charter | Other Services
  */
 export const NAV_ITEMS: NavItem[] = [
   { label: "Meet & Greet", href: "/solutions/concierge" },
   { label: "Lounge", href: "/lounge" },
-  { label: "Airports", href: "/airports" },
   { label: "Cargo", href: "/solutions/cargo" },
   { label: "Transport", href: "/solutions/transport" },
   { label: "Hotels", href: "/solutions/hotels" },
@@ -263,7 +262,7 @@ export const checkSpecialServiceActive = (
     case "hum":
       return rawSub === "hum" || rawSub.includes("remains");
     case "visa":
-      return rawSub.includes("visa");
+      return rawSub.includes("visa") || rawSub.includes("passport");
     case "cargo_avi_pet":
       return rawSub.includes("cargo") || rawSub.includes("avi") || rawSub.includes("pet");
     case "ticketing":

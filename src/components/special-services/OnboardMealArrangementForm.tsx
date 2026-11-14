@@ -39,9 +39,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
   className = "",
 }) => {
   const queryClient = useQueryClient();
-  const { getPrimaryContact } = useWebsiteContacts();
-  const primaryContact = getPrimaryContact("meet_greet_lounge");
-  const waNumber = primaryContact?.full_phone_number?.replace(/\D/g, "") || "919599087959";
+  const waNumber = "919599087957";
 
   // Section 1: Passenger & Route Details
   const [passengerName, setPassengerName] = useState("");
@@ -241,6 +239,23 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
     return `https://wa.me/${waNumber}?text=${text}`;
   };
 
+  const getInstantWhatsAppLink = () => {
+    const text = encodeURIComponent(
+      `Hello Shafsky Aviation VIP Concierge Desk,\n\n` +
+        `I would like to inquire about On-board Meal Arrangements for group travel.\n` +
+        (passengerName ? `• Contact Name: ${passengerName}\n` : "") +
+        (phone ? `• Phone: ${phone}\n` : "") +
+        (email ? `• Email: ${email}\n` : "") +
+        (sectorRoute ? `• Route: ${sectorRoute}\n` : "") +
+        (flightNumber ? `• Flight: ${flightNumber}\n` : "") +
+        (dateOfTravel ? `• Travel Date: ${dateOfTravel}\n` : "") +
+        `• Meals Count: ${mealCount}\n` +
+        `• Preference: ${selectedMealPreferences.join(", ")}\n\n` +
+        `Please provide a custom quotation for in-flight catering coordination.`
+    );
+    return `https://wa.me/${waNumber}?text=${text}`;
+  };
+
   return (
     <div className={`w-full max-w-4xl mx-auto ${className}`}>
       {submittedResult ? (
@@ -254,7 +269,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
             ENQUIRY CONFIRMED
           </span>
 
-          <h3 className="text-3xl sm:text-4xl font-extrabold text-[#0a196f] mt-2 mb-1" style={display}>
+          <h3 className="text-3xl sm:text-4xl font-extrabold text-slate-950 mt-2 mb-1" style={display}>
             Reference #{submittedResult.bookingRef}
           </h3>
 
@@ -341,8 +356,8 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
             {/* ──────────────── SECTION 1: PASSENGER DETAILS ──────────────── */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-                <span className="w-2 h-2 rounded-full bg-[#0a196f] inline-block" />
-                <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#0a196f] font-mono">
+                <span className="w-2 h-2 rounded-full bg-lime-600 inline-block" />
+                <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 font-mono">
                   1. Passenger Details
                 </h3>
               </div>
@@ -362,7 +377,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                       onKeyDown={preventDigitsKeyDown}
                       onChange={(e) => setPassengerName(sanitizeName(e.target.value))}
                       required
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15 transition font-medium"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 transition font-medium"
                     />
                   </div>
                 </div>
@@ -379,7 +394,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                       placeholder="Flight number"
                       value={flightNumber}
                       onChange={(e) => setFlightNumber(e.target.value.toUpperCase())}
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15 transition font-mono uppercase"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 transition font-mono uppercase"
                     />
                   </div>
                 </div>
@@ -397,7 +412,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                       value={dateOfTravel}
                       onChange={(e) => setDateOfTravel(e.target.value)}
                       required
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15 transition font-mono cursor-pointer"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 transition font-mono cursor-pointer"
                     />
                   </div>
                 </div>
@@ -415,7 +430,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                       value={sectorRoute}
                       onChange={(e) => setSectorRoute(e.target.value)}
                       required
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15 transition font-medium"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 transition font-medium"
                     />
                   </div>
                 </div>
@@ -433,7 +448,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15 transition font-medium"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 transition font-medium"
                     />
                   </div>
                 </div>
@@ -448,7 +463,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                     value={phone}
                     onChange={setPhone}
                     placeholder="Phone or WhatsApp number"
-                    className="border-slate-200 focus:border-[#0a196f] focus:ring-[#0a196f]/15 font-mono text-xs sm:text-sm"
+                    className="border-slate-200 focus:border-lime-500 focus:ring-lime-500/20 font-mono text-xs sm:text-sm"
                   />
                 </div>
               </div>
@@ -457,8 +472,8 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
             {/* ──────────────── SECTION 2: VALID ID DETAILS ──────────────── */}
             <div className="space-y-4 pt-2">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-                <span className="w-2 h-2 rounded-full bg-[#0a196f] inline-block" />
-                <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#0a196f] font-mono">
+                <span className="w-2 h-2 rounded-full bg-lime-600 inline-block" />
+                <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 font-mono">
                   2. Valid ID Details
                 </h3>
               </div>
@@ -472,7 +487,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                   <select
                     value={idType}
                     onChange={(e) => setIdType(e.target.value as any)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15 transition cursor-pointer font-medium"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 transition cursor-pointer font-medium"
                   >
                     <option value="Passport">Passport</option>
                     <option value="Government-issued ID">Government-issued ID</option>
@@ -490,7 +505,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                     placeholder="ID or passport number"
                     value={idNumber}
                     onChange={(e) => setIdNumber(e.target.value.toUpperCase())}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15 transition font-mono uppercase"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 transition font-mono uppercase"
                   />
                 </div>
 
@@ -500,8 +515,8 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
             {/* SECTION 3: MEAL ARRANGEMENT DETAILS */}
             <div className="space-y-6 pt-2">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-                <span className="w-2 h-2 rounded-full bg-[#0a196f] inline-block" />
-                <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#0a196f] font-mono">
+                <span className="w-2 h-2 rounded-full bg-lime-600 inline-block" />
+                <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 font-mono">
                   3. Meal Arrangement Details
                 </h3>
               </div>
@@ -527,14 +542,14 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                           aria-checked={isChecked}
                           className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm transition-all duration-150 cursor-pointer border ${
                             isChecked
-                              ? "bg-[#0a196f] text-white border-[#0a196f] shadow-sm font-semibold ring-2 ring-[#0a196f]/15"
+                              ? "bg-lime-500 text-slate-950 border-lime-600 shadow-sm font-bold ring-2 ring-lime-500/20"
                               : "bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100/70 font-medium"
                           }`}
                         >
                           <span
                             className={`w-4 h-4 rounded flex items-center justify-center border text-[10px] transition ${
                               isChecked
-                                ? "bg-white/20 border-white/40 text-white"
+                                ? "bg-slate-950 text-white border-slate-950"
                                 : "border-slate-300 bg-slate-50 text-transparent"
                             }`}
                           >
@@ -574,7 +589,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                           setMealCount(Math.max(1, Math.min(500, parseInt(e.target.value) || 1)))
                         }
                         required
-                        className="w-24 text-center py-2 rounded-xl border border-slate-300 bg-white font-mono font-bold text-sm text-slate-900 focus:outline-none focus:border-[#0a196f] focus:ring-2 focus:ring-[#0a196f]/15"
+                        className="w-24 text-center py-2 rounded-xl border border-slate-300 bg-white font-mono font-bold text-sm text-slate-900 focus:outline-none focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20"
                       />
                       <span className="text-[10px] text-slate-400 font-mono block mt-1">
                         {mealCount === 1 ? "1 Meal" : `${mealCount} Meals`}
@@ -596,8 +611,8 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
             {/* ──────────────── SECTION 4: DECLARATION ──────────────── */}
             <div className="space-y-3 pt-2">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-                <span className="w-2 h-2 rounded-full bg-[#0a196f] inline-block" />
-                <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#0a196f] font-mono">
+                <span className="w-2 h-2 rounded-full bg-lime-600 inline-block" />
+                <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 font-mono">
                   4. Declaration
                 </h3>
               </div>
@@ -608,7 +623,7 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                     checked={declarationConfirmed}
                     onChange={(e) => setDeclarationConfirmed(e.target.checked)}
                     required
-                    className="w-4 h-4 mt-0.5 rounded border-amber-300 text-[#0a196f] focus:ring-[#0a196f]/20 accent-[#0a196f] cursor-pointer shrink-0"
+                    className="w-4 h-4 mt-0.5 rounded border-amber-300 text-lime-600 focus:ring-lime-500/20 accent-lime-600 cursor-pointer shrink-0"
                   />
                   <span className="text-xs text-slate-800 leading-relaxed font-medium">
                     I confirm that the information provided above is accurate and that the identification document submitted, where required, is valid.
@@ -624,21 +639,31 @@ export const OnboardMealArrangementForm: React.FC<OnboardMealArrangementFormProp
                 <span>Zero charge • Official enquiry for custom quotation</span>
               </div>
 
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto justify-end">
+                <a
+                  href={getInstantWhatsAppLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs font-mono tracking-wider transition-all"
+                >
+                  <MessageSquare size={14} className="text-lime-400" />
+                  <span>Instant WhatsApp Enquiry</span>
+                </a>
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-9 py-3.5 rounded-full bg-[#0a196f] hover:bg-[#071252] active:bg-[#050e40] text-white font-bold text-xs sm:text-sm font-mono uppercase tracking-wider shadow-lg hover:shadow-xl transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-9 py-3.5 rounded-full bg-lime-500 hover:bg-lime-400 active:bg-lime-600 text-slate-950 font-bold text-xs sm:text-sm font-mono uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 size={16} className="animate-spin text-lime-400" />
+                      <Loader2 size={16} className="animate-spin text-slate-950" />
                       <span>Submitting Enquiry...</span>
                     </>
                   ) : (
                     <>
                       <span>Submit Enquiry</span>
-                      <Send size={15} className="text-lime-400" />
+                      <Send size={15} className="text-slate-950" />
                     </>
                   )}
                 </button>

@@ -6,6 +6,7 @@ import {
 import { display } from "@/components/home/theme";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 import { Footer } from "@/components/home/sections/Footer";
+import infantCareBanner from "@/assets/others/infantcare.jpeg";
 import { InfantCareEnquiryForm } from "@/components/special-services/InfantCareEnquiryForm";
 
 export const Route = createFileRoute("/solutions/infant-care")({
@@ -51,7 +52,7 @@ function DedicatedInfantCarePage() {
       <section className="relative w-full overflow-hidden bg-white border-b border-slate-200 py-6 sm:py-8 md:py-10">
         <div className="relative z-10 mx-auto w-full max-w-[1040px] xl:max-w-[1100px] 2xl:max-w-[1140px] px-4 sm:px-6 md:px-8">
           {/* Header Row: Back Button */}
-          <div className="w-full flex items-center justify-between gap-3">
+          <div className="w-full flex items-center justify-between gap-3 mb-3.5 sm:mb-5">
             <button
               onClick={handleBack}
               className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/90 text-xs font-semibold shadow-xs hover:border-lime-500 transition-all cursor-pointer"
@@ -61,6 +62,26 @@ function DedicatedInfantCarePage() {
             </button>
           </div>
 
+          <div className="text-center max-w-3xl mx-auto mb-4 sm:mb-6">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
+              style={display}
+            >
+              Infant Care Services
+            </h1>
+          </div>
+
+          <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none">
+            <img
+              width={1600}
+              height={900}
+              src={infantCareBanner}
+              alt="Shafsky Aviation Infant Care and Family Airport Concierge Service"
+              className="w-full h-auto object-contain object-center select-none block pointer-events-none bg-white"
+              loading="eager"
+              draggable={false}
+            />
+          </div>
         </div>
       </section>
 
@@ -70,9 +91,9 @@ function DedicatedInfantCarePage() {
       <section id="enquiry" className="py-12 sm:py-20 bg-slate-50/80 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <div className="text-center mb-8">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950" style={display}>
               Infant Care Enquiry Form
-            </h1>
+            </h2>
           </div>
 
           <InfantCareEnquiryForm />

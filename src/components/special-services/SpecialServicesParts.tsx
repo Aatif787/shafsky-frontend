@@ -23,6 +23,9 @@ import humanRemainsImg from "@/assets/others/human-remains.jpg";
 import airAmbulanceImg from "@/assets/others/airambulance.jpeg";
 import airAmbulance1Img from "@/assets/others/airambulance1.jpeg";
 import trainImg from "@/assets/others/train.jpeg";
+import infantCareImg from "@/assets/others/infantcare.jpeg";
+import onboardMealsImg from "@/assets/others/on board meal .jpeg";
+import airTicketingImg from "@/assets/others/airticketing.jpeg";
 
 export type SpecialServiceOptionId =
   | "Air Ticketing Services"
@@ -60,6 +63,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     shortLabel: "Air Ticketing",
     badge: "",
     tagline: "",
+    photo: airTicketingImg,
     icon: Ticket,
     inclusions: [],
   },
@@ -88,8 +92,8 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     label: "On-board Meal Arrangements",
     shortLabel: "On-board Meals",
     badge: "",
-    tagline:
-      "Bespoke in-flight catering, customized dietary curation, and synchronized airside meal delivery for group and VIP Meet & Greet journeys.",
+    tagline: "",
+    photo: onboardMealsImg,
     icon: UtensilsCrossed,
     inclusions: [],
   },
@@ -102,14 +106,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
       "Private couples spa suites, therapeutic hot stone treatments, and 5-star wellness retreats.",
     photo: spaWellnessImg,
     icon: Sparkles,
-    inclusions: [
-      "Private Couple Spa Suites with Jacuzzi & Aromatherapy Steam Rooms",
-      "Certified Ayurvedic Doctors & International Holistic Wellness Therapists",
-      "Signature Volcanic Hot Stone Therapy & Deep Tissue Rejuvenation",
-      "Cold-Pressed Organic Essential Oils & Customized Herbal Infusions",
-      "VIP Airport Layover Express Rejuvenation & Hydro-Massage Access",
-      "24/7 Dedicated Wellness Concierge Booking & Private Suite Reservations",
-    ],
+    inclusions: [],
   },
   {
     id: "PSO (Personal Security Officer / VIP Shopping)",
@@ -151,18 +148,10 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     label: "Human Remains (HUM)",
     shortLabel: "HUM Repatriation",
     badge: "",
-    tagline:
-      "Compassionate, fully documented repatriation of mortal remains across domestic and international aviation sectors.",
+    tagline: "",
     photo: humanRemainsImg,
     icon: HeartHandshake,
-    inclusions: [
-      "Full Domestic & International Air Repatriation Clearance by Dedicated Case Managers",
-      "Hospital NOC, Death Certificate Clearance, Embalming Certificate & Police Clearances",
-      "Certified Embalming Procedure & International Zinc-Lined Coffin Hermetic Sealing",
-      "Embassy / Consular Clearance, Quarantine / Health Officer Approvals & NOCs",
-      "Priority Aviation Allocation & Direct Airside Tarmac Dignified Receiving",
-      "Complete Compassionate Guidance with Real-Time Family Progress Updates",
-    ],
+    inclusions: [],
   },
   {
     id: "Cargo & AVI Pet Freight",
@@ -180,8 +169,8 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     label: "Infant Care Services",
     shortLabel: "Infant Care",
     badge: "",
-    tagline:
-      "Compassionate airport concierge assistance for parents travelling with infants, pram escort, and seamless airside coordination.",
+    tagline: "",
+    photo: infantCareImg,
     icon: Baby,
     inclusions: [],
   },
@@ -201,7 +190,7 @@ export function resolveSpecialServiceFromSearch(search: unknown): SpecialService
   if (sub.includes("travel") || sub.includes("tour") || sub.includes("honeymoon")) {
     return "Travel & Tour";
   }
-  if (sub.includes("visa")) {
+  if (sub.includes("visa") || sub.includes("passport")) {
     return "Visa Assistance Services";
   }
   if (sub.includes("meal") || sub.includes("catering") || sub.includes("onboard") || sub.includes("dining")) {
@@ -228,6 +217,20 @@ export function resolveSpecialServiceFromSearch(search: unknown): SpecialService
   return "Air Ticketing Services";
 }
 
+const HERO_HEADING_SERVICE_IDS = new Set<SpecialServiceOptionId>([
+  "Air Ticketing Services",
+  "Spa & Wellness",
+  "PSO (Personal Security Officer / VIP Shopping)",
+  "Air Ambulance (Airborne ICU Jet)",
+  "Train Ambulance",
+  "Train Ambulance (Train ICU Escort)",
+  "Human Remains (HUM)",
+  "Dignified Human Remains (HUM)",
+  "Cargo & AVI Pet Freight",
+  "Infant Care Services",
+  "On-board Meal Arrangements for Group Meet & Greet Bookings",
+]);
+
 export function SpecialServiceHeroStage({
   activeOption,
   onBack,
@@ -242,18 +245,30 @@ export function SpecialServiceHeroStage({
       ? [activeOption.photo]
       : [];
   const hasPhotos = photosList.length > 0;
+  const isTravelTour =
+    activeOption.id === "Travel & Tour" ||
+    activeOption.shortLabel === "Travel & Tour" ||
+    (Boolean(activeOption.label) && activeOption.label.toLowerCase().includes("travel"));
+  const isVisa =
+    activeOption.id === "Visa Assistance Services" ||
+    activeOption.shortLabel === "Passport and Visa" ||
+    (Boolean(activeOption.label) &&
+      (activeOption.label.toLowerCase().includes("passport") ||
+        activeOption.label.toLowerCase().includes("visa")));
+  const hasProperHeroHeading =
+    !isTravelTour && !isVisa && HERO_HEADING_SERVICE_IDS.has(activeOption.id);
 
   return (
     <section
       className={`relative w-full overflow-hidden bg-white border-b border-slate-200 ${
-        hasPhotos ? "py-6 sm:py-8 md:py-10" : "py-4 sm:py-6"
+        hasPhotos ? "py-6 sm:py-8 md:py-10" : "py-6 sm:py-8"
       }`}
     >
       <div className="relative z-10 mx-auto w-full max-w-[1040px] xl:max-w-[1100px] 2xl:max-w-[1140px] px-4 sm:px-6 md:px-8">
         {/* Top Header Row: Back Button & Selected Service Status Badge */}
         <div
           className={`w-full flex items-center justify-between gap-3 ${
-            hasPhotos ? "mb-3.5 sm:mb-5" : ""
+            hasPhotos ? "mb-3.5 sm:mb-5" : "mb-3 sm:mb-4"
           }`}
         >
           <button
@@ -272,14 +287,62 @@ export function SpecialServiceHeroStage({
           ) : null}
         </div>
 
+        {/* Proper Heading at Top of Travel and Tour */}
+        {isTravelTour && (
+          <div className="text-center max-w-3xl mx-auto mb-4 sm:mb-6">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
+              style={display}
+            >
+              Travel &amp; Tour
+            </h1>
+          </div>
+        )}
+
+        {/* Proper Heading at Top of Passport and Visa */}
+        {isVisa && (
+          <div className="text-center max-w-3xl mx-auto mb-2 sm:mb-4">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
+              style={display}
+            >
+              Passport and Visa
+            </h1>
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+              Expedited visa processing, VIP doorstep biometrics, document vetting, and priority embassy liaison for international travel.
+            </p>
+          </div>
+        )}
+
+        {/* Proper Heading at Top of Dedicated Special Service Pages */}
+        {hasProperHeroHeading && (
+          <div
+            className={`text-center max-w-3xl mx-auto ${
+              hasPhotos ? "mb-4 sm:mb-6" : "mb-2 sm:mb-4"
+            }`}
+          >
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight"
+              style={display}
+            >
+              {activeOption.label}
+            </h1>
+            {activeOption.tagline ? (
+              <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+                {activeOption.tagline}
+              </p>
+            ) : null}
+          </div>
+        )}
+
         {photosList.length === 1 && (
-          <div className="relative w-full aspect-[16/9] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none">
+          <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none">
             <img
               width={1600}
               height={900}
               src={photosList[0]}
               alt={activeOption.label}
-              className="w-full h-full object-cover object-center select-none block pointer-events-none bg-white"
+              className="w-full h-auto object-contain object-center select-none block pointer-events-none bg-white"
               loading="eager"
               draggable={false}
             />
@@ -316,7 +379,20 @@ export function SpecialServiceDetailsSection({
 }: {
   activeOption: SpecialServiceOptionDef;
 }) {
-  if (activeOption.id === "Air Ticketing Services" || activeOption.id === "Travel & Tour" || activeOption.id === "Cargo & AVI Pet Freight" || activeOption.id === "PSO (Personal Security Officer / VIP Shopping)" || activeOption.id === "Visa Assistance Services" || activeOption.id === "Air Ambulance (Airborne ICU Jet)" || activeOption.id === "Train Ambulance" || !activeOption.inclusions || activeOption.inclusions.length === 0) {
+  if (
+    activeOption.id === "Air Ticketing Services" ||
+    activeOption.id === "Travel & Tour" ||
+    activeOption.id === "Cargo & AVI Pet Freight" ||
+    activeOption.id === "Spa & Wellness" ||
+    activeOption.id === "PSO (Personal Security Officer / VIP Shopping)" ||
+    activeOption.id === "Visa Assistance Services" ||
+    activeOption.id === "Air Ambulance (Airborne ICU Jet)" ||
+    activeOption.id === "Train Ambulance" ||
+    activeOption.id === "Human Remains (HUM)" ||
+    activeOption.id === "Dignified Human Remains (HUM)" ||
+    !activeOption.inclusions ||
+    activeOption.inclusions.length === 0
+  ) {
     return null;
   }
   return (

@@ -68,8 +68,7 @@ describe("Dedicated Cargo Page and Form", () => {
     // Cargo Type
     expect(html).toContain("Cargo Type *");
     expect(html).toContain('id="cargo-type"');
-    expect(html).toContain("General Cargo");
-    expect(html).toContain("Perishables &amp; Cold Chain");
+    expect(html).toContain('placeholder="Enter cargo type"');
 
     // Origin
     expect(html).toContain("Origin *");
@@ -83,8 +82,10 @@ describe("Dedicated Cargo Page and Form", () => {
     expect(html).toContain("Cargo Details *");
     expect(html).toContain('id="cargo-details"');
 
-    // One Submit Enquiry button
+    // One Submit Enquiry button and Instant WhatsApp button
     expect(html).toContain("Submit Enquiry</span>");
+    expect(html).toContain("Instant WhatsApp</span>");
+    expect(html).toContain("https://wa.me/919599087957");
   });
 
   it("submits enquiry with serviceCategory: Cargo & Logistics", async () => {
