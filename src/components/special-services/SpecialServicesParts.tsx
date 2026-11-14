@@ -25,6 +25,7 @@ import airAmbulance1Img from "@/assets/others/airambulance1.jpeg";
 import trainImg from "@/assets/others/train.jpeg";
 import infantCareImg from "@/assets/others/infantcare.jpeg";
 import onboardMealsImg from "@/assets/others/on board meal .jpeg";
+import airTicketingImg from "@/assets/others/airticketing.jpeg";
 
 export type SpecialServiceOptionId =
   | "Air Ticketing Services"
@@ -62,6 +63,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     shortLabel: "Air Ticketing",
     badge: "",
     tagline: "",
+    photo: airTicketingImg,
     icon: Ticket,
     inclusions: [],
   },
@@ -224,6 +226,7 @@ export function resolveSpecialServiceFromSearch(search: unknown): SpecialService
 }
 
 const HERO_HEADING_SERVICE_IDS = new Set<SpecialServiceOptionId>([
+  "Air Ticketing Services",
   "Spa & Wellness",
   "PSO (Personal Security Officer / VIP Shopping)",
   "Air Ambulance (Airborne ICU Jet)",

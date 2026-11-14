@@ -79,5 +79,14 @@ describe("BookingPanel Regression & Navigation Tests", () => {
     // Verify there is no separate "Airport Services" button
     expect(html).not.toContain("Airport Services");
   });
+
+  it("hides Other Services button when showOtherServices is false (Meet & Greet page)", () => {
+    const html = renderToString(React.createElement(BookingPanel, { showOtherServices: false }));
+    expect(html).toContain("Departure");
+    expect(html).toContain("Transit");
+    expect(html).toContain("Arrival");
+    expect(html).toContain("Lounge");
+    expect(html).not.toContain("Other Services");
+  });
 });
 

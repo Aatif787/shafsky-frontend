@@ -175,12 +175,11 @@ export interface NavItem {
 
 /**
  * Navbar Navigation Items in exact specified order:
- * Meet & Greet | Lounge | Airports | Transport | Hotel | Private Charter | Other Services | Support
+ * Meet & Greet | Lounge | Cargo | Transport | Hotels | Air Charter | Other Services
  */
 export const NAV_ITEMS: NavItem[] = [
   { label: "Meet & Greet", href: "/solutions/concierge" },
   { label: "Lounge", href: "/lounge" },
-  { label: "Airports", href: "/airports" },
   { label: "Cargo", href: "/solutions/cargo" },
   { label: "Transport", href: "/solutions/transport" },
   { label: "Hotels", href: "/solutions/hotels" },

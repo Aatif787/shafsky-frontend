@@ -25,7 +25,7 @@ vi.mock("@/lib/branding/branding.context", () => ({
 
 describe("Navigation navbar (Direct Individual Links)", () => {
   it("defines NAV_ITEMS in the exact required order with correct routes", () => {
-    expect(NAV_ITEMS).toHaveLength(8);
+    expect(NAV_ITEMS).toHaveLength(7);
 
     expect(NAV_ITEMS[0]).toEqual({
       label: "Meet & Greet",
@@ -36,26 +36,22 @@ describe("Navigation navbar (Direct Individual Links)", () => {
       href: "/lounge",
     });
     expect(NAV_ITEMS[2]).toEqual({
-      label: "Airports",
-      href: "/airports",
-    });
-    expect(NAV_ITEMS[3]).toEqual({
       label: "Cargo",
       href: "/solutions/cargo",
     });
-    expect(NAV_ITEMS[4]).toEqual({
+    expect(NAV_ITEMS[3]).toEqual({
       label: "Transport",
       href: "/solutions/transport",
     });
-    expect(NAV_ITEMS[5]).toEqual({
+    expect(NAV_ITEMS[4]).toEqual({
       label: "Hotels",
       href: "/solutions/hotels",
     });
-    expect(NAV_ITEMS[6]).toEqual({
+    expect(NAV_ITEMS[5]).toEqual({
       label: "Air Charter",
       href: "/solutions/aviation",
     });
-    expect(NAV_ITEMS[7]).toEqual({
+    expect(NAV_ITEMS[6]).toEqual({
       label: "Other Services",
       href: "/solutions/special-services",
     });
@@ -89,9 +85,9 @@ describe("Navigation navbar (Direct Individual Links)", () => {
 
     expect(html).toContain(">Other Services</span>");
 
-    // Other nav items
-    expect(html).toContain('href="/airports"');
-    expect(html).toContain(">Airports</span>");
+    // Airports was moved under Meet & Greet and removed from the navbar
+    expect(html).not.toContain('href="/airports"');
+    expect(html).not.toContain(">Airports</span>");
 
     expect(html).not.toContain('href="/gallery"');
 

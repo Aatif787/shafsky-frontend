@@ -13,6 +13,7 @@ function escapeHtml(text: string): string {
 
 describe("SpecialServiceHeroStage - proper headings for special services", () => {
   const cases = [
+    { sub: "ticketing", id: "Air Ticketing Services" },
     { sub: "spa-wellness", id: "Spa & Wellness" },
     { sub: "pso", id: "PSO (Personal Security Officer / VIP Shopping)" },
     { sub: "air_ambulance", id: "Air Ambulance (Airborne ICU Jet)" },
@@ -44,16 +45,19 @@ describe("SpecialServiceHeroStage - proper headings for special services", () =>
     }
   );
 
-  it("does not alter Air Ticketing hero headings", () => {
-    for (const id of [
-      "Air Ticketing Services",
-    ] as const) {
-      const option = SPECIAL_SERVICES_OPTIONS.find((opt) => opt.id === id)!;
-      const html = renderToString(
-        <SpecialServiceHeroStage activeOption={option} onBack={() => {}} />
-      );
-      expect(html).not.toContain("<h1");
-    }
+  it("renders hero heading and airticketing image for Air Ticketing Services", () => {
+    const option = SPECIAL_SERVICES_OPTIONS.find(
+      (opt) => opt.id === "Air Ticketing Services"
+    )!;
+    expect(option).toBeDefined();
+    expect(option.photo).toBeDefined();
+
+    const html = renderToString(
+      <SpecialServiceHeroStage activeOption={option} onBack={() => {}} />
+    );
+    expect(html).toContain("<h1");
+    expect(html).toContain("Air Ticketing Services");
+    expect(html).toContain("<img");
   });
 });
 

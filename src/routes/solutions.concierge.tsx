@@ -17,12 +17,14 @@ import home3Img from "@/assets/homepage/home3.jpeg";
 import home5Img from "@/assets/homepage/home5.jpeg";
 
 import { BookingPanel } from "@/components/home/booking/BookingPanel";
+import { ServiceableAirportsSection } from "@/components/airports/ServiceableAirportsSection";
+import { Footer } from "@/components/home/sections/Footer";
 import { pageHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/solutions/concierge")({
   head: () =>
     pageHead({
-      title: "Airport Meet & Greet Lounge Service in India | Shafsky",
+      title: "Airport Meet & Greet and Lounge Service in India | Shafsky",
       description:
         "Official Shafsky Meet & Greet Lounge service for domestic and international arrival, departure, and transit. Aerobridge greeting, fast-track, and VIP lounge access.",
       path: "/solutions/concierge",
@@ -197,24 +199,6 @@ const CATALOG_DATA: CatalogItem[] = [
   },
 ];
 
-const AIRPORTS = [
-  { code: "DEL", name: "Delhi — Indira Gandhi Intl (IGI)", city: "New Delhi" },
-  { code: "BOM", name: "Mumbai — Chhatrapati Shivaji Maharaj (CSMIA)", city: "Mumbai" },
-  { code: "BLR", name: "Bengaluru — Kempegowda Intl Airport", city: "Bengaluru" },
-  { code: "HYD", name: "Hyderabad — Rajiv Gandhi Intl Airport", city: "Hyderabad" },
-  { code: "CCU", name: "Kolkata — Netaji Subhash Chandra Bose", city: "Kolkata" },
-  { code: "MAA", name: "Chennai — International Airport", city: "Chennai" },
-  { code: "GOI", name: "Goa — Dabolim / Manohar Intl Airport (GOX)", city: "Goa" },
-  { code: "COK", name: "Kochi — Cochin International Airport", city: "Kochi" },
-  { code: "AMD", name: "Ahmedabad — Sardar Vallabhbhai Patel", city: "Ahmedabad" },
-  { code: "JAI", name: "Jaipur — International Airport", city: "Jaipur" },
-  { code: "LKO", name: "Lucknow — Chaudhary Charan Singh", city: "Lucknow" },
-  { code: "ATQ", name: "Amritsar — Sri Guru Ram Dass Jee", city: "Amritsar" },
-  { code: "DXB", name: "Dubai — International Airport (DXB)", city: "Dubai" },
-  { code: "LHR", name: "London — Heathrow Airport (LHR)", city: "London" },
-  { code: "SIN", name: "Singapore — Changi Airport (SIN)", city: "Singapore" },
-];
-
 function MeetGreetDedicatedPage() {
   const navigate = useNavigate();
   const [selectedSubService, setSelectedSubService] = useState<MeetGreetOptionKey>("Domestic Departure");
@@ -260,7 +244,7 @@ function MeetGreetDedicatedPage() {
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-tight text-center"
               style={display}
             >
-              Meet & Greet Lounge Service
+              Meet & Greet and Lounge Service
             </h1>
           </div>
 
@@ -268,7 +252,7 @@ function MeetGreetDedicatedPage() {
           <div className="max-w-6xl mx-auto">
             <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-100 flex items-center justify-center">
               <img width={1600} height={900} src={meetGreetImg}
-                alt="Shafsky Meet & Greet Lounge Service Airport Team"
+                alt="Shafsky Meet & Greet and Lounge Service Airport Team"
                 className="w-full h-auto object-contain object-center select-none block max-h-[580px]"
                 loading="eager"
               />
@@ -278,7 +262,12 @@ function MeetGreetDedicatedPage() {
       </section>
 
       <section className="bg-white border-b border-slate-200 py-6 sm:py-8">
-        <BookingPanel />
+        <BookingPanel showOtherServices={false} />
+      </section>
+
+      {/* 2. SERVICEABLE AIRPORTS NETWORK SECTION */}
+      <section id="airports" className="bg-[#FAF9F5] border-b border-slate-200 py-14 sm:py-20">
+        <ServiceableAirportsSection headingTag="h2" />
       </section>
 
       <section className="py-16 sm:py-24 bg-white px-4 sm:px-6 lg:px-8">
@@ -416,6 +405,9 @@ function MeetGreetDedicatedPage() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

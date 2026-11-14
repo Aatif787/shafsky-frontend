@@ -69,9 +69,6 @@ function DedicatedInfantCarePage() {
             >
               Infant Care Services
             </h1>
-            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-              Compassionate airport concierge assistance for parents travelling with infants, pram escort, and seamless airside coordination.
-            </p>
           </div>
 
           <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 ring-1 ring-slate-100 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.08)] bg-white flex items-center justify-center select-none">

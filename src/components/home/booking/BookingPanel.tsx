@@ -74,9 +74,13 @@ function SelectionCircle({
 
 export interface BookingPanelProps {
   showSideAnimation?: boolean;
+  showOtherServices?: boolean;
 }
 
-export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
+export function BookingPanel({
+  showSideAnimation = false,
+  showOtherServices = true,
+}: BookingPanelProps) {
   const navigate = useNavigate();
   const [activeMode, setActiveMode] = useState<BookingServiceMode>("airport");
   const [originCode, setOriginCode] = useState<string>("");
@@ -555,23 +559,25 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
               </motion.button>
 
               {/* Other Services Option alongside Departure, Transit, Arrival */}
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.96 }}
-                transition={{ type: "spring", stiffness: 450, damping: 28 }}
-                onClick={() => setActiveMode("other")}
-                className={`relative z-10 flex sm:flex-initial min-h-9 h-9 min-w-0 sm:shrink-0 whitespace-nowrap px-2.5 sm:px-3.5 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
-                  activeMode === "other"
-                    ? "text-slate-950 bg-gradient-to-r from-lime-400/95 via-lime-300/95 to-lime-400/95 font-bold shadow-[0_4px_14px_rgba(132,204,22,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.9)] border border-lime-300/80"
-                    : "text-slate-700 hover:text-slate-950 hover:bg-white/50"
-                }`}
-                style={mono}
-              >
-                <SelectionCircle active={activeMode === "other"} variant="lime" />
-                <Sparkles className={`h-3.5 w-3.5 shrink-0 ${activeMode === "other" ? "text-slate-950" : "text-lime-600"}`} />
-                <span className="whitespace-nowrap">Other Services</span>
-              </motion.button>
+              {showOtherServices && (
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 28 }}
+                  onClick={() => setActiveMode("other")}
+                  className={`relative z-10 flex sm:flex-initial min-h-9 h-9 min-w-0 sm:shrink-0 whitespace-nowrap px-2.5 sm:px-3.5 items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.14em] outline-none transition-all duration-200 cursor-pointer rounded-xl ${
+                    activeMode === "other"
+                      ? "text-slate-950 bg-gradient-to-r from-lime-400/95 via-lime-300/95 to-lime-400/95 font-bold shadow-[0_4px_14px_rgba(132,204,22,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.9)] border border-lime-300/80"
+                      : "text-slate-700 hover:text-slate-950 hover:bg-white/50"
+                  }`}
+                  style={mono}
+                >
+                  <SelectionCircle active={activeMode === "other"} variant="lime" />
+                  <Sparkles className={`h-3.5 w-3.5 shrink-0 ${activeMode === "other" ? "text-slate-950" : "text-lime-600"}`} />
+                  <span className="whitespace-nowrap">Other Services</span>
+                </motion.button>
+              )}
             </div>
           </div>
 
@@ -589,7 +595,7 @@ export function BookingPanel({ showSideAnimation = false }: BookingPanelProps) {
                 onBackToAirport={() => setActiveMode("airport")}
               />
             </div>
-          ) : activeMode === "other" ? (
+          ) : showOtherServices && activeMode === "other" ? (
             <OtherServicesEnquiryFlow
               initialOrigin={originLabel || originCode}
               initialDestination={destLabel || destCode}

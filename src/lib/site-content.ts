@@ -239,7 +239,7 @@ export const FOOTER_CONTENT = {
   phone: "+91 9599087959",
   copyright: "Shafsky Aviation Services Pvt. Ltd. All Rights Reserved.",
   services: ["Meet & Greet", "Lounge Access", "Transport", "Hotels", "Concierge"],
-  companyLinks: ["About Us", "Our Team", "Contact"],
+  companyLinks: ["About Us", "Contact"],
   legalLinks: ["Privacy Policy", "Terms of Use"],
 } as const;
 

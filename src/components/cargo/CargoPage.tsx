@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CheckCircle2, Loader2, AlertCircle, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Loader2, AlertCircle, ShieldCheck, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/home/sections/Footer";
@@ -134,6 +134,13 @@ export function CargoPage() {
     setCargoDetails("");
   };
 
+  const getCargoWhatsAppLink = () => {
+    const text = encodeURIComponent(
+      `Hello Shafsky Aviation Cargo Desk,\n\nI would like to enquire about Cargo & Freight Logistics:\n\n*Name:* ${fullName.trim() || "Guest"}\n*Email:* ${email.trim() || "N/A"}\n*Phone:* ${phone.trim() || "N/A"}\n*Cargo Type:* ${cargoType.trim() || "Not specified"}\n*Origin:* ${origin.trim() || "Not specified"}\n*Destination:* ${destination.trim() || "Not specified"}\n*Cargo Details:* ${cargoDetails.trim() || "None"}`
+    );
+    return `https://wa.me/919599087957?text=${text}`;
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-900 flex flex-col justify-between selection:bg-lime-200">
       <Navigation visible={true} />
@@ -198,7 +205,16 @@ export function CargoPage() {
                   <span className="text-lime-700">{submittedRef}</span>
                 </div>
 
-                <div>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5">
+                  <a
+                    href={getCargoWhatsAppLink()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider shadow-sm transition"
+                  >
+                    <MessageSquare size={13} className="text-white" />
+                    <span>Chat on WhatsApp</span>
+                  </a>
                   <button
                     type="button"
                     onClick={handleResetForm}
@@ -331,12 +347,12 @@ export function CargoPage() {
                   />
                 </div>
 
-                {/* Row 5: Submit Enquiry Button */}
-                <div className="pt-1">
+                {/* Row 5: Submit Enquiry + Instant WhatsApp Buttons */}
+                <div className="pt-1 flex flex-col sm:flex-row items-center gap-2.5">
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full inline-flex items-center justify-center gap-2 px-8 py-2.5 rounded-full bg-[#76C000] hover:bg-lime-500 text-slate-950 text-xs sm:text-sm font-extrabold uppercase tracking-wider shadow-md transition disabled:opacity-50 cursor-pointer"
+                    className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#76C000] hover:bg-lime-500 text-slate-950 text-xs sm:text-sm font-extrabold uppercase tracking-wider shadow-md transition disabled:opacity-50 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <>
@@ -347,6 +363,16 @@ export function CargoPage() {
                       <span>Submit Enquiry</span>
                     )}
                   </button>
+
+                  <a
+                    href={getCargoWhatsAppLink()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold uppercase tracking-wider shadow-md transition cursor-pointer"
+                  >
+                    <MessageSquare size={14} className="text-lime-400" />
+                    <span className="whitespace-nowrap">Instant WhatsApp</span>
+                  </a>
                 </div>
               </form>
             )}

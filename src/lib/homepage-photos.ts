@@ -15,7 +15,7 @@ import meetImg from "@/assets/homepage/widescreen/meet.jpeg";
 import transitImg from "@/assets/homepage/widescreen/transit.jpeg";
 import vvipImg from "@/assets/homepage/widescreen/vvip.jpeg";
 import wheelImg from "@/assets/homepage/widescreen/wheel.jpeg";
-import airTicketingImg from "@/assets/others/air-ticketing.jpg";
+import airTicketingImg from "@/assets/others/airticketing.jpeg";
 import infantCareImg from "@/assets/others/infantcare.jpeg";
 
 export const HOMEPAGE_PHOTOS = {
