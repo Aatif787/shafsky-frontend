@@ -290,7 +290,7 @@ export const BookingSummarySection: React.FC<BookingSummarySectionProps> = ({
         <div className="rounded-2xl bg-amber-50/70 border border-amber-200 p-5 flex flex-col gap-2">
           <div className="flex items-start sm:items-center gap-2 text-amber-950 font-bold text-sm">
             <AlertCircle size={18} className="text-amber-700 shrink-0 mt-0.5 sm:mt-0" />
-            <span>This airport is not currently serviceable. Submit your request and our team will check availability.</span>
+            <span>Submit your request and our team will check availability.</span>
           </div>
           <span className="text-xs text-amber-800 pl-6 sm:pl-6.5">
             Our team will review your request and contact you.
