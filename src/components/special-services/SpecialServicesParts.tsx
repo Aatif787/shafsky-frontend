@@ -90,8 +90,7 @@ export const SPECIAL_SERVICES_OPTIONS: SpecialServiceOptionDef[] = [
     label: "On-board Meal Arrangements",
     shortLabel: "On-board Meals",
     badge: "",
-    tagline:
-      "Bespoke in-flight catering, customized dietary curation, and synchronized airside meal delivery for group and VIP Meet & Greet journeys.",
+    tagline: "",
     photo: onboardMealsImg,
     icon: UtensilsCrossed,
     inclusions: [],
