@@ -51,14 +51,6 @@ export const HOMEPAGE_FAQS: readonly FAQItem[] = [
     },
   },
   {
-    q: "How early do I need to book my airport service?",
-    a: "We recommend booking at least 6 hours in advance for domestic flights and 12 hours for international flights. If your trip is last minute, reach out to our team directly and we will do our best to arrange it.",
-    cta: {
-      label: "Book Your Service",
-      href: "/#book",
-    },
-  },
-  {
     q: "Can you assist large families, groups, or VIP travelers?",
     a: "Yes, definitely. We regularly coordinate travel for large families, corporate delegations, and VIP guests with multiple dedicated airport hosts, group luggage handling, and private tarmac vehicles.",
     cta: {
