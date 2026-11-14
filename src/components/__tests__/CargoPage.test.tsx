@@ -68,8 +68,7 @@ describe("Dedicated Cargo Page and Form", () => {
     // Cargo Type
     expect(html).toContain("Cargo Type *");
     expect(html).toContain('id="cargo-type"');
-    expect(html).toContain("General Cargo");
-    expect(html).toContain("Perishables &amp; Cold Chain");
+    expect(html).toContain('placeholder="Enter cargo type"');
 
     // Origin
     expect(html).toContain("Origin *");

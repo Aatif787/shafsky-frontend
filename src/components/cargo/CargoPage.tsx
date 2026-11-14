@@ -14,17 +14,6 @@ const CARGO_LABEL_CLASS =
 const CARGO_INPUT_CLASS =
   "w-full h-9 px-3 rounded-xl border border-slate-200/90 bg-white/95 text-xs sm:text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:border-lime-500 focus:bg-white focus:outline-none shadow-2xs transition-colors";
 
-const CARGO_TYPE_OPTIONS = [
-  "General Cargo",
-  "Perishables & Cold Chain",
-  "Valuable & High-Value Cargo",
-  "Dangerous Goods (Hazmat)",
-  "Pharma & Temperature-Controlled",
-  "Heavy & Oversized Freight",
-  "Express Air Freight",
-  "Other",
-];
-
 export function CargoPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -66,8 +55,9 @@ export function CargoPage() {
       return;
     }
 
-    if (!cargoType) {
-      const err = "Please select a cargo type.";
+    const trimmedCargoType = cargoType.trim();
+    if (!trimmedCargoType) {
+      const err = "Please enter the cargo type.";
       setSubmitError(err);
       toast.error(err);
       return;
@@ -101,12 +91,12 @@ export function CargoPage() {
         passengerEmail: trimmedEmail,
         passengerPhone: cleanPhone,
         serviceCategory: "Cargo & Logistics",
-        serviceType: cargoType,
+        serviceType: trimmedCargoType,
         origin: origin.trim(),
         destination: destination.trim(),
         notes: cargoDetails.trim(),
         details: {
-          cargo_type: cargoType,
+          cargo_type: trimmedCargoType,
           cargo_details: cargoDetails.trim(),
         },
       });
@@ -280,22 +270,15 @@ export function CargoPage() {
                     <label htmlFor="cargo-type" className={CARGO_LABEL_CLASS}>
                       Cargo Type *
                     </label>
-                    <select
+                    <input
                       id="cargo-type"
+                      type="text"
                       required
                       value={cargoType}
                       onChange={(e) => setCargoType(e.target.value)}
+                      placeholder="Enter cargo type"
                       className={CARGO_INPUT_CLASS}
-                    >
-                      <option value="" disabled>
-                        Select cargo type
-                      </option>
-                      {CARGO_TYPE_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </div>
                 </div>
 
