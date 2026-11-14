@@ -228,9 +228,6 @@ export function ServiceableAirportsSection({
               </div>
 
               <div className="flex items-center gap-2 shrink-0 ml-2">
-                <span className="text-[10px] font-bold text-emerald-600">
-                  {item.servicesCount} Services
-                </span>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#7c3aed] group-hover:translate-x-0.5 transition" />
               </div>
             </Link>
