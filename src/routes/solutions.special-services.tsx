@@ -377,7 +377,8 @@ function DedicatedSpecialServicesPage() {
         ? "919599087957"
         : selectedOptionId === "Train Ambulance" ||
             selectedOptionId === "Train Ambulance (Train ICU Escort)" ||
-            selectedOptionId === "Infant Care Services"
+            selectedOptionId === "Infant Care Services" ||
+            selectedOptionId === "Cargo & AVI Pet Freight"
           ? "919599225778"
           : "919599087959";
     return `https://wa.me/${targetPhone}?text=${text}`;
